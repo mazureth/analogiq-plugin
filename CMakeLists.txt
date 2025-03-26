@@ -14,7 +14,7 @@ option(ANALOGIQ_BUILD_STANDALONE "Build Standalone app" ON)
 # Set up the plugin target with JUCE modules
 juce_add_plugin(AnalogIQ
     VERSION ${PROJECT_VERSION}
-    COMPANY_NAME "Your Company"
+    COMPANY_NAME "Mazureth"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
