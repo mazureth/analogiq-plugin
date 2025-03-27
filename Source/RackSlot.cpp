@@ -86,19 +86,12 @@ void RackSlot::mouseDrag(const juce::MouseEvent& e)
         juce::DragAndDropContainer* dragContainer = juce::DragAndDropContainer::findParentDragContainerFor(this);
         if (dragContainer != nullptr)
         {
-            // Create a thumbnail image of this component for the drag
-            juce::Image dragImage = createComponentSnapshot(getLocalBounds(), true);
-            
-            // Center drag image
-            juce::Point<int> dragOffset = dragImage.getBounds().getCentre();
-            
-            // Use the correct startDragging method with correctly typed parameters
+            // Just set drag data without creating visual thumbnail
             dragContainer->startDragging(
                 juce::var(index),    // Description (slot index) 
                 this,                // Source component
-                juce::ScaledImage(dragImage),  // Image to display during drag (wrapped in ScaledImage)
-                true,                // Allow dragging to other windows
-                &dragOffset          // Offset for the drag image
+                juce::ScaledImage(),  // Empty image - no visual thumbnail
+                true                 // Allow dragging to other windows
             );
             
             DBG("RackSlot::mouseDrag - drag started successfully for slot " + juce::String(index));
