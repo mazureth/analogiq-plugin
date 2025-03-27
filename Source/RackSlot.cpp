@@ -1,156 +1,160 @@
 #include "RackSlot.h"
 #include "GearLibrary.h"
+#include "Rack.h"
 
-RackSlot::RackSlot(SlotType slotType, int slotIndex, int slotSize)
-    : type(slotType), index(slotIndex), size(slotSize)
+RackSlot::RackSlot(int slotIndex)
+    : index(slotIndex), highlighted(false), isDragging(false)
 {
-    setMouseCursor(juce::MouseCursor::PointingHandCursor);
-    setComponentID("RackSlot_" + juce::String(slotIndex));
-    
-    // CRITICAL: Enable drag-and-drop reception
+    setComponentID("RackSlot_" + juce::String(index));
     setInterceptsMouseClicks(true, true);
-}
-
-RackSlot::~RackSlot()
-{
+    DBG("Created RackSlot with index " + juce::String(index));
 }
 
 void RackSlot::paint(juce::Graphics& g)
 {
     // Draw background
-    if (isAvailable())
+    juce::Colour bgColor = isAvailable() ? juce::Colours::darkgrey : juce::Colours::darkslategrey;
+    g.fillAll(bgColor);
+    
+    // Draw border (highlighted if being dragged over)
+    juce::Colour borderColor = highlighted ? juce::Colours::orange : juce::Colours::grey;
+    g.setColour(borderColor);
+    g.drawRect(getLocalBounds(), 2);
+    
+    // Draw slot number
+    g.setColour(juce::Colours::white);
+    g.drawText(juce::String(index), getLocalBounds().reduced(5, 5).removeFromTop(20), 
+               juce::Justification::topLeft, true);
+    
+    // If we have a gear item, draw its name and image
+    if (!isAvailable() && gearItem != nullptr)
     {
-        // Empty slot
-        g.setColour(juce::Colours::darkgrey.darker(0.3f));
-        g.fillRect(getLocalBounds());
+        // Draw name
+        g.setFont(16.0f);
+        g.setColour(juce::Colours::white);
+        juce::Rectangle<int> nameArea = getLocalBounds().reduced(10, 10);
+        g.drawText(gearItem->name, nameArea, juce::Justification::centred, true);
         
-        // Border color based on highlight state
-        g.setColour(highlighted ? juce::Colours::green : juce::Colours::black);
-        g.drawRect(getLocalBounds(), highlighted ? 3 : 1);
+        // Draw manufacturer below name
+        g.setFont(12.0f);
+        g.setColour(juce::Colours::lightgrey);
+        juce::Rectangle<int> mfgArea = nameArea.translated(0, 20);
+        g.drawText(gearItem->manufacturer, mfgArea, juce::Justification::centred, true);
         
-        // Slot identifier
+        // Draw image if available
+        if (gearItem->image.isValid())
+        {
+            juce::Rectangle<int> imageArea = getLocalBounds().reduced(20);
+            g.drawImageWithin(gearItem->image, imageArea.getX(), imageArea.getY() + 40, 
+                             imageArea.getWidth(), imageArea.getHeight() - 40, 
+                             juce::RectanglePlacement::centred);
+        }
+    }
+    else
+    {
+        // Draw "empty slot" text for available slots
         g.setColour(juce::Colours::lightgrey);
         g.setFont(14.0f);
-        
-        juce::String slotText;
-        if (type == SlotType::Series500)
-            slotText = "500 Series #" + juce::String(index + 1);
-        else
-            slotText = "19\" Rack " + juce::String(size) + "U #" + juce::String(index + 1);
-            
-        g.drawText(slotText, getLocalBounds().reduced(5), juce::Justification::centred, true);
-    }
-    else if (gearItem != nullptr)
-    {
-        // Slot with gear in it
-        if (gearItem->image.isNull())
-            gearItem->loadImage();
-            
-        // Draw gear image
-        g.drawImage(gearItem->image, getLocalBounds().toFloat(), 
-                    juce::RectanglePlacement::centred);
-                    
-        // Draw name at the bottom
-        g.setColour(juce::Colours::black);
-        g.fillRect(getLocalBounds().removeFromBottom(20));
-        g.setColour(juce::Colours::white);
-        g.setFont(12.0f);
-        g.drawText(gearItem->name, getLocalBounds().removeFromBottom(20).reduced(2, 0),
-                   juce::Justification::centred, true);
-        
-        // Draw border based on highlight state (useful for when rearranging gear)
-        if (highlighted)
-        {
-            g.setColour(juce::Colours::orange);
-            g.drawRect(getLocalBounds(), 3);
-        }
+        g.drawText("Empty Slot", getLocalBounds(), juce::Justification::centred, true);
     }
 }
 
 void RackSlot::resized()
 {
+    // Nothing to do here - we draw everything in paint()
 }
 
 void RackSlot::mouseDown(const juce::MouseEvent& e)
 {
-    DBG("RackSlot::mouseDown on slot " + juce::String(index));
-    
-    if (gearItem != nullptr)
+    // Only start drag if this slot has gear
+    if (!isAvailable() && gearItem != nullptr)
     {
-        dragMode = true;
+        DBG("RackSlot::mouseDown - has gear item - preparing for drag");
+        setMouseCursor(juce::MouseCursor::DraggingHandCursor);
         dragger.startDraggingComponent(this, e);
-        DBG("Started dragging component in slot " + juce::String(index));
     }
 }
 
-void RackSlot::mouseDrag(const juce::MouseEvent& /*e*/)
+void RackSlot::mouseDrag(const juce::MouseEvent& e)
 {
-    if (dragMode && gearItem != nullptr)
+    // Only start drag if we have gear and have moved enough
+    if (!isAvailable() && gearItem != nullptr && !isDragging && e.getDistanceFromDragStart() > 5)
     {
-        DBG("RackSlot::mouseDrag on slot " + juce::String(index));
+        isDragging = true;
+        DBG("RackSlot::mouseDrag - starting drag for slot " + juce::String(index));
         
-        // Start a drag-and-drop operation
-        juce::Component* comp = this;
-        juce::DragAndDropContainer* dragContainer = nullptr;
-        
-        while (comp != nullptr)
-        {
-            dragContainer = dynamic_cast<juce::DragAndDropContainer*>(comp);
-            if (dragContainer != nullptr)
-                break;
-            comp = comp->getParentComponent();
-            
-            if (comp != nullptr)
-                DBG("Looking for DragAndDropContainer in parent: " + comp->getComponentID());
-        }
-        
+        juce::DragAndDropContainer* dragContainer = juce::DragAndDropContainer::findParentDragContainerFor(this);
         if (dragContainer != nullptr)
         {
-            DBG("Found DragAndDropContainer: " + dragContainer->getComponentID());
+            // Create a thumbnail image of this component for the drag
+            juce::Image dragImage = createComponentSnapshot(getLocalBounds(), true);
             
-            juce::var dragData(index);
-            this->toFront(true);
-            dragContainer->startDragging(dragData, this, juce::ScaledImage(), false);
-            dragMode = false;
+            // Center drag image
+            juce::Point<int> dragOffset = dragImage.getBounds().getCentre();
             
-            DBG("Started drag operation with data: " + juce::String(index));
+            // Use the correct startDragging method with correctly typed parameters
+            dragContainer->startDragging(
+                juce::var(index),    // Description (slot index) 
+                this,                // Source component
+                juce::ScaledImage(dragImage),  // Image to display during drag (wrapped in ScaledImage)
+                true,                // Allow dragging to other windows
+                &dragOffset          // Offset for the drag image
+            );
+            
+            DBG("RackSlot::mouseDrag - drag started successfully for slot " + juce::String(index));
+            
+            // Bring this slot to the front visually during drag
+            toFront(true);
         }
         else
         {
-            DBG("No DragAndDropContainer found in hierarchy");
+            DBG("RackSlot::mouseDrag - NO DRAG CONTAINER FOUND!");
+        }
+    }
+    
+    // Update component position during drag for visual feedback
+    if (isDragging)
+    {
+        // Only allow vertical movement by keeping X the same
+        auto originalBounds = getBounds();
+        dragger.dragComponent(this, e, nullptr);
+        
+        // Restrict to vertical movement only
+        auto newBounds = getBounds();
+        setBounds(originalBounds.getX(), newBounds.getY(), originalBounds.getWidth(), originalBounds.getHeight());
+    }
+}
+
+void RackSlot::mouseUp(const juce::MouseEvent&)
+{
+    DBG("RackSlot::mouseUp");
+    isDragging = false;
+    dragSourceDetails.reset();
+    setMouseCursor(juce::MouseCursor::NormalCursor);
+    
+    // When drag ends, let the parent Rack handle final positioning
+    juce::Component* parentComponent = findParentRackComponent();
+    Rack* parentRack = dynamic_cast<Rack*>(parentComponent);
+    if (parentRack != nullptr)
+    {
+        parentRack->resetSlotPositions();
+    }
+    else
+    {
+        auto* container = dynamic_cast<Rack::RackContainer*>(parentComponent);
+        if (container != nullptr && container->rack != nullptr)
+        {
+            container->rack->resetSlotPositions();
         }
     }
 }
 
-bool RackSlot::isCompatibleWithGear(const GearItem* itemToCheck) const
-{
-    if (itemToCheck == nullptr)
-        return false;
-        
-    // Check type compatibility
-    bool typeMatch = (type == SlotType::Series500 && itemToCheck->type == GearType::Series500) ||
-                     (type == SlotType::Rack19Inch && itemToCheck->type == GearType::Rack19Inch);
-                     
-    // Check size compatibility
-    bool sizeMatch = itemToCheck->slotSize <= size;
-    
-    return typeMatch && sizeMatch;
-}
-
-void RackSlot::setGearItem(GearItem* newGearItem)
-{
-    gearItem = newGearItem;
-    repaint();
-}
-
-// DragAndDropTarget implementation
 bool RackSlot::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails& sourceDetails)
 {
-    // Check if the source is a DraggableListBox from the GearLibrary
     DBG("RackSlot::isInterestedInDragSource called on slot " + juce::String(index) + 
         ", description=" + sourceDetails.description.toString());
     
-    // CRITICAL FIX: Always accept drag sources with integer data (row indices)
+    // Accept drag sources with integer data (row indices)
     if (sourceDetails.description.isInt())
     {
         DBG("RackSlot is interested in drag with integer data: " + sourceDetails.description.toString());
@@ -168,197 +172,158 @@ bool RackSlot::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDet
     }
     
     // Check if it's another RackSlot (for rearranging)
-    if (dynamic_cast<RackSlot*>(sourceComp) != nullptr && sourceComp != this)
+    if (dynamic_cast<RackSlot*>(sourceComp) != nullptr)
     {
         DBG("RackSlot is interested in drag from another RackSlot");
         return true;
     }
     
-    // For maximum compatibility, accept all drags during development
-    DBG("RackSlot accepting all drags during development");
-    return true;
+    return false;
 }
 
-void RackSlot::itemDragEnter(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails)
+void RackSlot::itemDragEnter(const juce::DragAndDropTarget::SourceDetails& /*details*/)
 {
-    DBG("RackSlot::itemDragEnter on slot " + juce::String(index) + 
-        ", description=" + dragSourceDetails.description.toString());
+    DBG("RackSlot::itemDragEnter on slot " + juce::String(index));
     setHighlighted(true);
 }
 
-void RackSlot::itemDragMove(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails)
+void RackSlot::itemDragMove(const juce::DragAndDropTarget::SourceDetails& /*details*/)
 {
-    // Keep highlighted
-    DBG("RackSlot::itemDragMove on slot " + juce::String(index) + 
-        ", description=" + dragSourceDetails.description.toString());
+    DBG("RackSlot::itemDragMove on slot " + juce::String(index));
 }
 
-void RackSlot::itemDragExit(const juce::DragAndDropTarget::SourceDetails& /*dragSourceDetails*/)
+void RackSlot::itemDragExit(const juce::DragAndDropTarget::SourceDetails& /*details*/)
 {
     DBG("RackSlot::itemDragExit on slot " + juce::String(index));
     setHighlighted(false);
 }
 
-void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails)
+void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails& details)
 {
     DBG("RackSlot::itemDropped on slot " + juce::String(index) + 
-        ", description=" + dragSourceDetails.description.toString());
+        ", description=" + details.description.toString());
     setHighlighted(false);
     
-    // CRITICAL: Get the gear index directly from the drag data
-    if (dragSourceDetails.description.isInt())
+    // Always try to delegate to the parent Rack for handling
+    juce::Component* parentComponent = findParentRackComponent();
+    
+    if (parentComponent != nullptr)
     {
-        int gearIndex = static_cast<int>(dragSourceDetails.description);
-        DBG("Dropped gear index: " + juce::String(gearIndex));
+        DBG("Forwarding drop to parent Rack");
         
-        // Find the GearLibrary component - search all window hierarchy
-        GearLibrary* gearLibrary = nullptr;
+        // The parent Rack should handle all drops centrally
+        // This ensures consistent behavior whether the drop is on a slot or between slots
         
-        // Start with the top-level window
-        juce::Component* topLevelComponent = getTopLevelComponent();
+        // Convert source details to parent's coordinate system
+        juce::Point<int> positionInParent;
         
-        if (topLevelComponent != nullptr)
+        // Handle case where direct parent is RackContainer or Rack
+        if (parentComponent->getComponentID() == "Rack") 
         {
-            DBG("Found top level component: " + topLevelComponent->getComponentID());
-            
-            // APPROACH 1: Try a direct search through all children of top-level component
-            for (int i = 0; i < topLevelComponent->getNumChildComponents(); ++i)
+            // Direct parent is the Rack
+            Rack* parentRack = dynamic_cast<Rack*>(parentComponent);
+            if (parentRack != nullptr)
             {
-                juce::Component* child = topLevelComponent->getChildComponent(i);
-                if (child != nullptr)
-                {
-                    DBG("Examining top-level child: " + child->getComponentID());
-                    
-                    // See if this is a GearLibrary
-                    if (dynamic_cast<GearLibrary*>(child) != nullptr)
-                    {
-                        gearLibrary = dynamic_cast<GearLibrary*>(child);
-                        DBG("Found GearLibrary directly");
-                        break;
-                    }
-                    
-                    // Check the child's children (one level deeper)
-                    for (int j = 0; j < child->getNumChildComponents(); ++j)
-                    {
-                        juce::Component* grandchild = child->getChildComponent(j);
-                        if (grandchild != nullptr && dynamic_cast<GearLibrary*>(grandchild) != nullptr)
-                        {
-                            gearLibrary = dynamic_cast<GearLibrary*>(grandchild);
-                            DBG("Found GearLibrary at grandchild level");
-                            break;
-                        }
-                    }
-                    
-                    if (gearLibrary != nullptr)
-                        break;
-                }
-            }
-            
-            // APPROACH 2: If not found, try direct ID match at any level
-            if (gearLibrary == nullptr)
-            {
-                DBG("Trying direct ID match approach");
-                juce::Component* target = nullptr;
+                positionInParent = parentRack->getLocalPoint(this, details.localPosition);
                 
-                // Find component by ID recursively with a helper lambda
-                std::function<void(juce::Component*)> findComponent = 
-                    [&target, &findComponent](juce::Component* comp) {
-                        if (comp->getComponentID() == "GearLibrary")
-                        {
-                            target = comp;
-                            return;
-                        }
-                        
-                        for (int i = 0; i < comp->getNumChildComponents(); ++i)
-                        {
-                            if (target == nullptr)
-                                findComponent(comp->getChildComponent(i));
-                        }
-                    };
-                
-                findComponent(topLevelComponent);
-                
-                if (target != nullptr)
-                {
-                    gearLibrary = dynamic_cast<GearLibrary*>(target);
-                    DBG("Found GearLibrary through ID match");
-                }
-            }
-        }
-        
-        if (gearLibrary != nullptr)
-        {
-            // Get the gear item from the library
-            DBG("Attempting to get gear item at index " + juce::String(gearIndex));
-            GearItem* originalItem = gearLibrary->getGearItem(gearIndex);
-            
-            if (originalItem != nullptr)
-            {
-                DBG("Found gear item: " + originalItem->name);
-                
-                // Create a new copy of the item for this slot
-                GearItem* newItem = new GearItem(
-                    originalItem->name,
-                    originalItem->manufacturer,
-                    originalItem->type,
-                    originalItem->category,
-                    originalItem->slotSize,
-                    originalItem->imageUrl,
-                    originalItem->controls
+                // Create simplified source details with only the required data
+                juce::DragAndDropTarget::SourceDetails parentDetails(
+                    details.description,
+                    details.sourceComponent.get(),
+                    positionInParent
                 );
                 
-                // Check if the item is compatible with this slot
-                if (isCompatibleWithGear(newItem) && isAvailable())
-                {
-                    // Add the item to this slot
-                    setGearItem(newItem);
-                    DBG("SUCCESS: Added gear item '" + newItem->name + "' to slot " + juce::String(index));
-                }
-                else
-                {
-                    // Clean up if not compatible
-                    delete newItem;
-                    DBG("ERROR: Item not compatible with slot " + juce::String(index) + 
-                        ". Type match: " + juce::String(originalItem->type == GearType::Series500 ? 
-                                                     "Series500" : "Rack19Inch") + 
-                        ", Slot type: " + juce::String(type == SlotType::Series500 ? 
-                                                    "Series500" : "Rack19Inch"));
-                }
+                // Call the parent's itemDropped directly
+                parentRack->itemDropped(parentDetails);
             }
-            else
-            {
-                DBG("ERROR: Could not find gear item at index " + juce::String(gearIndex));
-            }
+            return;
         }
-        else
+        else if (parentComponent->getComponentID() == "RackContainer")
         {
-            DBG("ERROR: Could not find GearLibrary component");
+            // Parent is RackContainer, need to find its Rack parent
+            auto* container = dynamic_cast<Rack::RackContainer*>(parentComponent);
+            if (container != nullptr && container->rack != nullptr)
+            {
+                // Convert twice - first to container, then to rack
+                auto posInContainer = container->getLocalPoint(this, details.localPosition);
+                positionInParent = container->rack->getLocalPoint(container, posInContainer);
+                
+                // Create simplified source details with only the required data
+                juce::DragAndDropTarget::SourceDetails parentDetails(
+                    details.description,
+                    details.sourceComponent.get(),
+                    positionInParent
+                );
+                
+                // Call the Rack's itemDropped
+                container->rack->itemDropped(parentDetails);
+                return;
+            }
         }
     }
-    else if (auto* sourceSlot = dynamic_cast<RackSlot*>(dragSourceDetails.sourceComponent.get()))
+    
+    // If we got here, we couldn't delegate to the parent Rack,
+    // so handle it locally as a fallback (this should rarely happen)
+    DBG("WARNING: Could not forward drop to parent Rack - handling locally");
+    
+    RackSlot* sourceSlot = dynamic_cast<RackSlot*>(details.sourceComponent.get());
+    if (sourceSlot != nullptr && sourceSlot != this)
     {
-        // Handle drag from another slot - this is rearranging
-        DBG("Handling drag from RackSlot " + juce::String(sourceSlot->getIndex()));
+        // Handle drag from another slot
+        GearItem* itemToMove = sourceSlot->getGearItem();
         
-        // Get the gear item from the source slot
-        auto* itemToMove = sourceSlot->getGearItem();
-        
-        // Check if the item is compatible with this slot
-        if (itemToMove != nullptr && isCompatibleWithGear(itemToMove) && isAvailable())
+        if (itemToMove != nullptr)
         {
             // Move the item to this slot
+            if (!isAvailable())
+            {
+                clearGearItem();
+            }
+            
             sourceSlot->clearGearItem();
             setGearItem(itemToMove);
-            DBG("SUCCESS: Moved gear item from slot " + juce::String(sourceSlot->getIndex()) + 
+            DBG("Locally handled item move from slot " + juce::String(sourceSlot->getIndex()) + 
                 " to slot " + juce::String(index));
-        }
-        else
-        {
-            DBG("ERROR: Cannot move item - incompatible or slot not available");
         }
     }
     else
     {
-        DBG("ERROR: Unrecognized drag source type");
+        // Handle drops from other sources
+        DBG("Unhandled drop from non-slot source");
     }
+}
+
+void RackSlot::setGearItem(GearItem* newGearItem)
+{
+    DBG("RackSlot::setGearItem for slot " + juce::String(index));
+    gearItem = newGearItem;
+    repaint(); // Trigger repaint to show the gear item
+}
+
+void RackSlot::clearGearItem()
+{
+    DBG("RackSlot::clearGearItem for slot " + juce::String(index));
+    gearItem = nullptr;
+    repaint(); // Trigger repaint to update
+}
+
+void RackSlot::setHighlighted(bool shouldHighlight)
+{
+    highlighted = shouldHighlight;
+    repaint();
+}
+
+// New helper method to find parent Rack
+juce::Component* RackSlot::findParentRackComponent()
+{
+    juce::Component* parent = getParentComponent();
+    while (parent != nullptr)
+    {
+        if (parent->getComponentID() == "Rack" || parent->getComponentID() == "RackContainer")
+        {
+            return parent;
+        }
+        parent = parent->getParentComponent();
+    }
+    return nullptr;
 } 
