@@ -27,8 +27,8 @@ public:
         Fader
     };
 
-    GearControl(Type type, const juce::String& name, const juce::Rectangle<float>& position)
-        : type(type), name(name), position(position), value(0.0f) {}
+    GearControl(Type typeParam, const juce::String& nameParam, const juce::Rectangle<float>& positionParam)
+        : type(typeParam), name(nameParam), position(positionParam), value(0.0f) {}
 
     Type type;
     juce::String name;
@@ -41,20 +41,20 @@ class GearItem
 public:
     GearItem() = default;
     
-    GearItem(const juce::String& name, 
-             const juce::String& manufacturer,
-             GearType type,
-             GearCategory category,
-             int slotSize,
-             const juce::String& imageUrl,
-             const juce::Array<GearControl>& controls)
-        : name(name),
-          manufacturer(manufacturer),
-          type(type),
-          category(category),
-          slotSize(slotSize),
-          imageUrl(imageUrl),
-          controls(controls) {}
+    GearItem(const juce::String& nameParam, 
+             const juce::String& manufacturerParam,
+             GearType typeParam,
+             GearCategory categoryParam,
+             int slotSizeParam,
+             const juce::String& imageUrlParam,
+             const juce::Array<GearControl>& controlsParam)
+        : name(nameParam),
+          manufacturer(manufacturerParam),
+          type(typeParam),
+          category(categoryParam),
+          slotSize(slotSizeParam),
+          imageUrl(imageUrlParam),
+          controls(controlsParam) {}
 
     juce::String name;
     juce::String manufacturer;

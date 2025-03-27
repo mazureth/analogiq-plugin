@@ -1,13 +1,56 @@
 #include "GearLibrary.h"
 
-GearLibrary::GearLibrary()
-    : gearListBox("Gear Library", this)
+// Create a ListBoxModel adapter
+class GearListBoxModel : public juce::ListBoxModel
 {
+public:
+    GearListBoxModel(GearLibrary& ownerRef) : owner(ownerRef) {}
+    
+    int getNumRows() override { return owner.getNumRows(); }
+    
+    void paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int height, bool rowIsSelected) override
+    {
+        owner.paintListBoxItem(rowNumber, g, width, height, rowIsSelected);
+    }
+    
+    juce::Component* refreshComponentForRow(int rowNumber, bool isRowSelected, juce::Component* existingComponentToUpdate) override
+    {
+        return owner.refreshComponentForRow(rowNumber, isRowSelected, existingComponentToUpdate);
+    }
+    
+    void listBoxItemClicked(int row, const juce::MouseEvent& e) override
+    {
+        owner.listBoxItemClicked(row, e);
+    }
+    
+    void listBoxItemDoubleClicked(int row, const juce::MouseEvent& e) override
+    {
+        owner.listBoxItemDoubleClicked(row, e);
+    }
+    
+private:
+    GearLibrary& owner;
+};
+
+// DraggableListBox is now defined in DraggableListBox.h
+
+GearLibrary::GearLibrary()
+    : gearListModel(new GearListBoxModel(*this)),
+      gearListBox(new DraggableListBox("Gear Library", gearListModel.get()))
+{
+    // Set component ID for debugging
+    setComponentID("GearLibrary");
+    gearListBox->setComponentID("GearListBox");
+    
+    // CRITICAL: Make the parent GearLibrary component forward all mouse events to the list box
+    // This is often the root cause of drag and drop not working
+    setInterceptsMouseClicks(false, true);
+    
     // Set up search box
     searchBox.setTextToShowWhenEmpty("Search gear...", juce::Colours::grey);
     searchBox.onTextChange = [this] { 
-        gearListBox.updateContent();
-        gearListBox.repaint();
+        gearListBox->updateContent();
+        gearListBox->repaint();
     };
     addAndMakeVisible(searchBox);
 
@@ -18,8 +61,8 @@ GearLibrary::GearLibrary()
     filterBox.addItem("User Created", 4);
     filterBox.setSelectedId(1);
     filterBox.onChange = [this] {
-        gearListBox.updateContent();
-        gearListBox.repaint();
+        gearListBox->updateContent();
+        gearListBox->repaint();
     };
     addAndMakeVisible(filterBox);
 
@@ -30,15 +73,15 @@ GearLibrary::GearLibrary()
 
     // Set up add user gear button
     addUserGearButton.setButtonText("Add Custom Gear");
-    addUserGearButton.onClick = [this] { 
+    addUserGearButton.onClick = [] { 
         // Open user gear creation dialog (to be implemented)
     };
     addAndMakeVisible(addUserGearButton);
 
     // Set up list box
-    gearListBox.setRowHeight(60);
-    gearListBox.setMultipleSelectionEnabled(false);
-    addAndMakeVisible(gearListBox);
+    gearListBox->setRowHeight(60);
+    gearListBox->setMultipleSelectionEnabled(false);
+    addAndMakeVisible(*gearListBox);
 
     // Add some dummy gear items for testing
     gearItems.add(GearItem("API 550A", "API", GearType::Series500, GearCategory::EQ, 1, "", {}));
@@ -61,117 +104,96 @@ void GearLibrary::paint(juce::Graphics& g)
 
 void GearLibrary::resized()
 {
-    auto area = getLocalBounds().reduced(5);
+    auto area = getLocalBounds();
     
-    // Title space
-    area.removeFromTop(30);
+    // Top bar
+    auto topBar = area.removeFromTop(30);
+    addUserGearButton.setBounds(topBar.removeFromRight(150).reduced(2));
+    refreshButton.setBounds(topBar.removeFromRight(80).reduced(2));
     
-    // Search box
+    // Search and filter controls
     auto topControls = area.removeFromTop(30);
-    searchBox.setBounds(topControls.removeFromLeft(topControls.getWidth() * 0.7f).reduced(2));
+    searchBox.setBounds(topControls.removeFromLeft(static_cast<int>(topControls.getWidth() * 0.7f)).reduced(2));
     filterBox.setBounds(topControls.reduced(2));
     
-    // Buttons
-    auto buttonArea = area.removeFromBottom(30);
-    refreshButton.setBounds(buttonArea.removeFromLeft(buttonArea.getWidth() / 2).reduced(2));
-    addUserGearButton.setBounds(buttonArea.reduced(2));
-    
     // List box
-    gearListBox.setBounds(area.reduced(0, 5));
+    gearListBox->setBounds(area.reduced(0, 5));
 }
 
 int GearLibrary::getNumRows()
 {
-    // Filter gear items based on search and filter
-    juce::String searchText = searchBox.getText().toLowerCase();
-    int filterType = filterBox.getSelectedId();
-    
-    int count = 0;
-    for (auto& item : gearItems)
-    {
-        bool matchesSearch = searchText.isEmpty() || 
-                            item.name.toLowerCase().contains(searchText) ||
-                            item.manufacturer.toLowerCase().contains(searchText);
-                            
-        bool matchesFilter = filterType == 1 || 
-                            (filterType == 2 && item.type == GearType::Series500) ||
-                            (filterType == 3 && item.type == GearType::Rack19Inch) ||
-                            (filterType == 4 && item.type == GearType::UserCreated);
-                            
-        if (matchesSearch && matchesFilter)
-            count++;
-    }
-    
-    return count;
+    return gearItems.size();
 }
 
-void GearLibrary::paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int height, bool rowIsSelected)
+void GearLibrary::paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int /*height*/, bool rowIsSelected)
 {
     if (rowNumber >= 0 && rowNumber < gearItems.size())
     {
-        auto& item = gearItems[rowNumber];
+        const auto& item = gearItems[rowNumber];
         
         // Background
         if (rowIsSelected)
-            g.fillAll(juce::Colours::lightblue.darker(0.7f));
-        else if (rowNumber % 2)
-            g.fillAll(juce::Colours::darkgrey.darker(0.5f));
+            g.fillAll(juce::Colours::lightblue.darker(0.2f));
         else
-            g.fillAll(juce::Colours::darkgrey.darker(0.6f));
-            
+            g.fillAll(juce::Colours::darkgrey);
+        
+        // Debug outline to clearly see the bounds
+        g.setColour(juce::Colours::green);
+        g.drawRect(0, 0, width, 60, 1); // Draw outline around item
+        
         // Text
         g.setColour(juce::Colours::white);
         g.setFont(16.0f);
+        g.drawText(item.name, 10, 5, width - 20, 20, juce::Justification::left);
         
-        auto bounds = juce::Rectangle<int>(0, 0, width, height).reduced(8);
+        g.setFont(14.0f);
+        g.setColour(juce::Colours::lightgrey);
+        g.drawText(item.manufacturer, 10, 25, width - 20, 16, juce::Justification::left);
         
-        // Draw manufacturer
-        g.setFont(12.0f);
-        g.drawText(item.manufacturer, bounds.removeFromTop(15), juce::Justification::topLeft, true);
-        
-        // Draw name
-        g.setFont(16.0f);
-        g.drawText(item.name, bounds.removeFromTop(20), juce::Justification::topLeft, true);
-        
-        // Draw type
-        g.setFont(12.0f);
-        juce::String typeText;
+        // Type/category info
+        juce::String typeStr;
         if (item.type == GearType::Series500)
-            typeText = "500 Series";
+            typeStr = "500 Series";
         else if (item.type == GearType::Rack19Inch)
-            typeText = "19\" Rack";
+            typeStr = "19\" Rack";
         else
-            typeText = "User Gear";
+            typeStr = "Custom";
             
-        g.drawText(typeText, bounds, juce::Justification::topLeft, true);
+        juce::String catStr;
+        if (item.category == GearCategory::EQ)
+            catStr = "EQ";
+        else if (item.category == GearCategory::Compressor)
+            catStr = "Compressor";
+        else if (item.category == GearCategory::Preamp)
+            catStr = "Preamp";
+        else
+            catStr = "Other";
+            
+        g.drawText(typeStr + " | " + catStr + " | Drag Me!", 10, 41, width - 20, 14, juce::Justification::left);
     }
 }
 
-juce::Component* GearLibrary::refreshComponentForRow(int rowNumber, bool isRowSelected, juce::Component* existingComponentToUpdate)
+juce::Component* GearLibrary::refreshComponentForRow(int /*rowNumber*/, bool /*isRowSelected*/, juce::Component* /*existingComponentToUpdate*/)
 {
     // We're using paintListBoxItem for now, so return nullptr
     return nullptr;
 }
 
-void GearLibrary::listBoxItemClicked(int row, const juce::MouseEvent& e)
+void GearLibrary::listBoxItemClicked(int row, const juce::MouseEvent& /*e*/)
 {
     // Select the row
-    gearListBox.selectRow(row);
+    gearListBox->selectRow(row);
 }
 
-void GearLibrary::listBoxItemDoubleClicked(int row, const juce::MouseEvent& e)
+void GearLibrary::listBoxItemDoubleClicked(int row, const juce::MouseEvent& /*e*/)
 {
-    // Start drag and drop operation
+    // Show details or edit the gear item
     if (row >= 0 && row < gearItems.size())
     {
-        juce::var dragData(row);
-        juce::DragAndDropContainer* dragContainer = juce::DynamicCast<juce::DragAndDropContainer>(getParentComponent());
-        
-        if (dragContainer != nullptr)
-        {
-            dragContainer->startDragging(dragData, this, juce::ScaledImage(),
-                                       true, nullptr, juce::Point<int>(-10, -10));
-        }
+        // In the future, show a details dialog
+        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon,
+                                           "Gear Details",
+                                           "Item: " + gearItems[row].name);
     }
 }
 
@@ -183,69 +205,44 @@ void GearLibrary::loadLibraryAsync()
     class DummyLoadThread : public juce::Thread
     {
     public:
-        DummyLoadThread(GearLibrary& owner) : juce::Thread("GearLoader"), owner(owner) {}
+        DummyLoadThread(GearLibrary& ownerRef) : juce::Thread("GearLoader"), owner(ownerRef) {}
         
         void run() override
         {
-            // Simulate server delay
-            juce::Thread::sleep(1000);
+            // Simulate network delay
+            juce::Thread::sleep(500);
             
-            // Create some dummy JSON data
-            juce::String jsonData = R"(
-            {
-                "gear": [
-                    {
-                        "name": "API 550A",
-                        "manufacturer": "API",
-                        "type": "500Series",
-                        "category": "EQ",
-                        "slotSize": 1,
-                        "imageUrl": "https://example.com/api550a.jpg"
-                    },
-                    {
-                        "name": "Neve 1073",
-                        "manufacturer": "Neve",
-                        "type": "Rack19Inch",
-                        "category": "Preamp",
-                        "slotSize": 2,
-                        "imageUrl": "https://example.com/neve1073.jpg"
-                    },
-                    {
-                        "name": "SSL G-Comp",
-                        "manufacturer": "SSL",
-                        "type": "Rack19Inch",
-                        "category": "Compressor",
-                        "slotSize": 1,
-                        "imageUrl": "https://example.com/sslgcomp.jpg"
-                    },
-                    {
-                        "name": "Empirical Labs Distressor",
-                        "manufacturer": "Empirical Labs",
-                        "type": "Rack19Inch",
-                        "category": "Compressor",
-                        "slotSize": 1,
-                        "imageUrl": "https://example.com/distressor.jpg"
-                    },
-                    {
-                        "name": "Chandler Limited TG2",
-                        "manufacturer": "Chandler Limited",
-                        "type": "Rack19Inch",
-                        "category": "Preamp",
-                        "slotSize": 1,
-                        "imageUrl": "https://example.com/tg2.jpg"
-                    },
-                    {
-                        "name": "API 525",
-                        "manufacturer": "API",
-                        "type": "500Series",
-                        "category": "Compressor",
-                        "slotSize": 1,
-                        "imageUrl": "https://example.com/api525.jpg"
-                    }
-                ]
-            })";
+            // Create a JSON string with dummy gear data
+            juce::String jsonData = 
+                "{"
+                "  \"gear\": ["
+                "    {"
+                "      \"name\": \"API 512c\","
+                "      \"manufacturer\": \"API\","
+                "      \"type\": \"500Series\","
+                "      \"category\": \"Preamp\","
+                "      \"slotSize\": 1,"
+                "      \"imageUrl\": \"https://apiaudio.com/wp-content/uploads/2024/08/api-550a-23_9143_1.jpg\""
+                "    },"
+                "    {"
+                "      \"name\": \"SSL Bus Comp\","
+                "      \"manufacturer\": \"SSL\","
+                "      \"type\": \"Rack19Inch\","
+                "      \"category\": \"Compressor\","
+                "      \"slotSize\": 1,"
+                "      \"imageUrl\": \"https://brazilbox.us/wp-content/uploads/2021/07/1.jpg\""
+                "    },"
+                "    {"
+                "      \"name\": \"Pultec EQP-1A\","
+                "      \"manufacturer\": \"Pultec\","
+                "      \"type\": \"Rack19Inch\","
+                "      \"category\": \"EQ\","
+                "      \"slotSize\": 2,"
+                "      \"imageUrl\": \"https://media.sweetwater.com/m/products/image/2f36089c5b5svON7leBtYM0aeR6L8Ron1HzNhCVN.jpg\""
+                "    }"
+                "  ]"
+                "}";
             
-            // Update UI on the message thread
             juce::MessageManager::callAsync([this, jsonData]() {
                 owner.parseGearLibrary(jsonData);
             });
@@ -309,7 +306,43 @@ void GearLibrary::parseGearLibrary(const juce::String& jsonData)
         }
         
         // Update list box
-        gearListBox.updateContent();
-        gearListBox.repaint();
+        gearListBox->updateContent();
+        gearListBox->repaint();
     }
+}
+
+GearItem* GearLibrary::getGearItem(int index)
+{
+    if (index >= 0 && index < gearItems.size())
+    {
+        // Return a pointer to the item in the array
+        return &(gearItems.getReference(index));
+    }
+    return nullptr;
+}
+
+void GearLibrary::mouseDown(const juce::MouseEvent& e)
+{
+    // Forward mouse down events to the list box
+    DBG("GearLibrary: mouseDown event - forwarding to list box");
+    
+    // Convert to list box coordinates
+    juce::Point<int> pointInListBox = e.position.toInt() - gearListBox->getPosition();
+    juce::MouseEvent listBoxEvent = e.withNewPosition(pointInListBox.toFloat());
+    
+    // Forward to list box
+    gearListBox->mouseDown(listBoxEvent);
+}
+
+void GearLibrary::mouseDrag(const juce::MouseEvent& e)
+{
+    // Forward mouse drag events to the list box
+    DBG("GearLibrary: mouseDrag event - forwarding to list box");
+    
+    // Convert to list box coordinates
+    juce::Point<int> pointInListBox = e.position.toInt() - gearListBox->getPosition();
+    juce::MouseEvent listBoxEvent = e.withNewPosition(pointInListBox.toFloat());
+    
+    // Forward to list box
+    gearListBox->mouseDrag(listBoxEvent);
 } 

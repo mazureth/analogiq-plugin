@@ -48,21 +48,24 @@ int AnalogIQProcessor::getCurrentProgram()
     return 0;
 }
 
-void AnalogIQProcessor::setCurrentProgram(int index)
+void AnalogIQProcessor::setCurrentProgram(int /*index*/)
 {
+    // No program support
 }
 
-const juce::String AnalogIQProcessor::getProgramName(int index)
+const juce::String AnalogIQProcessor::getProgramName(int /*index*/)
 {
     return {};
 }
 
-void AnalogIQProcessor::changeProgramName(int index, const juce::String& newName)
+void AnalogIQProcessor::changeProgramName(int /*index*/, const juce::String& /*newName*/)
 {
+    // No program support
 }
 
-void AnalogIQProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
+void AnalogIQProcessor::prepareToPlay(double /*sampleRate*/, int /*samplesPerBlock*/)
 {
+    // No prep needed, we're not processing audio
 }
 
 void AnalogIQProcessor::releaseResources()
@@ -81,7 +84,7 @@ bool AnalogIQProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
     return true;
 }
 
-void AnalogIQProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void AnalogIQProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& /*midiMessages*/)
 {
     // We're not doing audio processing in this plugin as it's for settings/documentation only
     // Just pass audio through
@@ -100,13 +103,13 @@ bool AnalogIQProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* AnalogIQProcessor::createEditor()
 {
-    return new AnalogIQEditor(*this);
+    return static_cast<juce::AudioProcessorEditor*>(new AnalogIQEditor(*this));
 }
 
 void AnalogIQProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
-    auto state = getState().copyState();
-    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    auto stateSnapshot = getState().copyState();
+    std::unique_ptr<juce::XmlElement> xml(stateSnapshot.createXml());
     copyXmlToBinary(*xml, destData);
 }
 

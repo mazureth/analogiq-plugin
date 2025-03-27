@@ -5,6 +5,9 @@ project(AnalogIQ VERSION 0.1.0)
 # Find the JUCE library
 add_subdirectory(JUCE)
 
+# Initialize JUCE
+include(JUCE/extras/Build/CMake/JUCEUtils.cmake)
+
 # Add options for AAX, VST3, etc.
 option(ANALOGIQ_BUILD_AAX "Build AAX plugin" ON)
 option(ANALOGIQ_BUILD_VST3 "Build VST3 plugin" ON)
@@ -24,10 +27,10 @@ juce_add_plugin(AnalogIQ
     PLUGIN_MANUFACTURER_CODE Yoco
     PLUGIN_CODE Ana1
     FORMATS
-        ${ANALOGIQ_BUILD_AAX}
-        ${ANALOGIQ_BUILD_VST3}
-        ${ANALOGIQ_BUILD_AU}
-        ${ANALOGIQ_BUILD_STANDALONE}
+        AAX
+        VST3
+        AU
+        Standalone
     VST3_CATEGORIES "Tools"
     AAX_CATEGORY "AAX_ePlugInCategory_Dynamics"
     AU_MAIN_TYPE "kAudioUnitType_Effect"
@@ -39,20 +42,21 @@ target_compile_features(AnalogIQ PRIVATE cxx_std_17)
 # Add source files
 target_sources(AnalogIQ PRIVATE
     Source/PluginProcessor.cpp
+    Source/PluginProcessor.h
     Source/PluginEditor.cpp
+    Source/PluginEditor.h
     Source/GearLibrary.cpp
     Source/GearItem.cpp
     Source/Rack.cpp
     Source/RackSlot.cpp
     Source/NotesPanel.cpp
+    Source/NotesPanel.h
 )
 
 # Set up JUCE dependencies
 target_compile_definitions(AnalogIQ
     PUBLIC
     JUCE_WEB_BROWSER=0
-    JUCE_USE_CURL=1
-    JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
 # Link with JUCE modules
@@ -74,4 +78,7 @@ target_link_libraries(AnalogIQ
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
-) 
+)
+
+# Generate JuceHeader.h
+juce_generate_juce_header(AnalogIQ)

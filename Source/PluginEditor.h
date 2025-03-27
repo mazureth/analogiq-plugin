@@ -17,13 +17,15 @@ public:
     void resized() override;
 
 private:
-    AnalogIQProcessor& processor;
+    // Store processor reference - keep it even though it's currently unused
+    // as we'll need it later for state management
+    AnalogIQProcessor& audioProcessor;
 
     // UI Components
     juce::TabbedComponent mainTabs;
-    GearLibrary gearLibrary;
-    Rack rackGrid;
-    NotesPanel notesPanel;
+    std::unique_ptr<GearLibrary> gearLibrary;
+    std::unique_ptr<Rack> rackGrid;
+    std::unique_ptr<NotesPanel> notesPanel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQEditor)
 }; 
