@@ -47,10 +47,16 @@ void Rack::resized()
     auto area = getLocalBounds();
     rackViewport->setBounds(area);
     
+    // Get the available width from the viewport
+    const int availableWidth = rackViewport->getWidth();
+    
     // Size the container to fit all slots with spacing
     const int containerHeight = numSlots * (slotHeight + slotSpacing) + slotSpacing;
-    const int containerWidth = slotWidth + 2 * slotSpacing;
+    const int containerWidth = availableWidth; // Use full viewport width
     rackContainer->setSize(containerWidth, containerHeight);
+    
+    // Calculate the slot width based on container width minus margins
+    const int effectiveSlotWidth = containerWidth - (2 * slotSpacing);
     
     // Position the slots within the container
     for (int i = 0; i < slots.size(); ++i)
@@ -59,7 +65,7 @@ void Rack::resized()
         slot->setBounds(
             slotSpacing,
             slotSpacing + i * (slotHeight + slotSpacing),
-            slotWidth,
+            effectiveSlotWidth,
             slotHeight
         );
     }

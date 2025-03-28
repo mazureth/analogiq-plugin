@@ -47,7 +47,6 @@ private:
     // Configuration
     int numSlots = 16;
     int slotHeight = 150;
-    int slotWidth = 300;
     int slotSpacing = 10;
     
     // UI Components
