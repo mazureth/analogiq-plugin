@@ -18,6 +18,9 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor& p)
     rackGrid->setComponentID("Rack");
     notesPanel->setComponentID("NotesPanel");
     
+    // Connect the Rack to the GearLibrary for drag and drop
+    rackGrid->setGearLibrary(gearLibrary.get());
+    
     // Set up main window size
     setSize(1200, 800);
     
