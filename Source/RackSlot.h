@@ -3,54 +3,63 @@
 #include <JuceHeader.h>
 #include "GearItem.h"
 
+/**
+ * RackSlot represents a slot in the rack that can contain a gear item.
+ * It handles drag and drop from the gear library, and up/down movement via buttons.
+ */
 class RackSlot : public juce::Component,
-                 public juce::DragAndDropTarget  // CRITICAL: Make RackSlot a direct drag target
+                 public juce::DragAndDropTarget,
+                 public juce::Button::Listener
 {
 public:
-    enum class SlotType
-    {
-        Series500,
-        Rack19Inch
-    };
-
-    RackSlot(SlotType type, int index, int size = 1);
+    RackSlot(int slotIndex);
     ~RackSlot() override;
-
-    void paint(juce::Graphics&) override;
+    
+    void paint(juce::Graphics& g) override;
     void resized() override;
+    
+    // Button handling
+    void buttonClicked(juce::Button* button) override;
+    void updateButtonStates();
+    void moveUp();
+    void moveDown();
+    
+    // Simplified mouse events (no longer used for drag-and-drop reordering)
     void mouseDown(const juce::MouseEvent& e) override;
     void mouseDrag(const juce::MouseEvent& e) override;
-
-    // DragAndDropTarget implementation
-    bool isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) override;
-    void itemDragEnter(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) override;
-    void itemDragMove(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) override;
-    void itemDragExit(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) override;
-    void itemDropped(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails) override;
-
-    bool isCompatibleWithGear(const GearItem* gearItem) const;
+    void mouseUp(const juce::MouseEvent& e) override;
+    
+    // DragAndDropTarget implementation - still used for library drops
+    bool isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails& sourceDetails) override;
+    void itemDragEnter(const juce::DragAndDropTarget::SourceDetails& details) override;
+    void itemDragMove(const juce::DragAndDropTarget::SourceDetails& details) override;
+    void itemDragExit(const juce::DragAndDropTarget::SourceDetails& details) override;
+    void itemDropped(const juce::DragAndDropTarget::SourceDetails& details) override;
+    
+    // Gear item management
+    void setGearItem(GearItem* newGearItem);
+    void clearGearItem();
+    GearItem* getGearItem() const { return gearItem; }
     bool isAvailable() const { return gearItem == nullptr; }
     
-    void setGearItem(GearItem* newGearItem);
-    GearItem* getGearItem() const { return gearItem; }
-    void clearGearItem() { gearItem = nullptr; repaint(); }
+    // Visual state
+    void setHighlighted(bool shouldHighlight);
     
-    void setHighlighted(bool shouldHighlight) { highlighted = shouldHighlight; repaint(); }
-    bool isHighlighted() const { return highlighted; }
-    
-    SlotType getType() const { return type; }
+    // Utility methods
     int getIndex() const { return index; }
-    int getSize() const { return size; }
-
+    
 private:
-    SlotType type;
-    int index;
-    int size;  // 1 for standard 500-series, or 1-4 for 19" racks (in 1U increments)
-    GearItem* gearItem = nullptr;
-    bool highlighted = false;
+    // Helper to find the parent Rack component
+    juce::Component* findParentRackComponent();
     
-    juce::ComponentDragger dragger;
-    bool dragMode = false;
+    int index;                 // The slot's position in the rack
+    GearItem* gearItem = nullptr; // The gear item in this slot, if any
+    bool highlighted;          // Whether this slot is highlighted
+    bool isDragging;           // Whether a drag operation is in progress
     
+    // Up/down movement buttons
+    std::unique_ptr<juce::DrawableButton> upButton;
+    std::unique_ptr<juce::DrawableButton> downButton;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RackSlot)
 }; 

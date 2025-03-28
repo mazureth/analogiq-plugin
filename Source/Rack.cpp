@@ -3,36 +3,35 @@
 
 Rack::Rack()
 {
-    // Set component ID for debugging
+    DBG("Rack constructor");
     setComponentID("Rack");
     
-    // Set up rack container
-    rackContainer.setSize(800, 1000);
-    rackContainer.setComponentID("RackContainer");
+    // Create viewport and container
+    rackViewport = std::make_unique<juce::Viewport>();
+    rackContainer = std::make_unique<RackContainer>();
+    rackViewport->setViewedComponent(rackContainer.get(), false); // false = don't delete when viewport is deleted
+    addAndMakeVisible(rackViewport.get());
     
-    // CRITICAL FIX: Make the rack container also handle mouse events properly
-    // This is essential since it's the actual parent of the slots
-    rackContainer.setInterceptsMouseClicks(false, true);
+    // Set up the container
+    rackContainer->rack = this;
     
-    // CRITICAL FIX: Configure viewport to properly handle drag and drop
-    rackViewport.setViewedComponent(&rackContainer, false);
-    rackViewport.setInterceptsMouseClicks(false, true); // Let events pass through to container
-    rackViewport.setComponentID("RackViewport");
-    addAndMakeVisible(rackViewport);
+    // Create rack slots
+    DBG("Creating " + juce::String(numSlots) + " rack slots");
+    for (int i = 0; i < numSlots; ++i)
+    {
+        RackSlot* newSlot = new RackSlot(i);
+        slots.add(newSlot);
+        rackContainer->addAndMakeVisible(newSlot);
+    }
     
-    // Initialize rack slots
-    initializeRackSlots();
-    
-    // Make sure the rack accepts drag and drop
-    setInterceptsMouseClicks(false, true); // CHANGED FROM TRUE to FALSE - let events reach container
-    
-    // CRITICAL: Register the rack itself as a drag target
-    setWantsKeyboardFocus(true);
+    // Set up this component as a drag-and-drop target
+    setInterceptsMouseClicks(true, true);
 }
 
 Rack::~Rack()
 {
-    slots.clear();
+    DBG("Rack destructor");
+    // unique_ptr members will be automatically deleted
 }
 
 void Rack::paint(juce::Graphics& g)
@@ -42,348 +41,226 @@ void Rack::paint(juce::Graphics& g)
 
 void Rack::resized()
 {
-    rackViewport.setBounds(getLocalBounds());
+    DBG("Rack::resized");
+    
+    // Size the viewport to fill our area
+    auto area = getLocalBounds();
+    rackViewport->setBounds(area);
+    
+    // Get the available width from the viewport
+    const int availableWidth = rackViewport->getWidth();
+    
+    // Size the container to fit all slots with spacing
+    const int containerHeight = numSlots * (slotHeight + slotSpacing) + slotSpacing;
+    const int containerWidth = availableWidth; // Use full viewport width
+    rackContainer->setSize(containerWidth, containerHeight);
+    
+    // Calculate the slot width based on container width minus margins
+    const int effectiveSlotWidth = containerWidth - (2 * slotSpacing);
+    
+    // Position the slots within the container
+    for (int i = 0; i < slots.size(); ++i)
+    {
+        auto* slot = slots[i];
+        slot->setBounds(
+            slotSpacing,
+            slotSpacing + i * (slotHeight + slotSpacing),
+            effectiveSlotWidth,
+            slotHeight
+        );
+    }
+    
+    DBG("Rack resized: viewport=" + rackViewport->getBounds().toString() +
+        ", container=" + rackContainer->getBounds().toString());
 }
 
-bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails& sourceDetails)
+bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails)
 {
-    DBG("Rack::isInterestedInDragSource called, description: " + sourceDetails.description.toString());
+    // Accept drops from DraggableListBox (GearLibrary) or other RackSlots
+    auto* sourceComp = dragSourceDetails.sourceComponent.get();
     
-    // CRITICAL FIX: Always accept drags with integer data (row indices)
-    if (sourceDetails.description.isInt())
+    if (sourceComp && (sourceComp->getComponentID() == "DraggableListBox" || 
+                       sourceComp->getComponentID() == "GearListBox" ||
+                       dynamic_cast<RackSlot*>(sourceComp) != nullptr))
     {
-        DBG("Rack is interested in drag with integer data: " + sourceDetails.description.toString());
         return true;
     }
     
-    // Check if the source is a DraggableListBox from the GearLibrary
-    auto* sourceComp = sourceDetails.sourceComponent.get();
-    if (sourceComp && sourceComp->getComponentID() == "DraggableListBox")
-    {
-        DBG("Interested in drag from DraggableListBox");
-        return true;
-    }
-    
-    // Check if it's a RackSlot (for rearranging)
-    if (dynamic_cast<RackSlot*>(sourceComp) != nullptr)
-    {
-        DBG("Interested in drag from RackSlot");
-        return true;
-    }
-    
-    DBG("Not interested in this drag source: " + 
-        (sourceComp ? sourceComp->getComponentID() : "unknown"));
-        
-    // For maximum compatibility, accept all drags during development
-    return true;
+    return false;
 }
 
-void Rack::itemDragEnter(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails)
+void Rack::itemDragEnter(const juce::DragAndDropTarget::SourceDetails& /*dragSourceDetails*/)
 {
-    DBG("Rack::itemDragEnter called");
-    
-    // Highlight potential drop areas
-    auto* nearestSlot = findNearestSlot(dragSourceDetails.localPosition);
-    if (nearestSlot)
-    {
-        nearestSlot->setHighlighted(true);
-    }
-    
-    repaint();
+    // Nothing to do here
 }
 
-void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails)
+void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails& details)
 {
-    DBG("Rack::itemDragMove called at " + dragSourceDetails.localPosition.toString());
+    // This is only used for dragging from GearLibrary now, not for reordering
+    RackSlot* nearestSlot = findNearestSlot(details.localPosition);
     
-    // Clear all highlighting
+    // Highlight the nearest slot
+    for (auto* slot : slots)
+    {
+        slot->setHighlighted(slot == nearestSlot);
+    }
+}
+
+void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails& /*dragSourceDetails*/)
+{
+    // Clear all highlights
     for (auto* slot : slots)
     {
         slot->setHighlighted(false);
     }
-    
-    // Highlight the slot under the cursor
-    auto* nearestSlot = findNearestSlot(dragSourceDetails.localPosition);
-    if (nearestSlot)
-    {
-        nearestSlot->setHighlighted(true);
-    }
-    
-    repaint();
 }
 
-void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails)
+void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails& details)
 {
-    DBG("Rack::itemDragExit called");
-    
-    // Clear all highlighting
-    for (auto* slot : slots)
-    {
-        slot->setHighlighted(false);
-    }
-    
-    repaint();
-}
-
-void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails& dragSourceDetails)
-{
-    DBG("Rack::itemDropped called");
-    DBG("Drop position: " + dragSourceDetails.localPosition.toString());
-    DBG("Description: " + dragSourceDetails.description.toString());
-    
-    // Clear all highlighting
-    for (auto* slot : slots)
-    {
-        slot->setHighlighted(false);
-    }
-    
-    auto* sourceComponent = dragSourceDetails.sourceComponent.get();
-    DBG("Source component: " + (sourceComponent != nullptr ? sourceComponent->getComponentID() : "nullptr"));
+    DBG("Rack::itemDropped");
     
     // Find the nearest slot to the drop position
-    auto* targetSlot = findNearestSlot(dragSourceDetails.localPosition);
-    
-    if (targetSlot != nullptr)
+    RackSlot* targetSlot = findNearestSlot(details.localPosition);
+    if (targetSlot == nullptr)
     {
-        DBG("Target slot found: " + juce::String(targetSlot->getIndex()));
-        
-        if (dynamic_cast<RackSlot*>(sourceComponent) != nullptr)
+        DBG("No target slot found for drop position");
+        return;
+    }
+    
+    // Clear highlights
+    for (auto* slot : slots)
+    {
+        slot->setHighlighted(false);
+    }
+    
+    // Handle drops from GearLibrary only (not for rearranging items)
+    if (details.description.isInt())
+    {
+        auto* sourceComp = details.sourceComponent.get();
+        if (sourceComp && (sourceComp->getComponentID() == "DraggableListBox" || 
+                         sourceComp->getComponentID() == "GearListBox"))
         {
-            // Dragging from one slot to another (rearranging)
-            DBG("Rearranging from slot to slot");
-            auto* sourceSlot = dynamic_cast<RackSlot*>(sourceComponent);
-            rearrangeGear(sourceSlot->getIndex(), targetSlot->getIndex());
-        }
-        else if (sourceComponent != nullptr && 
-                (sourceComponent->getComponentID() == "DraggableListBox"))
-        {
-            // Dragging from gear library
-            DBG("Dragging from DraggableListBox");
+            // This is a drop from the GearLibrary
+            int gearIndex = details.description.toString().getIntValue();
+            DBG("Drop from GearLibrary, gear index: " + juce::String(gearIndex));
             
-            // The var should contain the gear item index in the library
-            int gearIndex = -1;
-            
-            if (dragSourceDetails.description.isInt())
+            // Check if gearLibrary is valid before accessing it
+            if (gearLibrary == nullptr)
             {
-                gearIndex = (int)dragSourceDetails.description;
-                DBG("Gear index from drag description: " + juce::String(gearIndex));
-            }
-            else
-            {
-                DBG("Invalid drag description. Expected integer, got: " + 
-                    dragSourceDetails.description.toString());
+                DBG("ERROR: gearLibrary is null, cannot get gear item");
                 return;
             }
             
-            // Find the GearLibrary component in the component hierarchy
-            GearLibrary* gearLibrary = nullptr;
-            
-            // Start with our parent component and search upward
-            juce::Component* parent = getParentComponent();
-            while (parent != nullptr && gearLibrary == nullptr)
+            // Get the gear item from the library
+            GearItem* gearItem = gearLibrary->getGearItem(gearIndex);
+            if (gearItem != nullptr)
             {
-                // Try all siblings of this parent
-                for (int i = 0; i < parent->getNumChildComponents(); ++i)
-                {
-                    auto* child = parent->getChildComponent(i);
-                    if (child->getComponentID() == "GearLibrary")
-                    {
-                        gearLibrary = dynamic_cast<GearLibrary*>(child);
-                        if (gearLibrary != nullptr)
-                        {
-                            DBG("Found GearLibrary at component: " + child->getComponentID());
-                            break;
-                        }
-                    }
-                }
+                // If the target slot already has an item, clear it first
+                targetSlot->clearGearItem();
                 
-                parent = parent->getParentComponent();
-            }
-            
-            if (gearLibrary != nullptr && gearIndex >= 0)
-            {
-                DBG("Getting gear item from library");
-                // Get the actual gear item from the library
-                GearItem* originalItem = gearLibrary->getGearItem(gearIndex);
-                
-                if (originalItem != nullptr)
-                {
-                    DBG("Creating new gear item: " + originalItem->name);
-                    // Create a new copy of the item for the rack
-                    GearItem* newItem = new GearItem(
-                        originalItem->name,
-                        originalItem->manufacturer,
-                        originalItem->type,
-                        originalItem->category,
-                        originalItem->slotSize,
-                        originalItem->imageUrl,
-                        originalItem->controls
-                    );
-                    
-                    if (targetSlot->isCompatibleWithGear(newItem))
-                    {
-                        DBG("Adding gear to slot " + juce::String(targetSlot->getIndex()));
-                        addGearItem(newItem, targetSlot->getIndex());
-                    }
-                    else
-                    {
-                        DBG("Gear incompatible with slot");
-                        delete newItem; // Clean up if not compatible
-                    }
-                }
-                else
-                {
-                    DBG("Original item not found in library");
-                }
+                // Set the new gear item in the slot
+                targetSlot->setGearItem(gearItem);
+                DBG("Set gear item " + gearItem->getName() + " in slot " + juce::String(targetSlot->getIndex()));
             }
             else
             {
-                DBG("GearLibrary not found or invalid gear index: " + juce::String(gearIndex));
+                DBG("Could not find gear item with index " + juce::String(gearIndex));
             }
         }
-        else
-        {
-            DBG("Source component is neither RackSlot nor DraggableListBox: " + 
-                (sourceComponent ? sourceComponent->getComponentID() : "nullptr"));
-        }
     }
-    else
+}
+
+void Rack::rearrangeGearAsSortableList(int sourceSlotIndex, int targetSlotIndex)
+{
+    DBG("===============================================");
+    DBG("Rack::rearrangeGearAsSortableList - sourceIndex: " + juce::String(sourceSlotIndex) + 
+        ", targetIndex: " + juce::String(targetSlotIndex));
+    
+    // Validate indices
+    if (sourceSlotIndex < 0 || sourceSlotIndex >= slots.size() ||
+        targetSlotIndex < 0 || targetSlotIndex >= slots.size() ||
+        sourceSlotIndex == targetSlotIndex)
     {
-        DBG("No target slot found");
+        DBG("Invalid source or target index, or they are the same. Aborting rearrangement.");
+        return;
     }
     
-    repaint();
-}
-
-void Rack::addGearItem(GearItem* gearItem, int slotIndex)
-{
-    if (slotIndex >= 0 && slotIndex < slots.size())
+    // Get pointers to the source and target slots
+    RackSlot* sourceSlot = slots[sourceSlotIndex];
+    RackSlot* targetSlot = slots[targetSlotIndex];
+    
+    if (sourceSlot == nullptr || targetSlot == nullptr)
     {
-        auto* targetSlot = slots[slotIndex];
-        
-        if (targetSlot->isCompatibleWithGear(gearItem) && targetSlot->isAvailable())
-        {
-            targetSlot->setGearItem(gearItem);
-        }
+        DBG("Source or target slot is null. Aborting rearrangement.");
+        return;
     }
-}
-
-void Rack::removeGearItem(int slotIndex)
-{
-    if (slotIndex >= 0 && slotIndex < slots.size())
+    
+    // Get the gear items from both slots
+    GearItem* sourceGearItem = sourceSlot->getGearItem();
+    GearItem* targetGearItem = targetSlot->getGearItem();
+    
+    if (sourceGearItem == nullptr)
     {
-        auto* targetSlot = slots[slotIndex];
-        targetSlot->clearGearItem();
+        DBG("Source gear item is null. Cannot move an empty slot. Aborting rearrangement.");
+        return;
     }
-}
-
-void Rack::rearrangeGear(int sourceSlotIndex, int destSlotIndex)
-{
-    if (sourceSlotIndex >= 0 && sourceSlotIndex < slots.size() &&
-        destSlotIndex >= 0 && destSlotIndex < slots.size())
+    
+    // Simply swap the two slots
+    DBG("Swapping gear items between slot " + juce::String(sourceSlotIndex) + 
+        " and slot " + juce::String(targetSlotIndex));
+    
+    // First clear both slots
+    sourceSlot->clearGearItem();
+    targetSlot->clearGearItem();
+    
+    // Then set the items in their new positions
+    targetSlot->setGearItem(sourceGearItem);
+    
+    // If the target slot had an item, move it to the source slot
+    if (targetGearItem != nullptr)
     {
-        auto* sourceSlot = slots[sourceSlotIndex];
-        auto* destSlot = slots[destSlotIndex];
-        
-        auto* gearItem = sourceSlot->getGearItem();
-        
-        if (gearItem != nullptr && destSlot->isCompatibleWithGear(gearItem) && destSlot->isAvailable())
-        {
-            sourceSlot->clearGearItem();
-            destSlot->setGearItem(gearItem);
-        }
+        sourceSlot->setGearItem(targetGearItem);
     }
+    
+    // Update the rack view
+    rackContainer->resized();
+    
+    DBG("Gear items successfully swapped.");
+    DBG("===============================================");
 }
 
 RackSlot* Rack::findNearestSlot(const juce::Point<int>& position)
 {
-    // Debug output
-    DBG("Looking for slot at position: " + position.toString());
+    // This method is kept for compatibility with drops from GearLibrary
+    // but we've simplified it since we're not using it for reordering
     
-    // FIXED COORDINATE TRANSFORMATION:
-    // 1. Convert global position to local rack coordinates
-    auto rackRelativePos = getLocalPoint(nullptr, position);
+    // Convert global position to container coordinates
+    auto containerPos = rackContainer->getLocalPoint(this, position);
     
-    // 2. Then convert to the container's coordinate system, accounting for viewport's scroll position
-    auto containerPos = rackContainer.getLocalPoint(this, rackRelativePos) + rackViewport.getViewPosition();
-    
-    DBG("Transformed coordinates: global -> " + position.toString() + 
-        ", rack local -> " + rackRelativePos.toString() + 
-        ", container -> " + containerPos.toString());
-    
-    // First check for direct hit
+    // First check for a direct hit
     for (auto* slot : slots)
     {
         if (slot->getBounds().contains(containerPos))
         {
-            DBG("Direct hit on slot at index: " + juce::String(slot->getIndex()));
             return slot;
         }
     }
     
-    // If no direct hit, find the nearest slot
-    RackSlot* nearestSlot = nullptr;
-    int nearestDistance = std::numeric_limits<int>::max();
+    // If no direct hit, find the closest slot
+    RackSlot* bestSlot = nullptr;
+    int bestDistance = std::numeric_limits<int>::max();
     
     for (auto* slot : slots)
     {
-        int distance = slot->getBounds().getCentre().getDistanceFrom(containerPos);
-        if (distance < nearestDistance)
+        juce::Rectangle<int> slotBounds = slot->getBounds();
+        int distance = slotBounds.getCentre().getDistanceFrom(containerPos);
+        
+        if (distance < bestDistance)
         {
-            nearestDistance = distance;
-            nearestSlot = slot;
+            bestDistance = distance;
+            bestSlot = slot;
         }
     }
     
-    if (nearestSlot != nullptr)
-    {
-        DBG("Nearest slot at index: " + juce::String(nearestSlot->getIndex()) + 
-            " distance: " + juce::String(nearestDistance));
-    }
-    else
-    {
-        DBG("No nearest slot found");
-    }
-    
-    return nearestSlot;
-}
-
-void Rack::initializeRackSlots()
-{
-    // Clear existing slots
-    slots.clear();
-    
-    // Constants for slot sizing
-    const int series500Width = 150;
-    const int series500Height = 200;
-    const int rack19Width = 800;
-    const int rack19UnitHeight = 44;  // 1U = 1.75 inches = ~44mm
-    
-    // Add 500-series slots (horizontal row at the top)
-    int xPos = 0;
-    int yPos = 20;
-    for (int i = 0; i < series500SlotCount; ++i)
-    {
-        auto* slot = new RackSlot(RackSlot::SlotType::Series500, i);
-        slot->setBounds(xPos, yPos, series500Width, series500Height);
-        rackContainer.addAndMakeVisible(slot);
-        slots.add(slot);
-        
-        xPos += series500Width + 5;  // 5px spacing
-    }
-    
-    // Add 19" rack slots (vertical stack below 500-series)
-    xPos = 0;
-    yPos = series500Height + 50;  // 50px gap
-    for (int i = 0; i < rack19SlotCount; ++i)
-    {
-        int slotSize = (i % 3) + 1;  // Alternate between 1U, 2U, and 3U
-        
-        auto* slot = new RackSlot(RackSlot::SlotType::Rack19Inch, i, slotSize);
-        slot->setBounds(xPos, yPos, rack19Width, rack19UnitHeight * slotSize);
-        rackContainer.addAndMakeVisible(slot);
-        slots.add(slot);
-        
-        yPos += rack19UnitHeight * slotSize + 5;  // 5px spacing
-    }
+    return bestSlot;
 } 
