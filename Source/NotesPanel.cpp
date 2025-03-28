@@ -16,6 +16,7 @@ NotesPanel::NotesPanel()
     textEditor.setCaretVisible(true);
     textEditor.setPopupMenuEnabled(true);
     textEditor.setColour(juce::TextEditor::backgroundColourId, juce::Colours::white);
+    textEditor.setColour(juce::TextEditor::textColourId, juce::Colours::black);
     textEditor.setColour(juce::TextEditor::outlineColourId, juce::Colours::grey);
     textEditor.setText("Enter your session notes here. Document patchbay connections, settings, and any other important details.");
     addAndMakeVisible(textEditor);
