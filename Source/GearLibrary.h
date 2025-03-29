@@ -67,9 +67,8 @@ private:
     // UI components
     juce::Label titleLabel { "titleLabel", "Gear Library" };
     juce::TextEditor searchBox;
-    juce::ComboBox filterBox;
-    juce::TextButton refreshButton { "Refresh" };
-    juce::TextButton addUserGearButton { "Add Custom Gear" };
+    juce::DrawableButton refreshButton { "RefreshButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground };
+    juce::DrawableButton addUserGearButton { "AddUserGearButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground };
     
     // List box components (for legacy support)
     std::unique_ptr<GearListBoxModel> gearListModel;
@@ -132,29 +131,29 @@ public:
         int textX = 4;
         juce::String itemText = name;
         
-        if (itemType == ItemType::Category && name != "Categories")
+        // Only draw icons for actual gear items (leaf nodes)
+        if (itemType == ItemType::Gear)
         {
-            // Draw folder icon
-            g.setColour(juce::Colours::orange);
-            g.fillRect(textX, height/2 - 7, 14, 14);
+            const int iconSize = 24;
+            const int iconY = (height - iconSize) / 2;
+            
+            if (gearItem != nullptr && gearItem->image.isValid())
+            {
+                // Use the gear item's thumbnail image if available
+                g.drawImageWithin(gearItem->image, 
+                                 textX, iconY, 
+                                 iconSize, iconSize, 
+                                 juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize);
+            }
+            else
+            {
+                // Fallback to green circle
+                g.setColour(juce::Colours::greenyellow);
+                g.fillEllipse(textX + 4, height/2 - 6, 12, 12);
+            }
+            
             g.setColour(juce::Colours::white);
-            textX += 20;
-        }
-        else if (itemType == ItemType::Type && name != "Types")
-        {
-            // Draw document icon
-            g.setColour(juce::Colours::lightblue);
-            g.fillRect(textX, height/2 - 7, 12, 14);
-            g.setColour(juce::Colours::white);
-            textX += 20;
-        }
-        else if (itemType == ItemType::Gear)
-        {
-            // Draw gear icon
-            g.setColour(juce::Colours::greenyellow);
-            g.fillEllipse(textX, height/2 - 6, 12, 12);
-            g.setColour(juce::Colours::white);
-            textX += 20;
+            textX += 30; // Wider space for gear items with images
         }
         
         g.drawText(itemText, textX, 0, width - textX, height, juce::Justification::centredLeft);

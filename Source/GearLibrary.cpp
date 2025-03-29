@@ -51,31 +51,41 @@ GearLibrary::GearLibrary()
     };
     addAndMakeVisible(searchBox);
     
-    // Set up filter box
-    filterBox.addItem("All Items", 1);
-    filterBox.onChange = [this] {
-        int selectedId = filterBox.getSelectedId();
-        switch (selectedId) {
-            case 1: // All Items
-                currentFilter = { FilterCategory::All, "" };
-                break;
-            // Other filter options will be populated from remote data
-        }
-        updateFilteredItems();
-    };
-    filterBox.setSelectedId(1);
-    addAndMakeVisible(filterBox);
-    
-    // Set up refresh button
-    refreshButton.setColour(juce::TextButton::buttonColourId, juce::Colours::darkgrey);
-    refreshButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    // Set up refresh button with Unicode character (adjusted settings)
+    refreshButton.setColour(juce::DrawableButton::backgroundColourId, juce::Colours::darkgrey);
+    refreshButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::darkgrey.brighter(0.2f));
     refreshButton.addListener(this);
+    refreshButton.setTooltip("Refresh List");
+    
+    // Create refresh icon using Unicode character
+    auto normalIcon = std::make_unique<juce::DrawableText>();
+    juce::String unicodeArrow (CharPointer_UTF8 ("\xE2\x86\xBB"));
+    normalIcon->setText(unicodeArrow);  // Unicode U+27F2 (ANTICLOCKWISE GAPPED CIRCLE ARROW)
+    normalIcon->setFont(juce::Font(24.0f, juce::Font::plain), true);
+    normalIcon->setColour(juce::Colours::white);
+    normalIcon->setJustification(juce::Justification::centred);
+    
+    // Use the same icon for normal and hover states
+    refreshButton.setImages(normalIcon.get(), nullptr, nullptr, nullptr, 
+                          nullptr, nullptr, nullptr, nullptr);
     addAndMakeVisible(refreshButton);
     
-    // Set up add user gear button
-    addUserGearButton.setColour(juce::TextButton::buttonColourId, juce::Colours::darkgrey);
-    addUserGearButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    // Set up add user gear button with plus icon
+    addUserGearButton.setColour(juce::DrawableButton::backgroundColourId, juce::Colours::darkgrey);
+    addUserGearButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::darkgrey.brighter(0.2f));
     addUserGearButton.addListener(this);
+    addUserGearButton.setTooltip("Add Custom Gear");
+    
+    // Create plus icon using Unicode character
+    auto normalPlusIcon = std::make_unique<juce::DrawableText>();
+    normalPlusIcon->setText("+");  // Unicode Plus sign
+    normalPlusIcon->setFont(juce::Font(24.0f, juce::Font::plain), true);
+    normalPlusIcon->setColour(juce::Colours::white);
+    normalPlusIcon->setJustification(juce::Justification::centred);
+    
+    // Use the same icon for normal and hover states
+    addUserGearButton.setImages(normalPlusIcon.get(), nullptr, nullptr, nullptr,
+                              nullptr, nullptr, nullptr, nullptr);
     addAndMakeVisible(addUserGearButton);
     
     // Set up list box (legacy)
@@ -128,7 +138,6 @@ void GearLibrary::resized()
     auto controlArea = bounds.removeFromTop(40);
     refreshButton.setBounds(controlArea.removeFromRight(80).reduced(5));
     addUserGearButton.setBounds(controlArea.removeFromRight(120).reduced(5));
-    filterBox.setBounds(controlArea.removeFromRight(120).reduced(5));
     searchBox.setBounds(controlArea.reduced(5));
     
     // List area (legacy)
@@ -199,9 +208,8 @@ void GearLibrary::updateFilteredItems()
         // Only refresh the root item's children if they exist
         if (rootItem->getNumSubItems() > 0)
         {
-            // Expand root-level categories if we're filtering or searching
-            bool shouldExpand = !currentSearchText.isEmpty() || 
-                               currentFilter.first != FilterCategory::All;
+            // Check if we're searching
+            bool shouldExpand = !currentSearchText.isEmpty();
                                
             // Remember current expanded state of items
             juce::Array<juce::String> expandedItems;
@@ -228,7 +236,7 @@ void GearLibrary::updateFilteredItems()
             rootItem->clearSubItems();
             rootItem->refreshSubItems();
             
-            // Restore expanded state or expand based on filter
+            // Restore expanded state or expand based on search
             for (int i = 0; i < rootItem->getNumSubItems(); ++i)
             {
                 if (auto item = dynamic_cast<GearTreeItem*>(rootItem->getSubItem(i)))
@@ -242,28 +250,16 @@ void GearLibrary::updateFilteredItems()
                         {
                             if (auto subItem = dynamic_cast<GearTreeItem*>(item->getSubItem(j)))
                             {
-                                bool matchesFilter = false;
+                                bool matchesSearch = false;
                                 
-                                // Check if this category matches our filter
-                                if (currentFilter.first == FilterCategory::Category)
-                                {
-                                    if (subItem->getItemText() == currentFilter.second)
-                                        matchesFilter = true;
-                                }
-                                else if (currentFilter.first == FilterCategory::Type)
-                                {
-                                    if (subItem->getItemText() == currentFilter.second)
-                                        matchesFilter = true;
-                                }
-                                
-                                // Also check for search text matches
+                                // Check for search text matches
                                 if (!currentSearchText.isEmpty() && 
                                     subItem->getItemText().toLowerCase().contains(currentSearchText))
                                 {
-                                    matchesFilter = true;
+                                    matchesSearch = true;
                                 }
                                 
-                                if (shouldExpand || matchesFilter || 
+                                if (shouldExpand || matchesSearch || 
                                     expandedItems.contains(subItem->getUniqueName()))
                                 {
                                     subItem->setOpen(true);
@@ -380,7 +376,7 @@ void GearLibrary::loadGearItemsAsync()
                     "type": "500Series",
                     "category": "EQ",
                     "slotSize": 1,
-                    "imageUrl": ""
+                    "thumbnailUrl": "https://www.rspeaudio.com/media/iopt/catalog/product/cache/c92d27ddc910f51cbf84cfdc5a8e45c0/image/1394d61/api-550b-discrete-4-band-eq.webp"
                 },
                 {
                     "name": "Trident 80B",
@@ -388,7 +384,7 @@ void GearLibrary::loadGearItemsAsync()
                     "type": "Rack19Inch",
                     "category": "EQ",
                     "slotSize": 1,
-                    "imageUrl": ""
+                    "thumbnailUrl": "https://tridentaudiodevelopments.com/wp-content/uploads/2016/06/80BEQ_front.jpg"
                 },
                 {
                     "name": "DBX 560A",
@@ -396,7 +392,7 @@ void GearLibrary::loadGearItemsAsync()
                     "type": "500Series",
                     "category": "Compressor",
                     "slotSize": 1,
-                    "imageUrl": ""
+                    "thumbnailUrl": "https://vintageking.com/media/catalog/product/d/b/dbx560a-500s-vca-com_43992_1.jpg"
                 },
                 {
                     "name": "Neve 1073",
@@ -404,7 +400,7 @@ void GearLibrary::loadGearItemsAsync()
                     "type": "Rack19Inch",
                     "category": "Preamp",
                     "slotSize": 2,
-                    "imageUrl": ""
+                    "thumbnailUrl": ""
                 },
                 {
                     "name": "SSL G Series",
@@ -412,7 +408,7 @@ void GearLibrary::loadGearItemsAsync()
                     "type": "Rack19Inch",
                     "category": "Compressor",
                     "slotSize": 1,
-                    "imageUrl": ""
+                    "thumbnailUrl": ""
                 },
                 {
                     "name": "Pultec EQP-1A",
@@ -420,7 +416,7 @@ void GearLibrary::loadGearItemsAsync()
                     "type": "Rack19Inch",
                     "category": "EQ",
                     "slotSize": 2,
-                    "imageUrl": ""
+                    "thumbnailUrl": ""
                 }
             ]
         })";
@@ -482,13 +478,56 @@ void GearLibrary::parseGearLibrary(const juce::String& jsonData)
                     category = GearCategory::Other;
                 
                 int slotSize = obj->getProperty("slotSize");
-                juce::String imageUrl = obj->getProperty("imageUrl");
+                juce::String thumbnailUrl = obj->getProperty("thumbnailUrl");
                 
                 // Create an empty array of controls
                 juce::Array<GearControl> controls;
                 
+                // Create gear item
+                GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls);
+                
+                // If thumbnailUrl is provided, try to load the image
+                if (thumbnailUrl.isNotEmpty())
+                {
+                    // In a real implementation, you'd load from network or disk
+                    // For now, we'll setup a placeholder image
+                    
+                    // Create a placeholder colored image based on category
+                    juce::Image thumbnail(juce::Image::ARGB, 24, 24, true);
+                    juce::Graphics g(thumbnail);
+                    
+                    // Use different colors for different categories
+                    switch (category)
+                    {
+                        case GearCategory::EQ:
+                            g.setColour(juce::Colours::orange);
+                            break;
+                        case GearCategory::Preamp:
+                            g.setColour(juce::Colours::red);
+                            break;
+                        case GearCategory::Compressor:
+                            g.setColour(juce::Colours::blue);
+                            break;
+                        default:
+                            g.setColour(juce::Colours::green);
+                            break;
+                    }
+                    
+                    // Draw a rounded rectangle for the thumbnail
+                    g.fillRoundedRectangle(0.0f, 0.0f, 24.0f, 24.0f, 4.0f);
+                    
+                    // Draw the first letter of the gear name
+                    g.setColour(juce::Colours::white);
+                    g.setFont(16.0f);
+                    g.drawText(name.substring(0, 1).toUpperCase(), 
+                              0, 0, 24, 24, juce::Justification::centred);
+                    
+                    // Set the image in the item
+                    item.image = thumbnail;
+                }
+                
                 // Add to list
-                gearItems.add(GearItem(name, manufacturer, type, category, slotSize, imageUrl, controls));
+                gearItems.add(item);
             }
         }
         
@@ -576,6 +615,8 @@ void GearLibrary::buttonClicked(juce::Button* button)
 
 void GearLibrary::parseFilterOptions(const juce::String& jsonData)
 {
+    // This method is retained for backwards compatibility but simplified
+    // since we no longer use the filter box
     auto json = juce::JSON::parse(jsonData);
     
     if (json.hasProperty("filters") && json["filters"].isArray())
@@ -607,35 +648,13 @@ void GearLibrary::parseFilterOptions(const juce::String& jsonData)
                 filterOptions.add({displayName, filterCategory, value});
             }
         }
-        
-        // After loading filter options, update the filter box and reset to default
-        updateFilterBox();
-        
-        // Log filter options for debugging
-        DBG("Loaded " + juce::String(filterOptions.size()) + " filter options:");
-        for (int i = 0; i < filterOptions.size(); ++i)
-        {
-            DBG(" - " + filterOptions[i].displayName + " (category: " + 
-                (filterOptions[i].category == FilterCategory::All ? "All" : 
-                 filterOptions[i].category == FilterCategory::Type ? "Type" : "Category") + 
-                ", value: " + filterOptions[i].value + ")");
-        }
     }
 }
 
 void GearLibrary::updateFilterBox()
 {
-    // Clear the box first
-    filterBox.clear();
-    
-    // Add all available filter options
-    for (int i = 0; i < filterOptions.size(); ++i)
-    {
-        filterBox.addItem(filterOptions[i].displayName, i + 1);
-    }
-    
-    // Reset to "All Items" and trigger filter update
-    filterBox.setSelectedId(1);
+    // This method is now a no-op since we removed the filter box
+    // but we keep it for API compatibility
     currentFilter = {FilterCategory::All, ""};
     updateFilteredItems();
 } 
