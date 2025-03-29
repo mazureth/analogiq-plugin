@@ -247,7 +247,7 @@ bool RackSlot::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDet
 {
     // We're not using drag-and-drop for reordering anymore, but keeping the code for GearLibrary drags
     
-    // Accept drag sources from the GearLibrary
+    // Accept drag sources from the GearLibrary list box (legacy)
     if (sourceDetails.description.isInt())
     {
         auto* sourceComp = sourceDetails.sourceComponent.get();
@@ -255,6 +255,20 @@ bool RackSlot::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDet
                            sourceComp->getComponentID() == "GearListBox"))
         {
             return true;
+        }
+    }
+    
+    // Accept drag sources from TreeView (new hierarchical view)
+    if (sourceDetails.description.isString())
+    {
+        juce::String desc = sourceDetails.description.toString();
+        if (desc.startsWith("GEAR:"))
+        {
+            auto* sourceComp = sourceDetails.sourceComponent.get();
+            if (sourceComp && dynamic_cast<juce::TreeView*>(sourceComp) != nullptr)
+            {
+                return true;
+            }
         }
     }
     

@@ -79,11 +79,25 @@ bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails
     // Accept drops from DraggableListBox (GearLibrary) or other RackSlots
     auto* sourceComp = dragSourceDetails.sourceComponent.get();
     
+    // Check for drags from the legacy list box
     if (sourceComp && (sourceComp->getComponentID() == "DraggableListBox" || 
-                       sourceComp->getComponentID() == "GearListBox" ||
-                       dynamic_cast<RackSlot*>(sourceComp) != nullptr))
+                     sourceComp->getComponentID() == "GearListBox" ||
+                     dynamic_cast<RackSlot*>(sourceComp) != nullptr))
     {
         return true;
+    }
+    
+    // Check for drags from the TreeView
+    if (sourceComp && dynamic_cast<juce::TreeView*>(sourceComp) != nullptr)
+    {
+        if (dragSourceDetails.description.isString())
+        {
+            juce::String desc = dragSourceDetails.description.toString();
+            if (desc.startsWith("GEAR:"))
+            {
+                return true;
+            }
+        }
     }
     
     return false;
@@ -133,39 +147,55 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails& details)
         slot->setHighlighted(false);
     }
     
-    // Handle drops from GearLibrary only (not for rearranging items)
-    if (details.description.isInt())
+    // Handle drops from GearLibrary (legacy list box)
+    if (details.description.isInt() && gearLibrary != nullptr)
     {
-        auto* sourceComp = details.sourceComponent.get();
-        if (sourceComp && (sourceComp->getComponentID() == "DraggableListBox" || 
-                         sourceComp->getComponentID() == "GearListBox"))
+        int gearIndex = static_cast<int>(details.description);
+        GearItem* item = gearLibrary->getGearItem(gearIndex);
+        
+        if (item != nullptr)
         {
-            // This is a drop from the GearLibrary
-            int gearIndex = details.description.toString().getIntValue();
-            DBG("Drop from GearLibrary, gear index: " + juce::String(gearIndex));
+            DBG("Adding gear item from listbox: " + item->name + " to slot " + juce::String(targetSlot->getIndex()));
+            targetSlot->setGearItem(item);
+        }
+    }
+    // Handle drops from TreeView
+    else if (details.description.isString() && gearLibrary != nullptr)
+    {
+        juce::String desc = details.description.toString();
+        if (desc.startsWith("GEAR:"))
+        {
+            // Parse the gear index from the drag descriptor
+            juce::StringArray parts;
+            parts.addTokens(desc, ":", "");
             
-            // Check if gearLibrary is valid before accessing it
-            if (gearLibrary == nullptr)
+            if (parts.size() >= 3)
             {
-                DBG("ERROR: gearLibrary is null, cannot get gear item");
-                return;
-            }
-            
-            // Get the gear item from the library
-            GearItem* gearItem = gearLibrary->getGearItem(gearIndex);
-            if (gearItem != nullptr)
-            {
-                // If the target slot already has an item, clear it first
-                targetSlot->clearGearItem();
+                int gearIndex = parts[1].getIntValue();
+                GearItem* item = gearLibrary->getGearItem(gearIndex);
                 
-                // Set the new gear item in the slot
-                targetSlot->setGearItem(gearItem);
-                DBG("Set gear item " + gearItem->getName() + " in slot " + juce::String(targetSlot->getIndex()));
+                if (item != nullptr)
+                {
+                    DBG("Adding gear item from TreeView: " + item->name + " to slot " + juce::String(targetSlot->getIndex()));
+                    targetSlot->setGearItem(item);
+                }
             }
-            else
-            {
-                DBG("Could not find gear item with index " + juce::String(gearIndex));
-            }
+        }
+    }
+    // Handle drops from other RackSlots (rearranging)
+    else if (auto* sourceSlot = dynamic_cast<RackSlot*>(details.sourceComponent.get()))
+    {
+        if (sourceSlot != targetSlot && sourceSlot->getGearItem() != nullptr)
+        {
+            // Swap the items between slots
+            GearItem* sourceItem = sourceSlot->getGearItem();
+            GearItem* targetItem = targetSlot->getGearItem();
+            
+            sourceSlot->setGearItem(targetItem);
+            targetSlot->setGearItem(sourceItem);
+            
+            DBG("Swapped gear items between slots " + juce::String(sourceSlot->getIndex()) + 
+                " and " + juce::String(targetSlot->getIndex()));
         }
     }
 }

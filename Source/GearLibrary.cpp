@@ -35,75 +35,81 @@ private:
 // DraggableListBox is now defined in DraggableListBox.h
 
 GearLibrary::GearLibrary()
-    : gearListModel(new GearListBoxModel(*this)),
-      gearListBox(new DraggableListBox("Gear Library", gearListModel.get()))
 {
-    // Set component ID for debugging
-    setComponentID("GearLibrary");
-    gearListBox->setComponentID("GearListBox");
-    
     // Set up title label
-    titleLabel.setText("Gear Library", juce::dontSendNotification);
     titleLabel.setFont(juce::Font(18.0f, juce::Font::bold));
     titleLabel.setColour(juce::Label::textColourId, juce::Colours::white);
-    titleLabel.setJustificationType(juce::Justification::centredLeft);
+    titleLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(titleLabel);
     
-    // CRITICAL: Make the parent GearLibrary component forward all mouse events to the list box
-    // This is often the root cause of drag and drop not working
-    setInterceptsMouseClicks(false, true);
-    
     // Set up search box
-    searchBox.setTextToShowWhenEmpty("Search gear...", juce::Colours::grey);
-    searchBox.onTextChange = [this] { 
-        currentSearchText = searchBox.getText();
+    searchBox.setTextToShowWhenEmpty("Search...", juce::Colours::grey);
+    searchBox.setJustification(juce::Justification::centredLeft);
+    searchBox.onTextChange = [this] {
+        currentSearchText = searchBox.getText().trim().toLowerCase();
         updateFilteredItems();
     };
     addAndMakeVisible(searchBox);
-
+    
     // Set up filter box
-    filterBox.clear();
+    filterBox.addItem("All Items", 1);
     filterBox.onChange = [this] {
         int selectedId = filterBox.getSelectedId();
-        DBG("Filter box selection changed: ID=" + juce::String(selectedId));
-        
-        if (selectedId > 0 && selectedId <= filterOptions.size())
-        {
-            // Adjust index (0-based array, 1-based combobox IDs)
-            const auto& option = filterOptions[selectedId - 1];
-            currentFilter = {option.category, option.value};
-            DBG("Setting filter to: category=" + 
-                (option.category == FilterCategory::All ? "All" : 
-                 option.category == FilterCategory::Type ? "Type" : "Category") + 
-                ", value=" + option.value);
-            updateFilteredItems();
+        switch (selectedId) {
+            case 1: // All Items
+                currentFilter = { FilterCategory::All, "" };
+                break;
+            // Other filter options will be populated from remote data
         }
+        updateFilteredItems();
     };
+    filterBox.setSelectedId(1);
     addAndMakeVisible(filterBox);
-
+    
     // Set up refresh button
-    refreshButton.setButtonText("Refresh");
-    refreshButton.onClick = [this] { loadLibraryAsync(); };
+    refreshButton.setColour(juce::TextButton::buttonColourId, juce::Colours::darkgrey);
+    refreshButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    refreshButton.addListener(this);
     addAndMakeVisible(refreshButton);
-
+    
     // Set up add user gear button
-    addUserGearButton.setButtonText("Add Custom Gear");
-    addUserGearButton.onClick = [] { 
-        // Open user gear creation dialog (to be implemented)
-    };
+    addUserGearButton.setColour(juce::TextButton::buttonColourId, juce::Colours::darkgrey);
+    addUserGearButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    addUserGearButton.addListener(this);
     addAndMakeVisible(addUserGearButton);
-
-    // Set up list box
-    gearListBox->setRowHeight(60);
+    
+    // Set up list box (legacy)
+    gearListModel = std::make_unique<GearListBoxModel>(*this);
+    
+    gearListBox = std::make_unique<DraggableListBox>("gearListBox", gearListModel.get());
+    gearListBox->setRowHeight(40);
+    gearListBox->setColour(juce::ListBox::backgroundColourId, juce::Colours::darkgrey.darker(0.7f));
     gearListBox->setMultipleSelectionEnabled(false);
-    addAndMakeVisible(*gearListBox);
-
-    // Load initial filter options
+    gearListBox->setVisible(false); // Hide legacy list box
+    addAndMakeVisible(gearListBox.get());
+    
+    // Set up the tree view (new hierarchical view)
+    gearTreeView = std::make_unique<juce::TreeView>();
+    gearTreeView->setRootItemVisible(false);
+    gearTreeView->setColour(juce::TreeView::backgroundColourId, juce::Colours::darkgrey.darker(0.7f));
+    gearTreeView->setIndentSize(20);
+    gearTreeView->setDefaultOpenness(false); // Collapsed by default
+    gearTreeView->setMultiSelectEnabled(false);
+    gearTreeView->setOpenCloseButtonsVisible(true);
+    
+    rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Root", this);
+    gearTreeView->setRootItem(rootItem.get());
+    
+    addAndMakeVisible(gearTreeView.get());
+    
+    // Load initial data
     loadLibraryAsync();
 }
 
 GearLibrary::~GearLibrary()
 {
+    // Important: set root item to null before the TreeView is deleted
+    gearTreeView->setRootItem(nullptr);
 }
 
 void GearLibrary::paint(juce::Graphics& g)
@@ -113,29 +119,29 @@ void GearLibrary::paint(juce::Graphics& g)
 
 void GearLibrary::resized()
 {
-    auto area = getLocalBounds();
+    auto bounds = getLocalBounds();
     
     // Title area
-    auto titleArea = area.removeFromTop(30);
-    titleArea.removeFromLeft(10); // Add some padding
-    titleLabel.setBounds(titleArea);
+    titleLabel.setBounds(bounds.removeFromTop(30));
     
-    // Search and filter controls
-    auto topControls = area.removeFromTop(30);
-    searchBox.setBounds(topControls.removeFromLeft(static_cast<int>(topControls.getWidth() * 0.7f)).reduced(2));
-    filterBox.setBounds(topControls.reduced(2));
+    // Control area
+    auto controlArea = bounds.removeFromTop(40);
+    refreshButton.setBounds(controlArea.removeFromRight(80).reduced(5));
+    addUserGearButton.setBounds(controlArea.removeFromRight(120).reduced(5));
+    filterBox.setBounds(controlArea.removeFromRight(120).reduced(5));
+    searchBox.setBounds(controlArea.reduced(5));
     
-    // Bottom buttons - centered
-    auto bottomButtons = area.removeFromBottom(30);
-    int totalButtonWidth = 150 + 80 + 4; // Add Custom Gear + Refresh + spacing
-    int startX = (bottomButtons.getWidth() - totalButtonWidth) / 2;
+    // List area (legacy)
+    if (gearListBox && gearListBox->isVisible())
+    {
+        gearListBox->setBounds(bounds);
+    }
     
-    bottomButtons.removeFromLeft(startX); // Remove space from left to center
-    addUserGearButton.setBounds(bottomButtons.removeFromLeft(150).reduced(2));
-    refreshButton.setBounds(bottomButtons.removeFromLeft(80).reduced(2));
-    
-    // List box gets remaining space
-    gearListBox->setBounds(area.reduced(0, 5));
+    // Tree view (new hierarchical view)
+    if (gearTreeView)
+    {
+        gearTreeView->setBounds(bounds);
+    }
 }
 
 bool GearLibrary::shouldShowItem(const GearItem& item) const
@@ -180,72 +186,120 @@ bool GearLibrary::shouldShowItem(const GearItem& item) const
 
 void GearLibrary::updateFilteredItems()
 {
-    // Log current filter state for debugging
-    DBG("Updating filtered items:");
-    DBG(" - Current filter: " + 
-        (currentFilter.first == FilterCategory::All ? "All" : 
-         currentFilter.first == FilterCategory::Type ? "Type" : "Category") + 
-        ", value: " + currentFilter.second);
-    DBG(" - Search text: " + currentSearchText);
-    
-    // Update count of visible items for debugging
-    int visibleCount = 0;
-    for (const auto& item : gearItems)
+    // First update the legacy list box
+    if (gearListBox)
     {
-        if (shouldShowItem(item))
-            visibleCount++;
+        gearListBox->updateContent();
+        gearListBox->repaint();
     }
-    DBG(" - Visible items: " + juce::String(visibleCount) + " / " + juce::String(gearItems.size()));
     
-    // Refresh the list box
-    gearListBox->updateContent();
-    gearListBox->repaint();
+    // Then update the tree view
+    if (rootItem && gearTreeView)
+    {
+        // Only refresh the root item's children if they exist
+        if (rootItem->getNumSubItems() > 0)
+        {
+            // Expand root-level categories if we're filtering or searching
+            bool shouldExpand = !currentSearchText.isEmpty() || 
+                               currentFilter.first != FilterCategory::All;
+                               
+            // Remember current expanded state of items
+            juce::Array<juce::String> expandedItems;
+            for (int i = 0; i < rootItem->getNumSubItems(); ++i)
+            {
+                if (auto item = dynamic_cast<GearTreeItem*>(rootItem->getSubItem(i)))
+                {
+                    if (item->isOpen())
+                        expandedItems.add(item->getUniqueName());
+                        
+                    // Also check second-level items
+                    for (int j = 0; j < item->getNumSubItems(); ++j)
+                    {
+                        if (auto subItem = dynamic_cast<GearTreeItem*>(item->getSubItem(j)))
+                        {
+                            if (subItem->isOpen())
+                                expandedItems.add(subItem->getUniqueName());
+                        }
+                    }
+                }
+            }
+            
+            // Refresh all items
+            rootItem->clearSubItems();
+            rootItem->refreshSubItems();
+            
+            // Restore expanded state or expand based on filter
+            for (int i = 0; i < rootItem->getNumSubItems(); ++i)
+            {
+                if (auto item = dynamic_cast<GearTreeItem*>(rootItem->getSubItem(i)))
+                {
+                    if (shouldExpand || expandedItems.contains(item->getUniqueName()))
+                    {
+                        item->setOpen(true);
+                        
+                        // Also expand relevant second-level items
+                        for (int j = 0; j < item->getNumSubItems(); ++j)
+                        {
+                            if (auto subItem = dynamic_cast<GearTreeItem*>(item->getSubItem(j)))
+                            {
+                                bool matchesFilter = false;
+                                
+                                // Check if this category matches our filter
+                                if (currentFilter.first == FilterCategory::Category)
+                                {
+                                    if (subItem->getItemText() == currentFilter.second)
+                                        matchesFilter = true;
+                                }
+                                else if (currentFilter.first == FilterCategory::Type)
+                                {
+                                    if (subItem->getItemText() == currentFilter.second)
+                                        matchesFilter = true;
+                                }
+                                
+                                // Also check for search text matches
+                                if (!currentSearchText.isEmpty() && 
+                                    subItem->getItemText().toLowerCase().contains(currentSearchText))
+                                {
+                                    matchesFilter = true;
+                                }
+                                
+                                if (shouldExpand || matchesFilter || 
+                                    expandedItems.contains(subItem->getUniqueName()))
+                                {
+                                    subItem->setOpen(true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            rootItem->refreshSubItems();
+        }
+        
+        gearTreeView->repaint();
+    }
 }
 
 int GearLibrary::getNumRows()
 {
-    int count = 0;
-    for (const auto& item : gearItems)
-    {
-        if (shouldShowItem(item))
-        {
-            count++;
-        }
-    }
-    return count;
+    return gearItems.size();
 }
 
 void GearLibrary::paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int /*height*/, bool rowIsSelected)
 {
-    // Find the actual item index that corresponds to this filtered row
-    int actualIndex = -1;
-    int filteredCount = 0;
-    for (int i = 0; i < gearItems.size(); ++i)
+    // This is still needed for legacy support or components that might use the list box
+    if (rowNumber >= 0 && rowNumber < gearItems.size())
     {
-        if (shouldShowItem(gearItems[i]))
-        {
-            if (filteredCount == rowNumber)
-            {
-                actualIndex = i;
-                break;
-            }
-            filteredCount++;
-        }
-    }
-
-    if (actualIndex >= 0 && actualIndex < gearItems.size())
-    {
-        const auto& item = gearItems[actualIndex];
+        const auto& item = gearItems[rowNumber];
         
         // Background
         if (rowIsSelected)
             g.fillAll(juce::Colours::lightblue.darker(0.2f));
         else
             g.fillAll(juce::Colours::darkgrey);
-        
-        // Debug outline to clearly see the bounds
-        g.setColour(juce::Colours::green);
-        g.drawRect(0, 0, width, 60, 1); // Draw outline around item
         
         // Text
         g.setColour(juce::Colours::white);
@@ -255,52 +309,25 @@ void GearLibrary::paintListBoxItem(int rowNumber, juce::Graphics& g, int width, 
         g.setFont(14.0f);
         g.setColour(juce::Colours::lightgrey);
         g.drawText(item.manufacturer, 10, 25, width - 20, 16, juce::Justification::left);
-        
-        // Type/category info
-        juce::String typeStr;
-        if (item.type == GearType::Series500)
-            typeStr = "500 Series";
-        else if (item.type == GearType::Rack19Inch)
-            typeStr = "19\" Rack";
-        else
-            typeStr = "Custom";
-            
-        juce::String catStr;
-        if (item.category == GearCategory::EQ)
-            catStr = "EQ";
-        else if (item.category == GearCategory::Compressor)
-            catStr = "Compressor";
-        else if (item.category == GearCategory::Preamp)
-            catStr = "Preamp";
-        else
-            catStr = "Other";
-            
-        g.drawText(typeStr + " | " + catStr + " | Drag Me!", 10, 41, width - 20, 14, juce::Justification::left);
     }
 }
 
-juce::Component* GearLibrary::refreshComponentForRow(int /*rowNumber*/, bool /*isRowSelected*/, juce::Component* /*existingComponentToUpdate*/)
+juce::Component* GearLibrary::refreshComponentForRow(int /*rowNumber*/, bool /*isRowSelected*/, juce::Component* existingComponentToUpdate)
 {
     // We're using paintListBoxItem for now, so return nullptr
-    return nullptr;
+    return existingComponentToUpdate;
 }
 
 void GearLibrary::listBoxItemClicked(int row, const juce::MouseEvent& /*e*/)
 {
     // Select the row
-    gearListBox->selectRow(row);
+    if (gearListBox->isVisible())
+        gearListBox->selectRow(row);
 }
 
 void GearLibrary::listBoxItemDoubleClicked(int row, const juce::MouseEvent& /*e*/)
 {
-    // Show details or edit the gear item
-    if (row >= 0 && row < gearItems.size())
-    {
-        // In the future, show a details dialog
-        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon,
-                                           "Gear Details",
-                                           "Item: " + gearItems[row].name);
-    }
+    // Not used with tree view
 }
 
 void GearLibrary::loadLibraryAsync()
@@ -457,94 +484,69 @@ void GearLibrary::parseGearLibrary(const juce::String& jsonData)
                 int slotSize = obj->getProperty("slotSize");
                 juce::String imageUrl = obj->getProperty("imageUrl");
                 
+                // Create an empty array of controls
+                juce::Array<GearControl> controls;
+                
                 // Add to list
-                gearItems.add(GearItem(name, manufacturer, type, category, slotSize, imageUrl, {}));
+                gearItems.add(GearItem(name, manufacturer, type, category, slotSize, imageUrl, controls));
             }
         }
         
-        // Update list box
-        gearListBox->updateContent();
-        gearListBox->repaint();
+        // Update the tree view
+        if (rootItem != nullptr)
+            rootItem->refreshSubItems();
     }
 }
 
 GearItem* GearLibrary::getGearItem(int index)
 {
-    // Find the actual item index that corresponds to this filtered row
-    int actualIndex = -1;
-    int filteredCount = 0;
-    for (int i = 0; i < gearItems.size(); ++i)
-    {
-        if (shouldShowItem(gearItems[i]))
-        {
-            if (filteredCount == index)
-            {
-                actualIndex = i;
-                break;
-            }
-            filteredCount++;
-        }
-    }
-
-    if (actualIndex >= 0 && actualIndex < gearItems.size())
-    {
-        return &(gearItems.getReference(actualIndex));
-    }
+    if (index >= 0 && index < gearItems.size())
+        return &(gearItems.getReference(index));
+    
     return nullptr;
 }
 
 void GearLibrary::mouseDown(const juce::MouseEvent& e)
 {
-    // Forward mouse down events to the list box
-    DBG("GearLibrary: mouseDown event - forwarding to list box");
-    
-    // Convert to list box coordinates
-    juce::Point<int> pointInListBox = e.position.toInt() - gearListBox->getPosition();
-    juce::MouseEvent listBoxEvent = e.withNewPosition(pointInListBox.toFloat());
-    
-    // Forward to list box
-    gearListBox->mouseDown(listBoxEvent);
+    // For now, we're not forwarding mouse events to the list box
+    // since we're using the tree view
 }
 
 void GearLibrary::mouseDrag(const juce::MouseEvent& e)
 {
-    // Forward mouse drag events to the list box
-    DBG("GearLibrary: mouseDrag event - forwarding to list box");
-    
-    // Convert to list box coordinates
-    juce::Point<int> pointInListBox = e.position.toInt() - gearListBox->getPosition();
-    juce::MouseEvent listBoxEvent = e.withNewPosition(pointInListBox.toFloat());
-    
-    // Forward to list box
-    gearListBox->mouseDrag(listBoxEvent);
+    // For now, we're not forwarding mouse events to the list box
+    // since we're using the tree view
 }
 
 void GearLibrary::addItem(const juce::String& name, const juce::String& category, const juce::String& description, const juce::String& manufacturer)
 {
-    GearItem item;
-    item.name = name;
-    item.manufacturer = manufacturer;
-    
-    // Properly set the category based on the string value
+    // Create a new GearItem with default controls
+    GearCategory gearCategory;
     if (category == "EQ")
-        item.category = GearCategory::EQ;
+        gearCategory = GearCategory::EQ;
     else if (category == "Preamp")
-        item.category = GearCategory::Preamp;
+        gearCategory = GearCategory::Preamp;
     else if (category == "Compressor")
-        item.category = GearCategory::Compressor;
+        gearCategory = GearCategory::Compressor;
     else
-        item.category = GearCategory::Other;
+        gearCategory = GearCategory::Other;
     
     // Determine a reasonable default type based on common industry standards
+    GearType gearType;
     if (name.containsIgnoreCase("500") || name.containsIgnoreCase("lunchbox"))
-        item.type = GearType::Series500;
+        gearType = GearType::Series500;
     else
-        item.type = GearType::Rack19Inch;
+        gearType = GearType::Rack19Inch;
     
-    item.slotSize = 1;  // Default slot size
+    // Create an empty array of controls
+    juce::Array<GearControl> controls;
     
-    gearItems.add(item);
-    gearListBox->updateContent();
+    // Add the new item to the list
+    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls));
+    
+    // Update the UI
+    if (rootItem != nullptr)
+        rootItem->refreshSubItems();
 }
 
 void GearLibrary::saveLibraryAsync()

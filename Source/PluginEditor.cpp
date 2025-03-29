@@ -10,23 +10,23 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor& p)
     
     // Create our components
     gearLibrary = std::make_unique<GearLibrary>();
-    rackGrid = std::make_unique<Rack>();
+    rack = std::make_unique<Rack>();
     notesPanel = std::make_unique<NotesPanel>();
     
     // Set component IDs
     gearLibrary->setComponentID("GearLibrary");
-    rackGrid->setComponentID("Rack");
+    rack->setComponentID("Rack");
     notesPanel->setComponentID("NotesPanel");
     
     // Connect the Rack to the GearLibrary for drag and drop
-    rackGrid->setGearLibrary(gearLibrary.get());
+    rack->setGearLibrary(gearLibrary.get());
     
     // Set up main window size
     setSize(1200, 800);
     
     // Set up tabs
     mainTabs.setComponentID("MainTabs");
-    mainTabs.addTab("Rack", juce::Colours::darkgrey, rackGrid.get(), false);
+    mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
     mainTabs.addTab("Notes", juce::Colours::darkgrey, notesPanel.get(), false);
     mainTabs.setTabBarDepth(30);
     mainTabs.setInterceptsMouseClicks(false, true);
