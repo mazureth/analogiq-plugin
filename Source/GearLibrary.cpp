@@ -42,6 +42,13 @@ GearLibrary::GearLibrary()
     setComponentID("GearLibrary");
     gearListBox->setComponentID("GearListBox");
     
+    // Set up title label
+    titleLabel.setText("Gear Library", juce::dontSendNotification);
+    titleLabel.setFont(juce::Font(18.0f, juce::Font::bold));
+    titleLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    titleLabel.setJustificationType(juce::Justification::centredLeft);
+    addAndMakeVisible(titleLabel);
+    
     // CRITICAL: Make the parent GearLibrary component forward all mouse events to the list box
     // This is often the root cause of drag and drop not working
     setInterceptsMouseClicks(false, true);
@@ -49,20 +56,28 @@ GearLibrary::GearLibrary()
     // Set up search box
     searchBox.setTextToShowWhenEmpty("Search gear...", juce::Colours::grey);
     searchBox.onTextChange = [this] { 
-        gearListBox->updateContent();
-        gearListBox->repaint();
+        currentSearchText = searchBox.getText();
+        updateFilteredItems();
     };
     addAndMakeVisible(searchBox);
 
     // Set up filter box
-    filterBox.addItem("All Types", 1);
-    filterBox.addItem("500 Series", 2);
-    filterBox.addItem("19\" Rack", 3);
-    filterBox.addItem("User Created", 4);
-    filterBox.setSelectedId(1);
+    filterBox.clear();
     filterBox.onChange = [this] {
-        gearListBox->updateContent();
-        gearListBox->repaint();
+        int selectedId = filterBox.getSelectedId();
+        DBG("Filter box selection changed: ID=" + juce::String(selectedId));
+        
+        if (selectedId > 0 && selectedId <= filterOptions.size())
+        {
+            // Adjust index (0-based array, 1-based combobox IDs)
+            const auto& option = filterOptions[selectedId - 1];
+            currentFilter = {option.category, option.value};
+            DBG("Setting filter to: category=" + 
+                (option.category == FilterCategory::All ? "All" : 
+                 option.category == FilterCategory::Type ? "Type" : "Category") + 
+                ", value=" + option.value);
+            updateFilteredItems();
+        }
     };
     addAndMakeVisible(filterBox);
 
@@ -83,10 +98,8 @@ GearLibrary::GearLibrary()
     gearListBox->setMultipleSelectionEnabled(false);
     addAndMakeVisible(*gearListBox);
 
-    // Add some dummy gear items for testing
-    gearItems.add(GearItem("API 550A", "API", GearType::Series500, GearCategory::EQ, 1, "", {}));
-    gearItems.add(GearItem("Neve 1073", "Neve", GearType::Rack19Inch, GearCategory::Preamp, 2, "", {}));
-    gearItems.add(GearItem("SSL G-Comp", "SSL", GearType::Rack19Inch, GearCategory::Compressor, 1, "", {}));
+    // Load initial filter options
+    loadLibraryAsync();
 }
 
 GearLibrary::~GearLibrary()
@@ -96,40 +109,133 @@ GearLibrary::~GearLibrary()
 void GearLibrary::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colours::darkgrey.darker(0.7f));
-    g.setColour(juce::Colours::white);
-    g.setFont(18.0f);
-    g.drawText("Gear Library", getLocalBounds().removeFromTop(30).withTrimmedLeft(10),
-               juce::Justification::centredLeft, true);
 }
 
 void GearLibrary::resized()
 {
     auto area = getLocalBounds();
     
-    // Top bar
-    auto topBar = area.removeFromTop(30);
-    addUserGearButton.setBounds(topBar.removeFromRight(150).reduced(2));
-    refreshButton.setBounds(topBar.removeFromRight(80).reduced(2));
+    // Title area
+    auto titleArea = area.removeFromTop(30);
+    titleArea.removeFromLeft(10); // Add some padding
+    titleLabel.setBounds(titleArea);
     
     // Search and filter controls
     auto topControls = area.removeFromTop(30);
     searchBox.setBounds(topControls.removeFromLeft(static_cast<int>(topControls.getWidth() * 0.7f)).reduced(2));
     filterBox.setBounds(topControls.reduced(2));
     
-    // List box
+    // Bottom buttons - centered
+    auto bottomButtons = area.removeFromBottom(30);
+    int totalButtonWidth = 150 + 80 + 4; // Add Custom Gear + Refresh + spacing
+    int startX = (bottomButtons.getWidth() - totalButtonWidth) / 2;
+    
+    bottomButtons.removeFromLeft(startX); // Remove space from left to center
+    addUserGearButton.setBounds(bottomButtons.removeFromLeft(150).reduced(2));
+    refreshButton.setBounds(bottomButtons.removeFromLeft(80).reduced(2));
+    
+    // List box gets remaining space
     gearListBox->setBounds(area.reduced(0, 5));
+}
+
+bool GearLibrary::shouldShowItem(const GearItem& item) const
+{
+    // First check the search text
+    if (!currentSearchText.isEmpty())
+    {
+        if (!item.name.containsIgnoreCase(currentSearchText) &&
+            !item.manufacturer.containsIgnoreCase(currentSearchText))
+        {
+            return false;
+        }
+    }
+
+    // Then check the filter
+    if (currentFilter.first == FilterCategory::All)
+        return true;
+
+    if (currentFilter.first == FilterCategory::Type)
+    {
+        if (currentFilter.second == "500Series")
+            return item.type == GearType::Series500;
+        if (currentFilter.second == "Rack19Inch")
+            return item.type == GearType::Rack19Inch;
+        if (currentFilter.second == "UserCreated")
+            return item.type == GearType::UserCreated;
+    }
+    else if (currentFilter.first == FilterCategory::Category)
+    {
+        if (currentFilter.second == "EQ")
+            return item.category == GearCategory::EQ;
+        if (currentFilter.second == "Preamp")
+            return item.category == GearCategory::Preamp;
+        if (currentFilter.second == "Compressor")
+            return item.category == GearCategory::Compressor;
+        if (currentFilter.second == "Other")
+            return item.category == GearCategory::Other;
+    }
+
+    return true;
+}
+
+void GearLibrary::updateFilteredItems()
+{
+    // Log current filter state for debugging
+    DBG("Updating filtered items:");
+    DBG(" - Current filter: " + 
+        (currentFilter.first == FilterCategory::All ? "All" : 
+         currentFilter.first == FilterCategory::Type ? "Type" : "Category") + 
+        ", value: " + currentFilter.second);
+    DBG(" - Search text: " + currentSearchText);
+    
+    // Update count of visible items for debugging
+    int visibleCount = 0;
+    for (const auto& item : gearItems)
+    {
+        if (shouldShowItem(item))
+            visibleCount++;
+    }
+    DBG(" - Visible items: " + juce::String(visibleCount) + " / " + juce::String(gearItems.size()));
+    
+    // Refresh the list box
+    gearListBox->updateContent();
+    gearListBox->repaint();
 }
 
 int GearLibrary::getNumRows()
 {
-    return gearItems.size();
+    int count = 0;
+    for (const auto& item : gearItems)
+    {
+        if (shouldShowItem(item))
+        {
+            count++;
+        }
+    }
+    return count;
 }
 
 void GearLibrary::paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int /*height*/, bool rowIsSelected)
 {
-    if (rowNumber >= 0 && rowNumber < gearItems.size())
+    // Find the actual item index that corresponds to this filtered row
+    int actualIndex = -1;
+    int filteredCount = 0;
+    for (int i = 0; i < gearItems.size(); ++i)
     {
-        const auto& item = gearItems[rowNumber];
+        if (shouldShowItem(gearItems[i]))
+        {
+            if (filteredCount == rowNumber)
+            {
+                actualIndex = i;
+                break;
+            }
+            filteredCount++;
+        }
+    }
+
+    if (actualIndex >= 0 && actualIndex < gearItems.size())
+    {
+        const auto& item = gearItems[actualIndex];
         
         // Background
         if (rowIsSelected)
@@ -199,60 +305,103 @@ void GearLibrary::listBoxItemDoubleClicked(int row, const juce::MouseEvent& /*e*
 
 void GearLibrary::loadLibraryAsync()
 {
-    // In a real implementation, this would fetch gear data from a server
-    // For now, we'll just simulate it
+    // Start both async loading operations
+    loadFiltersAsync();
+    loadGearItemsAsync();
+}
+
+void GearLibrary::loadFiltersAsync()
+{
+    // Simulate async loading of filters
+    juce::Thread::sleep(500); // Simulate network delay
     
-    class DummyLoadThread : public juce::Thread
-    {
-    public:
-        DummyLoadThread(GearLibrary& ownerRef) : juce::Thread("GearLoader"), owner(ownerRef) {}
+    juce::MessageManager::callAsync([this]() {
+        // Simulate fetching filter options from remote
+        juce::String filterJson = R"({
+            "filters": [
+                {"displayName": "500 Series", "category": "Type", "value": "500Series"},
+                {"displayName": "19\" Rack", "category": "Type", "value": "Rack19Inch"},
+                {"displayName": "User Created", "category": "Type", "value": "UserCreated"},
+                {"displayName": "EQ", "category": "Category", "value": "EQ"},
+                {"displayName": "Preamp", "category": "Category", "value": "Preamp"},
+                {"displayName": "Compressor", "category": "Category", "value": "Compressor"},
+                {"displayName": "Other", "category": "Category", "value": "Other"}
+            ]
+        })";
         
-        void run() override
-        {
-            // Simulate network delay
-            juce::Thread::sleep(500);
-            
-            // Create a JSON string with dummy gear data
-            juce::String jsonData = 
-                "{"
-                "  \"gear\": ["
-                "    {"
-                "      \"name\": \"API 512c\","
-                "      \"manufacturer\": \"API\","
-                "      \"type\": \"500Series\","
-                "      \"category\": \"Preamp\","
-                "      \"slotSize\": 1,"
-                "      \"imageUrl\": \"https://apiaudio.com/wp-content/uploads/2024/08/api-550a-23_9143_1.jpg\""
-                "    },"
-                "    {"
-                "      \"name\": \"SSL Bus Comp\","
-                "      \"manufacturer\": \"SSL\","
-                "      \"type\": \"Rack19Inch\","
-                "      \"category\": \"Compressor\","
-                "      \"slotSize\": 1,"
-                "      \"imageUrl\": \"https://brazilbox.us/wp-content/uploads/2021/07/1.jpg\""
-                "    },"
-                "    {"
-                "      \"name\": \"Pultec EQP-1A\","
-                "      \"manufacturer\": \"Pultec\","
-                "      \"type\": \"Rack19Inch\","
-                "      \"category\": \"EQ\","
-                "      \"slotSize\": 2,"
-                "      \"imageUrl\": \"https://media.sweetwater.com/m/products/image/2f36089c5b5svON7leBtYM0aeR6L8Ron1HzNhCVN.jpg\""
-                "    }"
-                "  ]"
-                "}";
-            
-            juce::MessageManager::callAsync([this, jsonData]() {
-                owner.parseGearLibrary(jsonData);
-            });
-        }
-        
-    private:
-        GearLibrary& owner;
-    };
+        parseFilterOptions(filterJson);
+    });
+}
+
+void GearLibrary::loadGearItemsAsync()
+{
+    // Simulate async loading of gear items
+    juce::Thread::sleep(1000); // Simulate network delay
     
-    (new DummyLoadThread(*this))->startThread();
+    juce::MessageManager::callAsync([this]() {
+        // Clear existing items before adding new ones
+        gearItems.clear();
+        
+        // Simulate fetching gear items from remote as JSON
+        juce::String gearJson = R"({
+            "gear": [
+                {
+                    "name": "API 550A",
+                    "manufacturer": "API",
+                    "type": "500Series",
+                    "category": "EQ",
+                    "slotSize": 1,
+                    "imageUrl": ""
+                },
+                {
+                    "name": "Trident 80B",
+                    "manufacturer": "Trident",
+                    "type": "Rack19Inch",
+                    "category": "EQ",
+                    "slotSize": 1,
+                    "imageUrl": ""
+                },
+                {
+                    "name": "DBX 560A",
+                    "manufacturer": "DBX",
+                    "type": "500Series",
+                    "category": "Compressor",
+                    "slotSize": 1,
+                    "imageUrl": ""
+                },
+                {
+                    "name": "Neve 1073",
+                    "manufacturer": "Neve",
+                    "type": "Rack19Inch",
+                    "category": "Preamp",
+                    "slotSize": 2,
+                    "imageUrl": ""
+                },
+                {
+                    "name": "SSL G Series",
+                    "manufacturer": "SSL",
+                    "type": "Rack19Inch",
+                    "category": "Compressor",
+                    "slotSize": 1,
+                    "imageUrl": ""
+                },
+                {
+                    "name": "Pultec EQP-1A",
+                    "manufacturer": "Pultec",
+                    "type": "Rack19Inch",
+                    "category": "EQ",
+                    "slotSize": 2,
+                    "imageUrl": ""
+                }
+            ]
+        })";
+        
+        // Parse the JSON data into gear items
+        parseGearLibrary(gearJson);
+        
+        // Save the updated library
+        saveLibraryAsync();
+    });
 }
 
 void GearLibrary::parseGearLibrary(const juce::String& jsonData)
@@ -313,10 +462,25 @@ void GearLibrary::parseGearLibrary(const juce::String& jsonData)
 
 GearItem* GearLibrary::getGearItem(int index)
 {
-    if (index >= 0 && index < gearItems.size())
+    // Find the actual item index that corresponds to this filtered row
+    int actualIndex = -1;
+    int filteredCount = 0;
+    for (int i = 0; i < gearItems.size(); ++i)
     {
-        // Return a pointer to the item in the array
-        return &(gearItems.getReference(index));
+        if (shouldShowItem(gearItems[i]))
+        {
+            if (filteredCount == index)
+            {
+                actualIndex = i;
+                break;
+            }
+            filteredCount++;
+        }
+    }
+
+    if (actualIndex >= 0 && actualIndex < gearItems.size())
+    {
+        return &(gearItems.getReference(actualIndex));
     }
     return nullptr;
 }
@@ -345,4 +509,117 @@ void GearLibrary::mouseDrag(const juce::MouseEvent& e)
     
     // Forward to list box
     gearListBox->mouseDrag(listBoxEvent);
+}
+
+void GearLibrary::addItem(const juce::String& name, const juce::String& category, const juce::String& description, const juce::String& manufacturer)
+{
+    GearItem item;
+    item.name = name;
+    item.manufacturer = manufacturer;
+    
+    // Properly set the category based on the string value
+    if (category == "EQ")
+        item.category = GearCategory::EQ;
+    else if (category == "Preamp")
+        item.category = GearCategory::Preamp;
+    else if (category == "Compressor")
+        item.category = GearCategory::Compressor;
+    else
+        item.category = GearCategory::Other;
+    
+    // Determine a reasonable default type based on common industry standards
+    if (name.containsIgnoreCase("500") || name.containsIgnoreCase("lunchbox"))
+        item.type = GearType::Series500;
+    else
+        item.type = GearType::Rack19Inch;
+    
+    item.slotSize = 1;  // Default slot size
+    
+    gearItems.add(item);
+    gearListBox->updateContent();
+}
+
+void GearLibrary::saveLibraryAsync()
+{
+    // In a real implementation, this would save to a file or server
+    // For now, we'll just simulate it
+    juce::Thread::sleep(500);
+}
+
+void GearLibrary::buttonClicked(juce::Button* button)
+{
+    if (button == &refreshButton)
+    {
+        loadLibraryAsync();
+    }
+    else if (button == &addUserGearButton)
+    {
+        // Open user gear creation dialog (to be implemented)
+    }
+}
+
+void GearLibrary::parseFilterOptions(const juce::String& jsonData)
+{
+    auto json = juce::JSON::parse(jsonData);
+    
+    if (json.hasProperty("filters") && json["filters"].isArray())
+    {
+        auto filterArray = json["filters"].getArray();
+        filterOptions.clear();
+        
+        // Always add "All Items" as the first option
+        filterOptions.add({"All Items", FilterCategory::All, ""});
+        
+        for (auto& filterJson : *filterArray)
+        {
+            if (filterJson.isObject())
+            {
+                auto obj = filterJson.getDynamicObject();
+                
+                juce::String displayName = obj->getProperty("displayName");
+                juce::String category = obj->getProperty("category");
+                juce::String value = obj->getProperty("value");
+                
+                FilterCategory filterCategory;
+                if (category == "Type")
+                    filterCategory = FilterCategory::Type;
+                else if (category == "Category")
+                    filterCategory = FilterCategory::Category;
+                else
+                    continue; // Skip invalid categories
+                
+                filterOptions.add({displayName, filterCategory, value});
+            }
+        }
+        
+        // After loading filter options, update the filter box and reset to default
+        updateFilterBox();
+        
+        // Log filter options for debugging
+        DBG("Loaded " + juce::String(filterOptions.size()) + " filter options:");
+        for (int i = 0; i < filterOptions.size(); ++i)
+        {
+            DBG(" - " + filterOptions[i].displayName + " (category: " + 
+                (filterOptions[i].category == FilterCategory::All ? "All" : 
+                 filterOptions[i].category == FilterCategory::Type ? "Type" : "Category") + 
+                ", value: " + filterOptions[i].value + ")");
+        }
+    }
+}
+
+void GearLibrary::updateFilterBox()
+{
+    // Clear the box first
+    filterBox.clear();
+    
+    // Add all available filter options
+    for (int i = 0; i < filterOptions.size(); ++i)
+    {
+        filterBox.addItem(filterOptions[i].displayName, i + 1);
+    }
+    
+    // Reset to "All Items" and trigger filter update
+    filterBox.setSelectedId(1);
+    currentFilter = {FilterCategory::All, ""};
+    updateFilteredItems();
 } 

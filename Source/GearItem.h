@@ -6,7 +6,8 @@ enum class GearType
 {
     Series500,
     Rack19Inch,
-    UserCreated
+    UserCreated,
+    Other
 };
 
 enum class GearCategory
