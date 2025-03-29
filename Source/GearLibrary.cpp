@@ -312,11 +312,12 @@ void GearLibrary::loadLibraryAsync()
 
 void GearLibrary::loadFiltersAsync()
 {
-    // Simulate async loading of filters
-    juce::Thread::sleep(500); // Simulate network delay
-    
-    juce::MessageManager::callAsync([this]() {
-        // Simulate fetching filter options from remote
+    // Use a background thread to avoid blocking the message thread
+    juce::Thread::launch([this]() {
+        // Simulate network delay
+        juce::Thread::sleep(500); 
+        
+        // Create a copy of the JSON data to avoid any threading issues
         juce::String filterJson = R"({
             "filters": [
                 {"displayName": "500 Series", "category": "Type", "value": "500Series"},
@@ -329,20 +330,21 @@ void GearLibrary::loadFiltersAsync()
             ]
         })";
         
-        parseFilterOptions(filterJson);
+        // Send the result back to the message thread
+        juce::MessageManager::callAsync([this, filterJson]() {
+            parseFilterOptions(filterJson);
+        });
     });
 }
 
 void GearLibrary::loadGearItemsAsync()
 {
-    // Simulate async loading of gear items
-    juce::Thread::sleep(1000); // Simulate network delay
-    
-    juce::MessageManager::callAsync([this]() {
-        // Clear existing items before adding new ones
-        gearItems.clear();
+    // Use a background thread to avoid blocking the message thread
+    juce::Thread::launch([this]() {
+        // Simulate network delay
+        juce::Thread::sleep(1000);
         
-        // Simulate fetching gear items from remote as JSON
+        // Create a copy of the JSON data to avoid any threading issues
         juce::String gearJson = R"({
             "gear": [
                 {
@@ -396,11 +398,17 @@ void GearLibrary::loadGearItemsAsync()
             ]
         })";
         
-        // Parse the JSON data into gear items
-        parseGearLibrary(gearJson);
-        
-        // Save the updated library
-        saveLibraryAsync();
+        // Send the result back to the message thread
+        juce::MessageManager::callAsync([this, gearJson]() {
+            // Clear existing items before adding new ones
+            gearItems.clear();
+            
+            // Parse the JSON data into gear items
+            parseGearLibrary(gearJson);
+            
+            // Save the updated library
+            saveLibraryAsync();
+        });
     });
 }
 
@@ -542,8 +550,14 @@ void GearLibrary::addItem(const juce::String& name, const juce::String& category
 void GearLibrary::saveLibraryAsync()
 {
     // In a real implementation, this would save to a file or server
-    // For now, we'll just simulate it
-    juce::Thread::sleep(500);
+    // We'll use a background thread to simulate the save operation
+    juce::Thread::launch([this]() {
+        // Simulate saving to a file or server
+        juce::Thread::sleep(500);
+        
+        // Log the save operation completion
+        DBG("Library saved successfully");
+    });
 }
 
 void GearLibrary::buttonClicked(juce::Button* button)
