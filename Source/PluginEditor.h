@@ -22,9 +22,9 @@ private:
     AnalogIQProcessor& audioProcessor;
 
     // UI Components
-    juce::TabbedComponent mainTabs;
+    juce::TabbedComponent mainTabs { juce::TabbedButtonBar::TabsAtTop };
     std::unique_ptr<GearLibrary> gearLibrary;
-    std::unique_ptr<Rack> rackGrid;
+    std::unique_ptr<Rack> rack;
     std::unique_ptr<NotesPanel> notesPanel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQEditor)
