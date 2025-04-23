@@ -159,11 +159,31 @@ bool GearLibrary::shouldShowItem(const GearItem &item) const
     // First check the search text
     if (!currentSearchText.isEmpty())
     {
-        if (!item.name.containsIgnoreCase(currentSearchText) &&
-            !item.manufacturer.containsIgnoreCase(currentSearchText))
+        bool matchesSearch = false;
+
+        // Check common text fields
+        if (item.name.containsIgnoreCase(currentSearchText) ||
+            item.manufacturer.containsIgnoreCase(currentSearchText) ||
+            item.categoryString.containsIgnoreCase(currentSearchText))
         {
-            return false;
+            matchesSearch = true;
         }
+
+        // Also check tags if we have them
+        if (!matchesSearch && item.tags.size() > 0)
+        {
+            for (const auto &tag : item.tags)
+            {
+                if (tag.containsIgnoreCase(currentSearchText))
+                {
+                    matchesSearch = true;
+                    break;
+                }
+            }
+        }
+
+        if (!matchesSearch)
+            return false;
     }
 
     // Then check the filter
@@ -181,14 +201,23 @@ bool GearLibrary::shouldShowItem(const GearItem &item) const
     }
     else if (currentFilter.first == FilterCategory::Category)
     {
-        if (currentFilter.second == "EQ")
-            return item.category == GearCategory::EQ;
-        if (currentFilter.second == "Preamp")
-            return item.category == GearCategory::Preamp;
-        if (currentFilter.second == "Compressor")
-            return item.category == GearCategory::Compressor;
-        if (currentFilter.second == "Other")
-            return item.category == GearCategory::Other;
+        // Check both the enum category and the string category for flexibility
+        if (currentFilter.second == "EQ" || currentFilter.second == "equalizer")
+            return (item.category == GearCategory::EQ ||
+                    item.categoryString.equalsIgnoreCase("equalizer") ||
+                    item.categoryString.equalsIgnoreCase("eq"));
+
+        if (currentFilter.second == "Preamp" || currentFilter.second == "preamp")
+            return (item.category == GearCategory::Preamp ||
+                    item.categoryString.equalsIgnoreCase("preamp"));
+
+        if (currentFilter.second == "Compressor" || currentFilter.second == "compressor")
+            return (item.category == GearCategory::Compressor ||
+                    item.categoryString.equalsIgnoreCase("compressor"));
+
+        if (currentFilter.second == "Other" || currentFilter.second == "other")
+            return (item.category == GearCategory::Other ||
+                    item.categoryString.equalsIgnoreCase("other"));
     }
 
     return true;
@@ -366,73 +395,72 @@ void GearLibrary::loadGearItemsAsync()
     // Use a background thread to avoid blocking the message thread
     juce::Thread::launch([this]()
                          {
-        // Simulate network delay
-        juce::Thread::sleep(1000);
+        // Create URL for the remote endpoint
+        juce::URL url("https://raw.githubusercontent.com/mazureth/analogiq-schemas/refs/heads/main/units/index.json");
         
-        // Create a copy of the JSON data to avoid any threading issues
-        juce::String gearJson = R"({
-            "gear": [
-                {
-                    "name": "API 550A",
-                    "manufacturer": "API",
-                    "type": "500Series",
-                    "category": "EQ",
-                    "slotSize": 1,
-                    "thumbnailUrl": "https://www.rspeaudio.com/media/iopt/catalog/product/cache/c92d27ddc910f51cbf84cfdc5a8e45c0/image/1394d61/api-550b-discrete-4-band-eq.webp"
-                },
-                {
-                    "name": "Trident 80B",
-                    "manufacturer": "Trident",
-                    "type": "Rack19Inch",
-                    "category": "EQ",
-                    "slotSize": 1,
-                    "thumbnailUrl": "https://tridentaudiodevelopments.com/wp-content/uploads/2016/06/80BEQ_front.jpg"
-                },
-                {
-                    "name": "DBX 560A",
-                    "manufacturer": "DBX",
-                    "type": "500Series",
-                    "category": "Compressor",
-                    "slotSize": 1,
-                    "thumbnailUrl": "https://vintageking.com/media/catalog/product/d/b/dbx560a-500s-vca-com_43992_1.jpg"
-                },
-                {
-                    "name": "Neve 1073",
-                    "manufacturer": "Neve",
-                    "type": "Rack19Inch",
-                    "category": "Preamp",
-                    "slotSize": 2,
-                    "thumbnailUrl": ""
-                },
-                {
-                    "name": "SSL G Series",
-                    "manufacturer": "SSL",
-                    "type": "Rack19Inch",
-                    "category": "Compressor",
-                    "slotSize": 1,
-                    "thumbnailUrl": ""
-                },
-                {
-                    "name": "Pultec EQP-1A",
-                    "manufacturer": "Pultec",
-                    "type": "Rack19Inch",
-                    "category": "EQ",
-                    "slotSize": 2,
-                    "thumbnailUrl": ""
-                }
-            ]
-        })";
+        // Fetch the JSON data
+        auto urlStream = url.createInputStream(juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
+                                                   .withConnectionTimeoutMs(10000)
+                                                   .withNumRedirectsToFollow(5));
+        
+        juce::String jsonData;
+        bool loadedSuccessfully = false;
+        
+        if (urlStream != nullptr)
+        {
+            // Read the data from the stream
+            jsonData = urlStream->readEntireStreamAsString();
+            loadedSuccessfully = true;
+            DBG("Successfully fetched gear library from remote URL");
+        }
+        else
+        {
+            // Failed to connect, use fallback data
+            DBG("Failed to connect to remote URL, using fallback data");
+            jsonData = R"({
+                "units": [
+                    {
+                        "unitId": "la2a-compressor",
+                        "name": "LA-2A Compressor",
+                        "manufacturer": "Teletronix/Universal Audio",
+                        "category": "compressor",
+                        "version": "1.0.0",
+                        "schemaPath": "units/la2a-compressor-1.0.0.json",
+                        "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                        "tags": [
+                            "UA", "Universal Audio", "Teletronix", "optical", "tube", "vintage", "leveling amplifier"
+                        ]
+                    },
+                    {
+                        "unitId": "api-560-eq",
+                        "name": "API 560 10-Band Graphic Equalizer",
+                        "manufacturer": "Automated Processes Inc.",
+                        "category": "equalizer",
+                        "version": "1.0.0",
+                        "schemaPath": "units/api-560-eq-1.0.0.json",
+                        "thumbnailImage": "assets/thumbnails/api-560-eq-1.0.0.jpg",
+                        "tags": [
+                            "API", "500 series", "graphic EQ", "10-band", "hardware"
+                        ]
+                    }
+                ]
+            })";
+        }
         
         // Send the result back to the message thread
-        juce::MessageManager::callAsync([this, gearJson]() {
+        juce::MessageManager::callAsync([this, jsonData, loadedSuccessfully]() {
             // Clear existing items before adding new ones
             gearItems.clear();
             
             // Parse the JSON data into gear items
-            parseGearLibrary(gearJson);
+            parseGearLibrary(jsonData);
             
-            // Save the updated library
-            saveLibraryAsync();
+            // Update the UI to reflect the changes
+            updateFilteredItems();
+            
+            // If loaded successfully, save the library to local cache
+            if (loadedSuccessfully)
+                saveLibraryAsync();
         }); });
 }
 
@@ -441,7 +469,63 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
     // Parse JSON data and populate gear items
     auto json = juce::JSON::parse(jsonData);
 
-    if (json.hasProperty("gear") && json["gear"].isArray())
+    // Check if we have a "units" array in the new format
+    if (json.hasProperty("units") && json["units"].isArray())
+    {
+        auto unitsArray = json["units"].getArray();
+        gearItems.clear();
+
+        for (auto &unitJson : *unitsArray)
+        {
+            if (unitJson.isObject())
+            {
+                auto obj = unitJson.getDynamicObject();
+
+                // Extract properties using the new format
+                juce::String unitId = obj->getProperty("unitId");
+                juce::String name = obj->getProperty("name");
+                juce::String manufacturer = obj->getProperty("manufacturer");
+                juce::String category = obj->getProperty("category");
+                juce::String version = obj->getProperty("version");
+                juce::String schemaPath = obj->getProperty("schemaPath");
+                juce::String thumbnailImage = obj->getProperty("thumbnailImage");
+
+                // Process tags
+                juce::StringArray tags;
+                if (obj->hasProperty("tags") && obj->getProperty("tags").isArray())
+                {
+                    auto tagsArray = obj->getProperty("tags").getArray();
+                    for (auto &tag : *tagsArray)
+                    {
+                        tags.add(tag.toString());
+                    }
+                }
+
+                // Determine slotSize (default to 1)
+                int slotSize = obj->hasProperty("slotSize") ? static_cast<int>(obj->getProperty("slotSize")) : 1;
+
+                // Create empty controls array (we'll populate this later when loading the full schema)
+                juce::Array<GearControl> controls;
+
+                // Create gear item with the new constructor
+                GearItem item(unitId, name, manufacturer, category, version, schemaPath,
+                              thumbnailImage, tags, GearType::Other, GearCategory::Other,
+                              slotSize, controls);
+
+                // If thumbnailImage is provided, try to load the image
+                if (thumbnailImage.isNotEmpty())
+                {
+                    // For now, we'll just use our placeholder image code in loadImage()
+                    item.loadImage();
+                }
+
+                // Add to list
+                gearItems.add(item);
+            }
+        }
+    }
+    // Fallback to the old "gear" array format for backwards compatibility
+    else if (json.hasProperty("gear") && json["gear"].isArray())
     {
         auto gearArray = json["gear"].getArray();
         gearItems.clear();
@@ -452,7 +536,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
             {
                 auto obj = gearJson.getDynamicObject();
 
-                // Extract properties
+                // Extract properties using the old format
                 juce::String name = obj->getProperty("name");
                 juce::String manufacturer = obj->getProperty("manufacturer");
 
@@ -484,58 +568,24 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 // Create an empty array of controls
                 juce::Array<GearControl> controls;
 
-                // Create gear item
+                // Create gear item using the legacy constructor
                 GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls);
 
                 // If thumbnailUrl is provided, try to load the image
                 if (thumbnailUrl.isNotEmpty())
                 {
-                    // In a real implementation, you'd load from network or disk
-                    // For now, we'll setup a placeholder image
-
-                    // Create a placeholder colored image based on category
-                    juce::Image thumbnail(juce::Image::ARGB, 24, 24, true);
-                    juce::Graphics g(thumbnail);
-
-                    // Use different colors for different categories
-                    switch (category)
-                    {
-                    case GearCategory::EQ:
-                        g.setColour(juce::Colours::orange);
-                        break;
-                    case GearCategory::Preamp:
-                        g.setColour(juce::Colours::red);
-                        break;
-                    case GearCategory::Compressor:
-                        g.setColour(juce::Colours::blue);
-                        break;
-                    default:
-                        g.setColour(juce::Colours::green);
-                        break;
-                    }
-
-                    // Draw a rounded rectangle for the thumbnail
-                    g.fillRoundedRectangle(0.0f, 0.0f, 24.0f, 24.0f, 4.0f);
-
-                    // Draw the first letter of the gear name
-                    g.setColour(juce::Colours::white);
-                    g.setFont(16.0f);
-                    g.drawText(name.substring(0, 1).toUpperCase(),
-                               0, 0, 24, 24, juce::Justification::centred);
-
-                    // Set the image in the item
-                    item.image = thumbnail;
+                    item.loadImage();
                 }
 
                 // Add to list
                 gearItems.add(item);
             }
         }
-
-        // Update the tree view
-        if (rootItem != nullptr)
-            rootItem->refreshSubItems();
     }
+
+    // Update the tree view if we have a root item
+    if (rootItem != nullptr)
+        rootItem->refreshSubItems();
 }
 
 GearItem *GearLibrary::getGearItem(int index)

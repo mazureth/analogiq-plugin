@@ -2,182 +2,230 @@
 
 bool GearItem::loadImage()
 {
-    // In a real implementation, this would load the image from the URL or local cache
-    // For now, we'll just create a dummy image
-    
-    image = juce::Image(juce::Image::RGB, 200, 100, true);
+    // In a real application, you'd fetch the image from the network or load from disk
+    // For now, we'll create a placeholder image
+
+    if (thumbnailImage.isEmpty())
+        return false;
+
+    // Create a placeholder colored image based on category
+    image = juce::Image(juce::Image::ARGB, 24, 24, true);
     juce::Graphics g(image);
-    
-    // Draw a placeholder image
-    g.fillAll(juce::Colours::darkgrey);
-    g.setColour(juce::Colours::black);
-    g.drawRect(0, 0, image.getWidth(), image.getHeight(), 1);
-    
-    // Draw name
+
+    // Use different colors for different categories
+    switch (category)
+    {
+    case GearCategory::EQ:
+        g.setColour(juce::Colours::orange);
+        break;
+    case GearCategory::Preamp:
+        g.setColour(juce::Colours::red);
+        break;
+    case GearCategory::Compressor:
+        g.setColour(juce::Colours::blue);
+        break;
+    default:
+        g.setColour(juce::Colours::green);
+        break;
+    }
+
+    // Draw a rounded rectangle for the thumbnail
+    g.fillRoundedRectangle(0.0f, 0.0f, 24.0f, 24.0f, 4.0f);
+
+    // Draw the first letter of the gear name
     g.setColour(juce::Colours::white);
     g.setFont(16.0f);
-    g.drawText(manufacturer + " - " + name, 
-               juce::Rectangle<int>(0, 0, image.getWidth(), image.getHeight()),
-               juce::Justification::centred, true);
-    
+    g.drawText(name.substring(0, 1).toUpperCase(),
+               0, 0, 24, 24, juce::Justification::centred);
+
     return true;
 }
 
 void GearItem::saveToJSON(juce::File destinationFile)
 {
-    juce::DynamicObject* obj = new juce::DynamicObject();
-    
-    // Add gear properties
-    obj->setProperty("name", name);
-    obj->setProperty("manufacturer", manufacturer);
-    
-    // Set type
+    // Create a JSON object with all of our properties
+    juce::DynamicObject::Ptr jsonObj = new juce::DynamicObject();
+
+    // Add all properties to the JSON object
+    jsonObj->setProperty("unitId", unitId);
+    jsonObj->setProperty("name", name);
+    jsonObj->setProperty("manufacturer", manufacturer);
+    jsonObj->setProperty("category", categoryString);
+    jsonObj->setProperty("version", version);
+    jsonObj->setProperty("schemaPath", schemaPath);
+    jsonObj->setProperty("thumbnailImage", thumbnailImage);
+
+    // Convert GearType enum to string
     juce::String typeStr;
     switch (type)
     {
-        case GearType::Series500: typeStr = "500Series"; break;
-        case GearType::Rack19Inch: typeStr = "Rack19Inch"; break;
-        case GearType::UserCreated: typeStr = "UserCreated"; break;
+    case GearType::Series500:
+        typeStr = "500Series";
+        break;
+    case GearType::Rack19Inch:
+        typeStr = "Rack19Inch";
+        break;
+    case GearType::UserCreated:
+        typeStr = "UserCreated";
+        break;
+    case GearType::Other:
+        typeStr = "Other";
+        break;
     }
-    obj->setProperty("type", typeStr);
-    
-    // Set category
-    juce::String catStr;
-    switch (category)
-    {
-        case GearCategory::EQ: catStr = "EQ"; break;
-        case GearCategory::Compressor: catStr = "Compressor"; break;
-        case GearCategory::Preamp: catStr = "Preamp"; break;
-        case GearCategory::Other: catStr = "Other"; break;
-    }
-    obj->setProperty("category", catStr);
-    
-    obj->setProperty("slotSize", slotSize);
-    obj->setProperty("imageUrl", imageUrl);
-    
-    // Save controls
+    jsonObj->setProperty("type", typeStr);
+
+    // Add slot size
+    jsonObj->setProperty("slotSize", slotSize);
+
+    // Add tags as an array
+    juce::Array<juce::var> tagsArray;
+    for (const auto &tag : tags)
+        tagsArray.add(tag);
+    jsonObj->setProperty("tags", tagsArray);
+
+    // Add controls as an array
     juce::Array<juce::var> controlsArray;
-    
-    for (auto& control : controls)
+    for (const auto &control : controls)
     {
-        juce::DynamicObject* controlObj = new juce::DynamicObject();
-        
-        // Set control type
+        juce::DynamicObject::Ptr controlObj = new juce::DynamicObject();
+
+        // Convert control type to string
         juce::String controlTypeStr;
         switch (control.type)
         {
-            case GearControl::Type::Knob: controlTypeStr = "Knob"; break;
-            case GearControl::Type::Button: controlTypeStr = "Button"; break;
-            case GearControl::Type::Fader: controlTypeStr = "Fader"; break;
+        case GearControl::Type::Knob:
+            controlTypeStr = "Knob";
+            break;
+        case GearControl::Type::Button:
+            controlTypeStr = "Button";
+            break;
+        case GearControl::Type::Fader:
+            controlTypeStr = "Fader";
+            break;
         }
+
         controlObj->setProperty("type", controlTypeStr);
-        
         controlObj->setProperty("name", control.name);
-        
-        // Save position
-        juce::DynamicObject* posObj = new juce::DynamicObject();
+
+        // Convert position rectangle to JSON
+        juce::DynamicObject::Ptr posObj = new juce::DynamicObject();
         posObj->setProperty("x", control.position.getX());
         posObj->setProperty("y", control.position.getY());
         posObj->setProperty("width", control.position.getWidth());
         posObj->setProperty("height", control.position.getHeight());
-        controlObj->setProperty("position", posObj);
-        
+
+        controlObj->setProperty("position", posObj.get());
         controlObj->setProperty("value", control.value);
-        
-        controlsArray.add(controlObj);
+
+        controlsArray.add(controlObj.get());
     }
-    
-    obj->setProperty("controls", controlsArray);
-    
+
+    jsonObj->setProperty("controls", controlsArray);
+
+    // Convert to JSON string
+    juce::var jsonVar(jsonObj.get());
+    juce::String jsonString = juce::JSON::toString(jsonVar);
+
     // Write to file
-    juce::var json(obj);
-    destinationFile.replaceWithText(juce::JSON::toString(json));
+    destinationFile.replaceWithText(jsonString);
 }
 
 GearItem GearItem::loadFromJSON(juce::File sourceFile)
 {
-    GearItem item;
-    
-    if (sourceFile.existsAsFile())
+    // Read the JSON from file
+    juce::String jsonString = sourceFile.loadFileAsString();
+
+    // Parse the JSON
+    juce::var jsonVar = juce::JSON::parse(jsonString);
+
+    // Check if we have a valid JSON object
+    if (!jsonVar.isObject())
+        return GearItem(); // Return empty gear item
+
+    // Extract fields from JSON
+    juce::String unitId = jsonVar.getProperty("unitId", "");
+    juce::String name = jsonVar.getProperty("name", "");
+    juce::String manufacturer = jsonVar.getProperty("manufacturer", "");
+    juce::String categoryStr = jsonVar.getProperty("category", "");
+    juce::String version = jsonVar.getProperty("version", "1.0.0");
+    juce::String schemaPath = jsonVar.getProperty("schemaPath", "");
+    juce::String thumbnailImage = jsonVar.getProperty("thumbnailImage", "");
+
+    // Parse tags
+    juce::StringArray tags;
+    if (jsonVar.hasProperty("tags") && jsonVar["tags"].isArray())
     {
-        juce::String jsonStr = sourceFile.loadFileAsString();
-        auto json = juce::JSON::parse(jsonStr);
-        
-        if (json.isObject())
+        juce::Array<juce::var> *tagsArray = jsonVar["tags"].getArray();
+        for (const auto &tag : *tagsArray)
+            tags.add(tag.toString());
+    }
+
+    // Determine type
+    GearType type = GearType::Other;
+    juce::String typeStr = jsonVar.getProperty("type", "");
+    if (typeStr == "500Series")
+        type = GearType::Series500;
+    else if (typeStr == "Rack19Inch")
+        type = GearType::Rack19Inch;
+    else if (typeStr == "UserCreated")
+        type = GearType::UserCreated;
+
+    // Determine category
+    GearCategory category = GearCategory::Other;
+    if (categoryStr == "equalizer" || categoryStr == "eq")
+        category = GearCategory::EQ;
+    else if (categoryStr == "compressor")
+        category = GearCategory::Compressor;
+    else if (categoryStr == "preamp")
+        category = GearCategory::Preamp;
+
+    // Get slot size
+    int slotSize = jsonVar.getProperty("slotSize", 1);
+
+    // Parse controls
+    juce::Array<GearControl> controls;
+    if (jsonVar.hasProperty("controls") && jsonVar["controls"].isArray())
+    {
+        juce::Array<juce::var> *controlsArray = jsonVar["controls"].getArray();
+        for (const auto &controlVar : *controlsArray)
         {
-            auto obj = json.getDynamicObject();
-            
-            // Load properties
-            item.name = obj->getProperty("name").toString();
-            item.manufacturer = obj->getProperty("manufacturer").toString();
-            
-            // Get type
-            juce::String typeStr = obj->getProperty("type");
-            if (typeStr == "500Series")
-                item.type = GearType::Series500;
-            else if (typeStr == "Rack19Inch")
-                item.type = GearType::Rack19Inch;
-            else
-                item.type = GearType::UserCreated;
-            
-            // Get category
-            juce::String catStr = obj->getProperty("category");
-            if (catStr == "EQ")
-                item.category = GearCategory::EQ;
-            else if (catStr == "Compressor")
-                item.category = GearCategory::Compressor;
-            else if (catStr == "Preamp")
-                item.category = GearCategory::Preamp;
-            else
-                item.category = GearCategory::Other;
-            
-            item.slotSize = (int)obj->getProperty("slotSize");
-            item.imageUrl = obj->getProperty("imageUrl").toString();
-            
-            // Load controls
-            if (obj->hasProperty("controls") && obj->getProperty("controls").isArray())
+            if (!controlVar.isObject())
+                continue;
+
+            // Get control type
+            GearControl::Type controlType = GearControl::Type::Knob;
+            juce::String controlTypeStr = controlVar.getProperty("type", "Knob");
+            if (controlTypeStr == "Button")
+                controlType = GearControl::Type::Button;
+            else if (controlTypeStr == "Fader")
+                controlType = GearControl::Type::Fader;
+
+            // Get control name
+            juce::String controlName = controlVar.getProperty("name", "");
+
+            // Get position
+            juce::Rectangle<float> position;
+            if (controlVar.hasProperty("position") && controlVar["position"].isObject())
             {
-                auto controlsArray = obj->getProperty("controls").getArray();
-                
-                for (auto& controlJson : *controlsArray)
-                {
-                    if (controlJson.isObject())
-                    {
-                        auto controlObj = controlJson.getDynamicObject();
-                        
-                        // Get control type
-                        GearControl::Type controlType;
-                        juce::String controlTypeStr = controlObj->getProperty("type");
-                        if (controlTypeStr == "Knob")
-                            controlType = GearControl::Type::Knob;
-                        else if (controlTypeStr == "Button")
-                            controlType = GearControl::Type::Button;
-                        else
-                            controlType = GearControl::Type::Fader;
-                        
-                        juce::String name = controlObj->getProperty("name");
-                        
-                        // Get position
-                        juce::Rectangle<float> position;
-                        if (controlObj->hasProperty("position") && controlObj->getProperty("position").isObject())
-                        {
-                            auto posObj = controlObj->getProperty("position").getDynamicObject();
-                            position.setX((float)posObj->getProperty("x"));
-                            position.setY((float)posObj->getProperty("y"));
-                            position.setWidth((float)posObj->getProperty("width"));
-                            position.setHeight((float)posObj->getProperty("height"));
-                        }
-                        
-                        // Create control
-                        GearControl control(controlType, name, position);
-                        control.value = (float)controlObj->getProperty("value");
-                        
-                        item.controls.add(control);
-                    }
-                }
+                position.setX(controlVar["position"].getProperty("x", 0.0f));
+                position.setY(controlVar["position"].getProperty("y", 0.0f));
+                position.setWidth(controlVar["position"].getProperty("width", 0.0f));
+                position.setHeight(controlVar["position"].getProperty("height", 0.0f));
             }
+
+            // Create control and add to array
+            GearControl control(controlType, controlName, position);
+            control.value = controlVar.getProperty("value", 0.0f);
+            controls.add(control);
         }
     }
-    
+
+    // Create and return the gear item with the new constructor
+    GearItem item(unitId, name, manufacturer, categoryStr, version, schemaPath,
+                  thumbnailImage, tags, type, category, slotSize, controls);
+
+    // Try to load the image
+    item.loadImage();
+
     return item;
-} 
+}

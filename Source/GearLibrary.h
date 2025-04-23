@@ -51,6 +51,9 @@ public:
     // Get a gear item by index
     GearItem *getGearItem(int index);
 
+    // Get the full array of items
+    const juce::Array<GearItem> &getItems() const { return gearItems; }
+
     // Load gear library from remote or local cache
     void loadLibraryAsync();
     void loadFiltersAsync();
@@ -120,7 +123,7 @@ public:
     juce::String getUniqueName() const override
     {
         if (itemType == ItemType::Gear && gearItem != nullptr)
-            return "gear_" + gearItem->name + "_" + juce::String(gearIndex);
+            return "gear_" + gearItem->unitId + "_" + juce::String(gearIndex);
 
         return "category_" + name + "_" + juce::String((int)itemType);
     }
@@ -181,122 +184,116 @@ public:
 
         if (itemType == ItemType::Root)
         {
-            // Add Category groups
+            // Add Categories group
             addSubItem(new GearTreeItem(ItemType::Category, "Categories", owner));
-            addSubItem(new GearTreeItem(ItemType::Type, "Types", owner));
         }
         else if (itemType == ItemType::Category && name == "Categories")
         {
-            // Add Category types (EQ, Preamp, etc.)
-            addSubItem(new GearTreeItem(ItemType::Category, "EQ", owner));
-            addSubItem(new GearTreeItem(ItemType::Category, "Preamp", owner));
-            addSubItem(new GearTreeItem(ItemType::Category, "Compressor", owner));
-            addSubItem(new GearTreeItem(ItemType::Category, "Other", owner));
-        }
-        else if (itemType == ItemType::Type && name == "Types")
-        {
-            // Add Type categories (500 Series, 19" Rack, etc.)
-            addSubItem(new GearTreeItem(ItemType::Type, "500 Series", owner));
-            addSubItem(new GearTreeItem(ItemType::Type, "19\" Rack", owner));
-            addSubItem(new GearTreeItem(ItemType::Type, "User Created", owner));
-        }
-        else if (itemType == ItemType::Category && name == "EQ")
-        {
-            // Add all EQ gear items
-            for (int i = 0; i < owner->getNumRows(); ++i)
+            // Get all items from the library
+            const auto &items = owner->getItems();
+
+            // Collect unique categories from the items
+            juce::StringArray categories;
+
+            // First pass - gather all unique categories
+            for (int i = 0; i < items.size(); ++i)
             {
-                if (GearItem *item = owner->getGearItem(i))
+                const auto &item = items.getReference(i);
+
+                // Get the category string or derive it from the enum
+                juce::String category;
+
+                if (!item.categoryString.isEmpty())
                 {
-                    if (item->category == GearCategory::EQ)
+                    category = item.categoryString.toLowerCase();
+                }
+                else
+                {
+                    // Fallback to enum if string is empty
+                    switch (item.category)
                     {
-                        addSubItem(new GearTreeItem(ItemType::Gear, item->name, owner, item, i));
+                    case GearCategory::EQ:
+                        category = "equalizer";
+                        break;
+                    case GearCategory::Compressor:
+                        category = "compressor";
+                        break;
+                    case GearCategory::Preamp:
+                        category = "preamp";
+                        break;
+                    case GearCategory::Other:
+                        category = "other";
+                        break;
                     }
                 }
+
+                // Add to our unique list if not already present
+                if (!category.isEmpty() && !categories.contains(category))
+                    categories.add(category);
+            }
+
+            // Sort categories alphabetically
+            categories.sort(true);
+
+            // Add a tree item for each category
+            for (const auto &category : categories)
+            {
+                // Format category name for display (capitalize first letter)
+                juce::String displayName = category.substring(0, 1).toUpperCase() + category.substring(1);
+                addSubItem(new GearTreeItem(ItemType::Category, displayName, owner));
             }
         }
-        else if (itemType == ItemType::Category && name == "Preamp")
+        else if (itemType == ItemType::Category)
         {
-            // Add all Preamp gear items
-            for (int i = 0; i < owner->getNumRows(); ++i)
+            // Find items matching this category
+            const auto &items = owner->getItems();
+            bool hasItems = false;
+
+            for (int i = 0; i < items.size(); ++i)
             {
-                if (GearItem *item = owner->getGearItem(i))
+                const auto &item = items.getReference(i);
+
+                // Check if this item matches the category
+                bool matches = false;
+
+                if (name.equalsIgnoreCase("EQ") || name.equalsIgnoreCase("Equalizer"))
                 {
-                    if (item->category == GearCategory::Preamp)
-                    {
-                        addSubItem(new GearTreeItem(ItemType::Gear, item->name, owner, item, i));
-                    }
+                    matches = (item.category == GearCategory::EQ ||
+                               item.categoryString.equalsIgnoreCase("equalizer") ||
+                               item.categoryString.equalsIgnoreCase("eq"));
+                }
+                else if (name.equalsIgnoreCase("Compressor"))
+                {
+                    matches = (item.category == GearCategory::Compressor ||
+                               item.categoryString.equalsIgnoreCase("compressor"));
+                }
+                else if (name.equalsIgnoreCase("Preamp"))
+                {
+                    matches = (item.category == GearCategory::Preamp ||
+                               item.categoryString.equalsIgnoreCase("preamp"));
+                }
+                else if (name.equalsIgnoreCase("Other"))
+                {
+                    matches = (item.category == GearCategory::Other ||
+                               item.categoryString.equalsIgnoreCase("other"));
+                }
+                else
+                {
+                    // For any other category, match directly with the item's categoryString
+                    matches = item.categoryString.equalsIgnoreCase(name);
+                }
+
+                if (matches)
+                {
+                    addSubItem(new GearTreeItem(ItemType::Gear, item.name, owner,
+                                                const_cast<GearItem *>(&item), i));
+                    hasItems = true;
                 }
             }
-        }
-        else if (itemType == ItemType::Category && name == "Compressor")
-        {
-            // Add all Compressor gear items
-            for (int i = 0; i < owner->getNumRows(); ++i)
-            {
-                if (GearItem *item = owner->getGearItem(i))
-                {
-                    if (item->category == GearCategory::Compressor)
-                    {
-                        addSubItem(new GearTreeItem(ItemType::Gear, item->name, owner, item, i));
-                    }
-                }
-            }
-        }
-        else if (itemType == ItemType::Category && name == "Other")
-        {
-            // Add all Other gear items
-            for (int i = 0; i < owner->getNumRows(); ++i)
-            {
-                if (GearItem *item = owner->getGearItem(i))
-                {
-                    if (item->category == GearCategory::Other)
-                    {
-                        addSubItem(new GearTreeItem(ItemType::Gear, item->name, owner, item, i));
-                    }
-                }
-            }
-        }
-        else if (itemType == ItemType::Type && name == "500 Series")
-        {
-            // Add all 500 Series gear items
-            for (int i = 0; i < owner->getNumRows(); ++i)
-            {
-                if (GearItem *item = owner->getGearItem(i))
-                {
-                    if (item->type == GearType::Series500)
-                    {
-                        addSubItem(new GearTreeItem(ItemType::Gear, item->name, owner, item, i));
-                    }
-                }
-            }
-        }
-        else if (itemType == ItemType::Type && name == "19\" Rack")
-        {
-            // Add all 19" Rack gear items
-            for (int i = 0; i < owner->getNumRows(); ++i)
-            {
-                if (GearItem *item = owner->getGearItem(i))
-                {
-                    if (item->type == GearType::Rack19Inch)
-                    {
-                        addSubItem(new GearTreeItem(ItemType::Gear, item->name, owner, item, i));
-                    }
-                }
-            }
-        }
-        else if (itemType == ItemType::Type && name == "User Created")
-        {
-            // Add all User Created gear items
-            for (int i = 0; i < owner->getNumRows(); ++i)
-            {
-                if (GearItem *item = owner->getGearItem(i))
-                {
-                    if (item->type == GearType::UserCreated)
-                    {
-                        addSubItem(new GearTreeItem(ItemType::Gear, item->name, owner, item, i));
-                    }
-                }
-            }
+
+            // If no items were found for this category, don't expand it
+            if (!hasItems)
+                setOpen(false);
         }
     }
 
