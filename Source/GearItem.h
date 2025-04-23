@@ -141,4 +141,8 @@ public:
     bool loadImage();
     void saveToJSON(juce::File destinationFile);
     static GearItem loadFromJSON(juce::File sourceFile);
+
+private:
+    // Helper method to create a placeholder image
+    bool createPlaceholderImage();
 };
