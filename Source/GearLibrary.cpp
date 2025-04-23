@@ -436,8 +436,8 @@ void GearLibrary::loadGearItemsAsync()
     // Use a background thread to avoid blocking the message thread
     juce::Thread::launch([this]()
                          {
-        // Create URL for the remote endpoint
-        juce::URL url("https://raw.githubusercontent.com/mazureth/analogiq-schemas/refs/heads/main/units/index.json");
+        // Create URL for the remote endpoint using the helper method
+        juce::URL url(getFullUrl(RemoteResources::LIBRARY_PATH));
         
         // Fetch the JSON data
         auto urlStream = url.createInputStream(juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
@@ -548,7 +548,28 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 // Create empty controls array (we'll populate this later when loading the full schema)
                 juce::Array<GearControl> controls;
 
-                // Create gear item with the new constructor
+                // Ensure schemaPath is properly formatted using our constants
+                if (!schemaPath.startsWith("http") && !schemaPath.isEmpty())
+                {
+                    // If it's a relative path, ensure it's relative to SCHEMAS_PATH
+                    if (!schemaPath.startsWith(RemoteResources::SCHEMAS_PATH) &&
+                        !schemaPath.startsWith("/"))
+                    {
+                        schemaPath = RemoteResources::SCHEMAS_PATH + schemaPath;
+                    }
+                }
+
+                // Do the same for thumbnail images
+                if (!thumbnailImage.startsWith("http") && !thumbnailImage.isEmpty())
+                {
+                    // If it's a relative path and doesn't start with assets/, add the ASSETS_PATH
+                    if (!thumbnailImage.startsWith(RemoteResources::ASSETS_PATH) &&
+                        !thumbnailImage.startsWith("/"))
+                    {
+                        thumbnailImage = RemoteResources::ASSETS_PATH + thumbnailImage;
+                    }
+                }
+
                 GearItem item(unitId, name, manufacturer, category, version, schemaPath,
                               thumbnailImage, tags, GearType::Other, GearCategory::Other,
                               slotSize, controls);

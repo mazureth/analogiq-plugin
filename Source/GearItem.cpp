@@ -1,4 +1,5 @@
 #include "GearItem.h"
+#include "GearLibrary.h" // Include for RemoteResources
 
 bool GearItem::loadImage()
 {
@@ -7,6 +8,16 @@ bool GearItem::loadImage()
 
     if (thumbnailImage.isEmpty())
         return false;
+
+    // Check if the thumbnail is a remote path
+    if (thumbnailImage.startsWith("assets/") || thumbnailImage.startsWith("http"))
+    {
+        // Determine the full URL using the helper method
+        juce::String imageUrl = GearLibrary::getFullUrl(thumbnailImage);
+
+        // Here you would fetch the image from the URL
+        // For now, we'll use our placeholder image
+    }
 
     // Create a placeholder colored image based on category
     image = juce::Image(juce::Image::ARGB, 24, 24, true);

@@ -4,6 +4,15 @@
 #include "DraggableListBox.h"
 #include "GearItem.h"
 
+// Base URLs and paths for remote resources
+namespace RemoteResources
+{
+    const juce::String BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/refs/heads/main/";
+    const juce::String LIBRARY_PATH = "units/index.json";
+    const juce::String ASSETS_PATH = "assets/";
+    const juce::String SCHEMAS_PATH = "units/";
+}
+
 // FilterCategory enum
 enum class FilterCategory
 {
@@ -60,6 +69,15 @@ public:
     void loadGearItemsAsync();
     void saveLibraryAsync();
     void addItem(const juce::String &name, const juce::String &category, const juce::String &description, const juce::String &manufacturer);
+
+    // Helper method to construct a full URL from a relative path
+    static juce::String getFullUrl(const juce::String &relativePath)
+    {
+        if (relativePath.startsWith("http"))
+            return relativePath;
+
+        return RemoteResources::BASE_URL + relativePath;
+    }
 
 private:
     // JSON parsing
