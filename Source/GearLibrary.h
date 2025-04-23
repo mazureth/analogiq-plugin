@@ -4,6 +4,15 @@
 #include "DraggableListBox.h"
 #include "GearItem.h"
 
+// Base URLs and paths for remote resources
+namespace RemoteResources
+{
+    const juce::String BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/refs/heads/main/";
+    const juce::String LIBRARY_PATH = "units/index.json";
+    const juce::String ASSETS_PATH = "assets/";
+    const juce::String SCHEMAS_PATH = "units/";
+}
+
 // FilterCategory enum
 enum class FilterCategory
 {
@@ -60,6 +69,15 @@ public:
     void loadGearItemsAsync();
     void saveLibraryAsync();
     void addItem(const juce::String &name, const juce::String &category, const juce::String &description, const juce::String &manufacturer);
+
+    // Helper method to construct a full URL from a relative path
+    static juce::String getFullUrl(const juce::String &relativePath)
+    {
+        if (relativePath.startsWith("http"))
+            return relativePath;
+
+        return RemoteResources::BASE_URL + relativePath;
+    }
 
 private:
     // JSON parsing
@@ -357,11 +375,48 @@ public:
         }
     }
 
-    GearItem *getGearItem() const { return gearItem; }
-    int getGearIndex() const { return gearIndex; }
+    // Added methods for compatibility with GearLibrary.cpp
+    void setVisible(bool shouldBeVisible)
+    {
+        // In a TreeViewItem, visibility is managed by the TreeView,
+        // so we need to implement this manually
+        if (getOwnerView() != nullptr)
+        {
+            if (shouldBeVisible)
+            {
+                // Make parent items visible and expanded to show this item
+                TreeViewItem *parent = getParentItem();
+                while (parent != nullptr)
+                {
+                    parent->setOpen(true);
+                    parent = parent->getParentItem();
+                }
 
-    // Get the item's display text
-    juce::String getItemText() const { return name; }
+                // Ensure this item is visible in the tree
+                getOwnerView()->scrollToKeepItemVisible(this);
+            }
+            else
+            {
+                // If not visible, close this item
+                setOpen(false);
+            }
+        }
+    }
+
+    void setOpenness(bool shouldBeOpen)
+    {
+        setOpen(shouldBeOpen);
+    }
+
+    juce::String getItemText() const
+    {
+        return name;
+    }
+
+    GearItem *getGearItem() const
+    {
+        return gearItem;
+    }
 
 private:
     ItemType itemType;

@@ -1,13 +1,74 @@
 #include "GearItem.h"
+#include "GearLibrary.h" // Include for RemoteResources
 
 bool GearItem::loadImage()
 {
-    // In a real application, you'd fetch the image from the network or load from disk
-    // For now, we'll create a placeholder image
-
+    // If no thumbnail specified, use placeholder
     if (thumbnailImage.isEmpty())
-        return false;
+        return createPlaceholderImage();
 
+    // Check if the thumbnail is a remote path
+    if (thumbnailImage.startsWith("assets/") || thumbnailImage.startsWith("http"))
+    {
+        // Determine the full URL using the helper method
+        juce::String imageUrl = GearLibrary::getFullUrl(thumbnailImage);
+
+        // Create URL object for the image
+        juce::URL url(imageUrl);
+
+        // Try to download the image
+        auto urlStream = url.createInputStream(juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
+                                                   .withConnectionTimeoutMs(10000)
+                                                   .withNumRedirectsToFollow(5));
+
+        if (urlStream != nullptr)
+        {
+            // Read the image data
+            juce::MemoryBlock imageData;
+            urlStream->readIntoMemoryBlock(imageData);
+
+            if (imageData.getSize() > 0)
+            {
+                // Create image from the memory block
+                juce::MemoryInputStream inputStream(imageData, false);
+                juce::JPEGImageFormat jpegFormat;
+                juce::PNGImageFormat pngFormat;
+
+                // Try to load as JPEG first, then PNG
+                if (jpegFormat.canUnderstand(inputStream))
+                {
+                    inputStream.setPosition(0);
+                    image = jpegFormat.decodeImage(inputStream);
+                }
+                else
+                {
+                    inputStream.setPosition(0);
+                    if (pngFormat.canUnderstand(inputStream))
+                    {
+                        inputStream.setPosition(0);
+                        image = pngFormat.decodeImage(inputStream);
+                    }
+                }
+
+                // If successfully loaded image, return true
+                if (image.isValid())
+                {
+                    DBG("Successfully loaded thumbnail image for " + name);
+                    return true;
+                }
+            }
+        }
+
+        DBG("Failed to load thumbnail image for " + name + ", using placeholder");
+    }
+
+    // If we get here, loading the actual image failed, so create a placeholder
+    return createPlaceholderImage();
+}
+
+// Helper method to create a placeholder image
+bool GearItem::createPlaceholderImage()
+{
     // Create a placeholder colored image based on category
     image = juce::Image(juce::Image::ARGB, 24, 24, true);
     juce::Graphics g(image);
