@@ -161,15 +161,21 @@ bool GearLibrary::shouldShowItem(const GearItem &item) const
     {
         bool matchesSearch = false;
 
-        // Check common text fields
+        // Check name and manufacturer
         if (item.name.containsIgnoreCase(currentSearchText) ||
-            item.manufacturer.containsIgnoreCase(currentSearchText) ||
+            item.manufacturer.containsIgnoreCase(currentSearchText))
+        {
+            matchesSearch = true;
+        }
+
+        // Check category string
+        if (!matchesSearch && !item.categoryString.isEmpty() &&
             item.categoryString.containsIgnoreCase(currentSearchText))
         {
             matchesSearch = true;
         }
 
-        // Also check tags if we have them
+        // Check tags
         if (!matchesSearch && item.tags.size() > 0)
         {
             for (const auto &tag : item.tags)
@@ -235,74 +241,109 @@ void GearLibrary::updateFilteredItems()
     // Then update the tree view
     if (rootItem && gearTreeView)
     {
-        // Only refresh the root item's children if they exist
-        if (rootItem->getNumSubItems() > 0)
+        bool isSearching = !currentSearchText.isEmpty();
+
+        // If we're searching or the root item has no children yet, refresh from scratch
+        if (isSearching || rootItem->getNumSubItems() == 0)
         {
-            // Check if we're searching
-            bool shouldExpand = !currentSearchText.isEmpty();
+            rootItem->clearSubItems();
+            rootItem->refreshSubItems();
+        }
 
-            // Remember current expanded state of items
-            juce::Array<juce::String> expandedItems;
-            for (int i = 0; i < rootItem->getNumSubItems(); ++i)
+        // Recursively expand and hide/show nodes based on search results
+        if (isSearching)
+        {
+            // First see if any item in the entire tree matches the search
+            bool anyMatches = false;
+            for (int i = 0; i < gearItems.size(); ++i)
             {
-                if (auto item = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
+                if (shouldShowItem(gearItems.getReference(i)))
                 {
-                    if (item->isOpen())
-                        expandedItems.add(item->getUniqueName());
+                    anyMatches = true;
+                    break;
+                }
+            }
 
-                    // Also check second-level items
-                    for (int j = 0; j < item->getNumSubItems(); ++j)
+            // If we have matches, expand everything to show them
+            if (anyMatches)
+            {
+                // Make sure the root categories node is expanded
+                for (int i = 0; i < rootItem->getNumSubItems(); ++i)
+                {
+                    if (auto categoriesNode = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
                     {
-                        if (auto subItem = dynamic_cast<GearTreeItem *>(item->getSubItem(j)))
+                        categoriesNode->setOpen(true);
+
+                        // For each category, check if it contains matching items
+                        for (int j = 0; j < categoriesNode->getNumSubItems(); ++j)
                         {
-                            if (subItem->isOpen())
-                                expandedItems.add(subItem->getUniqueName());
+                            if (auto categoryNode = dynamic_cast<GearTreeItem *>(categoriesNode->getSubItem(j)))
+                            {
+                                bool categoryHasMatches = false;
+
+                                // If the node hasn't loaded its items yet, refresh it
+                                if (categoryNode->getNumSubItems() == 0)
+                                {
+                                    categoryNode->refreshSubItems();
+                                }
+
+                                // Check each gear item to see if it matches
+                                for (int k = 0; k < categoryNode->getNumSubItems(); ++k)
+                                {
+                                    if (auto gearNode = dynamic_cast<GearTreeItem *>(categoryNode->getSubItem(k)))
+                                    {
+                                        if (GearItem *gearItem = gearNode->getGearItem())
+                                        {
+                                            // Check if this item matches the search
+                                            bool matches = shouldShowItem(*gearItem);
+                                            gearNode->setVisible(matches);
+
+                                            if (matches)
+                                                categoryHasMatches = true;
+                                        }
+                                    }
+                                }
+
+                                // Only show and expand categories that have matching items
+                                categoryNode->setVisible(categoryHasMatches);
+                                categoryNode->setOpen(categoryHasMatches);
+                            }
                         }
                     }
                 }
             }
-
-            // Refresh all items
-            rootItem->clearSubItems();
-            rootItem->refreshSubItems();
-
-            // Restore expanded state or expand based on search
+            else
+            {
+                // If no matches, don't expand anything
+                rootItem->setOpenness(false);
+            }
+        }
+        else
+        {
+            // When not searching, make all nodes visible
             for (int i = 0; i < rootItem->getNumSubItems(); ++i)
             {
-                if (auto item = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
+                if (auto categoriesNode = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
                 {
-                    if (shouldExpand || expandedItems.contains(item->getUniqueName()))
+                    categoriesNode->setVisible(true);
+
+                    for (int j = 0; j < categoriesNode->getNumSubItems(); ++j)
                     {
-                        item->setOpen(true);
-
-                        // Also expand relevant second-level items
-                        for (int j = 0; j < item->getNumSubItems(); ++j)
+                        if (auto categoryNode = dynamic_cast<GearTreeItem *>(categoriesNode->getSubItem(j)))
                         {
-                            if (auto subItem = dynamic_cast<GearTreeItem *>(item->getSubItem(j)))
+                            categoryNode->setVisible(true);
+
+                            for (int k = 0; k < categoryNode->getNumSubItems(); ++k)
                             {
-                                bool matchesSearch = false;
-
-                                // Check for search text matches
-                                if (!currentSearchText.isEmpty() &&
-                                    subItem->getItemText().toLowerCase().contains(currentSearchText))
+                                if (auto gearNode = dynamic_cast<GearTreeItem *>(categoryNode->getSubItem(k)))
                                 {
-                                    matchesSearch = true;
-                                }
-
-                                if (shouldExpand || matchesSearch ||
-                                    expandedItems.contains(subItem->getUniqueName()))
-                                {
-                                    subItem->setOpen(true);
+                                    gearNode->setVisible(true);
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        else
-        {
-            rootItem->refreshSubItems();
         }
 
         gearTreeView->repaint();
