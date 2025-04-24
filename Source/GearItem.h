@@ -136,6 +136,8 @@ public:
     juce::String categoryString;
     juce::StringArray tags;
     juce::Image image;
+    juce::String faceplateImagePath;
+    juce::Image faceplateImage;
     juce::Array<GearControl> controls;
 
     bool loadImage();
