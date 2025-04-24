@@ -162,13 +162,13 @@ void RackSlot::paint(juce::Graphics &g)
 
 void RackSlot::resized()
 {
-    // Position the arrow buttons in the top-right corner
+    // Position the arrow buttons in the top-right corner on a single line
     const int buttonSize = 20;
     const int margin = 5;
 
-    // Top-right corner, stacked vertically
-    upButton->setBounds(getWidth() - buttonSize - margin, margin, buttonSize, buttonSize);
-    downButton->setBounds(getWidth() - buttonSize - margin, margin + buttonSize + 2, buttonSize, buttonSize);
+    // Place buttons side by side horizontally
+    upButton->setBounds(getWidth() - (buttonSize * 2) - margin - 2, margin, buttonSize, buttonSize);
+    downButton->setBounds(getWidth() - buttonSize - margin, margin, buttonSize, buttonSize);
 }
 
 void RackSlot::buttonClicked(juce::Button *button)
