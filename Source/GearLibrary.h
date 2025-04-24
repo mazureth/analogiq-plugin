@@ -73,10 +73,43 @@ public:
     // Helper method to construct a full URL from a relative path
     static juce::String getFullUrl(const juce::String &relativePath)
     {
+        DBG("GearLibrary::getFullUrl called with path: " + relativePath);
+
+        // If already a full URL, return as is
         if (relativePath.startsWith("http"))
             return relativePath;
 
-        return RemoteResources::BASE_URL + relativePath;
+        // If this is an absolute path on the filesystem, return as is
+        if (relativePath.startsWith("/"))
+            return relativePath;
+
+        // Handle the case where we might need to add assets/ or units/ prefix
+        juce::String result;
+
+        if (relativePath.startsWith("assets/") || relativePath.startsWith("units/"))
+        {
+            // Path already has the correct folder prefix
+            result = RemoteResources::BASE_URL + relativePath;
+        }
+        else if (relativePath.endsWith(".json"))
+        {
+            // Likely a schema file - add units/ prefix if needed
+            result = RemoteResources::BASE_URL + RemoteResources::SCHEMAS_PATH + relativePath;
+        }
+        else if (relativePath.endsWith(".jpg") || relativePath.endsWith(".png") ||
+                 relativePath.endsWith(".jpeg") || relativePath.endsWith(".gif"))
+        {
+            // Likely an image file - add assets/ prefix if needed
+            result = RemoteResources::BASE_URL + RemoteResources::ASSETS_PATH + relativePath;
+        }
+        else
+        {
+            // Default case - just append to base URL
+            result = RemoteResources::BASE_URL + relativePath;
+        }
+
+        DBG("Full URL constructed: " + result);
+        return result;
     }
 
 private:
