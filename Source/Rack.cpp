@@ -305,8 +305,8 @@ void Rack::rearrangeGearAsSortableList(int sourceSlotIndex, int targetSlotIndex)
         sourceSlot->setGearItem(targetGearItem);
     }
 
-    // Update the rack view
-    rackContainer->resized();
+    // Update the rack view - call resized() on the rack itself to recalculate all slot heights
+    resized();
 
     DBG("Gear items successfully swapped.");
     DBG("===============================================");
