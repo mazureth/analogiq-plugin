@@ -45,7 +45,7 @@ int Rack::getSlotHeight(int slotIndex) const
         return getDefaultSlotHeight();
 
     RackSlot *slot = slots[slotIndex];
-    if (slot == nullptr)
+    if (slot == nullptr || slot->isAvailable())
         return getDefaultSlotHeight();
 
     // If the slot has a gear item with a faceplate image, use the image's height plus padding

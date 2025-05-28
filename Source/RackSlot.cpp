@@ -25,6 +25,15 @@ RackSlot::RackSlot(int slotIndex)
         return arrowPath;
     };
 
+    // Create X button path
+    auto createXPath = []()
+    {
+        juce::Path xPath;
+        xPath.addLineSegment(juce::Line<float>(2.0f, 2.0f, 18.0f, 18.0f), 2.0f);
+        xPath.addLineSegment(juce::Line<float>(2.0f, 18.0f, 18.0f, 2.0f), 2.0f);
+        return xPath;
+    };
+
     // Create drawable objects for the buttons
     auto normalUpArrow = std::make_unique<juce::DrawablePath>();
     normalUpArrow->setPath(createArrowPath(true));
@@ -42,6 +51,14 @@ RackSlot::RackSlot(int slotIndex)
     overDownArrow->setPath(createArrowPath(false));
     overDownArrow->setFill(juce::Colours::white);
 
+    auto normalX = std::make_unique<juce::DrawablePath>();
+    normalX->setPath(createXPath());
+    normalX->setFill(juce::Colours::red.withAlpha(0.8f));
+
+    auto overX = std::make_unique<juce::DrawablePath>();
+    overX->setPath(createXPath());
+    overX->setFill(juce::Colours::red);
+
     // Create the buttons
     upButton = std::make_unique<juce::DrawableButton>("UpButton", juce::DrawableButton::ButtonStyle::ImageFitted);
     upButton->setImages(normalUpArrow.get(), overUpArrow.get());
@@ -54,6 +71,12 @@ RackSlot::RackSlot(int slotIndex)
     downButton->setTooltip("Move item down");
     downButton->addListener(this);
     addAndMakeVisible(downButton.get());
+
+    removeButton = std::make_unique<juce::DrawableButton>("RemoveButton", juce::DrawableButton::ButtonStyle::ImageFitted);
+    removeButton->setImages(normalX.get(), overX.get());
+    removeButton->setTooltip("Remove item from rack");
+    removeButton->addListener(this);
+    addAndMakeVisible(removeButton.get());
 
     // Initial button state
     updateButtonStates();
@@ -68,6 +91,8 @@ RackSlot::~RackSlot()
         upButton->removeListener(this);
     if (downButton != nullptr)
         downButton->removeListener(this);
+    if (removeButton != nullptr)
+        removeButton->removeListener(this);
 }
 
 void RackSlot::paint(juce::Graphics &g)
@@ -83,7 +108,7 @@ void RackSlot::paint(juce::Graphics &g)
 
     // Draw slot number
     g.setColour(juce::Colours::white);
-    g.drawText(juce::String(index), getLocalBounds().reduced(5, 5).removeFromTop(20),
+    g.drawText(juce::String(index + 1), getLocalBounds().reduced(5, 5).removeFromTop(20),
                juce::Justification::topLeft, true);
 
     // If we have a gear item, draw its details and image
@@ -167,8 +192,9 @@ void RackSlot::resized()
     const int margin = 5;
 
     // Place buttons side by side horizontally
-    upButton->setBounds(getWidth() - (buttonSize * 2) - margin - 2, margin, buttonSize, buttonSize);
-    downButton->setBounds(getWidth() - buttonSize - margin, margin, buttonSize, buttonSize);
+    upButton->setBounds(getWidth() - (buttonSize * 3) - margin - 2, margin, buttonSize, buttonSize);
+    downButton->setBounds(getWidth() - (buttonSize * 2) - margin, margin, buttonSize, buttonSize);
+    removeButton->setBounds(getWidth() - buttonSize - margin, margin, buttonSize, buttonSize);
 }
 
 void RackSlot::buttonClicked(juce::Button *button)
@@ -181,6 +207,10 @@ void RackSlot::buttonClicked(juce::Button *button)
     {
         moveDown();
     }
+    else if (button == removeButton.get())
+    {
+        clearGearItem();
+    }
 }
 
 void RackSlot::updateButtonStates()
@@ -189,7 +219,7 @@ void RackSlot::updateButtonStates()
     bool hasGear = !isAvailable() && gearItem != nullptr;
 
     // Make sure buttons exist before using them
-    if (upButton == nullptr || downButton == nullptr)
+    if (upButton == nullptr || downButton == nullptr || removeButton == nullptr)
         return;
 
     // Up button should be disabled for the first slot
@@ -207,6 +237,9 @@ void RackSlot::updateButtonStates()
     {
         downButton->setEnabled(hasGear); // Fallback if we can't get the rack
     }
+
+    // Remove button is only enabled when there's a gear item
+    removeButton->setEnabled(hasGear);
 }
 
 void RackSlot::moveUp()
