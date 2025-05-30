@@ -261,7 +261,7 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
     }
 
     // Convert angle to radians and draw indicator line
-    float radians = juce::degreesToRadians(angle);
+    float radians = juce::degreesToRadians(angle + 90.0f); // Add 90 degrees to make 0 at 6 o'clock
     float endX = centerX + (radius - 4) * std::cos(radians);
     float endY = centerY + (radius - 4) * std::sin(radians);
 
