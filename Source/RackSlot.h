@@ -3,6 +3,9 @@
 #include <JuceHeader.h>
 #include "GearItem.h"
 
+// Forward declaration
+class Rack;
+
 /**
  * RackSlot represents a slot in the rack that can contain a gear item.
  * It handles drag and drop from the gear library, and up/down movement via buttons.
@@ -30,11 +33,11 @@ public:
     void mouseUp(const juce::MouseEvent &e) override;
 
     // DragAndDropTarget implementation - still used for library drops
-    bool isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &sourceDetails) override;
-    void itemDragEnter(const juce::DragAndDropTarget::SourceDetails &details) override;
-    void itemDragMove(const juce::DragAndDropTarget::SourceDetails &details) override;
-    void itemDragExit(const juce::DragAndDropTarget::SourceDetails &details) override;
-    void itemDropped(const juce::DragAndDropTarget::SourceDetails &details) override;
+    bool isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
+    void itemDragEnter(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
+    void itemDragMove(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
+    void itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
+    void itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
 
     // Gear item management
     void setGearItem(GearItem *newGearItem);
@@ -49,8 +52,15 @@ public:
     int getIndex() const { return index; }
 
 private:
-    // Helper to find the parent Rack component
-    juce::Component *findParentRackComponent();
+    // Helper methods for control rendering
+    void drawControls(juce::Graphics &g, const juce::Rectangle<int> &faceplateArea);
+    void drawKnob(juce::Graphics &g, const GearControl &control, int x, int y);
+    void drawSwitch(juce::Graphics &g, const GearControl &control, int x, int y);
+    void drawButton(juce::Graphics &g, const GearControl &control, int x, int y);
+    void drawFader(juce::Graphics &g, const GearControl &control, int x, int y);
+
+    // Helper method to find parent Rack
+    juce::Component *findParentRackComponent() const;
 
     int index;                    // The slot's position in the rack
     GearItem *gearItem = nullptr; // The gear item in this slot, if any

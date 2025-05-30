@@ -146,6 +146,9 @@ void RackSlot::paint(juce::Graphics &g)
                               faceplateArea.getX(), faceplateArea.getY(),
                               faceplateArea.getWidth(), faceplateArea.getHeight(),
                               juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize);
+
+            // Draw controls on top of the faceplate
+            drawControls(g, faceplateArea);
         }
         else
         {
@@ -183,6 +186,146 @@ void RackSlot::paint(juce::Graphics &g)
         g.setFont(14.0f);
         g.drawText("Empty Slot", getLocalBounds(), juce::Justification::centred, true);
     }
+}
+
+void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<int> &faceplateArea)
+{
+    if (gearItem == nullptr)
+        return;
+
+    for (const auto &control : gearItem->controls)
+    {
+        // Calculate control position relative to faceplate
+        int x = faceplateArea.getX() + (int)(control.position.getX() * faceplateArea.getWidth());
+        int y = faceplateArea.getY() + (int)(control.position.getY() * faceplateArea.getHeight());
+
+        // Draw control based on type
+        switch (control.type)
+        {
+        case GearControl::Type::Knob:
+            drawKnob(g, control, x, y);
+            break;
+        case GearControl::Type::Switch:
+            drawSwitch(g, control, x, y);
+            break;
+        case GearControl::Type::Button:
+            drawButton(g, control, x, y);
+            break;
+        case GearControl::Type::Fader:
+            drawFader(g, control, x, y);
+            break;
+        }
+    }
+}
+
+void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, int y)
+{
+    const int knobSize = 40;
+    const float centerX = x + knobSize / 2.0f;
+    const float centerY = y + knobSize / 2.0f;
+    const float radius = knobSize / 2.0f;
+
+    // Draw knob background
+    g.setColour(juce::Colours::darkgrey);
+    g.fillEllipse(x, y, knobSize, knobSize);
+
+    // Draw knob border
+    g.setColour(juce::Colours::grey);
+    g.drawEllipse(x, y, knobSize, knobSize, 2.0f);
+
+    // Calculate rotation angle based on value
+    float angle;
+    if (control.steps.size() > 0)
+    {
+        // For stepped knobs, use the current step
+        angle = control.steps[control.currentStepIndex];
+    }
+    else
+    {
+        // For continuous knobs, interpolate between start and end angles
+        float normalizedValue = (control.value - control.startAngle) / (control.endAngle - control.startAngle);
+        angle = control.startAngle + normalizedValue * (control.endAngle - control.startAngle);
+    }
+
+    // Convert angle to radians and draw indicator line
+    float radians = juce::degreesToRadians(angle);
+    float endX = centerX + (radius - 4) * std::cos(radians);
+    float endY = centerY + (radius - 4) * std::sin(radians);
+
+    g.setColour(juce::Colours::white);
+    g.drawLine(centerX, centerY, endX, endY, 2.0f);
+
+    // Draw label
+    g.setFont(10.0f);
+    g.drawText(control.name, x, y + knobSize + 2, knobSize, 15, juce::Justification::centred);
+}
+
+void RackSlot::drawSwitch(juce::Graphics &g, const GearControl &control, int x, int y)
+{
+    const int switchWidth = 30;
+    const int switchHeight = 60;
+    const bool isVertical = control.orientation == "vertical";
+
+    // Draw switch background
+    g.setColour(juce::Colours::darkgrey);
+    g.fillRoundedRectangle(x, y, switchWidth, switchHeight, 4.0f);
+
+    // Draw switch border
+    g.setColour(juce::Colours::grey);
+    g.drawRoundedRectangle(x, y, switchWidth, switchHeight, 4.0f, 2.0f);
+
+    // Draw switch position indicator
+    g.setColour(juce::Colours::white);
+    if (isVertical)
+    {
+        float indicatorY = y + (control.currentIndex * (switchHeight / control.options.size()));
+        g.fillRoundedRectangle(x + 4, indicatorY + 4, switchWidth - 8, (switchHeight / control.options.size()) - 8, 2.0f);
+    }
+    else
+    {
+        float indicatorX = x + (control.currentIndex * (switchWidth / control.options.size()));
+        g.fillRoundedRectangle(indicatorX + 4, y + 4, (switchWidth / control.options.size()) - 8, switchHeight - 8, 2.0f);
+    }
+
+    // Draw label
+    g.setFont(10.0f);
+    g.drawText(control.name, x, y + switchHeight + 2, switchWidth, 15, juce::Justification::centred);
+}
+
+void RackSlot::drawButton(juce::Graphics &g, const GearControl &control, int x, int y)
+{
+    const int buttonSize = 30;
+
+    // Draw button background
+    g.setColour(control.value > 0.5f ? juce::Colours::red : juce::Colours::darkgrey);
+    g.fillRoundedRectangle(x, y, buttonSize, buttonSize, 4.0f);
+
+    // Draw button border
+    g.setColour(juce::Colours::grey);
+    g.drawRoundedRectangle(x, y, buttonSize, buttonSize, 4.0f, 2.0f);
+
+    // Draw label
+    g.setFont(10.0f);
+    g.drawText(control.name, x, y + buttonSize + 2, buttonSize, 15, juce::Justification::centred);
+}
+
+void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, int y)
+{
+    const int faderWidth = 20;
+    const int faderHeight = 100;
+
+    // Draw fader track
+    g.setColour(juce::Colours::darkgrey);
+    g.fillRoundedRectangle(x, y, faderWidth, faderHeight, 2.0f);
+
+    // Draw fader handle
+    float handleY = y + (1.0f - control.value) * faderHeight;
+    g.setColour(juce::Colours::white);
+    g.fillRoundedRectangle(x - 5, handleY - 5, faderWidth + 10, 10, 4.0f);
+
+    // Draw label
+    g.setFont(10.0f);
+    g.drawText(control.name, x, y + faderHeight + 2, faderWidth, 15, juce::Justification::centred);
 }
 
 void RackSlot::resized()
@@ -469,8 +612,8 @@ void RackSlot::setHighlighted(bool shouldHighlight)
     repaint();
 }
 
-// New helper method to find parent Rack
-juce::Component *RackSlot::findParentRackComponent()
+// Helper method to find parent Rack
+juce::Component *RackSlot::findParentRackComponent() const
 {
     juce::Component *parent = getParentComponent();
     while (parent != nullptr)

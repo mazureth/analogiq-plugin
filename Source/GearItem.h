@@ -25,7 +25,8 @@ public:
     {
         Knob,
         Button,
-        Fader
+        Fader,
+        Switch
     };
 
     GearControl(Type typeParam, const juce::String &nameParam, const juce::Rectangle<float> &positionParam)
@@ -35,6 +36,18 @@ public:
     juce::String name;
     juce::Rectangle<float> position;
     float value;
+
+    // Additional properties for knobs
+    float startAngle = 0.0f;
+    float endAngle = 360.0f;
+    juce::Array<float> steps;
+    int currentStepIndex = -1;
+
+    // Additional properties for switches
+    juce::StringArray options;
+    int currentIndex = 0;
+    juce::String orientation = "vertical"; // "horizontal" or "vertical"
+    juce::String image;                    // URI to the sprite sheet image
 };
 
 class GearItem

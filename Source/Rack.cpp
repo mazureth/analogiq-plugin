@@ -427,49 +427,19 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
 // Method to parse the schema data
 void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
 {
-    if (schemaData.isEmpty() || item == nullptr)
-    {
-        DBG("Cannot parse schema: data is empty or item is null");
-        return;
-    }
-
-    DBG("Parsing schema for " + item->name);
-    DBG("Schema data: " + schemaData.substring(0, 500) + "..."); // Print first part of schema for debugging
-
     // Parse the JSON schema
-    juce::var schemaJson = juce::JSON::parse(schemaData);
-
+    auto schemaJson = juce::JSON::parse(schemaData);
     if (!schemaJson.isObject())
     {
-        DBG("Schema parsing failed: not a valid JSON object");
+        DBG("Failed to parse schema JSON");
         return;
     }
 
-    // Extract schema information
-    auto *schemaObj = schemaJson.getDynamicObject();
-    if (schemaObj == nullptr)
-    {
-        DBG("Schema parsing failed: couldn't get dynamic object");
-        return;
-    }
-
-    // Debug all available properties in the schema
-    DBG("Schema contains the following properties:");
-    for (auto &prop : schemaObj->getProperties())
-    {
-        DBG(" - " + prop.name.toString());
-    }
-
-    // Check for different possible property names for the faceplate image
-    bool foundFaceplate = false;
+    // Look for faceplate image properties
+    juce::StringArray faceplateProperties = {"faceplateImage", "thumbnailImage"};
     juce::String faceplateImagePath;
+    bool foundFaceplate = false;
 
-    // List of possible property names for the faceplate image
-    const std::vector<juce::String> faceplateProperties = {
-        "faceplateImage", "faceplate", "panelImage", "panel", "frontPanel",
-        "image", "fullImage", "uiImage", "mainImage"};
-
-    // Try each possible property name
     for (const auto &propName : faceplateProperties)
     {
         if (schemaJson.hasProperty(propName))
@@ -508,14 +478,17 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
 
             // Get control type
             GearControl::Type controlType = GearControl::Type::Knob;
-            juce::String controlTypeStr = controlVar.getProperty("type", "Knob");
-            if (controlTypeStr == "Button")
+            juce::String controlTypeStr = controlVar.getProperty("type", "knob").toString().toLowerCase();
+            if (controlTypeStr == "button")
                 controlType = GearControl::Type::Button;
-            else if (controlTypeStr == "Fader")
+            else if (controlTypeStr == "fader")
                 controlType = GearControl::Type::Fader;
+            else if (controlTypeStr == "switch")
+                controlType = GearControl::Type::Switch;
 
-            // Get control name
-            juce::String controlName = controlVar.getProperty("name", "");
+            // Get control name and ID
+            juce::String controlName = controlVar.getProperty("label", "").toString();
+            juce::String controlId = controlVar.getProperty("id", "").toString();
 
             // Get position
             juce::Rectangle<float> position;
@@ -523,13 +496,71 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
             {
                 position.setX(controlVar["position"].getProperty("x", 0.0f));
                 position.setY(controlVar["position"].getProperty("y", 0.0f));
-                position.setWidth(controlVar["position"].getProperty("width", 0.0f));
-                position.setHeight(controlVar["position"].getProperty("height", 0.0f));
             }
 
-            // Create control and add to array
+            // Create control
             GearControl control(controlType, controlName, position);
-            control.value = controlVar.getProperty("value", 0.0f);
+
+            // Set type-specific properties
+            switch (controlType)
+            {
+            case GearControl::Type::Knob:
+            {
+                // Get knob-specific properties
+                control.startAngle = controlVar.getProperty("startAngle", 0.0f);
+                control.endAngle = controlVar.getProperty("endAngle", 360.0f);
+                control.value = controlVar.getProperty("value", 0.0f);
+
+                // Handle stepped knobs
+                if (controlVar.hasProperty("steps") && controlVar["steps"].isArray())
+                {
+                    auto stepsArray = controlVar["steps"].getArray();
+                    for (auto &step : *stepsArray)
+                    {
+                        control.steps.add(step);
+                    }
+                    control.currentStepIndex = controlVar.getProperty("currentStepIndex", 0);
+                }
+                break;
+            }
+            case GearControl::Type::Switch:
+            {
+                // Get switch-specific properties
+                control.orientation = controlVar.getProperty("orientation", "vertical").toString();
+                control.currentIndex = controlVar.getProperty("currentIndex", 0);
+                control.image = controlVar.getProperty("image", "").toString();
+
+                // Get switch options
+                if (controlVar.hasProperty("options") && controlVar["options"].isArray())
+                {
+                    auto optionsArray = controlVar["options"].getArray();
+                    for (auto &option : *optionsArray)
+                    {
+                        if (option.isObject())
+                        {
+                            control.options.add(option.getProperty("value", "").toString());
+                        }
+                    }
+                }
+                break;
+            }
+            case GearControl::Type::Button:
+            {
+                // Get button-specific properties
+                control.value = controlVar.getProperty("state", false) ? 1.0f : 0.0f;
+                control.image = controlVar.getProperty("image", "").toString();
+                break;
+            }
+            case GearControl::Type::Fader:
+            {
+                // Get fader-specific properties
+                control.value = controlVar.getProperty("value", 0.0f);
+                control.orientation = controlVar.getProperty("orientation", "vertical").toString();
+                control.image = controlVar.getProperty("image", "").toString();
+                break;
+            }
+            }
+
             item->controls.add(control);
         }
 
