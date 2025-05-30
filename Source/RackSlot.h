@@ -27,10 +27,11 @@ public:
     void moveUp();
     void moveDown();
 
-    // Simplified mouse events (no longer used for drag-and-drop reordering)
+    // Mouse events for control interaction
     void mouseDown(const juce::MouseEvent &e) override;
     void mouseDrag(const juce::MouseEvent &e) override;
     void mouseUp(const juce::MouseEvent &e) override;
+    void mouseDoubleClick(const juce::MouseEvent &e) override;
 
     // DragAndDropTarget implementation - still used for library drops
     bool isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
@@ -59,13 +60,24 @@ private:
     void drawButton(juce::Graphics &g, const GearControl &control, int x, int y);
     void drawFader(juce::Graphics &g, const GearControl &control, int x, int y);
 
+    // Helper methods for control interaction
+    GearControl *findControlAtPosition(const juce::Point<float> &position, const juce::Rectangle<int> &faceplateArea);
+    void handleKnobInteraction(GearControl &control, const juce::Point<float> &mousePos, const juce::Rectangle<int> &controlBounds);
+    void handleSwitchInteraction(GearControl &control);
+    void handleButtonInteraction(GearControl &control);
+    void handleFaderInteraction(GearControl &control, const juce::Point<float> &mousePos, const juce::Rectangle<int> &controlBounds);
+
     // Helper method to find parent Rack
     juce::Component *findParentRackComponent() const;
 
-    int index;                    // The slot's position in the rack
-    GearItem *gearItem = nullptr; // The gear item in this slot, if any
-    bool highlighted;             // Whether this slot is highlighted
-    bool isDragging;              // Whether a drag operation is in progress
+    int index;                            // The slot's position in the rack
+    GearItem *gearItem = nullptr;         // The gear item in this slot, if any
+    bool highlighted;                     // Whether this slot is highlighted
+    bool isDragging;                      // Whether a drag operation is in progress
+    float dragStartValue = 0.0f;          // Control value at drag start
+    float dragStartAngle = 0.0f;          // Control angle at drag start
+    juce::Point<float> dragStartPos;      // Mouse position at drag start
+    GearControl *activeControl = nullptr; // Currently active control being manipulated
 
     // Up/down movement buttons
     std::unique_ptr<juce::DrawableButton> upButton;
