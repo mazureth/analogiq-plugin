@@ -650,6 +650,27 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
         // Clamp the value between startAngle and endAngle
         newValue = juce::jlimit(activeControl->startAngle, activeControl->endAngle, newValue);
 
+        // If this is a stepped knob, snap to the nearest step
+        if (!activeControl->steps.isEmpty())
+        {
+            float closestStep = activeControl->steps[0];
+            float minDistance = std::abs(newValue - closestStep);
+
+            // Find the closest step angle
+            for (float step : activeControl->steps)
+            {
+                float distance = std::abs(newValue - step);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestStep = step;
+                }
+            }
+
+            newValue = closestStep;
+            DBG("Stepped knob - Snapped to step: " + juce::String(newValue) + " degrees");
+        }
+
         DBG("Knob drag details:");
         DBG("  Control: " + activeControl->name);
         DBG("  Start Value: " + juce::String(dragStartValue) + " degrees");
@@ -660,6 +681,10 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
         DBG("  Start Angle: " + juce::String(activeControl->startAngle) + " degrees");
         DBG("  End Angle: " + juce::String(activeControl->endAngle) + " degrees");
         DBG("  Initial Value: " + juce::String(activeControl->initialValue) + " degrees");
+        if (!activeControl->steps.isEmpty())
+        {
+            DBG("  Steps: " + juce::String(activeControl->steps.size()) + " steps");
+        }
 
         activeControl->value = newValue;
 
