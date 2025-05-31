@@ -3,8 +3,8 @@
 
 AnalogIQProcessor::AnalogIQProcessor()
     : AudioProcessor(BusesProperties()
-        .withInput("Input", juce::AudioChannelSet::stereo(), true)
-        .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
+                         .withInput("Input", juce::AudioChannelSet::stereo(), true)
+                         .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       state(*this, &undoManager, "Parameters", {})
 {
 }
@@ -58,7 +58,7 @@ const juce::String AnalogIQProcessor::getProgramName(int /*index*/)
     return {};
 }
 
-void AnalogIQProcessor::changeProgramName(int /*index*/, const juce::String& /*newName*/)
+void AnalogIQProcessor::changeProgramName(int /*index*/, const juce::String & /*newName*/)
 {
     // No program support
 }
@@ -72,10 +72,9 @@ void AnalogIQProcessor::releaseResources()
 {
 }
 
-bool AnalogIQProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
+bool AnalogIQProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 {
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
@@ -84,7 +83,7 @@ bool AnalogIQProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
     return true;
 }
 
-void AnalogIQProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& /*midiMessages*/)
+void AnalogIQProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer & /*midiMessages*/)
 {
     // We're not doing audio processing in this plugin as it's for settings/documentation only
     // Just pass audio through
@@ -101,28 +100,140 @@ bool AnalogIQProcessor::hasEditor() const
     return true;
 }
 
-juce::AudioProcessorEditor* AnalogIQProcessor::createEditor()
+juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
-    return static_cast<juce::AudioProcessorEditor*>(new AnalogIQEditor(*this));
+    return static_cast<juce::AudioProcessorEditor *>(new AnalogIQEditor(*this));
 }
 
-void AnalogIQProcessor::getStateInformation(juce::MemoryBlock& destData)
+void AnalogIQProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
     auto stateSnapshot = getState().copyState();
     std::unique_ptr<juce::XmlElement> xml(stateSnapshot.createXml());
     copyXmlToBinary(*xml, destData);
 }
 
-void AnalogIQProcessor::setStateInformation(const void* data, int sizeInBytes)
+void AnalogIQProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
     std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
-    
+
     if (xmlState.get() != nullptr)
         if (xmlState->hasTagName(getState().state.getType()))
             getState().replaceState(juce::ValueTree::fromXml(*xmlState));
 }
 
-juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+void AnalogIQProcessor::saveInstanceState()
+{
+    // Create a child tree for instance state
+    auto instanceTree = state.state.getOrCreateChildWithName("instances", nullptr);
+
+    // Clear existing instance data
+    instanceTree.removeAllChildren(nullptr);
+
+    // Get the rack from the editor
+    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
+    {
+        if (auto *rack = editor->getRack())
+        {
+            // Save instance data for each slot
+            for (int i = 0; i < rack->getNumSlots(); ++i)
+            {
+                if (rack->isInstance(i))
+                {
+                    auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), nullptr);
+                    slotTree.setProperty("instanceId", rack->getInstanceId(i), nullptr);
+
+                    // Get the gear item for this slot
+                    if (auto *slot = rack->getSlot(i))
+                    {
+                        if (auto *item = slot->getGearItem())
+                        {
+                            // Save control values
+                            auto controlsTree = slotTree.getOrCreateChildWithName("controls", nullptr);
+                            for (int j = 0; j < item->controls.size(); ++j)
+                            {
+                                const auto &control = item->controls[j];
+                                auto controlTree = controlsTree.getOrCreateChildWithName("control_" + juce::String(j), nullptr);
+                                controlTree.setProperty("value", control.value, nullptr);
+                                controlTree.setProperty("initialValue", control.initialValue, nullptr);
+                                if (control.type == GearControl::Type::Switch)
+                                {
+                                    controlTree.setProperty("currentIndex", control.currentIndex, nullptr);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void AnalogIQProcessor::loadInstanceState()
+{
+    // Get the instance state tree
+    auto instanceTree = state.state.getChildWithName("instances");
+    if (!instanceTree.isValid())
+        return;
+
+    // Get the rack from the editor
+    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
+    {
+        if (auto *rack = editor->getRack())
+        {
+            // Load instance data for each slot
+            for (int i = 0; i < rack->getNumSlots(); ++i)
+            {
+                auto slotTree = instanceTree.getChildWithName("slot_" + juce::String(i));
+                if (slotTree.isValid())
+                {
+                    // Create instance if we have saved state
+                    rack->createInstance(i);
+
+                    // Get the gear item for this slot
+                    if (auto *slot = rack->getSlot(i))
+                    {
+                        if (auto *item = slot->getGearItem())
+                        {
+                            // Load control values
+                            auto controlsTree = slotTree.getChildWithName("controls");
+                            if (controlsTree.isValid())
+                            {
+                                for (int j = 0; j < item->controls.size(); ++j)
+                                {
+                                    auto controlTree = controlsTree.getChildWithName("control_" + juce::String(j));
+                                    if (controlTree.isValid())
+                                    {
+                                        auto &control = item->controls.getReference(j);
+                                        control.value = controlTree.getProperty("value", control.value);
+                                        control.initialValue = controlTree.getProperty("initialValue", control.initialValue);
+                                        if (control.type == GearControl::Type::Switch)
+                                        {
+                                            control.currentIndex = controlTree.getProperty("currentIndex", control.currentIndex);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void AnalogIQProcessor::resetAllInstances()
+{
+    // Get the rack from the editor
+    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
+    {
+        if (auto *rack = editor->getRack())
+        {
+            rack->resetAllInstances();
+        }
+    }
+}
+
+juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
     return new AnalogIQProcessor();
-} 
+}

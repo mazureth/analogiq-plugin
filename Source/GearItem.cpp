@@ -102,6 +102,60 @@ bool GearItem::createPlaceholderImage()
     return true;
 }
 
+void GearItem::createInstance(const juce::String &sourceUnitId)
+{
+    // Store current state
+    juce::Array<GearControl> currentControls = controls;
+    juce::String currentInstanceId = instanceId;
+    bool wasInstance = isInstance;
+    juce::String currentSourceUnitId = sourceUnitId;
+
+    // Set up as a new instance
+    this->sourceUnitId = sourceUnitId;
+    this->isInstance = true;
+    this->instanceId = juce::Uuid().toString(); // Generate a new unique ID
+
+    // If we were already an instance, we need to preserve our current state
+    if (wasInstance)
+    {
+        // Restore our current control values
+        controls = currentControls;
+
+        // Update initial values to match current values
+        for (auto &control : controls)
+        {
+            control.initialValue = control.value;
+        }
+    }
+    else
+    {
+        // For new instances, keep the current control values
+        for (auto &control : controls)
+        {
+            control.initialValue = control.value;
+        }
+    }
+}
+
+void GearItem::resetToSource()
+{
+    if (!isInstance)
+        return;
+
+    // Reset the instance to match its source
+    // This will be implemented when we add the gear library reference
+    // For now, we'll just reset the values to their initial values
+    for (auto &control : controls)
+    {
+        control.value = control.initialValue;
+    }
+
+    // Clear instance state
+    isInstance = false;
+    instanceId = juce::String();
+    sourceUnitId = juce::String();
+}
+
 void GearItem::saveToJSON(juce::File destinationFile)
 {
     // Create a JSON object with all of our properties
@@ -115,6 +169,11 @@ void GearItem::saveToJSON(juce::File destinationFile)
     jsonObj->setProperty("version", version);
     jsonObj->setProperty("schemaPath", schemaPath);
     jsonObj->setProperty("thumbnailImage", thumbnailImage);
+
+    // Add instance management properties
+    jsonObj->setProperty("isInstance", isInstance);
+    jsonObj->setProperty("instanceId", instanceId);
+    jsonObj->setProperty("sourceUnitId", sourceUnitId);
 
     // Convert GearType enum to string
     juce::String typeStr;
