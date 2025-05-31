@@ -201,6 +201,16 @@ public:
         }
     }
 
+    // Add instance management fields
+    juce::String instanceId;   // Unique identifier for this instance
+    bool isInstance = false;   // Whether this is an instance of another item
+    juce::String sourceUnitId; // The unitId of the source item if this is an instance
+
+    // Add instance management methods
+    void createInstance(const juce::String &sourceUnitId);
+    void resetToSource();
+    bool isInstanceOf(const juce::String &unitId) const { return isInstance && sourceUnitId == unitId; }
+
     // New fields from updated schema
     juce::String unitId;
     juce::String name;
@@ -221,6 +231,30 @@ public:
     bool loadImage();
     void saveToJSON(juce::File destinationFile);
     static GearItem loadFromJSON(juce::File sourceFile);
+
+    // Copy constructor
+    GearItem(const GearItem &other)
+        : unitId(other.unitId),
+          name(other.name),
+          manufacturer(other.manufacturer),
+          categoryString(other.categoryString),
+          version(other.version),
+          schemaPath(other.schemaPath),
+          thumbnailImage(other.thumbnailImage),
+          tags(other.tags),
+          type(other.type),
+          category(other.category),
+          slotSize(other.slotSize),
+          controls(other.controls),
+          image(other.image),
+          faceplateImage(other.faceplateImage),
+          isInstance(false),           // New instances start as non-instances
+          instanceId(juce::String()),  // New instances get a new ID
+          sourceUnitId(juce::String()) // New instances start with no source
+    {
+        // Load the image
+        loadImage();
+    }
 
 private:
     // Helper method to create a placeholder image

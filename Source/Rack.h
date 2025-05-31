@@ -43,6 +43,13 @@ public:
     void fetchFaceplateImage(GearItem *item);
     void fetchKnobImage(GearItem *item, int controlIndex);
 
+    // Instance management
+    void createInstance(int slotIndex);
+    void resetToSource(int slotIndex);
+    bool isInstance(int slotIndex) const;
+    juce::String getInstanceId(int slotIndex) const;
+    void resetAllInstances();
+
     // Internal container class for rack slots
     class RackContainer : public juce::Component
     {

@@ -909,7 +909,54 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &details
 void RackSlot::setGearItem(GearItem *newGearItem)
 {
     DBG("RackSlot::setGearItem for slot " + juce::String(index));
-    gearItem = newGearItem;
+
+    // If we already have a gear item and it's an instance, preserve its state
+    if (gearItem != nullptr && gearItem->isInstance)
+    {
+        // Store the current state
+        juce::String instanceId = gearItem->instanceId;
+        juce::String sourceUnitId = gearItem->sourceUnitId;
+        juce::Array<GearControl> preservedControls;
+
+        // Create new GearControl objects with preserved values
+        for (const auto &control : gearItem->controls)
+        {
+            GearControl newControl = control; // Use copy constructor
+            preservedControls.add(newControl);
+        }
+
+        // Set the new gear item
+        gearItem = newGearItem;
+
+        // If the new item is the same type as the source, restore the instance state
+        if (newGearItem != nullptr && newGearItem->unitId == sourceUnitId)
+        {
+            // Create a new instance of the source item
+            newGearItem->createInstance(sourceUnitId);
+
+            // Restore the preserved controls
+            newGearItem->controls = preservedControls;
+
+            // Update initial values to match current values
+            for (auto &control : newGearItem->controls)
+            {
+                control.initialValue = control.value;
+            }
+        }
+    }
+    else if (newGearItem != nullptr && !newGearItem->isInstance)
+    {
+        // For new non-instance items, ensure they're not marked as instances
+        newGearItem->isInstance = false;
+        newGearItem->instanceId = juce::String();
+        newGearItem->sourceUnitId = juce::String();
+        gearItem = newGearItem;
+    }
+    else
+    {
+        gearItem = newGearItem;
+    }
+
     updateButtonStates(); // Update button states when gear changes
     repaint();            // Trigger repaint to show the gear item
 }
@@ -941,4 +988,34 @@ juce::Component *RackSlot::findParentRackComponent() const
         parent = parent->getParentComponent();
     }
     return nullptr;
+}
+
+void RackSlot::createInstance()
+{
+    if (gearItem == nullptr || gearItem->isInstance)
+        return;
+
+    // Create a new instance of the current gear item
+    gearItem->createInstance(gearItem->unitId);
+
+    // Log the instance creation
+    DBG("Created instance of " + gearItem->name + " with ID: " + gearItem->instanceId);
+
+    // Repaint to show the instance state
+    repaint();
+}
+
+void RackSlot::resetToSource()
+{
+    if (gearItem == nullptr || !gearItem->isInstance)
+        return;
+
+    // Reset the instance to match its source
+    gearItem->resetToSource();
+
+    // Log the reset
+    DBG("Reset instance " + gearItem->instanceId + " to source " + gearItem->sourceUnitId);
+
+    // Repaint to show the updated state
+    repaint();
 }

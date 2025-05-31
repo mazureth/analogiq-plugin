@@ -220,10 +220,13 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
         if (item != nullptr)
         {
             DBG("Adding gear item from listbox: " + item->name + " to slot " + juce::String(targetSlot->getIndex()));
-            targetSlot->setGearItem(item);
+
+            // Create a new instance of the item
+            GearItem *newItem = new GearItem(*item); // Use copy constructor
+            targetSlot->setGearItem(newItem);
 
             // Fetch schema for this item
-            fetchSchemaForGearItem(item);
+            fetchSchemaForGearItem(newItem);
         }
     }
     // Handle drops from TreeView
@@ -244,10 +247,13 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
                 if (item != nullptr)
                 {
                     DBG("Adding gear item from TreeView: " + item->name + " to slot " + juce::String(targetSlot->getIndex()));
-                    targetSlot->setGearItem(item);
+
+                    // Create a new instance of the item
+                    GearItem *newItem = new GearItem(*item); // Use copy constructor
+                    targetSlot->setGearItem(newItem);
 
                     // Fetch schema for this item
-                    fetchSchemaForGearItem(item);
+                    fetchSchemaForGearItem(newItem);
                 }
             }
         }
@@ -947,4 +953,52 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
 
     // Create and start the download thread (it will delete itself when done)
     new KnobImageDownloader(imageUrl, item, controlIndex, this);
+}
+
+void Rack::createInstance(int slotIndex)
+{
+    if (auto *slot = getSlot(slotIndex))
+    {
+        slot->createInstance();
+    }
+}
+
+void Rack::resetToSource(int slotIndex)
+{
+    if (auto *slot = getSlot(slotIndex))
+    {
+        slot->resetToSource();
+    }
+}
+
+bool Rack::isInstance(int slotIndex) const
+{
+    if (auto *slot = getSlot(slotIndex))
+    {
+        return slot->isInstance();
+    }
+    return false;
+}
+
+juce::String Rack::getInstanceId(int slotIndex) const
+{
+    if (auto *slot = getSlot(slotIndex))
+    {
+        return slot->getInstanceId();
+    }
+    return juce::String();
+}
+
+void Rack::resetAllInstances()
+{
+    for (int i = 0; i < slots.size(); ++i)
+    {
+        if (auto *slot = getSlot(i))
+        {
+            if (slot->isInstance())
+            {
+                slot->resetToSource();
+            }
+        }
+    }
 }

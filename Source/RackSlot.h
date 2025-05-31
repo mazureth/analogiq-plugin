@@ -52,6 +52,12 @@ public:
     // Utility methods
     int getIndex() const { return index; }
 
+    // Instance management
+    void createInstance();
+    void resetToSource();
+    bool isInstance() const { return gearItem != nullptr && gearItem->isInstance; }
+    juce::String getInstanceId() const { return gearItem != nullptr ? gearItem->instanceId : juce::String(); }
+
 private:
     // Helper methods for control rendering
     void drawControls(juce::Graphics &g, const juce::Rectangle<int> &faceplateArea);
