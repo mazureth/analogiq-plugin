@@ -41,6 +41,7 @@ public:
     void fetchSchemaForGearItem(GearItem *item);
     void parseSchema(const juce::String &schemaData, GearItem *item);
     void fetchFaceplateImage(GearItem *item);
+    void fetchKnobImage(GearItem *item, int controlIndex);
 
     // Internal container class for rack slots
     class RackContainer : public juce::Component

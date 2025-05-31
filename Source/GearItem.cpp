@@ -154,14 +154,14 @@ void GearItem::saveToJSON(juce::File destinationFile)
         juce::String controlTypeStr;
         switch (control.type)
         {
-        case GearControl::Type::Knob:
-            controlTypeStr = "Knob";
-            break;
         case GearControl::Type::Button:
             controlTypeStr = "Button";
             break;
         case GearControl::Type::Fader:
             controlTypeStr = "Fader";
+            break;
+        case GearControl::Type::Switch:
+            controlTypeStr = "Switch";
             break;
         }
 
@@ -254,12 +254,12 @@ GearItem GearItem::loadFromJSON(juce::File sourceFile)
                 continue;
 
             // Get control type
-            GearControl::Type controlType = GearControl::Type::Knob;
-            juce::String controlTypeStr = controlVar.getProperty("type", "Knob");
-            if (controlTypeStr == "Button")
-                controlType = GearControl::Type::Button;
-            else if (controlTypeStr == "Fader")
+            GearControl::Type controlType = GearControl::Type::Button;
+            juce::String controlTypeStr = controlVar.getProperty("type", "Button");
+            if (controlTypeStr == "Fader")
                 controlType = GearControl::Type::Fader;
+            else if (controlTypeStr == "Switch")
+                controlType = GearControl::Type::Switch;
 
             // Get control name
             juce::String controlName = controlVar.getProperty("name", "");
