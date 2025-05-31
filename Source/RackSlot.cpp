@@ -146,7 +146,7 @@ void RackSlot::paint(juce::Graphics &g)
         {
             DBG("Drawing faceplate image for " + gearItem->name + " in slot " + juce::String(index));
 
-            // If we have a faceplate image, use it instead of the default rendering
+            // Calculate faceplate area
             juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
 
             // Draw name above the faceplate (for better identification)
@@ -154,6 +154,20 @@ void RackSlot::paint(juce::Graphics &g)
             g.setColour(juce::Colours::white);
             juce::Rectangle<int> nameArea = faceplateArea.removeFromTop(20);
             g.drawText(gearItem->name, nameArea, juce::Justification::centred, true);
+
+            // Calculate scaling factor based on faceplate dimensions
+            float originalWidth = (float)gearItem->faceplateImage.getWidth();
+            float originalHeight = (float)gearItem->faceplateImage.getHeight();
+            float targetWidth = (float)faceplateArea.getWidth();
+            float targetHeight = (float)faceplateArea.getHeight();
+
+            // Calculate scale factor that maintains aspect ratio
+            float scaleX = targetWidth / originalWidth;
+            float scaleY = targetHeight / originalHeight;
+            float scaleFactor = std::min(scaleX, scaleY); // Use the smaller scale to fit within bounds
+
+            // Store the scale factor for use in drawing controls
+            currentFaceplateScale = scaleFactor;
 
             // Draw the faceplate image
             g.drawImageWithin(gearItem->faceplateImage,
@@ -166,6 +180,9 @@ void RackSlot::paint(juce::Graphics &g)
         }
         else
         {
+            // Reset scale factor when no faceplate
+            currentFaceplateScale = 1.0f;
+
             DBG("No faceplate image available for " + gearItem->name + " in slot " + juce::String(index) + ", using standard display");
 
             // No faceplate, use the original rendering with name, manufacturer and thumbnail
@@ -195,6 +212,9 @@ void RackSlot::paint(juce::Graphics &g)
     }
     else
     {
+        // Reset scale factor for empty slots
+        currentFaceplateScale = 1.0f;
+
         // Draw "empty slot" text for available slots
         g.setColour(juce::Colours::lightgrey);
         g.setFont(14.0f);
@@ -216,9 +236,6 @@ void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<int> &facep
         // Draw control based on type
         switch (control.type)
         {
-        case GearControl::Type::Knob:
-            drawKnob(g, control, x, y);
-            break;
         case GearControl::Type::Switch:
             drawSwitch(g, control, x, y);
             break;
@@ -228,49 +245,11 @@ void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<int> &facep
         case GearControl::Type::Fader:
             drawFader(g, control, x, y);
             break;
+        case GearControl::Type::Knob:
+            drawKnob(g, control, x, y);
+            break;
         }
     }
-}
-
-void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, int y)
-{
-    const int knobSize = 40;
-    const float centerX = x + knobSize / 2.0f;
-    const float centerY = y + knobSize / 2.0f;
-    const float radius = knobSize / 2.0f;
-
-    // Draw knob background
-    g.setColour(juce::Colours::darkgrey);
-    g.fillEllipse(x, y, knobSize, knobSize);
-
-    // Draw knob border
-    g.setColour(juce::Colours::grey);
-    g.drawEllipse(x, y, knobSize, knobSize, 2.0f);
-
-    // Calculate rotation angle based on value
-    float angle;
-    if (control.steps.size() > 0)
-    {
-        // For stepped knobs, use the current step
-        angle = control.steps[control.currentStepIndex];
-    }
-    else
-    {
-        // For continuous knobs, map the normalized value (0-1) to the angle range
-        angle = control.startAngle + control.value * (control.endAngle - control.startAngle);
-    }
-
-    // Convert angle to radians and draw indicator line
-    float radians = juce::degreesToRadians(angle + 90.0f); // Add 90 degrees to make 0 at 6 o'clock
-    float endX = centerX + (radius - 4) * std::cos(radians);
-    float endY = centerY + (radius - 4) * std::sin(radians);
-
-    g.setColour(juce::Colours::white);
-    g.drawLine(centerX, centerY, endX, endY, 2.0f);
-
-    // Draw label
-    g.setFont(10.0f);
-    g.drawText(control.name, x, y + knobSize + 2, knobSize, 15, juce::Justification::centred);
 }
 
 void RackSlot::drawSwitch(juce::Graphics &g, const GearControl &control, int x, int y)
@@ -339,6 +318,67 @@ void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, i
     // Draw label
     g.setFont(10.0f);
     g.drawText(control.name, x, y + faderHeight + 2, faderWidth, 15, juce::Justification::centred);
+}
+
+void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, int y)
+{
+    // Calculate knob size based on faceplate scale factor
+    float knobSize;
+    if (control.loadedImage.isValid())
+    {
+        // Use the original image dimensions as the base size
+        float originalWidth = (float)control.loadedImage.getWidth();
+        float originalHeight = (float)control.loadedImage.getHeight();
+        // Use the larger dimension to ensure the knob is properly sized
+        knobSize = std::max(originalWidth, originalHeight) * currentFaceplateScale;
+    }
+    else
+    {
+        // Fallback to standard size if no image
+        const float baseKnobSize = 40.0f;
+        knobSize = baseKnobSize * currentFaceplateScale;
+    }
+
+    // Create knob bounds using the transformed coordinates and scaled size
+    juce::Rectangle<float> knobBounds(x, y, knobSize, knobSize);
+
+    // Draw the knob image if available
+    if (control.loadedImage.isValid())
+    {
+        DBG("Drawing knob image for control: " + control.name +
+            " at position: " + juce::String(x) + "," + juce::String(y) +
+            " with dimensions: " + juce::String(control.loadedImage.getWidth()) + "x" +
+            juce::String(control.loadedImage.getHeight()) +
+            " scaled to: " + juce::String(knobSize) + "x" + juce::String(knobSize));
+
+        g.drawImageWithin(control.loadedImage,
+                          knobBounds.getX(), knobBounds.getY(),
+                          knobBounds.getWidth(), knobBounds.getHeight(),
+                          juce::RectanglePlacement::centred);
+    }
+    else
+    {
+        DBG("No valid knob image for control: " + control.name + ", using fallback drawing");
+        // Fallback to basic drawing if no image is provided
+        g.setColour(juce::Colours::darkgrey);
+        g.fillEllipse(knobBounds);
+        g.setColour(juce::Colours::black);
+        g.drawEllipse(knobBounds, 1.0f);
+
+        // Draw position indicator
+        g.setColour(juce::Colours::white);
+        float angle = control.value; // Value is now directly in degrees
+        float radius = knobBounds.getWidth() * 0.4f;
+        float centreX = knobBounds.getCentreX();
+        float centreY = knobBounds.getCentreY();
+
+        // Convert angle to radians and add 90 degrees offset to align with 6 o'clock position
+        float angleRad = (angle + 90.0f) * (juce::MathConstants<float>::pi / 180.0f);
+        float endX = centreX + radius * std::cos(angleRad);
+        float endY = centreY + radius * std::sin(angleRad);
+
+        g.drawLine(centreX, centreY, endX, endY, 2.0f);
+    }
 }
 
 void RackSlot::resized()
@@ -504,33 +544,17 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
         int y = faceplateArea.getY() + (int)(activeControl->position.getY() * faceplateArea.getHeight());
         juce::Rectangle<int> controlBounds(x, y, 40, 40); // Default size, adjust based on control type
 
-        // Store drag start state for knobs and faders
-        if (activeControl->type == GearControl::Type::Knob || activeControl->type == GearControl::Type::Fader)
+        // Store drag start state for faders
+        if (activeControl->type == GearControl::Type::Fader)
         {
             dragStartPos = e.position;
             dragStartValue = activeControl->value;
-
-            // For knobs, calculate the initial angle
-            if (activeControl->type == GearControl::Type::Knob)
-            {
-                float centerX = controlBounds.getCentreX();
-                float centerY = controlBounds.getCentreY();
-                float initialAngle = std::atan2(e.position.y - centerY, e.position.x - centerX);
-                initialAngle = juce::radiansToDegrees(initialAngle) + 90.0f;
-                if (initialAngle < 0)
-                    initialAngle += 360.0f;
-                dragStartAngle = initialAngle;
-                logToFile("Drag started - Initial angle: " + juce::String(initialAngle) +
-                          " Value: " + juce::String(activeControl->value));
-            }
-
             isDragging = true;
         }
 
         // Handle interaction based on control type (for click/tap)
         switch (activeControl->type)
         {
-        case GearControl::Type::Knob:
         case GearControl::Type::Fader:
             // Don't update value on click, wait for drag
             break;
@@ -568,72 +592,6 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
 
     switch (activeControl->type)
     {
-    case GearControl::Type::Knob:
-    {
-        // Calculate angle from center for knob
-        float centerX = controlBounds.getCentreX();
-        float centerY = controlBounds.getCentreY();
-        float angle = std::atan2(e.position.y - centerY, e.position.x - centerX);
-        angle = juce::radiansToDegrees(angle) + 90.0f; // Adjust to match our coordinate system
-        if (angle < 0)
-            angle += 360.0f;
-
-        logToFile("Knob angle: " + juce::String(angle) +
-                  " startAngle: " + juce::String(activeControl->startAngle) +
-                  " endAngle: " + juce::String(activeControl->endAngle));
-
-        if (activeControl->steps.size() > 0)
-        {
-            // For stepped knobs, find nearest step
-            float bestAngle = activeControl->steps[0];
-            float bestDiff = std::abs(angle - bestAngle);
-            int bestStep = 0;
-
-            for (int i = 1; i < activeControl->steps.size(); ++i)
-            {
-                float diff = std::abs(angle - activeControl->steps[i]);
-                if (diff < bestDiff)
-                {
-                    bestDiff = diff;
-                    bestAngle = activeControl->steps[i];
-                    bestStep = i;
-                }
-            }
-            activeControl->currentStepIndex = bestStep;
-            activeControl->value = (float)bestStep / (activeControl->steps.size() - 1);
-            logToFile("Stepped knob - Step: " + juce::String(bestStep) +
-                      " Value: " + juce::String(activeControl->value));
-        }
-        else
-        {
-            // For continuous knobs, calculate relative change
-            float angleDiff = angle - dragStartAngle;
-            if (angleDiff > 180.0f)
-                angleDiff -= 360.0f;
-            else if (angleDiff < -180.0f)
-                angleDiff += 360.0f;
-
-            // Convert angle difference to value change
-            float angleRange = activeControl->endAngle - activeControl->startAngle;
-            if (angleRange < 0)
-                angleRange += 360.0f;
-
-            // Calculate the normalized angle position
-            float normalizedAngle = (angle - activeControl->startAngle) / angleRange;
-            if (normalizedAngle < 0)
-                normalizedAngle += 1.0f;
-
-            // Clamp to valid range
-            float newValue = juce::jlimit(0.0f, 1.0f, normalizedAngle);
-
-            activeControl->value = newValue;
-            logToFile("Continuous knob - Raw angle: " + juce::String(angle) +
-                      " Normalized angle: " + juce::String(normalizedAngle) +
-                      " New value: " + juce::String(newValue));
-        }
-        repaint();
-        break;
-    }
     case GearControl::Type::Fader:
     {
         // Map vertical position to value
@@ -676,12 +634,6 @@ void RackSlot::mouseDoubleClick(const juce::MouseEvent &e)
         // Double-click resets control to default value
         switch (control->type)
         {
-        case GearControl::Type::Knob:
-            if (control->steps.size() > 0)
-                control->currentStepIndex = 0;
-            else
-                control->value = 0.0f;
-            break;
         case GearControl::Type::Switch:
             control->currentIndex = 0;
             break;
@@ -711,9 +663,6 @@ GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position,
         int width, height;
         switch (control.type)
         {
-        case GearControl::Type::Knob:
-            width = height = 40;
-            break;
         case GearControl::Type::Switch:
             width = 30;
             height = 60;
@@ -725,6 +674,9 @@ GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position,
             width = 20;
             height = 100;
             break;
+        case GearControl::Type::Knob:
+            width = height = 40;
+            break;
         default:
             width = height = 40;
         }
@@ -735,42 +687,6 @@ GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position,
     }
 
     return nullptr;
-}
-
-void RackSlot::handleKnobInteraction(GearControl &control, const juce::Point<float> &mousePos, const juce::Rectangle<int> &controlBounds)
-{
-    // Calculate angle from center
-    float centerX = controlBounds.getCentreX();
-    float centerY = controlBounds.getCentreY();
-    float angle = std::atan2(mousePos.y - centerY, mousePos.x - centerX);
-    angle = juce::radiansToDegrees(angle) + 90.0f; // Adjust to match our coordinate system
-    if (angle < 0)
-        angle += 360.0f;
-
-    if (control.steps.size() > 0)
-    {
-        // For stepped knobs, find nearest step
-        float bestAngle = control.steps[0];
-        float bestDiff = std::abs(angle - bestAngle);
-
-        for (int i = 1; i < control.steps.size(); ++i)
-        {
-            float diff = std::abs(angle - control.steps[i]);
-            if (diff < bestDiff)
-            {
-                bestDiff = diff;
-                bestAngle = control.steps[i];
-                control.currentStepIndex = i;
-            }
-        }
-        control.value = (float)control.currentStepIndex / (control.steps.size() - 1);
-    }
-    else
-    {
-        // For continuous knobs, map angle to value
-        float normalizedAngle = (angle - control.startAngle) / (control.endAngle - control.startAngle);
-        control.value = juce::jlimit(0.0f, 1.0f, normalizedAngle);
-    }
 }
 
 void RackSlot::handleSwitchInteraction(GearControl &control)

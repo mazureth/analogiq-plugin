@@ -55,14 +55,13 @@ public:
 private:
     // Helper methods for control rendering
     void drawControls(juce::Graphics &g, const juce::Rectangle<int> &faceplateArea);
-    void drawKnob(juce::Graphics &g, const GearControl &control, int x, int y);
     void drawSwitch(juce::Graphics &g, const GearControl &control, int x, int y);
     void drawButton(juce::Graphics &g, const GearControl &control, int x, int y);
     void drawFader(juce::Graphics &g, const GearControl &control, int x, int y);
+    void drawKnob(juce::Graphics &g, const GearControl &control, int x, int y);
 
     // Helper methods for control interaction
     GearControl *findControlAtPosition(const juce::Point<float> &position, const juce::Rectangle<int> &faceplateArea);
-    void handleKnobInteraction(GearControl &control, const juce::Point<float> &mousePos, const juce::Rectangle<int> &controlBounds);
     void handleSwitchInteraction(GearControl &control);
     void handleButtonInteraction(GearControl &control);
     void handleFaderInteraction(GearControl &control, const juce::Point<float> &mousePos, const juce::Rectangle<int> &controlBounds);
@@ -75,9 +74,9 @@ private:
     bool highlighted;                     // Whether this slot is highlighted
     bool isDragging;                      // Whether a drag operation is in progress
     float dragStartValue = 0.0f;          // Control value at drag start
-    float dragStartAngle = 0.0f;          // Control angle at drag start
     juce::Point<float> dragStartPos;      // Mouse position at drag start
     GearControl *activeControl = nullptr; // Currently active control being manipulated
+    float currentFaceplateScale = 1.0f;   // Add this line
 
     // Up/down movement buttons
     std::unique_ptr<juce::DrawableButton> upButton;

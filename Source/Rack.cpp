@@ -1,5 +1,22 @@
 #include "Rack.h"
 #include "GearLibrary.h"
+#include <fstream>
+
+// Set up logging to file
+static std::ofstream logFile("/tmp/rack.log");
+
+// Helper function for logging
+static void logToFile(const juce::String &message)
+{
+    if (logFile.is_open())
+    {
+        logFile << message << std::endl;
+        logFile.flush();
+    }
+}
+
+// Replace DBG with logToFile
+#define DBG(msg) logToFile(msg)
 
 Rack::Rack()
 {
@@ -477,18 +494,39 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 continue;
 
             // Get control type
-            GearControl::Type controlType = GearControl::Type::Knob;
-            juce::String controlTypeStr = controlVar.getProperty("type", "knob").toString().toLowerCase();
-            if (controlTypeStr == "button")
-                controlType = GearControl::Type::Button;
-            else if (controlTypeStr == "fader")
+            GearControl::Type controlType = GearControl::Type::Button;
+            juce::String controlTypeStr = controlVar.getProperty("type", "button").toString().toLowerCase();
+            if (controlTypeStr == "fader")
                 controlType = GearControl::Type::Fader;
             else if (controlTypeStr == "switch")
                 controlType = GearControl::Type::Switch;
+            else if (controlTypeStr == "knob")
+                controlType = GearControl::Type::Knob;
 
             // Get control name and ID
-            juce::String controlName = controlVar.getProperty("label", "").toString();
-            juce::String controlId = controlVar.getProperty("id", "").toString();
+            juce::String controlName = controlVar.getProperty("label", "");
+            juce::String controlId = controlVar.getProperty("id", ""); // Get ID from schema
+
+            // If no ID is provided, generate one from the label
+            if (controlId.isEmpty())
+            {
+                controlId = controlName.toLowerCase().replaceCharacters(" ", "-");
+            }
+
+            // Check if we already have a control with this ID
+            bool controlExists = false;
+            for (const auto &existingControl : item->controls)
+            {
+                if (existingControl.id == controlId)
+                {
+                    controlExists = true;
+                    DBG("Control with ID " + controlId + " already exists, skipping duplicate");
+                    break;
+                }
+            }
+
+            if (controlExists)
+                continue;
 
             // Get position
             juce::Rectangle<float> position;
@@ -496,72 +534,68 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
             {
                 position.setX(controlVar["position"].getProperty("x", 0.0f));
                 position.setY(controlVar["position"].getProperty("y", 0.0f));
+                position.setWidth(controlVar["position"].getProperty("width", 0.0f));
+                position.setHeight(controlVar["position"].getProperty("height", 0.0f));
             }
 
             // Create control
             GearControl control(controlType, controlName, position);
+            control.id = controlId; // Set the control ID
+            DBG("Created control: " + controlName + " with ID: " + controlId);
+            control.value = controlVar.getProperty("value", 0.0f);
 
             // Set type-specific properties
-            switch (controlType)
+            switch (control.type)
             {
+            case GearControl::Type::Switch:
+                // Get switch-specific properties
+                if (controlVar.hasProperty("options") && controlVar["options"].isArray())
+                {
+                    juce::Array<juce::var> *optionsArray = controlVar["options"].getArray();
+                    for (const auto &option : *optionsArray)
+                        control.options.add(option.toString());
+                }
+                control.currentIndex = controlVar.getProperty("currentIndex", 0);
+                control.orientation = controlVar.getProperty("orientation", "vertical").toString();
+                break;
+
             case GearControl::Type::Knob:
-            {
                 // Get knob-specific properties
                 control.startAngle = controlVar.getProperty("startAngle", 0.0f);
                 control.endAngle = controlVar.getProperty("endAngle", 360.0f);
-                control.value = controlVar.getProperty("value", 0.0f);
+                control.image = controlVar.getProperty("image", "").toString();
+                DBG("Knob image path from schema: " + control.image);
 
                 // Handle stepped knobs
                 if (controlVar.hasProperty("steps") && controlVar["steps"].isArray())
                 {
-                    auto stepsArray = controlVar["steps"].getArray();
-                    for (auto &step : *stepsArray)
-                    {
+                    juce::Array<juce::var> *stepsArray = controlVar["steps"].getArray();
+                    for (const auto &step : *stepsArray)
                         control.steps.add(step);
-                    }
                     control.currentStepIndex = controlVar.getProperty("currentStepIndex", 0);
                 }
-                break;
-            }
-            case GearControl::Type::Switch:
-            {
-                // Get switch-specific properties
-                control.orientation = controlVar.getProperty("orientation", "vertical").toString();
-                control.currentIndex = controlVar.getProperty("currentIndex", 0);
-                control.image = controlVar.getProperty("image", "").toString();
 
-                // Get switch options
-                if (controlVar.hasProperty("options") && controlVar["options"].isArray())
+                // Add control to item before fetching image
+                item->controls.add(control);
+
+                // Fetch the knob image if one is specified
+                if (control.image.isNotEmpty())
                 {
-                    auto optionsArray = controlVar["options"].getArray();
-                    for (auto &option : *optionsArray)
-                    {
-                        if (option.isObject())
-                        {
-                            control.options.add(option.getProperty("value", "").toString());
-                        }
-                    }
+                    DBG("Attempting to fetch knob image for control: " + control.name);
+                    // Pass the index of the control we just added
+                    fetchKnobImage(item, item->controls.size() - 1);
+                }
+                else
+                {
+                    DBG("No image path specified for knob control: " + control.name);
                 }
                 break;
-            }
-            case GearControl::Type::Button:
-            {
-                // Get button-specific properties
-                control.value = controlVar.getProperty("state", false) ? 1.0f : 0.0f;
-                control.image = controlVar.getProperty("image", "").toString();
-                break;
-            }
-            case GearControl::Type::Fader:
-            {
-                // Get fader-specific properties
-                control.value = controlVar.getProperty("value", 0.0f);
-                control.orientation = controlVar.getProperty("orientation", "vertical").toString();
-                control.image = controlVar.getProperty("image", "").toString();
-                break;
-            }
-            }
 
-            item->controls.add(control);
+            default:
+                // For non-knob controls, just add them
+                item->controls.add(control);
+                break;
+            }
         }
 
         DBG("Added " + juce::String(item->controls.size()) + " controls to " + item->name);
@@ -737,4 +771,167 @@ void Rack::fetchFaceplateImage(GearItem *item)
 
     // Create and start the download thread (it will delete itself when done)
     new FaceplateImageDownloader(imageUrl, item, this);
+}
+
+void Rack::fetchKnobImage(GearItem *item, int controlIndex)
+{
+    if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
+    {
+        DBG("Cannot fetch knob image: invalid item or control index");
+        return;
+    }
+
+    GearControl &control = item->controls.getReference(controlIndex);
+    if (control.image.isEmpty())
+    {
+        DBG("Cannot fetch knob image: image path is empty");
+        return;
+    }
+
+    DBG("Fetching knob image from " + control.image);
+
+    // Construct the full URL if it's a relative path
+    juce::String fullUrl = control.image;
+    if (!fullUrl.startsWith("http"))
+    {
+        // Check if the path is already a full path or needs the base URL
+        if (fullUrl.startsWith("assets/") || !fullUrl.contains("/"))
+        {
+            fullUrl = GearLibrary::getFullUrl(fullUrl);
+            DBG("Resolved relative path to full URL: " + fullUrl);
+        }
+    }
+
+    DBG("Full knob image URL: " + fullUrl);
+
+    // Use JUCE's URL class to fetch the image asynchronously
+    juce::URL imageUrl(fullUrl);
+
+    // Create a new thread to download the image asynchronously
+    struct KnobImageDownloader : public juce::Thread
+    {
+        KnobImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack)
+            : juce::Thread("Knob Image Downloader"),
+              url(urlToUse),
+              item(itemToUpdate),
+              controlIndex(controlIndexToUpdate),
+              rack(parentRack),
+              controlId(itemToUpdate->controls[controlIndexToUpdate].id),
+              controlName(itemToUpdate->controls[controlIndexToUpdate].name)
+        {
+            startThread();
+        }
+
+        ~KnobImageDownloader() override
+        {
+            stopThread(2000);
+        }
+
+        void run() override
+        {
+            DBG("KnobImageDownloader thread started for control: " + controlName);
+
+            // Try to download using the simple API - this is for older JUCE versions
+            std::unique_ptr<juce::InputStream> inputStream = url.createInputStream(false);
+
+            if (inputStream == nullptr || threadShouldExit())
+            {
+                DBG("Failed to create input stream for knob image: " + url.toString(true));
+                juce::MessageManager::callAsync([this]()
+                                                { delete this; });
+                return;
+            }
+
+            // Try to determine image format
+            juce::String urlStr = url.toString(true).toLowerCase();
+            juce::ImageFileFormat *format = nullptr;
+
+            if (urlStr.contains(".jpg") || urlStr.contains(".jpeg"))
+                format = new juce::JPEGImageFormat();
+            else if (urlStr.contains(".png"))
+                format = new juce::PNGImageFormat();
+            else if (urlStr.contains(".gif"))
+                format = new juce::GIFImageFormat();
+
+            // Load the image from the input stream
+            juce::Image downloadedImage;
+
+            if (format != nullptr)
+            {
+                // Use specific format if we could determine it
+                downloadedImage = format->decodeImage(*inputStream);
+                delete format;
+            }
+            else
+            {
+                // Otherwise use the generic loader
+                downloadedImage = juce::ImageFileFormat::loadFrom(*inputStream);
+            }
+
+            if (downloadedImage.isValid())
+            {
+                DBG("Successfully loaded knob image with dimensions: " +
+                    juce::String(downloadedImage.getWidth()) + "x" +
+                    juce::String(downloadedImage.getHeight()));
+
+                // Need to get back on the message thread to update the UI
+                juce::MessageManager::callAsync([this, downloadedImage]()
+                                                {
+                    DBG("KnobImageDownloader callback started for control: " + controlName);
+                    
+                    // Validate item and control index are still valid
+                    if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
+                    {
+                        DBG("Item or control index is no longer valid for: " + controlName);
+                        delete this;
+                        return;
+                    }
+
+                    // Validate control ID matches
+                    GearControl &control = item->controls.getReference(controlIndex);
+                    if (control.id != controlId)
+                    {
+                        DBG("Control ID mismatch in callback. Expected: " + controlId + ", Got: " + control.id);
+                        delete this;
+                        return;
+                    }
+
+                    // Update the control's loaded image
+                    control.loadedImage = downloadedImage;
+                    DBG("Setting loaded image for control: " + controlName + " with ID: " + controlId);
+                    
+                    // Notify any slots that have this item to repaint
+                    if (rack != nullptr)
+                    {
+                        for (int i = 0; i < rack->getNumSlots(); ++i)
+                        {
+                            RackSlot *slot = rack->getSlot(i);
+                            if (slot != nullptr && slot->getGearItem() == item)
+                            {
+                                slot->repaint();
+                                break;
+                            }
+                        }
+                    }
+                    
+                    delete this; });
+            }
+            else
+            {
+                DBG("Failed to load knob image for control: " + controlName);
+                juce::MessageManager::callAsync([this]()
+                                                { delete this; });
+            }
+        }
+
+        juce::URL url;
+        GearItem *item;
+        int controlIndex;
+        Rack *rack;
+        juce::String controlId;   // Store control ID at construction time
+        juce::String controlName; // Store control name at construction time
+    };
+
+    // Create and start the download thread (it will delete itself when done)
+    new KnobImageDownloader(imageUrl, item, controlIndex, this);
 }
