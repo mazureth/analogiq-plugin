@@ -560,9 +560,21 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 break;
 
             case GearControl::Type::Knob:
+            {
                 // Get knob-specific properties
-                control.startAngle = controlVar.getProperty("startAngle", 0.0f);
-                control.endAngle = controlVar.getProperty("endAngle", 360.0f);
+                float startAngle = controlVar.getProperty("startAngle", 0.0f);
+                float endAngle = controlVar.getProperty("endAngle", 360.0f);
+                float value = controlVar.getProperty("value", 0.0f);
+
+                DBG("Creating knob control: " + control.name +
+                    " StartAngle: " + juce::String(startAngle) +
+                    " EndAngle: " + juce::String(endAngle) +
+                    " InitialValue: " + juce::String(value));
+
+                control.startAngle = startAngle;
+                control.endAngle = endAngle;
+                control.value = value;
+                control.initialValue = value; // Store the initial value from schema
                 control.image = controlVar.getProperty("image", "").toString();
                 DBG("Knob image path from schema: " + control.image);
 
@@ -590,6 +602,7 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                     DBG("No image path specified for knob control: " + control.name);
                 }
                 break;
+            }
 
             default:
                 // For non-knob controls, just add them

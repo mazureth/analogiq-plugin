@@ -322,6 +322,11 @@ void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, i
 
 void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, int y)
 {
+    DBG("drawKnob - Control: " + control.name +
+        " Value: " + juce::String(control.value) +
+        " StartAngle: " + juce::String(control.startAngle) +
+        " EndAngle: " + juce::String(control.endAngle));
+
     // Calculate knob size based on faceplate scale factor
     float knobSize;
     if (control.loadedImage.isValid())
@@ -355,8 +360,10 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
         // Save the current graphics state
         g.saveState();
 
-        // Use the control value directly as degrees
-        float angle = control.value;
+        // Use the control value directly as degrees, but subtract 90 to align with JUCE's coordinate system
+        // where 0 is at 3 o'clock and we want 0 to be at 6 o'clock
+        float angle = control.value - 180.0f;
+        DBG("Drawing knob at angle: " + juce::String(angle));
 
         // Translate to the center of the knob
         g.addTransform(juce::AffineTransform::translation(knobBounds.getCentreX(), knobBounds.getCentreY()));
@@ -387,13 +394,14 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
 
         // Draw position indicator
         g.setColour(juce::Colours::white);
-        float angle = control.value; // Value is already in degrees
+        float angle = control.value - 180.0f; // Subtract 90 to align with JUCE's coordinate system
+        DBG("Drawing fallback knob at angle: " + juce::String(angle));
         float radius = knobBounds.getWidth() * 0.4f;
         float centreX = knobBounds.getCentreX();
         float centreY = knobBounds.getCentreY();
 
-        // Convert angle to radians and add 90 degrees offset to align with 6 o'clock position
-        float angleRad = (angle + 90.0f) * (juce::MathConstants<float>::pi / 180.0f);
+        // Convert angle to radians
+        float angleRad = angle * (juce::MathConstants<float>::pi / 180.0f);
         float endX = centreX + radius * std::cos(angleRad);
         float endY = centreY + radius * std::sin(angleRad);
 
@@ -595,7 +603,7 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
 
 void RackSlot::mouseDrag(const juce::MouseEvent &e)
 {
-    if (!isDragging || activeControl == nullptr || gearItem == nullptr || !gearItem->faceplateImage.isValid())
+    if (!isDragging || activeControl == nullptr)
     {
         logToFile(juce::String("Drag ignored - isDragging: ") + (isDragging ? "true" : "false") +
                   juce::String(" activeControl: ") + (activeControl != nullptr ? "true" : "false"));
@@ -637,7 +645,20 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
         float deltaAngle = deltaY * sensitivity;
 
         // Update the control value (angle in degrees)
-        activeControl->value = dragStartValue + deltaAngle;
+        float newValue = dragStartValue + deltaAngle;
+
+        DBG("Knob drag details:");
+        DBG("  Control: " + activeControl->name);
+        DBG("  Start Value: " + juce::String(dragStartValue) + " degrees");
+        DBG("  Current Value: " + juce::String(activeControl->value) + " degrees");
+        DBG("  Delta Y: " + juce::String(deltaY) + " pixels");
+        DBG("  Delta Angle: " + juce::String(deltaAngle) + " degrees");
+        DBG("  New Value: " + juce::String(newValue) + " degrees");
+        DBG("  Start Angle: " + juce::String(activeControl->startAngle) + " degrees");
+        DBG("  End Angle: " + juce::String(activeControl->endAngle) + " degrees");
+        DBG("  Initial Value: " + juce::String(activeControl->initialValue) + " degrees");
+
+        activeControl->value = newValue;
 
         logToFile("Knob - Angle: " + juce::String(activeControl->value) +
                   " Delta Y: " + juce::String(deltaY) +
@@ -683,6 +704,10 @@ void RackSlot::mouseDoubleClick(const juce::MouseEvent &e)
             break;
         case GearControl::Type::Fader:
             control->value = 0.0f;
+            break;
+        case GearControl::Type::Knob:
+            DBG("Resetting knob to initial value: " + juce::String(control->initialValue));
+            control->value = control->initialValue;
             break;
         }
         repaint();

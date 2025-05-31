@@ -36,6 +36,7 @@ public:
           id(""),
           position(0.0f, 0.0f, 0.0f, 0.0f),
           value(0.0f),
+          initialValue(0.0f),
           currentIndex(0),
           orientation("vertical"),
           startAngle(0.0f),
@@ -45,7 +46,7 @@ public:
     }
 
     GearControl(Type typeParam, const juce::String &nameParam, const juce::Rectangle<float> &positionParam)
-        : type(typeParam), name(nameParam), position(positionParam), value(0.0f) {}
+        : type(typeParam), name(nameParam), position(positionParam), value(0.0f), initialValue(0.0f) {}
 
     // Add copy constructor
     GearControl(const GearControl &other)
@@ -54,6 +55,7 @@ public:
           id(other.id),
           position(other.position),
           value(other.value),
+          initialValue(other.value),
           options(other.options),
           currentIndex(other.currentIndex),
           orientation(other.orientation),
@@ -77,6 +79,7 @@ public:
             id = other.id;
             position = other.position;
             value = other.value;
+            initialValue = other.initialValue;
             options = other.options;
             currentIndex = other.currentIndex;
             orientation = other.orientation;
@@ -96,6 +99,7 @@ public:
     juce::String id; // Unique identifier for the control
     juce::Rectangle<float> position;
     float value;
+    float initialValue; // Store the original value from schema
 
     // Additional properties for switches
     juce::StringArray options;
