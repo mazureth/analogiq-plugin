@@ -360,8 +360,8 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
         // Save the current graphics state
         g.saveState();
 
-        // Use the control value directly as degrees, but subtract 90 to align with JUCE's coordinate system
-        // where 0 is at 3 o'clock and we want 0 to be at 6 o'clock
+        // Use the control value directly as degrees, but subtract 180 to align with JUCE's coordinate system
+        // where 0 is at 12 o'clock and we want 0 to be at 6 o'clock
         float angle = control.value - 180.0f;
         DBG("Drawing knob at angle: " + juce::String(angle));
 
@@ -646,6 +646,9 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
 
         // Update the control value (angle in degrees)
         float newValue = dragStartValue + deltaAngle;
+
+        // Clamp the value between startAngle and endAngle
+        newValue = juce::jlimit(activeControl->startAngle, activeControl->endAngle, newValue);
 
         DBG("Knob drag details:");
         DBG("  Control: " + activeControl->name);
