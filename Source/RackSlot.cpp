@@ -349,12 +349,32 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
             " at position: " + juce::String(x) + "," + juce::String(y) +
             " with dimensions: " + juce::String(control.loadedImage.getWidth()) + "x" +
             juce::String(control.loadedImage.getHeight()) +
-            " scaled to: " + juce::String(knobSize) + "x" + juce::String(knobSize));
+            " scaled to: " + juce::String(knobSize) + "x" + juce::String(knobSize) +
+            " angle: " + juce::String(control.value));
 
+        // Save the current graphics state
+        g.saveState();
+
+        // Use the control value directly as degrees
+        float angle = control.value;
+
+        // Translate to the center of the knob
+        g.addTransform(juce::AffineTransform::translation(knobBounds.getCentreX(), knobBounds.getCentreY()));
+
+        // Rotate around the center
+        g.addTransform(juce::AffineTransform::rotation(juce::degreesToRadians(angle)));
+
+        // Translate back and draw the image centered
+        g.addTransform(juce::AffineTransform::translation(-knobBounds.getCentreX(), -knobBounds.getCentreY()));
+
+        // Draw the image
         g.drawImageWithin(control.loadedImage,
                           knobBounds.getX(), knobBounds.getY(),
                           knobBounds.getWidth(), knobBounds.getHeight(),
                           juce::RectanglePlacement::centred);
+
+        // Restore the graphics state
+        g.restoreState();
     }
     else
     {
@@ -367,7 +387,7 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
 
         // Draw position indicator
         g.setColour(juce::Colours::white);
-        float angle = control.value; // Value is now directly in degrees
+        float angle = control.value; // Value is already in degrees
         float radius = knobBounds.getWidth() * 0.4f;
         float centreX = knobBounds.getCentreX();
         float centreY = knobBounds.getCentreY();
@@ -544,8 +564,8 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
         int y = faceplateArea.getY() + (int)(activeControl->position.getY() * faceplateArea.getHeight());
         juce::Rectangle<int> controlBounds(x, y, 40, 40); // Default size, adjust based on control type
 
-        // Store drag start state for faders
-        if (activeControl->type == GearControl::Type::Fader)
+        // Store drag start state for faders and knobs
+        if (activeControl->type == GearControl::Type::Fader || activeControl->type == GearControl::Type::Knob)
         {
             dragStartPos = e.position;
             dragStartValue = activeControl->value;
@@ -565,6 +585,9 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
         case GearControl::Type::Button:
             handleButtonInteraction(*activeControl);
             repaint();
+            break;
+        case GearControl::Type::Knob:
+            // Don't update value on click, wait for drag
             break;
         }
     }
@@ -601,6 +624,24 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
                   " Y: " + juce::String(e.position.y) +
                   " Bounds Y: " + juce::String(controlBounds.getY()) +
                   " Height: " + juce::String(controlBounds.getHeight()));
+        repaint();
+        break;
+    }
+    case GearControl::Type::Knob:
+    {
+        // Calculate vertical movement since drag start
+        float deltaY = dragStartPos.y - e.position.y;
+
+        // Scale the movement to control sensitivity
+        const float sensitivity = 0.5f; // Adjust this value to change knob sensitivity
+        float deltaAngle = deltaY * sensitivity;
+
+        // Update the control value (angle in degrees)
+        activeControl->value = dragStartValue + deltaAngle;
+
+        logToFile("Knob - Angle: " + juce::String(activeControl->value) +
+                  " Delta Y: " + juce::String(deltaY) +
+                  " Delta Angle: " + juce::String(deltaAngle));
         repaint();
         break;
     }
