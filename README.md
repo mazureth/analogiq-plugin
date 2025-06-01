@@ -52,6 +52,9 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
    cmake --build .
    ```
 
+3. Open your IDE _after_ you build so JUCE is correctly downloaded. This will help with linter issues.
+
+
 The plugin will be built in the `build` directory. The first build might take longer as it downloads JUCE automatically.
 
 ## Usage
