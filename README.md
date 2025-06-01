@@ -4,12 +4,12 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
 
 ## Features
 
-- **Virtual Rack System**: Organize and visualize your outboard gear in a virtual 500-series and 19" rack environment
-- **Gear Library**: Browse and add gear from a comprehensive library of popular analog equipment
+- **Virtual Rack System**: Organize and visualize your outboard gear in a virtual rack environment
+- **Gear Library**: Browse and add gear from a comprehensive library of analog equipment
 - **Drag-and-Drop Interface**: Easily arrange gear in the rack via intuitive drag-and-drop
 - **Session Notes**: Document patchbay connections, settings, and other important session details
-- **User-Created Gear**: Import your own gear images and create custom controls (coming soon)
-- **MIDI/OSC Integration**: Control your digital-enabled analog gear directly from the plugin (coming soon)
+- **Instance Management**: Save and load gear instances with their control states
+- **Modern UI**: Clean, intuitive interface with tabbed navigation and responsive layout
 
 ## Building the Plugin
 
@@ -21,24 +21,30 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
 
 ### Build Steps
 
-1. Clone the JUCE framework into the project directory:
+1. Clone the repository:
+   ```
+   git clone https://github.com/mazureth/analogiq-client.git
+   cd analogiq-client
+   ```
+
+2. Clone the JUCE framework into the project directory:
    ```
    git clone https://github.com/juce-framework/JUCE.git
    ```
 
-2. Create a build directory and run CMake:
+3. Create a build directory and run CMake:
    ```
    mkdir build
    cd build
    cmake ..
    ```
 
-3. Build the plugin:
+4. Build the plugin:
    ```
    cmake --build .
    ```
 
-4. The built plugins will be in the `build` directory, inside their respective format folders.
+5. The built plugins will be in the `build` directory, inside their respective format folders.
 
 ## Usage
 
@@ -51,15 +57,33 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
 ## Project Structure
 
 - `Source/` - All source files
-  - `PluginProcessor.*` - Core plugin functionality
-  - `PluginEditor.*` - Main UI components
-  - `GearLibrary.*` - Gear browser and library management
-  - `GearItem.*` - Individual gear item representation
-  - `Rack.*` - Virtual rack system
-  - `RackSlot.*` - Individual rack slot
+  - `PluginProcessor.*` - Core plugin functionality and state management
+  - `PluginEditor.*` - Main UI components and layout
+  - `GearLibrary.*` - Gear browser, library management, and filtering
+  - `GearItem.*` - Individual gear item representation and controls
+  - `Rack.*` - Virtual rack system and instance management
+  - `RackSlot.*` - Individual rack slot and gear display
   - `NotesPanel.*` - Session notes functionality
-- `Assets/` - Images and other resources
+  - `DraggableListBox.*` - Enhanced list box with drag-and-drop support
+- `JUCE/` - JUCE framework (submodule)
+- `build/` - Build output directory
 - `CMakeLists.txt` - CMake build configuration
+
+## Development Status
+
+The project is currently in active development with the following features implemented:
+- Core plugin architecture
+- Virtual rack system
+- Gear library with filtering
+- Drag-and-drop interface
+- Session notes
+- Instance state management
+
+Planned features:
+- User-created gear support
+- MIDI/OSC integration
+- Additional rack formats
+- Enhanced control automation
 
 ## Contributing
 
