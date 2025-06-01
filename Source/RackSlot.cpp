@@ -640,8 +640,10 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
         int y = faceplateArea.getY() + (int)(activeControl->position.getY() * faceplateArea.getHeight());
         juce::Rectangle<int> controlBounds(x, y, 40, 40); // Default size, adjust based on control type
 
-        // Store drag start state for faders and knobs
-        if (activeControl->type == GearControl::Type::Fader || activeControl->type == GearControl::Type::Knob)
+        // Store drag start state for faders, knobs, and switches
+        if (activeControl->type == GearControl::Type::Fader ||
+            activeControl->type == GearControl::Type::Knob ||
+            activeControl->type == GearControl::Type::Switch)
         {
             dragStartPos = e.position;
             dragStartValue = activeControl->value;
@@ -655,8 +657,7 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
             // Don't update value on click, wait for drag
             break;
         case GearControl::Type::Switch:
-            handleSwitchInteraction(*activeControl);
-            repaint();
+            // Don't update value on click, wait for drag
             break;
         case GearControl::Type::Button:
             handleButtonInteraction(*activeControl);
@@ -691,6 +692,44 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
 
     switch (activeControl->type)
     {
+    case GearControl::Type::Switch:
+    {
+        const bool isVertical = activeControl->orientation == "vertical";
+        const int numOptions = activeControl->options.size();
+
+        // Calculate the drag distance along the orientation axis
+        float dragDistance;
+        if (isVertical)
+        {
+            dragDistance = e.position.y - dragStartPos.y;
+            // For vertical switches, invert the drag direction to match natural movement
+            dragDistance = -dragDistance;
+        }
+        else
+        {
+            dragDistance = e.position.x - dragStartPos.x;
+        }
+
+        // Calculate the total range of movement
+        float totalRange = isVertical ? controlBounds.getHeight() : controlBounds.getWidth();
+        float optionSize = totalRange / numOptions;
+
+        // Calculate the new index based on drag distance
+        float newIndex = dragStartValue + (dragDistance / optionSize);
+
+        // Clamp the index to valid range and round to nearest option
+        newIndex = juce::jlimit(0.0f, (float)(numOptions - 1), newIndex);
+        int newIndexInt = juce::roundToInt(newIndex);
+
+        // Update the control
+        if (newIndexInt != activeControl->currentIndex)
+        {
+            activeControl->currentIndex = newIndexInt;
+            activeControl->value = (float)newIndexInt;
+            repaint();
+        }
+        break;
+    }
     case GearControl::Type::Fader:
     {
         // Map vertical position to value
@@ -737,21 +776,6 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
 
             newValue = closestStep;
             DBG("Stepped knob - Snapped to step: " + juce::String(newValue) + " degrees");
-        }
-
-        DBG("Knob drag details:");
-        DBG("  Control: " + activeControl->name);
-        DBG("  Start Value: " + juce::String(dragStartValue) + " degrees");
-        DBG("  Current Value: " + juce::String(activeControl->value) + " degrees");
-        DBG("  Delta Y: " + juce::String(deltaY) + " pixels");
-        DBG("  Delta Angle: " + juce::String(deltaAngle) + " degrees");
-        DBG("  New Value: " + juce::String(newValue) + " degrees");
-        DBG("  Start Angle: " + juce::String(activeControl->startAngle) + " degrees");
-        DBG("  End Angle: " + juce::String(activeControl->endAngle) + " degrees");
-        DBG("  Initial Value: " + juce::String(activeControl->initialValue) + " degrees");
-        if (!activeControl->steps.isEmpty())
-        {
-            DBG("  Steps: " + juce::String(activeControl->steps.size()) + " steps");
         }
 
         activeControl->value = newValue;
