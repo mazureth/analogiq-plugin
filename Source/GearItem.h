@@ -21,6 +21,17 @@ enum class GearCategory
 class GearControl
 {
 public:
+    // Add a struct for switch option frames
+    struct SwitchOptionFrame
+    {
+        int x = 0;
+        int y = 0;
+        int width = 0;
+        int height = 0;
+        juce::String value;
+        juce::String label;
+    };
+
     enum class Type
     {
         Button,
@@ -64,7 +75,9 @@ public:
           endAngle(other.endAngle),
           steps(other.steps),
           currentStepIndex(other.currentStepIndex),
-          loadedImage(other.loadedImage)
+          loadedImage(other.loadedImage),
+          switchFrames(other.switchFrames),
+          switchSpriteSheet(other.switchSpriteSheet)
     {
         DBG("GearControl copy constructor called for control: " + name + " with ID: " + id);
     }
@@ -89,6 +102,8 @@ public:
             steps = other.steps;
             currentStepIndex = other.currentStepIndex;
             loadedImage = other.loadedImage;
+            switchFrames = other.switchFrames;
+            switchSpriteSheet = other.switchSpriteSheet;
             DBG("GearControl assignment operator called for control: " + name + " with ID: " + id);
         }
         return *this;
@@ -104,8 +119,10 @@ public:
     // Additional properties for switches
     juce::StringArray options;
     int currentIndex = 0;
-    juce::String orientation = "vertical"; // "horizontal" or "vertical"
-    juce::String image;                    // URI to the sprite sheet image
+    juce::String orientation = "vertical";       // "horizontal" or "vertical"
+    juce::String image;                          // URI to the sprite sheet image
+    juce::Array<SwitchOptionFrame> switchFrames; // Store frame data for each switch position
+    juce::Image switchSpriteSheet;               // The loaded sprite sheet image for switches
 
     // Additional properties for knobs
     float startAngle = 0.0f;  // Starting angle in degrees (0-360)
