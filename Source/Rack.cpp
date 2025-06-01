@@ -1,3 +1,21 @@
+/**
+ * @file Rack.cpp
+ * @brief Implementation of the Rack class, which manages a collection of rack slots for gear items.
+ *
+ * This file implements the functionality for:
+ * - Managing rack slots and their layout
+ * - Handling drag and drop operations
+ * - Downloading and managing gear item schemas
+ * - Downloading and managing gear item images (faceplates, controls)
+ * - Supporting instance management
+ *
+ * The implementation includes several helper classes for asynchronous downloading
+ * of schemas and images, ensuring the UI remains responsive during these operations.
+ *
+ * @author AnalogIQ Team
+ * @version 1.0
+ */
+
 #include "Rack.h"
 #include "GearLibrary.h"
 #include <fstream>
@@ -5,7 +23,10 @@
 // Set up logging to file
 static std::ofstream logFile("/tmp/rack.log");
 
-// Helper function for logging
+/**
+ * @brief Helper function for logging messages to a file.
+ * @param message The message to log.
+ */
 static void logToFile(const juce::String &message)
 {
     if (logFile.is_open())
@@ -18,6 +39,15 @@ static void logToFile(const juce::String &message)
 // Replace DBG with logToFile
 #define DBG(msg) logToFile(msg)
 
+/**
+ * @brief Constructs a new Rack instance.
+ *
+ * Initializes the rack with:
+ * - A viewport for scrolling
+ * - A container for rack slots
+ * - The specified number of slots
+ * - Sets up drag and drop functionality
+ */
 Rack::Rack()
 {
     DBG("Rack constructor");
@@ -45,17 +75,39 @@ Rack::Rack()
     setInterceptsMouseClicks(true, true);
 }
 
+/**
+ * @brief Destructor for Rack.
+ *
+ * Cleans up resources and logs the destruction.
+ * Note: unique_ptr members are automatically deleted.
+ */
 Rack::~Rack()
 {
     DBG("Rack destructor");
     // unique_ptr members will be automatically deleted
 }
 
+/**
+ * @brief Paints the rack background.
+ * @param g The graphics context to paint with.
+ */
 void Rack::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colours::black);
 }
 
+/**
+ * @brief Gets the height of a slot based on its contents.
+ *
+ * Calculates the appropriate height for a slot based on:
+ * - Whether the slot is available
+ * - The presence of a gear item
+ * - The dimensions of the gear item's faceplate image
+ * - Required padding for controls and UI elements
+ *
+ * @param slotIndex The index of the slot to get the height for.
+ * @return The calculated height for the slot.
+ */
 int Rack::getSlotHeight(int slotIndex) const
 {
     if (slotIndex < 0 || slotIndex >= slots.size())
@@ -93,6 +145,15 @@ int Rack::getSlotHeight(int slotIndex) const
     return getDefaultSlotHeight();
 }
 
+/**
+ * @brief Called when the component is resized.
+ *
+ * Updates the layout of all internal components:
+ * - Resizes the viewport to fill the available area
+ * - Calculates and sets the container size based on slot heights
+ * - Positions all slots within the container
+ * - Maintains proper spacing between slots
+ */
 void Rack::resized()
 {
     DBG("Rack::resized");
@@ -138,6 +199,16 @@ void Rack::resized()
         ", container=" + rackContainer->getBounds().toString());
 }
 
+/**
+ * @brief Checks if this rack is interested in a drag source.
+ *
+ * Determines if the rack should accept a drag operation based on:
+ * - The source component (must be from DraggableListBox, GearListBox, or another RackSlot)
+ * - For TreeView sources, checks if the description starts with "GEAR:"
+ *
+ * @param dragSourceDetails Details about the drag source.
+ * @return true if this rack can accept the drag source.
+ */
 bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
     // Accept drops from DraggableListBox (GearLibrary) or other RackSlots
@@ -167,11 +238,23 @@ bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails
     return false;
 }
 
+/**
+ * @brief Called when a drag operation enters this rack.
+ * @param dragSourceDetails Details about the drag source.
+ */
 void Rack::itemDragEnter(const juce::DragAndDropTarget::SourceDetails & /*dragSourceDetails*/)
 {
     // Nothing to do here
 }
 
+/**
+ * @brief Called when a drag operation moves within this rack.
+ *
+ * Updates the visual feedback by highlighting the nearest slot
+ * to the current drag position.
+ *
+ * @param details Details about the drag operation.
+ */
 void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails &details)
 {
     // This is only used for dragging from GearLibrary now, not for reordering
@@ -184,6 +267,13 @@ void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails &details)
     }
 }
 
+/**
+ * @brief Called when a drag operation exits this rack.
+ *
+ * Clears all slot highlights when the drag operation leaves the rack.
+ *
+ * @param dragSourceDetails Details about the drag source.
+ */
 void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails & /*dragSourceDetails*/)
 {
     // Clear all highlights
@@ -193,6 +283,16 @@ void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails & /*dragSou
     }
 }
 
+/**
+ * @brief Called when a drag operation is dropped on this rack.
+ *
+ * Handles the drop operation by:
+ * 1. Finding the nearest slot to the drop position
+ * 2. Creating a new gear item if dropped from the library
+ * 3. Reordering items if dropped from another slot
+ *
+ * @param details Details about the drag operation.
+ */
 void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
 {
     DBG("Rack::itemDropped");
@@ -371,7 +471,15 @@ RackSlot *Rack::findNearestSlot(const juce::Point<int> &position)
     return bestSlot;
 }
 
-// New method to fetch schema for a gear item
+/**
+ * @brief Fetches the schema for a gear item.
+ *
+ * Initiates an asynchronous download of the gear item's schema.
+ * The schema contains information about the gear item's controls,
+ * their types, positions, and other metadata.
+ *
+ * @param item The gear item to fetch the schema for.
+ */
 void Rack::fetchSchemaForGearItem(GearItem *item)
 {
     if (item == nullptr || item->schemaPath.isEmpty())
@@ -447,7 +555,18 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
     new SchemaDownloader(schemaUrl, item, this);
 }
 
-// Method to parse the schema data
+/**
+ * @brief Parses a schema for a gear item.
+ *
+ * Processes the downloaded schema data to:
+ * - Extract control information
+ * - Set up control types and positions
+ * - Initialize control states
+ * - Trigger image downloads for controls
+ *
+ * @param schemaData The schema data to parse.
+ * @param item The gear item to parse the schema for.
+ */
 void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
 {
     // Parse the JSON schema
@@ -757,7 +876,14 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
     DBG("Schema successfully parsed for " + item->name);
 }
 
-// New method to fetch the faceplate image
+/**
+ * @brief Fetches the faceplate image for a gear item.
+ *
+ * Initiates an asynchronous download of the gear item's faceplate image.
+ * The faceplate image is the main visual representation of the gear item.
+ *
+ * @param item The gear item to fetch the faceplate for.
+ */
 void Rack::fetchFaceplateImage(GearItem *item)
 {
     if (item == nullptr || item->faceplateImagePath.isEmpty())
@@ -925,6 +1051,15 @@ void Rack::fetchFaceplateImage(GearItem *item)
     new FaceplateImageDownloader(imageUrl, item, this);
 }
 
+/**
+ * @brief Fetches the knob image for a control.
+ *
+ * Initiates an asynchronous download of a knob control's image.
+ * The knob image is used to render the control in its various states.
+ *
+ * @param item The gear item containing the control.
+ * @param controlIndex The index of the control.
+ */
 void Rack::fetchKnobImage(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
@@ -1088,6 +1223,15 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
     new KnobImageDownloader(imageUrl, item, controlIndex, this);
 }
 
+/**
+ * @brief Fetches the fader image for a control.
+ *
+ * Initiates an asynchronous download of a fader control's image.
+ * The fader image is used to render the control in its various states.
+ *
+ * @param item The gear item containing the control.
+ * @param controlIndex The index of the control.
+ */
 void Rack::fetchFaderImage(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
@@ -1240,6 +1384,15 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
     new FaderImageDownloader(imageUrl, item, controlIndex, this);
 }
 
+/**
+ * @brief Fetches the switch sprite sheet for a control.
+ *
+ * Initiates an asynchronous download of a switch control's sprite sheet.
+ * The sprite sheet contains multiple frames for different switch states.
+ *
+ * @param item The gear item containing the control.
+ * @param controlIndex The index of the control.
+ */
 void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
@@ -1403,6 +1556,15 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
     new SwitchSpriteSheetDownloader(imageUrl, item, controlIndex, this);
 }
 
+/**
+ * @brief Fetches the button sprite sheet for a control.
+ *
+ * Initiates an asynchronous download of a button control's sprite sheet.
+ * The sprite sheet contains multiple frames for different button states.
+ *
+ * @param item The gear item containing the control.
+ * @param controlIndex The index of the control.
+ */
 void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
@@ -1566,6 +1728,15 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
     new ButtonSpriteSheetDownloader(imageUrl, item, controlIndex, this);
 }
 
+/**
+ * @brief Creates an instance of the gear item in a slot.
+ *
+ * Creates a new instance of the gear item in the specified slot.
+ * The instance maintains its own state while sharing the source
+ * item's schema and images.
+ *
+ * @param slotIndex The index of the slot to create the instance in.
+ */
 void Rack::createInstance(int slotIndex)
 {
     if (auto *slot = getSlot(slotIndex))
@@ -1574,6 +1745,14 @@ void Rack::createInstance(int slotIndex)
     }
 }
 
+/**
+ * @brief Resets a gear item to its source state.
+ *
+ * If the gear item in the specified slot is an instance,
+ * resets its state to match the source item's state.
+ *
+ * @param slotIndex The index of the slot containing the item to reset.
+ */
 void Rack::resetToSource(int slotIndex)
 {
     if (auto *slot = getSlot(slotIndex))
@@ -1582,6 +1761,15 @@ void Rack::resetToSource(int slotIndex)
     }
 }
 
+/**
+ * @brief Checks if a gear item is an instance.
+ *
+ * Determines whether the gear item in the specified slot
+ * is an instance of another gear item.
+ *
+ * @param slotIndex The index of the slot to check.
+ * @return true if the gear item is an instance.
+ */
 bool Rack::isInstance(int slotIndex) const
 {
     if (auto *slot = getSlot(slotIndex))
@@ -1591,6 +1779,15 @@ bool Rack::isInstance(int slotIndex) const
     return false;
 }
 
+/**
+ * @brief Gets the instance ID of a gear item.
+ *
+ * Retrieves the unique identifier for an instance of a gear item.
+ * If the item is not an instance, returns an empty string.
+ *
+ * @param slotIndex The index of the slot to get the instance ID from.
+ * @return The instance ID, or empty string if not an instance.
+ */
 juce::String Rack::getInstanceId(int slotIndex) const
 {
     if (auto *slot = getSlot(slotIndex))
@@ -1600,6 +1797,12 @@ juce::String Rack::getInstanceId(int slotIndex) const
     return juce::String();
 }
 
+/**
+ * @brief Resets all instances to their source states.
+ *
+ * Iterates through all slots and resets any instances
+ * to match their source items' states.
+ */
 void Rack::resetAllInstances()
 {
     for (int i = 0; i < slots.size(); ++i)

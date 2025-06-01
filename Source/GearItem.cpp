@@ -1,6 +1,35 @@
+/**
+ * @file GearItem.cpp
+ * @brief Implementation of the GearItem class for the AnalogIQ system.
+ *
+ * This file implements the core functionality for managing gear items, including:
+ * - Image loading and placeholder generation
+ * - Instance management (creation and resetting)
+ * - JSON serialization for saving and loading gear configurations
+ *
+ * The implementation handles both local and remote resources, with support for
+ * various image formats and error handling for failed resource loading.
+ *
+ * @author AnalogIQ Team
+ * @version 1.0
+ */
+
 #include "GearItem.h"
 #include "GearLibrary.h" // Include for RemoteResources
 
+/**
+ * @brief Attempts to load the gear item's image.
+ *
+ * This method handles loading images from both local and remote sources:
+ * 1. Checks if a thumbnail image is specified
+ * 2. For remote images (starting with "assets/" or "http"):
+ *    - Constructs the full URL
+ *    - Downloads the image data
+ *    - Attempts to load as JPEG or PNG
+ * 3. Falls back to creating a placeholder if loading fails
+ *
+ * @return true if an image was successfully loaded or created
+ */
 bool GearItem::loadImage()
 {
     // If no thumbnail specified, use placeholder
@@ -66,7 +95,17 @@ bool GearItem::loadImage()
     return createPlaceholderImage();
 }
 
-// Helper method to create a placeholder image
+/**
+ * @brief Creates a placeholder image for the gear item.
+ *
+ * Generates a simple colored placeholder image when the actual image
+ * cannot be loaded. The placeholder includes:
+ * - A colored background based on the gear category
+ * - The first letter of the gear name
+ * - Rounded corners for visual appeal
+ *
+ * @return true if the placeholder was successfully created
+ */
 bool GearItem::createPlaceholderImage()
 {
     // Create a placeholder colored image based on category
@@ -102,6 +141,18 @@ bool GearItem::createPlaceholderImage()
     return true;
 }
 
+/**
+ * @brief Creates a new instance of this gear item.
+ *
+ * Creates a copy of this gear item that shares the same source data
+ * but maintains its own state. The method:
+ * 1. Preserves current control values if already an instance
+ * 2. Generates a new unique instance ID
+ * 3. Links the instance to its source gear item
+ * 4. Stores initial control values for reset functionality
+ *
+ * @param sourceUnitId The unit ID of the source gear item
+ */
 void GearItem::createInstance(const juce::String &sourceUnitId)
 {
     // Store current state
@@ -137,6 +188,16 @@ void GearItem::createInstance(const juce::String &sourceUnitId)
     }
 }
 
+/**
+ * @brief Resets this instance to match its source item's state.
+ *
+ * If this is an instance of another gear item, resets all control
+ * values to their initial values and clears instance state.
+ * This method:
+ * 1. Verifies the item is an instance
+ * 2. Resets all control values to their initial values
+ * 3. Clears instance-related properties
+ */
 void GearItem::resetToSource()
 {
     if (!isInstance)
@@ -156,6 +217,20 @@ void GearItem::resetToSource()
     sourceUnitId = juce::String();
 }
 
+/**
+ * @brief Saves the gear item configuration to a JSON file.
+ *
+ * Serializes all gear item properties to JSON format, including:
+ * - Basic properties (unitId, name, manufacturer, etc.)
+ * - Instance management properties
+ * - Control configurations and values
+ * - Type and category information
+ * - Tags and metadata
+ *
+ * The JSON structure is designed to be compatible with the loadFromJSON method.
+ *
+ * @param destinationFile The file to save the configuration to
+ */
 void GearItem::saveToJSON(juce::File destinationFile)
 {
     // Create a JSON object with all of our properties
@@ -250,6 +325,25 @@ void GearItem::saveToJSON(juce::File destinationFile)
     destinationFile.replaceWithText(jsonString);
 }
 
+/**
+ * @brief Loads a gear item configuration from a JSON file.
+ *
+ * This method deserializes a gear item configuration from a JSON file, including:
+ * 1. Basic properties (unitId, name, manufacturer, etc.)
+ * 2. Type and category information
+ * 3. Control configurations and values
+ * 4. Tags and metadata
+ * 5. Instance management properties
+ *
+ * The method handles:
+ * - JSON parsing and validation
+ * - Type conversion for enums
+ * - Control position and value extraction
+ * - Image loading after configuration
+ *
+ * @param sourceFile The JSON file to load the configuration from
+ * @return A new GearItem instance with the loaded configuration
+ */
 GearItem GearItem::loadFromJSON(juce::File sourceFile)
 {
     // Read the JSON from file

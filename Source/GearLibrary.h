@@ -1,10 +1,34 @@
+/**
+ * @file GearLibrary.h
+ * @brief Core library management system for the AnalogIQ application.
+ *
+ * This file defines the GearLibrary class and related components that manage
+ * the collection of available gear items. It provides functionality for:
+ * - Loading and caching gear items from remote or local sources
+ * - Filtering and searching gear items
+ * - Hierarchical display of gear items by category and type
+ * - Drag and drop support for gear items
+ * - User interface components for browsing and managing gear
+ *
+ * The implementation includes both a traditional list view and a modern
+ * tree view for hierarchical organization of gear items.
+ *
+ * @author AnalogIQ Team
+ * @version 1.0
+ */
+
 #pragma once
 
 #include <JuceHeader.h>
 #include "DraggableListBox.h"
 #include "GearItem.h"
 
-// Base URLs and paths for remote resources
+/**
+ * @brief Namespace containing remote resource configuration.
+ *
+ * Defines base URLs and paths for accessing remote resources such as
+ * gear schemas, images, and the library index.
+ */
 namespace RemoteResources
 {
     const juce::String BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/";
@@ -15,64 +39,209 @@ namespace RemoteResources
     const juce::String SCHEMAS_PATH = "units/";
 }
 
-// FilterCategory enum
+/**
+ * @brief Enumeration of filter categories for gear items.
+ *
+ * Defines the different ways gear items can be filtered in the library.
+ */
 enum class FilterCategory
 {
-    All,
-    Type,
-    Category
+    All,     ///< Show all items (no filtering)
+    Type,    ///< Filter by gear type (e.g., 500 series, rack mount)
+    Category ///< Filter by functional category (e.g., EQ, compressor)
 };
 
-// Struct to represent a filter option
+/**
+ * @brief Structure representing a filter option in the library.
+ *
+ * Defines a single filter option that can be applied to the gear library,
+ * including its display name, category, and value.
+ */
 struct FilterOption
 {
-    juce::String displayName;
-    FilterCategory category;
-    juce::String value;
+    juce::String displayName; ///< Human-readable name for the filter
+    FilterCategory category;  ///< Category of the filter
+    juce::String value;       ///< Value to filter by
 };
 
 // Forward declarations
 class GearListBoxModel;
 class GearTreeItem;
 
+/**
+ * @brief Main class for managing the gear library.
+ *
+ * The GearLibrary class provides a complete interface for managing and
+ * displaying gear items. It includes:
+ * - Loading and caching of gear items
+ * - Filtering and search functionality
+ * - Hierarchical display of items
+ * - Drag and drop support
+ * - User interface components
+ */
 class GearLibrary : public juce::Component,
                     public juce::Button::Listener
 {
 public:
+    /**
+     * @brief Constructs a new GearLibrary instance.
+     */
     GearLibrary();
+
+    /**
+     * @brief Destructor for GearLibrary.
+     */
     ~GearLibrary() override;
 
+    /**
+     * @brief Paints the library component.
+     *
+     * @param g The graphics context to paint with
+     */
     void paint(juce::Graphics &g) override;
+
+    /**
+     * @brief Handles component resizing.
+     *
+     * Updates the layout of all child components when the library
+     * component is resized.
+     */
     void resized() override;
 
     // ListBox methods
+    /**
+     * @brief Gets the number of rows in the list box.
+     *
+     * @return The number of gear items currently displayed
+     */
     int getNumRows();
+
+    /**
+     * @brief Paints a single row in the list box.
+     *
+     * @param rowNumber The index of the row to paint
+     * @param g The graphics context to paint with
+     * @param width The width of the row
+     * @param height The height of the row
+     * @param rowIsSelected Whether the row is currently selected
+     */
     void paintListBoxItem(int rowNumber, juce::Graphics &g, int width, int height, bool rowIsSelected);
+
+    /**
+     * @brief Creates or updates a component for a list box row.
+     *
+     * @param rowNumber The index of the row
+     * @param isRowSelected Whether the row is selected
+     * @param existingComponentToUpdate Existing component to update, if any
+     * @return A component for the row
+     */
     juce::Component *refreshComponentForRow(int rowNumber, bool isRowSelected, juce::Component *existingComponentToUpdate);
+
+    /**
+     * @brief Handles single-click events on list box items.
+     *
+     * @param row The index of the clicked row
+     * @param e The mouse event details
+     */
     void listBoxItemClicked(int row, const juce::MouseEvent &e);
+
+    /**
+     * @brief Handles double-click events on list box items.
+     *
+     * @param row The index of the clicked row
+     * @param e The mouse event details
+     */
     void listBoxItemDoubleClicked(int row, const juce::MouseEvent &e);
 
     // Mouse event handlers
+    /**
+     * @brief Handles mouse down events.
+     *
+     * @param e The mouse event details
+     */
     void mouseDown(const juce::MouseEvent &e) override;
+
+    /**
+     * @brief Handles mouse drag events.
+     *
+     * @param e The mouse event details
+     */
     void mouseDrag(const juce::MouseEvent &e) override;
 
-    // Button listener
+    /**
+     * @brief Handles button click events.
+     *
+     * @param button The button that was clicked
+     */
     void buttonClicked(juce::Button *button) override;
 
-    // Get a gear item by index
+    /**
+     * @brief Gets a gear item by its index.
+     *
+     * @param index The index of the gear item to retrieve
+     * @return Pointer to the gear item, or nullptr if index is invalid
+     */
     GearItem *getGearItem(int index);
 
-    // Get the full array of items
+    /**
+     * @brief Gets the full array of gear items.
+     *
+     * @return Constant reference to the array of gear items
+     */
     const juce::Array<GearItem> &getItems() const { return gearItems; }
 
-    // Load gear library from remote or local cache
+    // Library management methods
+    /**
+     * @brief Loads the gear library asynchronously.
+     *
+     * Initiates an asynchronous load of the gear library from either
+     * remote sources or local cache.
+     */
     void loadLibraryAsync();
+
+    /**
+     * @brief Loads filter options asynchronously.
+     *
+     * Initiates an asynchronous load of available filter options
+     * for the gear library.
+     */
     void loadFiltersAsync();
+
+    /**
+     * @brief Loads gear items asynchronously.
+     *
+     * Initiates an asynchronous load of individual gear items
+     * from the library.
+     */
     void loadGearItemsAsync();
+
+    /**
+     * @brief Saves the gear library asynchronously.
+     *
+     * Initiates an asynchronous save of the gear library to
+     * local storage.
+     */
     void saveLibraryAsync();
+
+    /**
+     * @brief Adds a new user-created gear item to the library.
+     *
+     * @param name The name of the gear item
+     * @param category The category of the gear item
+     * @param description The description of the gear item
+     * @param manufacturer The manufacturer of the gear item
+     */
     void addItem(const juce::String &name, const juce::String &category, const juce::String &description, const juce::String &manufacturer);
 
-    // Helper method to construct a full URL from a relative path
+    /**
+     * @brief Constructs a full URL from a relative path.
+     *
+     * Helper method that converts a relative path to a full URL,
+     * handling various path types and adding appropriate prefixes.
+     *
+     * @param relativePath The relative path to convert
+     * @return The full URL
+     */
     static juce::String getFullUrl(const juce::String &relativePath)
     {
         DBG("GearLibrary::getFullUrl called with path: " + relativePath);
@@ -115,64 +284,117 @@ public:
     }
 
 private:
-    // JSON parsing
+    /**
+     * @brief Parses the gear library data from JSON.
+     *
+     * @param jsonData The JSON string containing the library data
+     */
     void parseGearLibrary(const juce::String &jsonData);
+
+    /**
+     * @brief Parses filter options from JSON.
+     *
+     * @param jsonData The JSON string containing filter options
+     */
     void parseFilterOptions(const juce::String &jsonData);
+
+    /**
+     * @brief Updates the filter box with current options.
+     */
     void updateFilterBox();
 
     // UI components
-    juce::Label titleLabel{"titleLabel", "Gear Library"};
-    juce::TextEditor searchBox;
-    juce::DrawableButton refreshButton{"RefreshButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground};
-    juce::DrawableButton addUserGearButton{"AddUserGearButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground};
+    juce::Label titleLabel{"titleLabel", "Gear Library"};                                                                    ///< Title label for the library
+    juce::TextEditor searchBox;                                                                                              ///< Search box for filtering items
+    juce::DrawableButton refreshButton{"RefreshButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground};         ///< Button to refresh the library
+    juce::DrawableButton addUserGearButton{"AddUserGearButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground}; ///< Button to add user gear
 
     // List box components (for legacy support)
-    std::unique_ptr<GearListBoxModel> gearListModel;
-    std::unique_ptr<DraggableListBox> gearListBox;
+    std::unique_ptr<GearListBoxModel> gearListModel; ///< Model for the list box view
+    std::unique_ptr<DraggableListBox> gearListBox;   ///< List box for displaying gear items
 
     // TreeView components (new hierarchical view)
-    std::unique_ptr<juce::TreeView> gearTreeView;
-    std::unique_ptr<GearTreeItem> rootItem;
+    std::unique_ptr<juce::TreeView> gearTreeView; ///< Tree view for hierarchical display
+    std::unique_ptr<GearTreeItem> rootItem;       ///< Root item for the tree view
 
     // Data
-    juce::Array<GearItem> gearItems;
-    juce::Array<FilterOption> filterOptions;
+    juce::Array<GearItem> gearItems;         ///< Array of all gear items
+    juce::Array<FilterOption> filterOptions; ///< Available filter options
 
     // Filter state
-    juce::String currentSearchText;
-    std::pair<FilterCategory, juce::String> currentFilter{FilterCategory::All, ""};
+    juce::String currentSearchText;                                                 ///< Current search text
+    std::pair<FilterCategory, juce::String> currentFilter{FilterCategory::All, ""}; ///< Current active filter
 
-    // Filtering
+    /**
+     * @brief Checks if an item should be shown based on current filters.
+     *
+     * @param item The gear item to check
+     * @return true if the item should be displayed
+     */
     bool shouldShowItem(const GearItem &item) const;
+
+    /**
+     * @brief Updates the filtered items based on current filters.
+     */
     void updateFilteredItems();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GearLibrary)
 };
 
-//==============================================================================
-// Custom TreeViewItem for hierarchical display
+/**
+ * @brief Custom TreeViewItem for hierarchical display of gear items.
+ *
+ * The GearTreeItem class provides a hierarchical view of gear items,
+ * organizing them by categories and types. It supports:
+ * - Different item types (root, category, type, gear)
+ * - Custom painting with icons and labels
+ * - Dynamic loading of sub-items
+ * - Drag and drop support
+ */
 class GearTreeItem : public juce::TreeViewItem
 {
 public:
+    /**
+     * @brief Enumeration of item types in the tree view.
+     */
     enum class ItemType
     {
-        Root,
-        Category,
-        Type,
-        Gear
+        Root,     ///< Root node of the tree
+        Category, ///< Category node (e.g., EQ, Compressor)
+        Type,     ///< Type node (e.g., 500 series, Rack mount)
+        Gear      ///< Individual gear item
     };
 
+    /**
+     * @brief Constructs a new tree item.
+     *
+     * @param typeIn The type of the item
+     * @param nameIn The display name of the item
+     * @param ownerIn Pointer to the owning GearLibrary
+     * @param gearItemIn Pointer to the associated gear item (for gear items)
+     * @param gearIndexIn Index of the gear item in the library
+     */
     GearTreeItem(ItemType typeIn, const juce::String &nameIn, GearLibrary *ownerIn = nullptr,
                  GearItem *gearItemIn = nullptr, int gearIndexIn = -1)
         : itemType(typeIn), name(nameIn), owner(ownerIn), gearItem(gearItemIn), gearIndex(gearIndexIn)
     {
     }
 
+    /**
+     * @brief Checks if the item might contain sub-items.
+     *
+     * @return true if the item type can have children
+     */
     bool mightContainSubItems() override
     {
         return itemType != ItemType::Gear;
     }
 
+    /**
+     * @brief Gets a unique name for the item.
+     *
+     * @return A unique identifier for the item
+     */
     juce::String getUniqueName() const override
     {
         if (itemType == ItemType::Gear && gearItem != nullptr)
@@ -181,6 +403,13 @@ public:
         return "category_" + name + "_" + juce::String((int)itemType);
     }
 
+    /**
+     * @brief Paints the item in the tree view.
+     *
+     * @param g The graphics context to paint with
+     * @param width The width of the item
+     * @param height The height of the item
+     */
     void paintItem(juce::Graphics &g, int width, int height) override
     {
         if (isSelected())
@@ -221,12 +450,23 @@ public:
         g.drawText(itemText, textX, 0, width - textX, height, juce::Justification::centredLeft);
     }
 
+    /**
+     * @brief Handles changes in item openness.
+     *
+     * @param isNowOpen Whether the item is now open
+     */
     void itemOpennessChanged(bool isNowOpen) override
     {
         if (isNowOpen && getNumSubItems() == 0)
             refreshSubItems();
     }
 
+    /**
+     * @brief Refreshes the sub-items of this item.
+     *
+     * Dynamically loads child items based on the item type and
+     * current library state.
+     */
     void refreshSubItems()
     {
         clearSubItems();
@@ -454,9 +694,9 @@ public:
     }
 
 private:
-    ItemType itemType;
-    juce::String name;
-    GearLibrary *owner;
-    GearItem *gearItem = nullptr;
-    int gearIndex = -1;
+    ItemType itemType;  ///< Type of this tree item
+    juce::String name;  ///< Display name of the item
+    GearLibrary *owner; ///< Pointer to the owning library
+    GearItem *gearItem; ///< Associated gear item (for gear items)
+    int gearIndex;      ///< Index of the gear item in the library
 };

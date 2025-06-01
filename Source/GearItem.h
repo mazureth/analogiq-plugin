@@ -1,43 +1,88 @@
+/**
+ * @file GearItem.h
+ * @brief Core data structures for representing gear items and their controls in the AnalogIQ system.
+ *
+ * This file defines the fundamental data structures used throughout the application:
+ * - GearType and GearCategory enums for classifying gear items
+ * - GearControl class for representing individual controls (knobs, faders, switches, buttons)
+ * - GearItem class for representing complete gear units with their controls and metadata
+ *
+ * The implementation supports:
+ * - Multiple control types with type-specific properties
+ * - Instance management for creating variations of gear items
+ * - Image and sprite sheet handling for visual representation
+ * - JSON serialization for saving and loading gear configurations
+ *
+ * @author AnalogIQ Team
+ * @version 1.0
+ */
+
 #pragma once
 
 #include <JuceHeader.h>
 
+/**
+ * @brief Enumeration of supported gear types.
+ *
+ * Defines the physical form factor or mounting type of gear items.
+ */
 enum class GearType
 {
-    Series500,
-    Rack19Inch,
-    UserCreated,
-    Other
+    Series500,   ///< 500 series format modules
+    Rack19Inch,  ///< Standard 19-inch rack mount units
+    UserCreated, ///< User-defined custom gear items
+    Other        ///< Other or unspecified gear types
 };
 
+/**
+ * @brief Enumeration of gear categories.
+ *
+ * Defines the functional category or purpose of gear items.
+ */
 enum class GearCategory
 {
-    EQ,
-    Compressor,
-    Preamp,
-    Other
+    EQ,         ///< Equalizers and tone shaping devices
+    Compressor, ///< Dynamic range processors
+    Preamp,     ///< Preamplifiers and gain stages
+    Other       ///< Other or unspecified categories
 };
 
+/**
+ * @brief Represents a single control on a gear item.
+ *
+ * The GearControl class encapsulates all properties and behaviors of a control,
+ * including its type, position, value, and visual representation. It supports
+ * multiple control types (knobs, faders, switches, buttons) with type-specific
+ * properties and behaviors.
+ */
 class GearControl
 {
 public:
-    // Add a struct for switch option frames
+    /**
+     * @brief Structure for defining frames in sprite sheets.
+     *
+     * Used for both switch and button controls to define the position and
+     * dimensions of each state's frame in the sprite sheet image.
+     */
     struct SwitchOptionFrame
     {
-        int x = 0;
-        int y = 0;
-        int width = 0;
-        int height = 0;
-        juce::String value;
-        juce::String label;
+        int x = 0;          ///< X coordinate of the frame in the sprite sheet
+        int y = 0;          ///< Y coordinate of the frame in the sprite sheet
+        int width = 0;      ///< Width of the frame
+        int height = 0;     ///< Height of the frame
+        juce::String value; ///< Value associated with this frame
+        juce::String label; ///< Display label for this frame
     };
 
+    /**
+     * @brief Enumeration of supported control types.
+     */
     enum class Type
     {
-        Button,
-        Fader,
-        Switch,
-        Knob
+        Button, ///< Push button control
+        Fader,  ///< Linear fader control
+        Switch, ///< Multi-position switch control
+        Knob    ///< Rotary knob control
     };
 
     // Add default constructor
@@ -158,6 +203,14 @@ public:
     juce::Image buttonSpriteSheet;               // The loaded sprite sheet image for buttons
 };
 
+/**
+ * @brief Represents a complete gear item with its controls and metadata.
+ *
+ * The GearItem class encapsulates all properties and behaviors of a gear unit,
+ * including its metadata (name, manufacturer, type), controls, and visual
+ * representation. It supports instance management for creating variations
+ * of gear items and JSON serialization for saving/loading configurations.
+ */
 class GearItem
 {
 public:
@@ -250,8 +303,31 @@ public:
     juce::String sourceUnitId; // The unitId of the source item if this is an instance
 
     // Add instance management methods
+    /**
+     * @brief Creates a new instance of this gear item.
+     *
+     * Creates a copy of this gear item that shares the same source data
+     * but maintains its own state. The instance will have a unique ID
+     * and will be linked to this item as its source.
+     *
+     * @param sourceUnitId The unit ID of the source gear item.
+     */
     void createInstance(const juce::String &sourceUnitId);
+
+    /**
+     * @brief Resets this instance to match its source item's state.
+     *
+     * If this is an instance of another gear item, resets all control
+     * values to match the source item's state.
+     */
     void resetToSource();
+
+    /**
+     * @brief Checks if this item is an instance of a specific gear item.
+     *
+     * @param unitId The unit ID to check against.
+     * @return true if this is an instance of the specified gear item.
+     */
     bool isInstanceOf(const juce::String &unitId) const { return isInstance && sourceUnitId == unitId; }
 
     // New fields from updated schema
@@ -271,9 +347,46 @@ public:
     juce::Image faceplateImage;
     juce::Array<GearControl> controls;
 
+    /**
+     * @brief Attempts to load the gear item's image.
+     *
+     * Loads the faceplate or thumbnail image for the gear item.
+     * The image path is determined by the schema or thumbnailImage property.
+     *
+     * @return true if the image was successfully loaded.
+     */
     bool loadImage();
+
+    /**
+     * @brief Saves the gear item configuration to a JSON file.
+     *
+     * Serializes the gear item's properties and control states to JSON format
+     * and saves them to the specified file.
+     *
+     * @param destinationFile The file to save the configuration to.
+     */
     void saveToJSON(juce::File destinationFile);
+
+    /**
+     * @brief Loads a gear item configuration from a JSON file.
+     *
+     * Creates a new GearItem instance from a saved JSON configuration file.
+     *
+     * @param sourceFile The JSON file to load the configuration from.
+     * @return A new GearItem instance with the loaded configuration.
+     */
     static GearItem loadFromJSON(juce::File sourceFile);
+
+    /**
+     * @brief Creates a placeholder image for the gear item.
+     *
+     * Generates a simple placeholder image when the actual image
+     * cannot be loaded. The placeholder includes the gear item's name
+     * and basic visual elements.
+     *
+     * @return true if the placeholder was successfully created.
+     */
+    bool createPlaceholderImage();
 
     // Copy constructor
     GearItem(const GearItem &other)
