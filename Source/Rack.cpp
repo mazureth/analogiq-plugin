@@ -554,16 +554,57 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
             switch (control.type)
             {
             case GearControl::Type::Switch:
+            {
                 // Get switch-specific properties
+                control.orientation = controlVar.getProperty("orientation", "vertical").toString();
+                control.currentIndex = controlVar.getProperty("currentIndex", 0);
+                control.value = (float)control.currentIndex; // Set value based on currentIndex
+                control.initialValue = control.value;        // Store initial value
+                control.image = controlVar.getProperty("image", "").toString();
+
+                // Parse options array
                 if (controlVar.hasProperty("options") && controlVar["options"].isArray())
                 {
-                    juce::Array<juce::var> *optionsArray = controlVar["options"].getArray();
+                    auto optionsArray = controlVar["options"].getArray();
                     for (const auto &option : *optionsArray)
-                        control.options.add(option.toString());
+                    {
+                        if (option.isObject())
+                        {
+                            GearControl::SwitchOptionFrame frame;
+                            frame.value = option.getProperty("value", "").toString();
+                            frame.label = option.getProperty("label", "").toString();
+
+                            // Parse frame data
+                            if (option.hasProperty("frame") && option["frame"].isObject())
+                            {
+                                auto frameObj = option["frame"];
+                                frame.x = frameObj.getProperty("x", 0);
+                                frame.y = frameObj.getProperty("y", 0);
+                                frame.width = frameObj.getProperty("width", 0);
+                                frame.height = frameObj.getProperty("height", 0);
+                            }
+
+                            control.switchFrames.add(frame);
+                            control.options.add(frame.value);
+                        }
+                    }
                 }
-                control.currentIndex = controlVar.getProperty("currentIndex", 0);
-                control.orientation = controlVar.getProperty("orientation", "vertical").toString();
+
+                // Add control to item before fetching sprite sheet
+                item->controls.add(control);
+
+                // Fetch the switch sprite sheet if one is specified
+                if (control.image.isNotEmpty())
+                {
+                    DBG("Attempting to fetch switch sprite sheet for control: " + control.name);
+                    fetchSwitchSpriteSheet(item, item->controls.size() - 1);
+                }
+                else
+                {
+                    DBG("No image path specified for switch control: " + control.name);
+                }
                 break;
+            }
 
             case GearControl::Type::Knob:
             {
@@ -953,6 +994,169 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
 
     // Create and start the download thread (it will delete itself when done)
     new KnobImageDownloader(imageUrl, item, controlIndex, this);
+}
+
+void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
+{
+    if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
+    {
+        DBG("Cannot fetch switch sprite sheet: invalid item or control index");
+        return;
+    }
+
+    GearControl &control = item->controls.getReference(controlIndex);
+    if (control.image.isEmpty())
+    {
+        DBG("Cannot fetch switch sprite sheet: image path is empty");
+        return;
+    }
+
+    DBG("Fetching switch sprite sheet from " + control.image);
+
+    // Construct the full URL if it's a relative path
+    juce::String fullUrl = control.image;
+    if (!fullUrl.startsWith("http"))
+    {
+        // Check if the path is already a full path or needs the base URL
+        if (fullUrl.startsWith("assets/") || !fullUrl.contains("/"))
+        {
+            fullUrl = GearLibrary::getFullUrl(fullUrl);
+            DBG("Resolved relative path to full URL: " + fullUrl);
+        }
+    }
+
+    DBG("Full switch sprite sheet URL: " + fullUrl);
+
+    // Use JUCE's URL class to fetch the image asynchronously
+    juce::URL imageUrl(fullUrl);
+
+    // Create a new thread to download the image asynchronously
+    struct SwitchSpriteSheetDownloader : public juce::Thread
+    {
+        SwitchSpriteSheetDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack)
+            : juce::Thread("Switch Sprite Sheet Downloader"),
+              url(urlToUse),
+              item(itemToUpdate),
+              controlIndex(controlIndexToUpdate),
+              rack(parentRack),
+              controlId(itemToUpdate->controls[controlIndexToUpdate].id),
+              controlName(itemToUpdate->controls[controlIndexToUpdate].name)
+        {
+            startThread();
+        }
+
+        ~SwitchSpriteSheetDownloader() override
+        {
+            stopThread(2000);
+        }
+
+        void run() override
+        {
+            DBG("SwitchSpriteSheetDownloader thread started for control: " + controlName);
+
+            // Try to download using the simple API - this is for older JUCE versions
+            std::unique_ptr<juce::InputStream> inputStream = url.createInputStream(false);
+
+            if (inputStream == nullptr || threadShouldExit())
+            {
+                DBG("Failed to create input stream for switch sprite sheet: " + url.toString(true));
+                juce::MessageManager::callAsync([this]()
+                                                { delete this; });
+                return;
+            }
+
+            // Try to determine image format
+            juce::String urlStr = url.toString(true).toLowerCase();
+            juce::ImageFileFormat *format = nullptr;
+
+            if (urlStr.contains(".jpg") || urlStr.contains(".jpeg"))
+                format = new juce::JPEGImageFormat();
+            else if (urlStr.contains(".png"))
+                format = new juce::PNGImageFormat();
+            else if (urlStr.contains(".gif"))
+                format = new juce::GIFImageFormat();
+
+            // Load the image from the input stream
+            juce::Image downloadedImage;
+
+            if (format != nullptr)
+            {
+                // Use specific format if we could determine it
+                downloadedImage = format->decodeImage(*inputStream);
+                delete format;
+            }
+            else
+            {
+                // Otherwise use the generic loader
+                downloadedImage = juce::ImageFileFormat::loadFrom(*inputStream);
+            }
+
+            if (downloadedImage.isValid())
+            {
+                DBG("Successfully loaded switch sprite sheet with dimensions: " +
+                    juce::String(downloadedImage.getWidth()) + "x" +
+                    juce::String(downloadedImage.getHeight()));
+
+                // Need to get back on the message thread to update the UI
+                juce::MessageManager::callAsync([this, downloadedImage]()
+                                                {
+                    DBG("SwitchSpriteSheetDownloader callback started for control: " + controlName);
+                    
+                    // Validate item and control index are still valid
+                    if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
+                    {
+                        DBG("Item or control index is no longer valid for: " + controlName);
+                        delete this;
+                        return;
+                    }
+
+                    // Validate control ID matches
+                    GearControl &control = item->controls.getReference(controlIndex);
+                    if (control.id != controlId)
+                    {
+                        DBG("Control ID mismatch in callback. Expected: " + controlId + ", Got: " + control.id);
+                        delete this;
+                        return;
+                    }
+
+                    // Update the control's sprite sheet
+                    control.switchSpriteSheet = downloadedImage;
+                    DBG("Setting sprite sheet for control: " + controlName + " with ID: " + controlId);
+                    
+                    // Notify any slots that have this item to repaint
+                    if (rack != nullptr)
+                    {
+                        for (int i = 0; i < rack->getNumSlots(); ++i)
+                        {
+                            RackSlot *slot = rack->getSlot(i);
+                            if (slot != nullptr && slot->getGearItem() == item)
+                            {
+                                slot->repaint();
+                                break;
+                            }
+                        }
+                    }
+                    
+                    delete this; });
+            }
+            else
+            {
+                DBG("Failed to load switch sprite sheet for control: " + controlName);
+                juce::MessageManager::callAsync([this]()
+                                                { delete this; });
+            }
+        }
+
+        juce::URL url;
+        GearItem *item;
+        int controlIndex;
+        Rack *rack;
+        juce::String controlId;   // Store control ID at construction time
+        juce::String controlName; // Store control name at construction time
+    };
+
+    // Create and start the download thread (it will delete itself when done)
+    new SwitchSpriteSheetDownloader(imageUrl, item, controlIndex, this);
 }
 
 void Rack::createInstance(int slotIndex)

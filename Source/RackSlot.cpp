@@ -254,34 +254,102 @@ void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<int> &facep
 
 void RackSlot::drawSwitch(juce::Graphics &g, const GearControl &control, int x, int y)
 {
-    const int switchWidth = 30;
-    const int switchHeight = 60;
     const bool isVertical = control.orientation == "vertical";
+    const int currentIndex = control.currentIndex;
 
-    // Draw switch background
-    g.setColour(juce::Colours::darkgrey);
-    g.fillRoundedRectangle(x, y, switchWidth, switchHeight, 4.0f);
-
-    // Draw switch border
-    g.setColour(juce::Colours::grey);
-    g.drawRoundedRectangle(x, y, switchWidth, switchHeight, 4.0f, 2.0f);
-
-    // Draw switch position indicator
-    g.setColour(juce::Colours::white);
-    if (isVertical)
+    // If we have a valid sprite sheet and frame data
+    if (control.switchSpriteSheet.isValid() && control.switchFrames.size() > 0)
     {
-        float indicatorY = y + (control.currentIndex * (switchHeight / control.options.size()));
-        g.fillRoundedRectangle(x + 4, indicatorY + 4, switchWidth - 8, (switchHeight / control.options.size()) - 8, 2.0f);
+        // Get the current frame
+        if (currentIndex >= 0 && currentIndex < control.switchFrames.size())
+        {
+            const auto &frame = control.switchFrames[currentIndex];
+
+            // Get the original sprite sheet dimensions
+            float originalSpriteWidth = (float)control.switchSpriteSheet.getWidth();
+            float originalSpriteHeight = (float)control.switchSpriteSheet.getHeight();
+
+            // Scale the sprite sheet dimensions by the faceplate scale
+            float scaledSpriteWidth = originalSpriteWidth * currentFaceplateScale;
+            float scaledSpriteHeight = originalSpriteHeight * currentFaceplateScale;
+
+            // Create a scaled version of the sprite sheet
+            juce::Image scaledSpriteSheet = control.switchSpriteSheet.rescaled(
+                (int)scaledSpriteWidth,
+                (int)scaledSpriteHeight,
+                juce::Graphics::ResamplingQuality::highResamplingQuality);
+
+            // Scale the frame coordinates and dimensions by the faceplate scale
+            float scaledFrameX = frame.x * currentFaceplateScale;
+            float scaledFrameY = frame.y * currentFaceplateScale;
+            float scaledFrameWidth = frame.width * currentFaceplateScale;
+            float scaledFrameHeight = frame.height * currentFaceplateScale;
+
+            logToFile("--- Sprite sheet dimensions: " +
+                      juce::String(originalSpriteWidth) + "x" + juce::String(originalSpriteHeight) +
+                      " scaled to: " + juce::String(scaledSpriteWidth) + "x" + juce::String(scaledSpriteHeight));
+
+            logToFile("---- Frame dimensions: " +
+                      juce::String(frame.x) + "," + juce::String(frame.y) + " " +
+                      juce::String(frame.width) + "x" + juce::String(frame.height) +
+                      " scaled to: " + juce::String(scaledFrameX) + "," + juce::String(scaledFrameY) + " " +
+                      juce::String(scaledFrameWidth) + "x" + juce::String(scaledFrameHeight));
+
+            // Create the source rectangle using the scaled coordinates and dimensions
+            juce::Rectangle<int> sourceRect(
+                (int)scaledFrameX,
+                (int)scaledFrameY,
+                (int)scaledFrameWidth,
+                (int)scaledFrameHeight);
+
+            // Create the destination rectangle at the control position
+            juce::Rectangle<float> destRect(x, y, scaledFrameWidth, scaledFrameHeight);
+
+            // Draw the frame from the scaled sprite sheet
+            g.drawImage(scaledSpriteSheet,
+                        destRect.getX(), destRect.getY(),
+                        destRect.getWidth(), destRect.getHeight(),
+                        sourceRect.getX(), sourceRect.getY(),
+                        sourceRect.getWidth(), sourceRect.getHeight());
+
+            logToFile("---- Drawing switch frame " + juce::String(currentIndex) +
+                      " for control: " + control.name +
+                      "\n----- at position: " + juce::String(x) + "," + juce::String(y) +
+                      "\n----- with dimensions: " + juce::String(scaledFrameWidth) + "x" + juce::String(scaledFrameHeight) +
+                      "\n----- faceplate scale: " + juce::String(currentFaceplateScale));
+        }
     }
     else
     {
-        float indicatorX = x + (control.currentIndex * (switchWidth / control.options.size()));
-        g.fillRoundedRectangle(indicatorX + 4, y + 4, (switchWidth / control.options.size()) - 8, switchHeight - 8, 2.0f);
+        // Fallback to basic drawing if no sprite sheet is available
+        const int switchWidth = 30;
+        const int switchHeight = 60;
+
+        // Draw switch background
+        g.setColour(juce::Colours::darkgrey);
+        g.fillRoundedRectangle(x, y, switchWidth, switchHeight, 4.0f);
+
+        // Draw switch border
+        g.setColour(juce::Colours::grey);
+        g.drawRoundedRectangle(x, y, switchWidth, switchHeight, 4.0f, 2.0f);
+
+        // Draw switch position indicator
+        g.setColour(juce::Colours::white);
+        if (isVertical)
+        {
+            float indicatorY = y + (currentIndex * (switchHeight / control.options.size()));
+            g.fillRoundedRectangle(x + 4, indicatorY + 4, switchWidth - 8, (switchHeight / control.options.size()) - 8, 2.0f);
+        }
+        else
+        {
+            float indicatorX = x + (currentIndex * (switchWidth / control.options.size()));
+            g.fillRoundedRectangle(indicatorX + 4, y + 4, (switchWidth / control.options.size()) - 8, switchHeight - 8, 2.0f);
+        }
     }
 
     // Draw label
     g.setFont(10.0f);
-    g.drawText(control.name, x, y + switchHeight + 2, switchWidth, 15, juce::Justification::centred);
+    g.drawText(control.name, x, y + (isVertical ? 60 : 30) + 2, isVertical ? 30 : 60, 15, juce::Justification::centred);
 }
 
 void RackSlot::drawButton(juce::Graphics &g, const GearControl &control, int x, int y)
@@ -572,8 +640,10 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
         int y = faceplateArea.getY() + (int)(activeControl->position.getY() * faceplateArea.getHeight());
         juce::Rectangle<int> controlBounds(x, y, 40, 40); // Default size, adjust based on control type
 
-        // Store drag start state for faders and knobs
-        if (activeControl->type == GearControl::Type::Fader || activeControl->type == GearControl::Type::Knob)
+        // Store drag start state for faders, knobs, and switches
+        if (activeControl->type == GearControl::Type::Fader ||
+            activeControl->type == GearControl::Type::Knob ||
+            activeControl->type == GearControl::Type::Switch)
         {
             dragStartPos = e.position;
             dragStartValue = activeControl->value;
@@ -587,8 +657,7 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
             // Don't update value on click, wait for drag
             break;
         case GearControl::Type::Switch:
-            handleSwitchInteraction(*activeControl);
-            repaint();
+            // Don't update value on click, wait for drag
             break;
         case GearControl::Type::Button:
             handleButtonInteraction(*activeControl);
@@ -623,6 +692,44 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
 
     switch (activeControl->type)
     {
+    case GearControl::Type::Switch:
+    {
+        const bool isVertical = activeControl->orientation == "vertical";
+        const int numOptions = activeControl->options.size();
+
+        // Calculate the drag distance along the orientation axis
+        float dragDistance;
+        if (isVertical)
+        {
+            dragDistance = e.position.y - dragStartPos.y;
+            // For vertical switches, invert the drag direction to match natural movement
+            dragDistance = -dragDistance;
+        }
+        else
+        {
+            dragDistance = e.position.x - dragStartPos.x;
+        }
+
+        // Calculate the total range of movement
+        float totalRange = isVertical ? controlBounds.getHeight() : controlBounds.getWidth();
+        float optionSize = totalRange / numOptions;
+
+        // Calculate the new index based on drag distance
+        float newIndex = dragStartValue + (dragDistance / optionSize);
+
+        // Clamp the index to valid range and round to nearest option
+        newIndex = juce::jlimit(0.0f, (float)(numOptions - 1), newIndex);
+        int newIndexInt = juce::roundToInt(newIndex);
+
+        // Update the control
+        if (newIndexInt != activeControl->currentIndex)
+        {
+            activeControl->currentIndex = newIndexInt;
+            activeControl->value = (float)newIndexInt;
+            repaint();
+        }
+        break;
+    }
     case GearControl::Type::Fader:
     {
         // Map vertical position to value
@@ -669,21 +776,6 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
 
             newValue = closestStep;
             DBG("Stepped knob - Snapped to step: " + juce::String(newValue) + " degrees");
-        }
-
-        DBG("Knob drag details:");
-        DBG("  Control: " + activeControl->name);
-        DBG("  Start Value: " + juce::String(dragStartValue) + " degrees");
-        DBG("  Current Value: " + juce::String(activeControl->value) + " degrees");
-        DBG("  Delta Y: " + juce::String(deltaY) + " pixels");
-        DBG("  Delta Angle: " + juce::String(deltaAngle) + " degrees");
-        DBG("  New Value: " + juce::String(newValue) + " degrees");
-        DBG("  Start Angle: " + juce::String(activeControl->startAngle) + " degrees");
-        DBG("  End Angle: " + juce::String(activeControl->endAngle) + " degrees");
-        DBG("  Initial Value: " + juce::String(activeControl->initialValue) + " degrees");
-        if (!activeControl->steps.isEmpty())
-        {
-            DBG("  Steps: " + juce::String(activeControl->steps.size()) + " steps");
         }
 
         activeControl->value = newValue;
@@ -787,7 +879,7 @@ void RackSlot::handleSwitchInteraction(GearControl &control)
 {
     // Toggle between options
     control.currentIndex = (control.currentIndex + 1) % control.options.size();
-    control.value = (float)control.currentIndex / (control.options.size() - 1);
+    control.value = (float)control.currentIndex; // Simply use the index as the value
 }
 
 void RackSlot::handleButtonInteraction(GearControl &control)
