@@ -44,6 +44,7 @@ public:
     void fetchKnobImage(GearItem *item, int controlIndex);
     void fetchFaderImage(GearItem *item, int controlIndex);
     void fetchSwitchSpriteSheet(GearItem *item, int controlIndex);
+    void fetchButtonSpriteSheet(GearItem *item, int controlIndex);
 
     // Instance management
     void createInstance(int slotIndex);

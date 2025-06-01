@@ -53,12 +53,18 @@ public:
           startAngle(0.0f),
           endAngle(360.0f),
           currentStepIndex(0),
-          length(100)
+          length(100),
+          momentary(false)
     {
     }
 
     GearControl(Type typeParam, const juce::String &nameParam, const juce::Rectangle<float> &positionParam)
-        : type(typeParam), name(nameParam), position(positionParam), value(0.0f), initialValue(0.0f) {}
+        : type(typeParam),
+          name(nameParam),
+          position(positionParam),
+          value(0.0f),
+          initialValue(0.0f),
+          momentary(false) {}
 
     // Add copy constructor
     GearControl(const GearControl &other)
@@ -80,7 +86,10 @@ public:
           switchFrames(other.switchFrames),
           switchSpriteSheet(other.switchSpriteSheet),
           length(other.length),
-          faderImage(other.faderImage)
+          faderImage(other.faderImage),
+          momentary(other.momentary),
+          buttonFrames(other.buttonFrames),
+          buttonSpriteSheet(other.buttonSpriteSheet)
     {
         DBG("GearControl copy constructor called for control: " + name + " with ID: " + id);
     }
@@ -109,6 +118,9 @@ public:
             switchSpriteSheet = other.switchSpriteSheet;
             length = other.length;
             faderImage = other.faderImage;
+            momentary = other.momentary;
+            buttonFrames = other.buttonFrames;
+            buttonSpriteSheet = other.buttonSpriteSheet;
             DBG("GearControl assignment operator called for control: " + name + " with ID: " + id);
         }
         return *this;
@@ -139,6 +151,11 @@ public:
     // Additional properties for faders
     int length = 100;       // Length of the fader track in pixels
     juce::Image faderImage; // The loaded fader image
+
+    // Additional properties for buttons
+    bool momentary = false;                      // Whether the button is momentary or latching
+    juce::Array<SwitchOptionFrame> buttonFrames; // Store frame data for button states
+    juce::Image buttonSpriteSheet;               // The loaded sprite sheet image for buttons
 };
 
 class GearItem
