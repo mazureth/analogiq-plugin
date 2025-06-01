@@ -1,46 +1,88 @@
+/**
+ * @file GearItem.h
+ * @brief Header file for the GearItem class and related components.
+ *
+ * This file defines the GearItem class and its supporting classes for managing
+ * audio gear items in the plugin. It includes definitions for gear types,
+ * categories, and controls.
+ */
+
 #pragma once
 
 #include <JuceHeader.h>
 
+/**
+ * @brief Enumeration of possible gear types.
+ *
+ * Defines the different types of audio gear that can be represented
+ * in the system, such as 500 series modules, rack units, etc.
+ */
 enum class GearType
 {
-    Series500,
-    Rack19Inch,
-    UserCreated,
-    Other
+    Series500,   ///< 500 series module
+    Rack19Inch,  ///< 19-inch rack unit
+    UserCreated, ///< User-created custom gear
+    Other        ///< Other type of gear
 };
 
+/**
+ * @brief Enumeration of gear categories.
+ *
+ * Defines the different functional categories of audio gear,
+ * such as equalizers, compressors, and preamps.
+ */
 enum class GearCategory
 {
-    EQ,
-    Compressor,
-    Preamp,
-    Other
+    EQ,         ///< Equalizer
+    Compressor, ///< Compressor
+    Preamp,     ///< Preamp
+    Other       ///< Other category
 };
 
+/**
+ * @brief Class representing a control on a piece of gear.
+ *
+ * This class defines the properties and behavior of controls
+ * such as knobs, faders, switches, and buttons on audio gear.
+ */
 class GearControl
 {
 public:
-    // Add a struct for switch option frames
+    /**
+     * @brief Structure defining a frame in a switch or button sprite sheet.
+     *
+     * Contains position and size information for a single frame
+     * in a multi-state control's sprite sheet.
+     */
     struct SwitchOptionFrame
     {
-        int x = 0;
-        int y = 0;
-        int width = 0;
-        int height = 0;
-        juce::String value;
-        juce::String label;
+        int x = 0;          ///< X position in sprite sheet
+        int y = 0;          ///< Y position in sprite sheet
+        int width = 0;      ///< Frame width
+        int height = 0;     ///< Frame height
+        juce::String value; ///< Value associated with this frame
+        juce::String label; ///< Display label for this frame
     };
 
+    /**
+     * @brief Enumeration of control types.
+     *
+     * Defines the different types of controls that can be
+     * represented in the system.
+     */
     enum class Type
     {
-        Button,
-        Fader,
-        Switch,
-        Knob
+        Button, ///< Push button control
+        Fader,  ///< Slider/fader control
+        Switch, ///< Toggle switch control
+        Knob    ///< Rotary knob control
     };
 
-    // Add default constructor
+    /**
+     * @brief Default constructor.
+     *
+     * Initializes a control with default values.
+     */
     GearControl()
         : type(Type::Button),
           name(""),
@@ -58,6 +100,13 @@ public:
     {
     }
 
+    /**
+     * @brief Constructor with basic parameters.
+     *
+     * @param typeParam The type of control
+     * @param nameParam The name of the control
+     * @param positionParam The position and size of the control
+     */
     GearControl(Type typeParam, const juce::String &nameParam, const juce::Rectangle<float> &positionParam)
         : type(typeParam),
           name(nameParam),
@@ -66,7 +115,11 @@ public:
           initialValue(0.0f),
           momentary(false) {}
 
-    // Add copy constructor
+    /**
+     * @brief Copy constructor.
+     *
+     * @param other The control to copy from
+     */
     GearControl(const GearControl &other)
         : type(other.type),
           name(other.name),
@@ -94,7 +147,12 @@ public:
         DBG("GearControl copy constructor called for control: " + name + " with ID: " + id);
     }
 
-    // Add assignment operator
+    /**
+     * @brief Assignment operator.
+     *
+     * @param other The control to assign from
+     * @return Reference to this control
+     */
     GearControl &operator=(const GearControl &other)
     {
         if (this != &other)
@@ -126,43 +184,68 @@ public:
         return *this;
     }
 
-    Type type;
-    juce::String name;
-    juce::String id; // Unique identifier for the control
-    juce::Rectangle<float> position;
-    float value;
-    float initialValue; // Store the original value from schema
+    Type type;                       ///< The type of control
+    juce::String name;               ///< The name of the control
+    juce::String id;                 ///< Unique identifier for the control
+    juce::Rectangle<float> position; ///< Position and size of the control
+    float value;                     ///< Current value of the control
+    float initialValue;              ///< Original value from schema
 
     // Additional properties for switches
-    juce::StringArray options;
-    int currentIndex = 0;
-    juce::String orientation = "vertical";       // "horizontal" or "vertical"
-    juce::String image;                          // URI to the sprite sheet image
-    juce::Array<SwitchOptionFrame> switchFrames; // Store frame data for each switch position
-    juce::Image switchSpriteSheet;               // The loaded sprite sheet image for switches
+    juce::StringArray options;                   ///< Available options for switch
+    int currentIndex = 0;                        ///< Current selected option index
+    juce::String orientation = "vertical";       ///< Control orientation
+    juce::String image;                          ///< URI to the sprite sheet image
+    juce::Array<SwitchOptionFrame> switchFrames; ///< Frame data for switch positions
+    juce::Image switchSpriteSheet;               ///< Loaded sprite sheet for switches
 
     // Additional properties for knobs
-    float startAngle = 0.0f;  // Starting angle in degrees (0-360)
-    float endAngle = 360.0f;  // Ending angle in degrees (0-360)
-    juce::Array<float> steps; // Array of rotation degrees for stepped knobs
-    int currentStepIndex = 0; // Index of current step (only used with steps)
-    juce::Image loadedImage;  // The actual loaded knob image
+    float startAngle = 0.0f;  ///< Starting angle in degrees
+    float endAngle = 360.0f;  ///< Ending angle in degrees
+    juce::Array<float> steps; ///< Rotation degrees for stepped knobs
+    int currentStepIndex = 0; ///< Current step index
+    juce::Image loadedImage;  ///< Loaded knob image
 
     // Additional properties for faders
-    int length = 100;       // Length of the fader track in pixels
-    juce::Image faderImage; // The loaded fader image
+    int length = 100;       ///< Length of fader track in pixels
+    juce::Image faderImage; ///< Loaded fader image
 
     // Additional properties for buttons
-    bool momentary = false;                      // Whether the button is momentary or latching
-    juce::Array<SwitchOptionFrame> buttonFrames; // Store frame data for button states
-    juce::Image buttonSpriteSheet;               // The loaded sprite sheet image for buttons
+    bool momentary = false;                      ///< Whether button is momentary
+    juce::Array<SwitchOptionFrame> buttonFrames; ///< Frame data for button states
+    juce::Image buttonSpriteSheet;               ///< Loaded sprite sheet for buttons
 };
 
+/**
+ * @brief Class representing a piece of audio gear.
+ *
+ * This class manages the properties and behavior of audio gear items,
+ * including their controls, images, and instance management.
+ */
 class GearItem
 {
 public:
+    /**
+     * @brief Default constructor.
+     */
     GearItem() = default;
 
+    /**
+     * @brief Constructor with full parameter set.
+     *
+     * @param unitIdParam Unique identifier for the gear
+     * @param nameParam Name of the gear
+     * @param manufacturerParam Manufacturer name
+     * @param categoryParam Category string
+     * @param versionParam Version string
+     * @param schemaPathParam Path to schema file
+     * @param thumbnailImageParam Path to thumbnail image
+     * @param tagsParam Array of tags
+     * @param typeParam Type of gear
+     * @param gearCategoryParam Category of gear
+     * @param slotSizeParam Size in rack slots
+     * @param controlsParam Array of controls
+     */
     GearItem(const juce::String &unitIdParam,
              const juce::String &nameParam,
              const juce::String &manufacturerParam,
@@ -205,7 +288,17 @@ public:
             type = GearType::Rack19Inch;
     }
 
-    // Original constructor for backward compatibility
+    /**
+     * @brief Legacy constructor for backward compatibility.
+     *
+     * @param nameParam Name of the gear
+     * @param manufacturerParam Manufacturer name
+     * @param typeParam Type of gear
+     * @param categoryParam Category of gear
+     * @param slotSizeParam Size in rack slots
+     * @param imageUrlParam Path to image
+     * @param controlsParam Array of controls
+     */
     GearItem(const juce::String &nameParam,
              const juce::String &manufacturerParam,
              GearType typeParam,
@@ -244,10 +337,10 @@ public:
         }
     }
 
-    // Add instance management fields
-    juce::String instanceId;   // Unique identifier for this instance
-    bool isInstance = false;   // Whether this is an instance of another item
-    juce::String sourceUnitId; // The unitId of the source item if this is an instance
+    // Instance management fields
+    juce::String instanceId;   ///< Unique identifier for this instance
+    bool isInstance = false;   ///< Whether this is an instance of another item
+    juce::String sourceUnitId; ///< The unitId of the source item if this is an instance
 
     // Add instance management methods
     void createInstance(const juce::String &sourceUnitId);
@@ -275,7 +368,14 @@ public:
     void saveToJSON(juce::File destinationFile);
     static GearItem loadFromJSON(juce::File sourceFile);
 
-    // Copy constructor
+    /**
+     * @brief Copy constructor.
+     *
+     * Creates a new instance of GearItem with the same properties as the source.
+     * The new instance is not marked as an instance of the source.
+     *
+     * @param other The GearItem to copy from
+     */
     GearItem(const GearItem &other)
         : unitId(other.unitId),
           name(other.name),
@@ -300,6 +400,13 @@ public:
     }
 
 private:
-    // Helper method to create a placeholder image
+    /**
+     * @brief Creates a placeholder image for the gear item.
+     *
+     * Generates a colored placeholder image based on the gear category,
+     * with the first letter of the gear name displayed.
+     *
+     * @return true if placeholder was successfully created
+     */
     bool createPlaceholderImage();
 };

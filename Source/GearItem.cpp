@@ -1,6 +1,22 @@
+/**
+ * @file GearItem.cpp
+ * @brief Implementation of the GearItem class for managing audio gear items.
+ *
+ * This file contains the implementation of methods for loading images,
+ * creating instances, managing state, and serializing gear items to/from JSON.
+ */
+
 #include "GearItem.h"
 #include "GearLibrary.h" // Include for RemoteResources
 
+/**
+ * @brief Loads the thumbnail image for the gear item.
+ *
+ * Attempts to load the image from a remote URL or local path.
+ * If loading fails, creates a placeholder image based on the gear category.
+ *
+ * @return true if image was successfully loaded or placeholder created
+ */
 bool GearItem::loadImage()
 {
     // If no thumbnail specified, use placeholder
@@ -66,7 +82,14 @@ bool GearItem::loadImage()
     return createPlaceholderImage();
 }
 
-// Helper method to create a placeholder image
+/**
+ * @brief Creates a placeholder image for the gear item.
+ *
+ * Generates a colored placeholder image based on the gear category,
+ * with the first letter of the gear name displayed.
+ *
+ * @return true if placeholder was successfully created
+ */
 bool GearItem::createPlaceholderImage()
 {
     // Create a placeholder colored image based on category
@@ -102,6 +125,14 @@ bool GearItem::createPlaceholderImage()
     return true;
 }
 
+/**
+ * @brief Creates a new instance of the gear item.
+ *
+ * Preserves current control values and generates a new unique instance ID.
+ * If the item was already an instance, maintains its current state.
+ *
+ * @param sourceUnitId The ID of the source unit this instance is based on
+ */
 void GearItem::createInstance(const juce::String &sourceUnitId)
 {
     // Store current state
@@ -137,6 +168,12 @@ void GearItem::createInstance(const juce::String &sourceUnitId)
     }
 }
 
+/**
+ * @brief Resets an instance back to its source state.
+ *
+ * Restores all control values to their initial values and clears instance-specific data.
+ * Only has effect if the item is currently an instance.
+ */
 void GearItem::resetToSource()
 {
     if (!isInstance)
@@ -156,6 +193,14 @@ void GearItem::resetToSource()
     sourceUnitId = juce::String();
 }
 
+/**
+ * @brief Saves the gear item's state to a JSON file.
+ *
+ * Serializes all properties including controls, tags, and instance data
+ * to a JSON format and writes to the specified file.
+ *
+ * @param destinationFile The file to save the JSON data to
+ */
 void GearItem::saveToJSON(juce::File destinationFile)
 {
     // Create a JSON object with all of our properties
@@ -250,6 +295,15 @@ void GearItem::saveToJSON(juce::File destinationFile)
     destinationFile.replaceWithText(jsonString);
 }
 
+/**
+ * @brief Loads a gear item from a JSON file.
+ *
+ * Deserializes a gear item's properties from JSON format,
+ * including controls, tags, and instance data.
+ *
+ * @param sourceFile The JSON file to load from
+ * @return A new GearItem instance with the loaded data
+ */
 GearItem GearItem::loadFromJSON(juce::File sourceFile)
 {
     // Read the JSON from file
