@@ -558,6 +558,8 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 // Get switch-specific properties
                 control.orientation = controlVar.getProperty("orientation", "vertical").toString();
                 control.currentIndex = controlVar.getProperty("currentIndex", 0);
+                control.value = (float)control.currentIndex; // Set value based on currentIndex
+                control.initialValue = control.value;        // Store initial value
                 control.image = controlVar.getProperty("image", "").toString();
 
                 // Parse options array
