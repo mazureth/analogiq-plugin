@@ -350,19 +350,100 @@ void RackSlot::drawSwitch(juce::Graphics &g, const GearControl &control, int x, 
 
 void RackSlot::drawButton(juce::Graphics &g, const GearControl &control, int x, int y)
 {
-    const int buttonSize = 30;
+    // Calculate base dimensions from the sprite sheet if available
+    float baseWidth, baseHeight;
+    juce::Image scaledSpriteSheet; // Move declaration to outer scope
 
-    // Draw button background
-    g.setColour(control.value > 0.5f ? juce::Colours::red : juce::Colours::darkgrey);
-    g.fillRoundedRectangle(x, y, buttonSize, buttonSize, 4.0f);
+    if (control.buttonSpriteSheet.isValid() && control.buttonFrames.size() > 0)
+    {
+        // Get the original sprite sheet dimensions
+        float originalSpriteWidth = (float)control.buttonSpriteSheet.getWidth();
+        float originalSpriteHeight = (float)control.buttonSpriteSheet.getHeight();
 
-    // Draw button border
-    g.setColour(juce::Colours::grey);
-    g.drawRoundedRectangle(x, y, buttonSize, buttonSize, 4.0f, 2.0f);
+        // Scale the sprite sheet dimensions by the faceplate scale
+        float scaledSpriteWidth = originalSpriteWidth * currentFaceplateScale;
+        float scaledSpriteHeight = originalSpriteHeight * currentFaceplateScale;
 
-    // Draw label
-    g.setFont(10.0f);
-    g.drawText(control.name, x, y + buttonSize + 2, buttonSize, 15, juce::Justification::centred);
+        // Create a scaled version of the sprite sheet
+        scaledSpriteSheet = control.buttonSpriteSheet.rescaled(
+            (int)scaledSpriteWidth,
+            (int)scaledSpriteHeight,
+            juce::Graphics::ResamplingQuality::highResamplingQuality);
+
+        // Use the first frame's dimensions as the base size
+        baseWidth = (float)control.buttonFrames[0].width;
+        baseHeight = (float)control.buttonFrames[0].height;
+    }
+    else
+    {
+        // Fallback to standard size if no sprite sheet
+        baseWidth = 30.0f;
+        baseHeight = 30.0f;
+    }
+
+    // Scale dimensions based on faceplate scale
+    const float buttonWidth = baseWidth * currentFaceplateScale;
+    const float buttonHeight = baseHeight * currentFaceplateScale;
+
+    // Debug logging for button sprite sheet
+    logToFile("Drawing button: " + control.name);
+    logToFile("  Has sprite sheet: " + juce::String(control.buttonSpriteSheet.isValid() ? "YES" : "NO"));
+    logToFile("  Number of frames: " + juce::String(control.buttonFrames.size()));
+    logToFile("  Is momentary: " + juce::String(control.momentary ? "YES" : "NO"));
+
+    // Draw the button using sprite sheet if available
+    if (control.buttonSpriteSheet.isValid() && control.buttonFrames.size() > 0)
+    {
+        // Use the currentIndex to determine which frame to use
+        int frameIndex = control.currentIndex;
+
+        // Ensure frame index is valid
+        if (frameIndex >= control.buttonFrames.size())
+        {
+            frameIndex = 0;
+        }
+
+        // Get the frame data
+        const auto &frame = control.buttonFrames[frameIndex];
+
+        // Scale the frame coordinates and dimensions by the faceplate scale
+        float scaledFrameX = frame.x * currentFaceplateScale;
+        float scaledFrameY = frame.y * currentFaceplateScale;
+        float scaledFrameWidth = frame.width * currentFaceplateScale;
+        float scaledFrameHeight = frame.height * currentFaceplateScale;
+
+        logToFile("  Frame dimensions: " +
+                  juce::String(frame.x) + "," + juce::String(frame.y) + " " +
+                  juce::String(frame.width) + "x" + juce::String(frame.height) +
+                  " scaled to: " + juce::String(scaledFrameX) + "," + juce::String(scaledFrameY) + " " +
+                  juce::String(scaledFrameWidth) + "x" + juce::String(scaledFrameHeight));
+
+        // Create the source rectangle using the scaled coordinates and dimensions
+        juce::Rectangle<int> sourceRect(
+            (int)scaledFrameX,
+            (int)scaledFrameY,
+            (int)scaledFrameWidth,
+            (int)scaledFrameHeight);
+
+        // Create the destination rectangle at the control position
+        juce::Rectangle<float> destRect(x, y, buttonWidth, buttonHeight);
+
+        // Draw the frame from the scaled sprite sheet
+        g.drawImage(scaledSpriteSheet,
+                    destRect.getX(), destRect.getY(),
+                    destRect.getWidth(), destRect.getHeight(),
+                    sourceRect.getX(), sourceRect.getY(),
+                    sourceRect.getWidth(), sourceRect.getHeight());
+    }
+    else
+    {
+        // Fallback to basic button drawing if no sprite sheet is available
+        g.setColour(control.value > 0.5f ? juce::Colours::red : juce::Colours::darkgrey);
+        g.fillRoundedRectangle(x, y, buttonWidth, buttonHeight, 4.0f);
+
+        g.setColour(juce::Colours::grey);
+        g.drawRoundedRectangle(x, y, buttonWidth, buttonHeight, 4.0f, 2.0f);
+    }
 }
 
 void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, int y)
@@ -1019,8 +1100,18 @@ void RackSlot::handleSwitchInteraction(GearControl &control)
 
 void RackSlot::handleButtonInteraction(GearControl &control)
 {
-    // Toggle button state
-    control.value = control.value > 0.5f ? 0.0f : 1.0f;
+    if (control.momentary)
+    {
+        // For momentary buttons, use value 1.0 for "on" state (index 1) and 0.0 for "off" state (index 0)
+        control.value = control.value > 0.5f ? 0.0f : 1.0f;
+        control.currentIndex = (int)control.value;
+    }
+    else
+    {
+        // For latching buttons, cycle through options like switches
+        control.currentIndex = (control.currentIndex + 1) % control.options.size();
+        control.value = (float)control.currentIndex;
+    }
 }
 
 void RackSlot::handleFaderInteraction(GearControl &control, const juce::Point<float> &mousePos, const juce::Rectangle<int> &controlBounds)
