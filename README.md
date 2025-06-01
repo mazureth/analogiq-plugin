@@ -34,34 +34,25 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
 
 - CMake 3.15+
 - C++17 compatible compiler
-- JUCE framework (will be downloaded automatically if not present)
+- JUCE framework (will be downloaded automatically by CMake)
 
 ### Build Steps
 
 1. Clone the repository:
-   ```
+   ```bash
    git clone https://github.com/mazureth/analogiq-client.git
    cd analogiq-client
    ```
 
-2. Clone the JUCE framework into the project directory:
-   ```
-   git clone https://github.com/juce-framework/JUCE.git
-   ```
-
-3. Create a build directory and run CMake:
-   ```
+2. Create a build directory and run CMake:
+   ```bash
    mkdir build
    cd build
    cmake ..
-   ```
-
-4. Build the plugin:
-   ```
    cmake --build .
    ```
 
-5. The built plugins will be in the `build` directory, inside their respective format folders.
+The plugin will be built in the `build` directory. The first build might take longer as it downloads JUCE automatically.
 
 ## Usage
 
