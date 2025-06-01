@@ -52,7 +52,8 @@ public:
           orientation("vertical"),
           startAngle(0.0f),
           endAngle(360.0f),
-          currentStepIndex(0)
+          currentStepIndex(0),
+          length(100)
     {
     }
 
@@ -77,7 +78,9 @@ public:
           currentStepIndex(other.currentStepIndex),
           loadedImage(other.loadedImage),
           switchFrames(other.switchFrames),
-          switchSpriteSheet(other.switchSpriteSheet)
+          switchSpriteSheet(other.switchSpriteSheet),
+          length(other.length),
+          faderImage(other.faderImage)
     {
         DBG("GearControl copy constructor called for control: " + name + " with ID: " + id);
     }
@@ -104,6 +107,8 @@ public:
             loadedImage = other.loadedImage;
             switchFrames = other.switchFrames;
             switchSpriteSheet = other.switchSpriteSheet;
+            length = other.length;
+            faderImage = other.faderImage;
             DBG("GearControl assignment operator called for control: " + name + " with ID: " + id);
         }
         return *this;
@@ -130,6 +135,10 @@ public:
     juce::Array<float> steps; // Array of rotation degrees for stepped knobs
     int currentStepIndex = 0; // Index of current step (only used with steps)
     juce::Image loadedImage;  // The actual loaded knob image
+
+    // Additional properties for faders
+    int length = 100;       // Length of the fader track in pixels
+    juce::Image faderImage; // The loaded fader image
 };
 
 class GearItem

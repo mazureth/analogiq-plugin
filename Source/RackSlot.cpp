@@ -346,10 +346,6 @@ void RackSlot::drawSwitch(juce::Graphics &g, const GearControl &control, int x, 
             g.fillRoundedRectangle(indicatorX + 4, y + 4, (switchWidth / control.options.size()) - 8, switchHeight - 8, 2.0f);
         }
     }
-
-    // Draw label
-    g.setFont(10.0f);
-    g.drawText(control.name, x, y + (isVertical ? 60 : 30) + 2, isVertical ? 30 : 60, 15, juce::Justification::centred);
 }
 
 void RackSlot::drawButton(juce::Graphics &g, const GearControl &control, int x, int y)
@@ -371,21 +367,111 @@ void RackSlot::drawButton(juce::Graphics &g, const GearControl &control, int x, 
 
 void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, int y)
 {
-    const int faderWidth = 20;
-    const int faderHeight = 100;
+    const bool isVertical = control.orientation == "vertical";
+    const float faderLength = control.length * currentFaceplateScale;
 
-    // Draw fader track
-    g.setColour(juce::Colours::darkgrey);
-    g.fillRoundedRectangle(x, y, faderWidth, faderHeight, 2.0f);
+    // Calculate base dimensions from the image if available, otherwise use defaults
+    float baseWidth, baseHeight;
+    if (control.faderImage.isValid())
+    {
+        baseWidth = (float)control.faderImage.getWidth();
+        baseHeight = (float)control.faderImage.getHeight();
+    }
+    else
+    {
+        baseWidth = 20.0f;
+        baseHeight = 20.0f;
+    }
 
-    // Draw fader handle
-    float handleY = y + (1.0f - control.value) * faderHeight;
-    g.setColour(juce::Colours::white);
-    g.fillRoundedRectangle(x - 5, handleY - 5, faderWidth + 10, 10, 4.0f);
+    const float faderWidth = baseWidth * currentFaceplateScale;
+    const float handleSize = std::max(baseWidth, baseHeight) * currentFaceplateScale;
 
-    // Draw label
-    g.setFont(10.0f);
-    g.drawText(control.name, x, y + faderHeight + 2, faderWidth, 15, juce::Justification::centred);
+    // Debug logging for fader image
+    logToFile("Drawing fader: " + control.name);
+    logToFile("  Has fader image: " + juce::String(control.faderImage.isValid() ? "YES" : "NO"));
+    if (control.faderImage.isValid())
+    {
+        logToFile("  Image dimensions: " +
+                  juce::String(control.faderImage.getWidth()) + "x" +
+                  juce::String(control.faderImage.getHeight()));
+        logToFile("  Image format: " + juce::String(control.faderImage.getFormat()));
+    }
+
+    // Calculate the fader bounds based on orientation
+    juce::Rectangle<float> faderBounds;
+    if (isVertical)
+    {
+        faderBounds = juce::Rectangle<float>(x, y, faderWidth, faderLength);
+    }
+    else
+    {
+        faderBounds = juce::Rectangle<float>(x, y, faderLength, faderWidth);
+    }
+
+    // Calculate the handle position based on the control value
+    float handleX, handleY;
+    if (isVertical)
+    {
+        handleX = x;
+        handleY = y + (1.0f - control.value) * faderLength;
+    }
+    else
+    {
+        handleX = x + control.value * faderLength;
+        handleY = y;
+    }
+
+    // Draw the fader image at the handle position
+    if (control.faderImage.isValid())
+    {
+        // Scale the handle size based on the image's aspect ratio
+        float imageWidth = (float)control.faderImage.getWidth();
+        float imageHeight = (float)control.faderImage.getHeight();
+        float aspectRatio = imageWidth / imageHeight;
+
+        float scaledWidth, scaledHeight;
+        if (isVertical)
+        {
+            scaledHeight = handleSize;
+            scaledWidth = handleSize * aspectRatio;
+        }
+        else
+        {
+            scaledWidth = handleSize;
+            scaledHeight = handleSize / aspectRatio;
+        }
+
+        logToFile("  Drawing image at: " +
+                  juce::String(handleX - scaledWidth / 2) + "," +
+                  juce::String(handleY - scaledHeight / 2) +
+                  " with size: " +
+                  juce::String(scaledWidth) + "x" +
+                  juce::String(scaledHeight));
+
+        // Draw the fader image centered at the handle position
+        g.drawImageWithin(control.faderImage,
+                          handleX - scaledWidth / 2,
+                          handleY - scaledHeight / 2,
+                          scaledWidth,
+                          scaledHeight,
+                          juce::RectanglePlacement::centred);
+    }
+    else
+    {
+        logToFile("  Using fallback white handle");
+        // Fallback to basic handle drawing if no image is provided
+        g.setColour(juce::Colours::white);
+        if (isVertical)
+        {
+            g.fillRoundedRectangle(x - handleSize / 2, handleY - handleSize / 2,
+                                   faderWidth + handleSize, handleSize, 4.0f);
+        }
+        else
+        {
+            g.fillRoundedRectangle(handleX - handleSize / 2, y - handleSize / 2,
+                                   handleSize, faderWidth + handleSize, 4.0f);
+        }
+    }
 }
 
 void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, int y)
@@ -688,7 +774,6 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
     // Calculate control bounds
     int x = faceplateArea.getX() + (int)(activeControl->position.getX() * faceplateArea.getWidth());
     int y = faceplateArea.getY() + (int)(activeControl->position.getY() * faceplateArea.getHeight());
-    juce::Rectangle<int> controlBounds(x, y, 40, 40); // Default size, adjust based on control type
 
     switch (activeControl->type)
     {
@@ -696,6 +781,7 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
     {
         const bool isVertical = activeControl->orientation == "vertical";
         const int numOptions = activeControl->options.size();
+        const float faderLength = activeControl->length * currentFaceplateScale;
 
         // Calculate the drag distance along the orientation axis
         float dragDistance;
@@ -710,8 +796,8 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
             dragDistance = e.position.x - dragStartPos.x;
         }
 
-        // Calculate the total range of movement
-        float totalRange = isVertical ? controlBounds.getHeight() : controlBounds.getWidth();
+        // Calculate the total range of movement using fader length
+        float totalRange = faderLength;
         float optionSize = totalRange / numOptions;
 
         // Calculate the new index based on drag distance
@@ -732,13 +818,30 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
     }
     case GearControl::Type::Fader:
     {
-        // Map vertical position to value
-        float normalizedY = 1.0f - (float)(e.position.y - controlBounds.getY()) / controlBounds.getHeight();
-        activeControl->value = juce::jlimit(0.0f, 1.0f, normalizedY);
+        const bool isVertical = activeControl->orientation == "vertical";
+        const float faderLength = activeControl->length * currentFaceplateScale;
+        float newValue;
+
+        if (isVertical)
+        {
+            // For vertical faders, use Y position relative to fader track
+            float trackY = y;
+            float trackHeight = faderLength;
+            float normalizedY = 1.0f - (float)(e.position.y - trackY) / trackHeight;
+            newValue = juce::jlimit(0.0f, 1.0f, normalizedY);
+        }
+        else
+        {
+            // For horizontal faders, use X position relative to fader track
+            float trackX = x;
+            float trackWidth = faderLength;
+            float normalizedX = (float)(e.position.x - trackX) / trackWidth;
+            newValue = juce::jlimit(0.0f, 1.0f, normalizedX);
+        }
+
+        activeControl->value = newValue;
         logToFile("Fader - Value: " + juce::String(activeControl->value) +
-                  " Y: " + juce::String(e.position.y) +
-                  " Bounds Y: " + juce::String(controlBounds.getY()) +
-                  " Height: " + juce::String(controlBounds.getHeight()));
+                  " Position: " + e.position.toString());
         repaint();
         break;
     }
@@ -786,6 +889,10 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
         repaint();
         break;
     }
+    case GearControl::Type::Button:
+        handleButtonInteraction(*activeControl);
+        repaint();
+        break;
     default:
         break; // Other controls don't need drag handling
     }
@@ -823,7 +930,7 @@ void RackSlot::mouseDoubleClick(const juce::MouseEvent &e)
             control->value = 0.0f;
             break;
         case GearControl::Type::Fader:
-            control->value = 0.0f;
+            control->value = control->initialValue;
             break;
         case GearControl::Type::Knob:
             DBG("Resetting knob to initial value: " + juce::String(control->initialValue));
@@ -857,9 +964,37 @@ GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position,
             width = height = 30;
             break;
         case GearControl::Type::Fader:
-            width = 20;
-            height = 100;
-            break;
+        {
+            const bool isVertical = control.orientation == "vertical";
+            const float faderLength = control.length * currentFaceplateScale;
+            const float faderWidth = 20.0f * currentFaceplateScale;
+            const float handleSize = 10.0f * currentFaceplateScale;
+
+            // Calculate handle position based on current value
+            float handleX, handleY;
+            if (isVertical)
+            {
+                handleX = x;
+                handleY = y + (1.0f - control.value) * faderLength;
+            }
+            else
+            {
+                handleX = x + control.value * faderLength;
+                handleY = y;
+            }
+
+            // Create handle bounds
+            juce::Rectangle<float> handleBounds(
+                handleX - handleSize / 2,
+                handleY - handleSize / 2,
+                isVertical ? faderWidth + handleSize : handleSize,
+                isVertical ? handleSize : faderWidth + handleSize);
+
+            // Check if click is within handle bounds
+            if (handleBounds.contains(position))
+                return &control;
+            continue; // Skip to next control if not clicking handle
+        }
         case GearControl::Type::Knob:
             width = height = 40;
             break;

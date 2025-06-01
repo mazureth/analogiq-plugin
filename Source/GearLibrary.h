@@ -7,7 +7,8 @@
 // Base URLs and paths for remote resources
 namespace RemoteResources
 {
-    const juce::String BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/";
+    // const juce::String BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/";
+    const juce::String BASE_URL = "http://localhost:8000/";
     const juce::String LIBRARY_PATH = "units/index.json";
     const juce::String ASSETS_PATH = "assets/";
     const juce::String SCHEMAS_PATH = "units/";

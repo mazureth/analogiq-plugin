@@ -606,6 +606,36 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 break;
             }
 
+            case GearControl::Type::Fader:
+            {
+                // Get fader-specific properties
+                control.orientation = controlVar.getProperty("orientation", "vertical").toString();
+                control.length = controlVar.getProperty("length", 100);
+                control.value = controlVar.getProperty("value", 0.0f);
+                control.initialValue = control.value; // Store initial value
+                control.image = controlVar.getProperty("image", "").toString();
+
+                DBG("Creating fader control: " + control.name +
+                    " Orientation: " + control.orientation +
+                    " Length: " + juce::String(control.length) +
+                    " InitialValue: " + juce::String(control.value));
+
+                // Add control to item before fetching image
+                item->controls.add(control);
+
+                // Fetch the fader image if one is specified
+                if (control.image.isNotEmpty())
+                {
+                    DBG("Attempting to fetch fader image for control: " + control.name);
+                    fetchFaderImage(item, item->controls.size() - 1);
+                }
+                else
+                {
+                    DBG("No image path specified for fader control: " + control.name);
+                }
+                break;
+            }
+
             case GearControl::Type::Knob:
             {
                 // Get knob-specific properties
@@ -994,6 +1024,158 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
 
     // Create and start the download thread (it will delete itself when done)
     new KnobImageDownloader(imageUrl, item, controlIndex, this);
+}
+
+void Rack::fetchFaderImage(GearItem *item, int controlIndex)
+{
+    if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
+    {
+        DBG("Invalid item or control index for fader image fetch");
+        return;
+    }
+
+    const GearControl &control = item->controls[controlIndex];
+    if (control.image.isEmpty())
+    {
+        DBG("No image path specified for fader control: " + control.name);
+        return;
+    }
+
+    // Use GearLibrary::getFullUrl to resolve the image path
+    juce::String fullUrl = GearLibrary::getFullUrl(control.image);
+
+    DBG("Fetching fader image from URL: " + fullUrl);
+    DBG("Original image path: " + control.image);
+    DBG("Full URL after resolution: " + fullUrl);
+
+    juce::URL imageUrl(fullUrl);
+
+    struct FaderImageDownloader : public juce::Thread
+    {
+        FaderImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack)
+            : juce::Thread("Fader Image Downloader"),
+              url(urlToUse),
+              item(itemToUpdate),
+              controlIndex(controlIndexToUpdate),
+              rack(parentRack),
+              controlId(itemToUpdate->controls[controlIndexToUpdate].id),
+              controlName(itemToUpdate->controls[controlIndexToUpdate].name)
+        {
+            startThread();
+        }
+
+        ~FaderImageDownloader() override
+        {
+            stopThread(2000);
+        }
+
+        void run() override
+        {
+            DBG("FaderImageDownloader thread started for control: " + controlName);
+
+            // Try to download using the simple API - this is for older JUCE versions
+            std::unique_ptr<juce::InputStream> inputStream = url.createInputStream(false);
+
+            if (inputStream == nullptr || threadShouldExit())
+            {
+                DBG("Failed to create input stream for fader image: " + url.toString(true));
+                juce::MessageManager::callAsync([this]()
+                                                { delete this; });
+                return;
+            }
+
+            // Try to determine image format
+            juce::String urlStr = url.toString(true).toLowerCase();
+            juce::ImageFileFormat *format = nullptr;
+
+            if (urlStr.contains(".jpg") || urlStr.contains(".jpeg"))
+                format = new juce::JPEGImageFormat();
+            else if (urlStr.contains(".png"))
+                format = new juce::PNGImageFormat();
+            else if (urlStr.contains(".gif"))
+                format = new juce::GIFImageFormat();
+
+            // Load the image from the input stream
+            juce::Image downloadedImage;
+
+            if (format != nullptr)
+            {
+                // Use specific format if we could determine it
+                downloadedImage = format->decodeImage(*inputStream);
+                delete format;
+            }
+            else
+            {
+                // Otherwise use the generic loader
+                downloadedImage = juce::ImageFileFormat::loadFrom(*inputStream);
+            }
+
+            if (downloadedImage.isValid())
+            {
+                DBG("Successfully loaded fader image with dimensions: " +
+                    juce::String(downloadedImage.getWidth()) + "x" +
+                    juce::String(downloadedImage.getHeight()));
+
+                // Need to get back on the message thread to update the UI
+                juce::MessageManager::callAsync([this, downloadedImage]()
+                                                {
+                    DBG("FaderImageDownloader callback started for control: " + controlName);
+                    
+                    // Validate item and control index are still valid
+                    if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
+                    {
+                        DBG("Item or control index is no longer valid for: " + controlName);
+                        delete this;
+                        return;
+                    }
+
+                    // Validate control ID matches
+                    GearControl &control = item->controls.getReference(controlIndex);
+                    if (control.id != controlId)
+                    {
+                        DBG("Control ID mismatch in callback. Expected: " + controlId + ", Got: " + control.id);
+                        delete this;
+                        return;
+                    }
+
+                    // Update the control's fader image
+                    control.faderImage = downloadedImage;
+                    DBG("Setting fader image for control: " + controlName + " with ID: " + controlId);
+                    
+                    // Notify any slots that have this item to repaint
+                    if (rack != nullptr)
+                    {
+                        for (int i = 0; i < rack->getNumSlots(); ++i)
+                        {
+                            RackSlot *slot = rack->getSlot(i);
+                            if (slot != nullptr && slot->getGearItem() == item)
+                            {
+                                slot->repaint();
+                                break;
+                            }
+                        }
+                    }
+                    
+                    delete this; });
+            }
+            else
+            {
+                DBG("Failed to load fader image for control: " + controlName);
+                juce::MessageManager::callAsync([this]()
+                                                { delete this; });
+            }
+        }
+
+        juce::URL url;
+        GearItem *item;
+        int controlIndex;
+        Rack *rack;
+        juce::String controlId;   // Store control ID at construction time
+        juce::String controlName; // Store control name at construction time
+    };
+
+    // Create and start the downloader
+    new FaderImageDownloader(imageUrl, item, controlIndex, this);
 }
 
 void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
