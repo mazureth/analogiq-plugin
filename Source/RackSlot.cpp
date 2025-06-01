@@ -1,3 +1,13 @@
+/**
+ * @file RackSlot.cpp
+ * @brief Implementation of the RackSlot class which represents a single slot in the virtual rack.
+ *
+ * This file implements the RackSlot class which provides the visual representation and
+ * interaction handling for individual slots in the virtual rack. It manages the display
+ * of gear items, their controls, and handles user interactions like drag-and-drop and
+ * button clicks.
+ */
+
 #include "RackSlot.h"
 #include "GearLibrary.h"
 #include "Rack.h"
@@ -6,7 +16,11 @@
 // Add at the top of the file, after includes
 static std::ofstream logFile("/tmp/rack_slot.log");
 
-// Helper function for logging
+/**
+ * @brief Helper function for logging messages to a file.
+ *
+ * @param message The message to log
+ */
 static void logToFile(const juce::String &message)
 {
     if (logFile.is_open())
@@ -16,6 +30,14 @@ static void logToFile(const juce::String &message)
     }
 }
 
+/**
+ * @brief Constructs a new RackSlot instance.
+ *
+ * Initializes the slot with the given index, creates navigation buttons (up/down/remove),
+ * and sets up the component for user interaction.
+ *
+ * @param slotIndex The index of this slot in the rack
+ */
 RackSlot::RackSlot(int slotIndex)
     : index(slotIndex), highlighted(false), isDragging(false)
 {
@@ -98,6 +120,11 @@ RackSlot::RackSlot(int slotIndex)
     DBG("Created RackSlot with index " + juce::String(index));
 }
 
+/**
+ * @brief Destructor for the RackSlot class.
+ *
+ * Cleans up by removing button listeners before the buttons are destroyed.
+ */
 RackSlot::~RackSlot()
 {
     // Make sure to remove listeners before buttons are destroyed
@@ -109,6 +136,14 @@ RackSlot::~RackSlot()
         removeButton->removeListener(this);
 }
 
+/**
+ * @brief Paints the rack slot and its contents.
+ *
+ * Draws the slot background, border, and if a gear item is present, its faceplate
+ * image and controls. For empty slots, displays an "Empty Slot" message.
+ *
+ * @param g The graphics context to paint with
+ */
 void RackSlot::paint(juce::Graphics &g)
 {
     // Draw background
@@ -222,6 +257,15 @@ void RackSlot::paint(juce::Graphics &g)
     }
 }
 
+/**
+ * @brief Draws the controls for the gear item.
+ *
+ * Iterates through the gear item's controls and draws each one based on its type
+ * (switch, button, fader, or knob) at the appropriate position on the faceplate.
+ *
+ * @param g The graphics context to paint with
+ * @param faceplateArea The area where the faceplate is drawn
+ */
 void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<int> &faceplateArea)
 {
     if (gearItem == nullptr)
@@ -252,6 +296,14 @@ void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<int> &facep
     }
 }
 
+/**
+ * @brief Draws a switch control.
+ *
+ * @param g The graphics context to paint with
+ * @param control The control to draw
+ * @param x The x-coordinate for the control
+ * @param y The y-coordinate for the control
+ */
 void RackSlot::drawSwitch(juce::Graphics &g, const GearControl &control, int x, int y)
 {
     const bool isVertical = control.orientation == "vertical";
@@ -348,6 +400,14 @@ void RackSlot::drawSwitch(juce::Graphics &g, const GearControl &control, int x, 
     }
 }
 
+/**
+ * @brief Draws a button control.
+ *
+ * @param g The graphics context to paint with
+ * @param control The control to draw
+ * @param x The x-coordinate for the control
+ * @param y The y-coordinate for the control
+ */
 void RackSlot::drawButton(juce::Graphics &g, const GearControl &control, int x, int y)
 {
     // Calculate base dimensions from the sprite sheet if available
@@ -446,6 +506,14 @@ void RackSlot::drawButton(juce::Graphics &g, const GearControl &control, int x, 
     }
 }
 
+/**
+ * @brief Draws a fader control.
+ *
+ * @param g The graphics context to paint with
+ * @param control The control to draw
+ * @param x The x-coordinate for the control
+ * @param y The y-coordinate for the control
+ */
 void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, int y)
 {
     const bool isVertical = control.orientation == "vertical";
@@ -555,6 +623,14 @@ void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, i
     }
 }
 
+/**
+ * @brief Draws a knob control.
+ *
+ * @param g The graphics context to paint with
+ * @param control The control to draw
+ * @param x The x-coordinate for the control
+ * @param y The y-coordinate for the control
+ */
 void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, int y)
 {
     DBG("drawKnob - Control: " + control.name +
@@ -644,6 +720,12 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
     }
 }
 
+/**
+ * @brief Handles resizing of the rack slot component.
+ *
+ * Positions the navigation buttons (up/down/remove) in the top-right corner
+ * of the slot when the component is resized.
+ */
 void RackSlot::resized()
 {
     // Position the arrow buttons in the top-right corner on a single line
@@ -656,6 +738,14 @@ void RackSlot::resized()
     removeButton->setBounds(getWidth() - buttonSize - margin, margin, buttonSize, buttonSize);
 }
 
+/**
+ * @brief Handles button click events for the navigation buttons.
+ *
+ * Processes clicks on the up, down, and remove buttons to handle
+ * gear item movement and removal.
+ *
+ * @param button Pointer to the button that was clicked
+ */
 void RackSlot::buttonClicked(juce::Button *button)
 {
     if (button == upButton.get())
@@ -672,6 +762,12 @@ void RackSlot::buttonClicked(juce::Button *button)
     }
 }
 
+/**
+ * @brief Updates the enabled state of the navigation buttons.
+ *
+ * Enables/disables the up, down, and remove buttons based on the
+ * current state of the slot and its position in the rack.
+ */
 void RackSlot::updateButtonStates()
 {
     // Disable buttons if there's no gear item
@@ -701,6 +797,12 @@ void RackSlot::updateButtonStates()
     removeButton->setEnabled(hasGear);
 }
 
+/**
+ * @brief Moves the gear item up one slot in the rack.
+ *
+ * Attempts to move the current gear item to the slot above this one.
+ * Only works if there is a gear item and this is not the first slot.
+ */
 void RackSlot::moveUp()
 {
     if (index <= 0 || isAvailable() || gearItem == nullptr)
@@ -742,6 +844,12 @@ void RackSlot::moveUp()
     }
 }
 
+/**
+ * @brief Moves the gear item down one slot in the rack.
+ *
+ * Attempts to move the current gear item to the slot below this one.
+ * Only works if there is a gear item and this is not the last slot.
+ */
 void RackSlot::moveDown()
 {
     if (isAvailable() || gearItem == nullptr)
@@ -787,6 +895,14 @@ void RackSlot::moveDown()
     }
 }
 
+/**
+ * @brief Handles mouse down events on the rack slot.
+ *
+ * Processes mouse clicks on the slot and its controls, initiating
+ * drag operations for interactive controls.
+ *
+ * @param e The mouse event details
+ */
 void RackSlot::mouseDown(const juce::MouseEvent &e)
 {
     if (gearItem == nullptr || !gearItem->faceplateImage.isValid())
@@ -837,6 +953,14 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
     }
 }
 
+/**
+ * @brief Handles mouse drag events on the rack slot.
+ *
+ * Updates control values based on drag position for interactive
+ * controls like faders, knobs, and switches.
+ *
+ * @param e The mouse event details
+ */
 void RackSlot::mouseDrag(const juce::MouseEvent &e)
 {
     if (!isDragging || activeControl == nullptr)
@@ -979,6 +1103,13 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
     }
 }
 
+/**
+ * @brief Handles mouse up events on the rack slot.
+ *
+ * Finalizes drag operations and updates control values.
+ *
+ * @param e The mouse event details
+ */
 void RackSlot::mouseUp(const juce::MouseEvent &)
 {
     if (isDragging)
@@ -989,6 +1120,13 @@ void RackSlot::mouseUp(const juce::MouseEvent &)
     activeControl = nullptr;
 }
 
+/**
+ * @brief Handles mouse double-click events on the rack slot.
+ *
+ * Resets controls to their default values when double-clicked.
+ *
+ * @param e The mouse event details
+ */
 void RackSlot::mouseDoubleClick(const juce::MouseEvent &e)
 {
     if (gearItem == nullptr || !gearItem->faceplateImage.isValid())
@@ -1022,6 +1160,16 @@ void RackSlot::mouseDoubleClick(const juce::MouseEvent &e)
     }
 }
 
+/**
+ * @brief Finds a control at the specified position.
+ *
+ * Searches through the gear item's controls to find one that
+ * contains the given position.
+ *
+ * @param position The position to check
+ * @param faceplateArea The area where the faceplate is drawn
+ * @return Pointer to the control at the position, or nullptr if none found
+ */
 GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position, const juce::Rectangle<int> &faceplateArea)
 {
     if (gearItem == nullptr)
@@ -1091,6 +1239,13 @@ GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position,
     return nullptr;
 }
 
+/**
+ * @brief Handles interaction with a switch control.
+ *
+ * Updates the switch's state when interacted with.
+ *
+ * @param control The switch control to handle
+ */
 void RackSlot::handleSwitchInteraction(GearControl &control)
 {
     // Toggle between options
@@ -1098,6 +1253,14 @@ void RackSlot::handleSwitchInteraction(GearControl &control)
     control.value = (float)control.currentIndex; // Simply use the index as the value
 }
 
+/**
+ * @brief Handles interaction with a button control.
+ *
+ * Updates the button's state when clicked, handling both momentary
+ * and latching button types.
+ *
+ * @param control The button control to handle
+ */
 void RackSlot::handleButtonInteraction(GearControl &control)
 {
     if (control.momentary)
@@ -1114,6 +1277,15 @@ void RackSlot::handleButtonInteraction(GearControl &control)
     }
 }
 
+/**
+ * @brief Handles interaction with a fader control.
+ *
+ * Updates the fader's value based on mouse position.
+ *
+ * @param control The fader control to handle
+ * @param mousePos The current mouse position
+ * @param controlBounds The bounds of the control
+ */
 void RackSlot::handleFaderInteraction(GearControl &control, const juce::Point<float> &mousePos, const juce::Rectangle<int> &controlBounds)
 {
     // Map vertical position to value
@@ -1121,8 +1293,15 @@ void RackSlot::handleFaderInteraction(GearControl &control, const juce::Point<fl
     control.value = juce::jlimit(0.0f, 1.0f, normalizedY);
 }
 
-// The rest of the existing implementation follows...
-
+/**
+ * @brief Checks if the slot is interested in a drag source.
+ *
+ * Determines if the slot should accept drops from a particular
+ * drag source, such as the gear library.
+ *
+ * @param sourceDetails Details about the drag source
+ * @return true if the slot accepts drops from this source
+ */
 bool RackSlot::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &sourceDetails)
 {
     // We're not using drag-and-drop for reordering anymore, but keeping the code for GearLibrary drags
@@ -1155,21 +1334,48 @@ bool RackSlot::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDet
     return false;
 }
 
+/**
+ * @brief Handles when a dragged item enters the slot.
+ *
+ * Highlights the slot to indicate it can accept the drop.
+ *
+ * @param details Details about the drag source
+ */
 void RackSlot::itemDragEnter(const juce::DragAndDropTarget::SourceDetails & /*details*/)
 {
     setHighlighted(true);
 }
 
+/**
+ * @brief Handles when a dragged item moves over the slot.
+ *
+ * @param details Details about the drag source
+ */
 void RackSlot::itemDragMove(const juce::DragAndDropTarget::SourceDetails & /*details*/)
 {
     // Nothing needed here
 }
 
+/**
+ * @brief Handles when a dragged item exits the slot.
+ *
+ * Removes the highlight from the slot.
+ *
+ * @param details Details about the drag source
+ */
 void RackSlot::itemDragExit(const juce::DragAndDropTarget::SourceDetails & /*details*/)
 {
     setHighlighted(false);
 }
 
+/**
+ * @brief Handles when a dragged item is dropped onto the slot.
+ *
+ * Processes the drop event and delegates to the parent rack
+ * to handle the actual gear item placement.
+ *
+ * @param details Details about the drag source and drop position
+ */
 void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
 {
     setHighlighted(false);
@@ -1224,6 +1430,14 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &details
     }
 }
 
+/**
+ * @brief Sets a new gear item in the slot.
+ *
+ * Updates the slot with a new gear item, preserving instance state
+ * if the current item is an instance.
+ *
+ * @param newGearItem Pointer to the new gear item to set
+ */
 void RackSlot::setGearItem(GearItem *newGearItem)
 {
     DBG("RackSlot::setGearItem for slot " + juce::String(index));
@@ -1279,6 +1493,11 @@ void RackSlot::setGearItem(GearItem *newGearItem)
     repaint();            // Trigger repaint to show the gear item
 }
 
+/**
+ * @brief Removes the current gear item from the slot.
+ *
+ * Clears the slot and updates the UI accordingly.
+ */
 void RackSlot::clearGearItem()
 {
     DBG("RackSlot::clearGearItem for slot " + juce::String(index));
@@ -1287,6 +1506,13 @@ void RackSlot::clearGearItem()
     repaint();            // Trigger repaint to update
 }
 
+/**
+ * @brief Sets whether the slot should be highlighted.
+ *
+ * Used to indicate when a slot is being dragged over or selected.
+ *
+ * @param shouldHighlight Whether the slot should be highlighted
+ */
 void RackSlot::setHighlighted(bool shouldHighlight)
 {
     highlighted = shouldHighlight;
@@ -1308,6 +1534,11 @@ juce::Component *RackSlot::findParentRackComponent() const
     return nullptr;
 }
 
+/**
+ * @brief Creates a new instance of the current gear item.
+ *
+ * Converts the current gear item into an instance if it isn't already one.
+ */
 void RackSlot::createInstance()
 {
     if (gearItem == nullptr || gearItem->isInstance)
@@ -1323,6 +1554,11 @@ void RackSlot::createInstance()
     repaint();
 }
 
+/**
+ * @brief Resets an instance to its source gear item.
+ *
+ * Restores the instance to match its source gear item's state.
+ */
 void RackSlot::resetToSource()
 {
     if (gearItem == nullptr || !gearItem->isInstance)

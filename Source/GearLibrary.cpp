@@ -1,28 +1,81 @@
+/**
+ * @file GearLibrary.cpp
+ * @brief Implementation of the GearLibrary class for managing audio gear items.
+ *
+ * This file contains the implementation of the GearLibrary class, which provides
+ * a user interface for browsing, searching, and managing audio gear items.
+ * It includes both a legacy list view and a new hierarchical tree view.
+ */
+
 #include "GearLibrary.h"
 
-// Create a ListBoxModel adapter
+/**
+ * @brief ListBoxModel adapter for the GearLibrary.
+ *
+ * This class adapts the GearLibrary to work with JUCE's ListBox component,
+ * providing the necessary interface for displaying gear items in a list.
+ */
 class GearListBoxModel : public juce::ListBoxModel
 {
 public:
+    /**
+     * @brief Constructs a new GearListBoxModel.
+     *
+     * @param ownerRef Reference to the owning GearLibrary instance
+     */
     GearListBoxModel(GearLibrary &ownerRef) : owner(ownerRef) {}
 
+    /**
+     * @brief Gets the number of rows in the list.
+     *
+     * @return The number of gear items to display
+     */
     int getNumRows() override { return owner.getNumRows(); }
 
+    /**
+     * @brief Paints a list box item.
+     *
+     * @param rowNumber The index of the row to paint
+     * @param g The graphics context to paint with
+     * @param width The width of the item
+     * @param height The height of the item
+     * @param rowIsSelected Whether the row is currently selected
+     */
     void paintListBoxItem(int rowNumber, juce::Graphics &g, int width, int height, bool rowIsSelected) override
     {
         owner.paintListBoxItem(rowNumber, g, width, height, rowIsSelected);
     }
 
+    /**
+     * @brief Refreshes a component for a specific row.
+     *
+     * @param rowNumber The index of the row
+     * @param isRowSelected Whether the row is selected
+     * @param existingComponentToUpdate Component to update if it exists
+     * @return The component to display for the row
+     */
     juce::Component *refreshComponentForRow(int rowNumber, bool isRowSelected, juce::Component *existingComponentToUpdate) override
     {
         return owner.refreshComponentForRow(rowNumber, isRowSelected, existingComponentToUpdate);
     }
 
+    /**
+     * @brief Handles a list box item click.
+     *
+     * @param row The index of the clicked row
+     * @param e The mouse event details
+     */
     void listBoxItemClicked(int row, const juce::MouseEvent &e) override
     {
         owner.listBoxItemClicked(row, e);
     }
 
+    /**
+     * @brief Handles a list box item double click.
+     *
+     * @param row The index of the double-clicked row
+     * @param e The mouse event details
+     */
     void listBoxItemDoubleClicked(int row, const juce::MouseEvent &e) override
     {
         owner.listBoxItemDoubleClicked(row, e);
@@ -34,6 +87,12 @@ private:
 
 // DraggableListBox is now defined in DraggableListBox.h
 
+/**
+ * @brief Constructs a new GearLibrary.
+ *
+ * Initializes the UI components including the title label, search box,
+ * refresh button, add user gear button, and both list and tree views.
+ */
 GearLibrary::GearLibrary()
 {
     // Set up title label
@@ -117,17 +176,32 @@ GearLibrary::GearLibrary()
     loadLibraryAsync();
 }
 
+/**
+ * @brief Destructor for GearLibrary.
+ *
+ * Ensures proper cleanup of the tree view root item.
+ */
 GearLibrary::~GearLibrary()
 {
     // Important: set root item to null before the TreeView is deleted
     gearTreeView->setRootItem(nullptr);
 }
 
+/**
+ * @brief Paints the GearLibrary component.
+ *
+ * @param g The graphics context to paint with
+ */
 void GearLibrary::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colours::darkgrey.darker(0.7f));
 }
 
+/**
+ * @brief Handles resizing of the GearLibrary component.
+ *
+ * Updates the bounds of all child components based on the new size.
+ */
 void GearLibrary::resized()
 {
     auto bounds = getLocalBounds();
@@ -154,6 +228,15 @@ void GearLibrary::resized()
     }
 }
 
+/**
+ * @brief Determines if a gear item should be shown based on current filters.
+ *
+ * Checks both search text and category/type filters to determine
+ * if an item should be visible in the current view.
+ *
+ * @param item The gear item to check
+ * @return true if the item should be shown
+ */
 bool GearLibrary::shouldShowItem(const GearItem &item) const
 {
     // First check the search text
@@ -229,6 +312,11 @@ bool GearLibrary::shouldShowItem(const GearItem &item) const
     return true;
 }
 
+/**
+ * @brief Updates the filtered items in both list and tree views.
+ *
+ * Refreshes the display of items based on current search and filter criteria.
+ */
 void GearLibrary::updateFilteredItems()
 {
     // First update the legacy list box
@@ -350,11 +438,25 @@ void GearLibrary::updateFilteredItems()
     }
 }
 
+/**
+ * @brief Gets the number of rows in the gear list.
+ *
+ * @return The total number of gear items in the library
+ */
 int GearLibrary::getNumRows()
 {
     return gearItems.size();
 }
 
+/**
+ * @brief Paints a list box item.
+ *
+ * @param rowNumber The index of the row to paint
+ * @param g The graphics context to paint with
+ * @param width The width of the item
+ * @param height The height of the item
+ * @param rowIsSelected Whether the row is currently selected
+ */
 void GearLibrary::paintListBoxItem(int rowNumber, juce::Graphics &g, int width, int /*height*/, bool rowIsSelected)
 {
     // This is still needed for legacy support or components that might use the list box
@@ -379,12 +481,26 @@ void GearLibrary::paintListBoxItem(int rowNumber, juce::Graphics &g, int width, 
     }
 }
 
+/**
+ * @brief Refreshes a component for a specific row in the list box.
+ *
+ * @param rowNumber The index of the row to refresh
+ * @param isRowSelected Whether the row is currently selected
+ * @param existingComponentToUpdate The existing component to update, if any
+ * @return The component to display for the row, or nullptr if using default painting
+ */
 juce::Component *GearLibrary::refreshComponentForRow(int /*rowNumber*/, bool /*isRowSelected*/, juce::Component *existingComponentToUpdate)
 {
     // We're using paintListBoxItem for now, so return nullptr
     return existingComponentToUpdate;
 }
 
+/**
+ * @brief Handles a list box item click.
+ *
+ * @param row The index of the clicked row
+ * @param e The mouse event details
+ */
 void GearLibrary::listBoxItemClicked(int row, const juce::MouseEvent & /*e*/)
 {
     // Select the row
@@ -392,11 +508,22 @@ void GearLibrary::listBoxItemClicked(int row, const juce::MouseEvent & /*e*/)
         gearListBox->selectRow(row);
 }
 
+/**
+ * @brief Handles a list box item double click.
+ *
+ * @param row The index of the double-clicked row
+ * @param e The mouse event details
+ */
 void GearLibrary::listBoxItemDoubleClicked(int row, const juce::MouseEvent & /*e*/)
 {
     // Not used with tree view
 }
 
+/**
+ * @brief Loads the gear library data asynchronously.
+ *
+ * Initiates both filter and gear item loading operations in parallel.
+ */
 void GearLibrary::loadLibraryAsync()
 {
     // Start both async loading operations
@@ -404,6 +531,12 @@ void GearLibrary::loadLibraryAsync()
     loadGearItemsAsync();
 }
 
+/**
+ * @brief Loads filter options asynchronously.
+ *
+ * Fetches filter options from a remote source or uses fallback data
+ * if the remote source is unavailable.
+ */
 void GearLibrary::loadFiltersAsync()
 {
     // Use a background thread to avoid blocking the message thread
@@ -431,6 +564,12 @@ void GearLibrary::loadFiltersAsync()
         }); });
 }
 
+/**
+ * @brief Loads gear items asynchronously.
+ *
+ * Fetches gear items from a remote source or uses fallback data
+ * if the remote source is unavailable.
+ */
 void GearLibrary::loadGearItemsAsync()
 {
     // Use a background thread to avoid blocking the message thread
@@ -505,6 +644,14 @@ void GearLibrary::loadGearItemsAsync()
         }); });
 }
 
+/**
+ * @brief Parses the gear library JSON data.
+ *
+ * Processes JSON data containing gear items and populates the library.
+ * Supports both new and legacy JSON formats.
+ *
+ * @param jsonData The JSON string containing gear library data
+ */
 void GearLibrary::parseGearLibrary(const juce::String &jsonData)
 {
     // Parse JSON data and populate gear items
@@ -650,6 +797,12 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
         rootItem->refreshSubItems();
 }
 
+/**
+ * @brief Gets a gear item by index.
+ *
+ * @param index The index of the gear item to retrieve
+ * @return Pointer to the gear item, or nullptr if index is invalid
+ */
 GearItem *GearLibrary::getGearItem(int index)
 {
     if (index >= 0 && index < gearItems.size())
@@ -658,18 +811,38 @@ GearItem *GearLibrary::getGearItem(int index)
     return nullptr;
 }
 
+/**
+ * @brief Handles mouse down events.
+ *
+ * @param e The mouse event details
+ */
 void GearLibrary::mouseDown(const juce::MouseEvent &e)
 {
     // For now, we're not forwarding mouse events to the list box
     // since we're using the tree view
 }
 
+/**
+ * @brief Handles mouse drag events.
+ *
+ * @param e The mouse event details
+ */
 void GearLibrary::mouseDrag(const juce::MouseEvent &e)
 {
     // For now, we're not forwarding mouse events to the list box
     // since we're using the tree view
 }
 
+/**
+ * @brief Adds a new gear item to the library.
+ *
+ * Creates and adds a new gear item with the specified properties.
+ *
+ * @param name The name of the gear item
+ * @param category The category of the gear item
+ * @param description The description of the gear item
+ * @param manufacturer The manufacturer of the gear item
+ */
 void GearLibrary::addItem(const juce::String &name, const juce::String &category, const juce::String &description, const juce::String &manufacturer)
 {
     // Create a new GearItem with default controls
@@ -701,6 +874,11 @@ void GearLibrary::addItem(const juce::String &name, const juce::String &category
         rootItem->refreshSubItems();
 }
 
+/**
+ * @brief Saves the gear library data asynchronously.
+ *
+ * Initiates an asynchronous save operation for the current library state.
+ */
 void GearLibrary::saveLibraryAsync()
 {
     // In a real implementation, this would save to a file or server
@@ -714,6 +892,13 @@ void GearLibrary::saveLibraryAsync()
         DBG("Library saved successfully"); });
 }
 
+/**
+ * @brief Handles button click events.
+ *
+ * Processes clicks on the refresh and add user gear buttons.
+ *
+ * @param button Pointer to the clicked button
+ */
 void GearLibrary::buttonClicked(juce::Button *button)
 {
     if (button == &refreshButton)
@@ -726,6 +911,14 @@ void GearLibrary::buttonClicked(juce::Button *button)
     }
 }
 
+/**
+ * @brief Parses filter options from JSON data.
+ *
+ * Processes JSON data containing filter options and populates
+ * the filter options list.
+ *
+ * @param jsonData The JSON string containing filter options
+ */
 void GearLibrary::parseFilterOptions(const juce::String &jsonData)
 {
     // This method is retained for backwards compatibility but simplified
@@ -764,6 +957,12 @@ void GearLibrary::parseFilterOptions(const juce::String &jsonData)
     }
 }
 
+/**
+ * @brief Updates the filter box state.
+ *
+ * Updates the current filter and refreshes the display
+ * based on the selected filter.
+ */
 void GearLibrary::updateFilterBox()
 {
     // This method is now a no-op since we removed the filter box

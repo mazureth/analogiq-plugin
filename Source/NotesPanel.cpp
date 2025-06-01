@@ -1,5 +1,20 @@
+/**
+ * @file NotesPanel.cpp
+ * @brief Implementation of the NotesPanel class for managing session notes.
+ *
+ * This file implements the NotesPanel class, which provides a text editor interface
+ * for users to enter and manage session notes, including patchbay connections and
+ * other important details.
+ */
+
 #include "NotesPanel.h"
 
+/**
+ * @brief Constructs a new NotesPanel.
+ *
+ * Initializes the panel with a title label and a text editor for entering notes.
+ * Sets up the text editor with appropriate styling and default text.
+ */
 NotesPanel::NotesPanel()
 {
     // Set up title
@@ -7,7 +22,7 @@ NotesPanel::NotesPanel()
     titleLabel.setFont(juce::Font(20.0f, juce::Font::bold));
     titleLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(titleLabel);
-    
+
     // Set up text editor
     textEditor.setMultiLine(true);
     textEditor.setReturnKeyStartsNewLine(true);
@@ -22,32 +37,55 @@ NotesPanel::NotesPanel()
     addAndMakeVisible(textEditor);
 }
 
+/**
+ * @brief Destructor for NotesPanel.
+ */
 NotesPanel::~NotesPanel()
 {
 }
 
-void NotesPanel::paint(juce::Graphics& g)
+/**
+ * @brief Paints the NotesPanel component.
+ *
+ * @param g The graphics context to paint with
+ */
+void NotesPanel::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colours::darkgrey.darker(0.2f));
 }
 
+/**
+ * @brief Handles resizing of the NotesPanel component.
+ *
+ * Arranges the title label and text editor within the panel's bounds.
+ */
 void NotesPanel::resized()
 {
     auto bounds = getLocalBounds().reduced(20);
-    
+
     // Title at top
     titleLabel.setBounds(bounds.removeFromTop(40));
-    
+
     // Text editor fills the rest
     textEditor.setBounds(bounds);
 }
 
-void NotesPanel::setText(const juce::String& text)
+/**
+ * @brief Sets the text content of the notes panel.
+ *
+ * @param text The text to set in the editor
+ */
+void NotesPanel::setText(const juce::String &text)
 {
     textEditor.setText(text);
 }
 
+/**
+ * @brief Gets the current text content from the notes panel.
+ *
+ * @return The current text content as a string
+ */
 juce::String NotesPanel::getText() const
 {
     return textEditor.getText();
-} 
+}

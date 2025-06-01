@@ -1,3 +1,12 @@
+/**
+ * @file Rack.cpp
+ * @brief Implementation of the Rack class for managing audio gear in a virtual rack.
+ *
+ * This file implements the Rack class which provides a visual interface for managing
+ * audio gear items in a virtual rack system. It handles the layout, drag-and-drop
+ * functionality, and resource management for gear items and their controls.
+ */
+
 #include "Rack.h"
 #include "GearLibrary.h"
 #include <fstream>
@@ -18,6 +27,12 @@ static void logToFile(const juce::String &message)
 // Replace DBG with logToFile
 #define DBG(msg) logToFile(msg)
 
+/**
+ * @brief Constructs a new Rack instance.
+ *
+ * Initializes the rack with a viewport and container, creates the specified number
+ * of rack slots, and sets up drag-and-drop functionality.
+ */
 Rack::Rack()
 {
     DBG("Rack constructor");
@@ -45,17 +60,33 @@ Rack::Rack()
     setInterceptsMouseClicks(true, true);
 }
 
+/**
+ * @brief Destructor for the Rack class.
+ *
+ * Cleans up resources and logs the destruction.
+ */
 Rack::~Rack()
 {
     DBG("Rack destructor");
     // unique_ptr members will be automatically deleted
 }
 
+/**
+ * @brief Paints the rack's background.
+ *
+ * @param g The graphics context to paint with
+ */
 void Rack::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colours::black);
 }
 
+/**
+ * @brief Gets the height of a specific rack slot.
+ *
+ * @param slotIndex The index of the slot to get the height for
+ * @return The height of the slot in pixels
+ */
 int Rack::getSlotHeight(int slotIndex) const
 {
     if (slotIndex < 0 || slotIndex >= slots.size())
@@ -93,6 +124,12 @@ int Rack::getSlotHeight(int slotIndex) const
     return getDefaultSlotHeight();
 }
 
+/**
+ * @brief Handles resizing of the rack component.
+ *
+ * Adjusts the layout of the viewport, container, and all rack slots
+ * based on the new dimensions.
+ */
 void Rack::resized()
 {
     DBG("Rack::resized");
@@ -138,6 +175,12 @@ void Rack::resized()
         ", container=" + rackContainer->getBounds().toString());
 }
 
+/**
+ * @brief Checks if the rack is interested in a drag source.
+ *
+ * @param dragSourceDetails Details about the drag source
+ * @return true if the rack accepts drops from this source
+ */
 bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
     // Accept drops from DraggableListBox (GearLibrary) or other RackSlots
@@ -167,11 +210,21 @@ bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails
     return false;
 }
 
+/**
+ * @brief Handles when a dragged item enters the rack.
+ *
+ * @param dragSourceDetails Details about the drag source
+ */
 void Rack::itemDragEnter(const juce::DragAndDropTarget::SourceDetails & /*dragSourceDetails*/)
 {
     // Nothing to do here
 }
 
+/**
+ * @brief Handles when a dragged item moves over the rack.
+ *
+ * @param details Details about the drag source and position
+ */
 void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails &details)
 {
     // This is only used for dragging from GearLibrary now, not for reordering
@@ -184,6 +237,11 @@ void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails &details)
     }
 }
 
+/**
+ * @brief Handles when a dragged item exits the rack.
+ *
+ * @param dragSourceDetails Details about the drag source
+ */
 void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails & /*dragSourceDetails*/)
 {
     // Clear all highlights
@@ -193,6 +251,11 @@ void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails & /*dragSou
     }
 }
 
+/**
+ * @brief Handles when a dragged item is dropped onto the rack.
+ *
+ * @param details Details about the drag source and drop position
+ */
 void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
 {
     DBG("Rack::itemDropped");
@@ -276,6 +339,12 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
     }
 }
 
+/**
+ * @brief Rearranges gear items in the rack using a sortable list.
+ *
+ * @param sourceSlotIndex The index of the source slot
+ * @param targetSlotIndex The index of the target slot
+ */
 void Rack::rearrangeGearAsSortableList(int sourceSlotIndex, int targetSlotIndex)
 {
     DBG("===============================================");
@@ -335,6 +404,12 @@ void Rack::rearrangeGearAsSortableList(int sourceSlotIndex, int targetSlotIndex)
     DBG("===============================================");
 }
 
+/**
+ * @brief Finds the nearest rack slot to a given position.
+ *
+ * @param position The position to find the nearest slot for
+ * @return Pointer to the nearest RackSlot, or nullptr if none found
+ */
 RackSlot *Rack::findNearestSlot(const juce::Point<int> &position)
 {
     // This method is kept for compatibility with drops from GearLibrary
@@ -371,7 +446,11 @@ RackSlot *Rack::findNearestSlot(const juce::Point<int> &position)
     return bestSlot;
 }
 
-// New method to fetch schema for a gear item
+/**
+ * @brief Fetches the schema for a gear item.
+ *
+ * @param item The gear item to fetch the schema for
+ */
 void Rack::fetchSchemaForGearItem(GearItem *item)
 {
     if (item == nullptr || item->schemaPath.isEmpty())
@@ -394,9 +473,21 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
     // Use JUCE's URL class to fetch the schema asynchronously
     juce::URL schemaUrl(fullUrl);
 
-    // Create a new thread to download the schema asynchronously
+    /**
+     * @brief Thread for downloading and processing schema data.
+     *
+     * This struct handles the asynchronous download and processing of schema data
+     * for gear items, ensuring UI updates happen on the message thread.
+     */
     struct SchemaDownloader : public juce::Thread
     {
+        /**
+         * @brief Constructs a new SchemaDownloader.
+         *
+         * @param urlToUse The URL to download the schema from
+         * @param itemToUpdate The gear item to update with the schema
+         * @param rackToNotify The rack to notify when the schema is loaded
+         */
         SchemaDownloader(juce::URL urlToUse, GearItem *itemToUpdate, Rack *rackToNotify)
             : juce::Thread("Schema Downloader"),
               url(urlToUse), item(itemToUpdate), rack(rackToNotify)
@@ -404,11 +495,21 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
             startThread();
         }
 
+        /**
+         * @brief Destructor for SchemaDownloader.
+         *
+         * Ensures the thread is properly stopped before destruction.
+         */
         ~SchemaDownloader() override
         {
             stopThread(2000);
         }
 
+        /**
+         * @brief Main thread execution function.
+         *
+         * Downloads the schema data and processes it on the message thread.
+         */
         void run() override
         {
             DBG("SchemaDownloader thread started for " + item->name);
@@ -436,18 +537,23 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
                 delete this; });
         }
 
-        juce::URL url;
-        GearItem *item;
-        Rack *rack;
-        juce::String schemaData;
-        bool success = false;
+        juce::URL url;           ///< The URL to download from
+        GearItem *item;          ///< The gear item to update
+        Rack *rack;              ///< The rack to notify
+        juce::String schemaData; ///< The downloaded schema data
+        bool success = false;    ///< Whether the download was successful
     };
 
     // Create and start the download thread (it will delete itself when done)
     new SchemaDownloader(schemaUrl, item, this);
 }
 
-// Method to parse the schema data
+/**
+ * @brief Parses the schema data for a gear item.
+ *
+ * @param schemaData The JSON schema data to parse
+ * @param item The gear item to update with the parsed schema
+ */
 void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
 {
     // Parse the JSON schema
@@ -757,7 +863,11 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
     DBG("Schema successfully parsed for " + item->name);
 }
 
-// New method to fetch the faceplate image
+/**
+ * @brief Fetches the faceplate image for a gear item.
+ *
+ * @param item The gear item to fetch the faceplate for
+ */
 void Rack::fetchFaceplateImage(GearItem *item)
 {
     if (item == nullptr || item->faceplateImagePath.isEmpty())
@@ -787,9 +897,21 @@ void Rack::fetchFaceplateImage(GearItem *item)
     // Direct image loading isn't available in this version of JUCE, so skip straight to async
     DBG("Starting async download for faceplate image...");
 
-    // Create a new thread to download the image asynchronously
+    /**
+     * @brief Thread for downloading faceplate images.
+     *
+     * This struct handles the asynchronous download and processing of faceplate images
+     * for gear items, ensuring UI updates happen on the message thread.
+     */
     struct FaceplateImageDownloader : public juce::Thread
     {
+        /**
+         * @brief Constructs a new FaceplateImageDownloader.
+         *
+         * @param urlToUse The URL to download the image from
+         * @param itemToUpdate The gear item to update with the image
+         * @param parentRack The rack to notify when the image is loaded
+         */
         FaceplateImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, Rack *parentRack)
             : juce::Thread("Faceplate Image Downloader"),
               url(urlToUse), item(itemToUpdate), rack(parentRack)
@@ -797,11 +919,21 @@ void Rack::fetchFaceplateImage(GearItem *item)
             startThread();
         }
 
+        /**
+         * @brief Destructor for FaceplateImageDownloader.
+         *
+         * Ensures the thread is properly stopped before destruction.
+         */
         ~FaceplateImageDownloader() override
         {
             stopThread(2000);
         }
 
+        /**
+         * @brief Main thread execution function.
+         *
+         * Downloads the faceplate image and updates the UI on the message thread.
+         */
         void run() override
         {
             DBG("FaceplateImageDownloader thread started for " + item->name);
@@ -916,15 +1048,21 @@ void Rack::fetchFaceplateImage(GearItem *item)
             }
         }
 
-        juce::URL url;
-        GearItem *item;
-        Rack *rack;
+        juce::URL url;  ///< The URL to download from
+        GearItem *item; ///< The gear item to update
+        Rack *rack;     ///< The rack to notify
     };
 
     // Create and start the download thread (it will delete itself when done)
     new FaceplateImageDownloader(imageUrl, item, this);
 }
 
+/**
+ * @brief Fetches the knob image for a gear control.
+ *
+ * @param item The gear item containing the control
+ * @param controlIndex The index of the control
+ */
 void Rack::fetchKnobImage(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
@@ -960,8 +1098,22 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
     juce::URL imageUrl(fullUrl);
 
     // Create a new thread to download the image asynchronously
+    /**
+     * @brief Thread for downloading knob images.
+     *
+     * This struct handles the asynchronous download and processing of knob images
+     * for gear controls, ensuring UI updates happen on the message thread.
+     */
     struct KnobImageDownloader : public juce::Thread
     {
+        /**
+         * @brief Constructs a new KnobImageDownloader.
+         *
+         * @param urlToUse The URL to download the image from
+         * @param itemToUpdate The gear item containing the control
+         * @param controlIndexToUpdate The index of the control to update
+         * @param parentRack The rack to notify when the image is loaded
+         */
         KnobImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack)
             : juce::Thread("Knob Image Downloader"),
               url(urlToUse),
@@ -974,11 +1126,21 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
             startThread();
         }
 
+        /**
+         * @brief Destructor for KnobImageDownloader.
+         *
+         * Ensures the thread is properly stopped before destruction.
+         */
         ~KnobImageDownloader() override
         {
             stopThread(2000);
         }
 
+        /**
+         * @brief Main thread execution function.
+         *
+         * Downloads the knob image and updates the UI on the message thread.
+         */
         void run() override
         {
             DBG("KnobImageDownloader thread started for control: " + controlName);
@@ -1076,18 +1238,24 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
             }
         }
 
-        juce::URL url;
-        GearItem *item;
-        int controlIndex;
-        Rack *rack;
-        juce::String controlId;   // Store control ID at construction time
-        juce::String controlName; // Store control name at construction time
+        juce::URL url;            ///< The URL to download from
+        GearItem *item;           ///< The gear item containing the control
+        int controlIndex;         ///< The index of the control to update
+        Rack *rack;               ///< The rack to notify
+        juce::String controlId;   ///< The ID of the control being updated
+        juce::String controlName; ///< The name of the control being updated
     };
 
     // Create and start the download thread (it will delete itself when done)
     new KnobImageDownloader(imageUrl, item, controlIndex, this);
 }
 
+/**
+ * @brief Fetches the fader image for a gear control.
+ *
+ * @param item The gear item containing the control
+ * @param controlIndex The index of the control
+ */
 void Rack::fetchFaderImage(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
@@ -1112,8 +1280,22 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
 
     juce::URL imageUrl(fullUrl);
 
+    /**
+     * @brief Thread for downloading fader images.
+     *
+     * This struct handles the asynchronous download and processing of fader images
+     * for gear controls, ensuring UI updates happen on the message thread.
+     */
     struct FaderImageDownloader : public juce::Thread
     {
+        /**
+         * @brief Constructs a new FaderImageDownloader.
+         *
+         * @param urlToUse The URL to download the image from
+         * @param itemToUpdate The gear item containing the control
+         * @param controlIndexToUpdate The index of the control to update
+         * @param parentRack The rack to notify when the image is loaded
+         */
         FaderImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack)
             : juce::Thread("Fader Image Downloader"),
               url(urlToUse),
@@ -1126,11 +1308,21 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
             startThread();
         }
 
+        /**
+         * @brief Destructor for FaderImageDownloader.
+         *
+         * Ensures the thread is properly stopped before destruction.
+         */
         ~FaderImageDownloader() override
         {
             stopThread(2000);
         }
 
+        /**
+         * @brief Main thread execution function.
+         *
+         * Downloads the fader image and updates the UI on the message thread.
+         */
         void run() override
         {
             DBG("FaderImageDownloader thread started for control: " + controlName);
@@ -1228,18 +1420,24 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
             }
         }
 
-        juce::URL url;
-        GearItem *item;
-        int controlIndex;
-        Rack *rack;
-        juce::String controlId;   // Store control ID at construction time
-        juce::String controlName; // Store control name at construction time
+        juce::URL url;            ///< The URL to download from
+        GearItem *item;           ///< The gear item containing the control
+        int controlIndex;         ///< The index of the control to update
+        Rack *rack;               ///< The rack to notify
+        juce::String controlId;   ///< The ID of the control being updated
+        juce::String controlName; ///< The name of the control being updated
     };
 
     // Create and start the downloader
     new FaderImageDownloader(imageUrl, item, controlIndex, this);
 }
 
+/**
+ * @brief Fetches the switch sprite sheet for a gear control.
+ *
+ * @param item The gear item containing the control
+ * @param controlIndex The index of the control
+ */
 void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
@@ -1275,8 +1473,22 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
     juce::URL imageUrl(fullUrl);
 
     // Create a new thread to download the image asynchronously
+    /**
+     * @brief Thread for downloading switch sprite sheets.
+     *
+     * This struct handles the asynchronous download and processing of switch sprite sheets
+     * for gear controls, ensuring UI updates happen on the message thread.
+     */
     struct SwitchSpriteSheetDownloader : public juce::Thread
     {
+        /**
+         * @brief Constructs a new SwitchSpriteSheetDownloader.
+         *
+         * @param urlToUse The URL to download the sprite sheet from
+         * @param itemToUpdate The gear item containing the control
+         * @param controlIndexToUpdate The index of the control to update
+         * @param parentRack The rack to notify when the sprite sheet is loaded
+         */
         SwitchSpriteSheetDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack)
             : juce::Thread("Switch Sprite Sheet Downloader"),
               url(urlToUse),
@@ -1289,11 +1501,21 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
             startThread();
         }
 
+        /**
+         * @brief Destructor for SwitchSpriteSheetDownloader.
+         *
+         * Ensures the thread is properly stopped before destruction.
+         */
         ~SwitchSpriteSheetDownloader() override
         {
             stopThread(2000);
         }
 
+        /**
+         * @brief Main thread execution function.
+         *
+         * Downloads the switch sprite sheet and updates the UI on the message thread.
+         */
         void run() override
         {
             DBG("SwitchSpriteSheetDownloader thread started for control: " + controlName);
@@ -1391,18 +1613,24 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
             }
         }
 
-        juce::URL url;
-        GearItem *item;
-        int controlIndex;
-        Rack *rack;
-        juce::String controlId;   // Store control ID at construction time
-        juce::String controlName; // Store control name at construction time
+        juce::URL url;            ///< The URL to download from
+        GearItem *item;           ///< The gear item containing the control
+        int controlIndex;         ///< The index of the control to update
+        Rack *rack;               ///< The rack to notify
+        juce::String controlId;   ///< The ID of the control being updated
+        juce::String controlName; ///< The name of the control being updated
     };
 
     // Create and start the download thread (it will delete itself when done)
     new SwitchSpriteSheetDownloader(imageUrl, item, controlIndex, this);
 }
 
+/**
+ * @brief Fetches the button sprite sheet for a gear control.
+ *
+ * @param item The gear item containing the control
+ * @param controlIndex The index of the control
+ */
 void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
@@ -1438,8 +1666,22 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
     juce::URL imageUrl(fullUrl);
 
     // Create a new thread to download the image asynchronously
+    /**
+     * @brief Thread for downloading button sprite sheets.
+     *
+     * This struct handles the asynchronous download and processing of button sprite sheets
+     * for gear controls, ensuring UI updates happen on the message thread.
+     */
     struct ButtonSpriteSheetDownloader : public juce::Thread
     {
+        /**
+         * @brief Constructs a new ButtonSpriteSheetDownloader.
+         *
+         * @param urlToUse The URL to download the sprite sheet from
+         * @param itemToUpdate The gear item containing the control
+         * @param controlIndexToUpdate The index of the control to update
+         * @param parentRack The rack to notify when the sprite sheet is loaded
+         */
         ButtonSpriteSheetDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack)
             : juce::Thread("Button Sprite Sheet Downloader"),
               url(urlToUse),
@@ -1452,11 +1694,21 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
             startThread();
         }
 
+        /**
+         * @brief Destructor for ButtonSpriteSheetDownloader.
+         *
+         * Ensures the thread is properly stopped before destruction.
+         */
         ~ButtonSpriteSheetDownloader() override
         {
             stopThread(2000);
         }
 
+        /**
+         * @brief Main thread execution function.
+         *
+         * Downloads the button sprite sheet and updates the UI on the message thread.
+         */
         void run() override
         {
             DBG("ButtonSpriteSheetDownloader thread started for control: " + controlName);
@@ -1554,18 +1806,23 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
             }
         }
 
-        juce::URL url;
-        GearItem *item;
-        int controlIndex;
-        Rack *rack;
-        juce::String controlId;   // Store control ID at construction time
-        juce::String controlName; // Store control name at construction time
+        juce::URL url;            ///< The URL to download from
+        GearItem *item;           ///< The gear item containing the control
+        int controlIndex;         ///< The index of the control to update
+        Rack *rack;               ///< The rack to notify
+        juce::String controlId;   ///< The ID of the control being updated
+        juce::String controlName; ///< The name of the control being updated
     };
 
     // Create and start the download thread (it will delete itself when done)
     new ButtonSpriteSheetDownloader(imageUrl, item, controlIndex, this);
 }
 
+/**
+ * @brief Creates a new instance of a gear item in a slot.
+ *
+ * @param slotIndex The index of the slot to create the instance in
+ */
 void Rack::createInstance(int slotIndex)
 {
     if (auto *slot = getSlot(slotIndex))
@@ -1574,6 +1831,11 @@ void Rack::createInstance(int slotIndex)
     }
 }
 
+/**
+ * @brief Resets a slot to its source gear item.
+ *
+ * @param slotIndex The index of the slot to reset
+ */
 void Rack::resetToSource(int slotIndex)
 {
     if (auto *slot = getSlot(slotIndex))
@@ -1582,6 +1844,12 @@ void Rack::resetToSource(int slotIndex)
     }
 }
 
+/**
+ * @brief Checks if a slot contains an instance.
+ *
+ * @param slotIndex The index of the slot to check
+ * @return true if the slot contains an instance
+ */
 bool Rack::isInstance(int slotIndex) const
 {
     if (auto *slot = getSlot(slotIndex))
@@ -1591,6 +1859,12 @@ bool Rack::isInstance(int slotIndex) const
     return false;
 }
 
+/**
+ * @brief Gets the instance ID for a slot.
+ *
+ * @param slotIndex The index of the slot
+ * @return The instance ID as a string
+ */
 juce::String Rack::getInstanceId(int slotIndex) const
 {
     if (auto *slot = getSlot(slotIndex))
@@ -1600,6 +1874,9 @@ juce::String Rack::getInstanceId(int slotIndex) const
     return juce::String();
 }
 
+/**
+ * @brief Resets all instances in the rack to their source gear items.
+ */
 void Rack::resetAllInstances()
 {
     for (int i = 0; i < slots.size(); ++i)
