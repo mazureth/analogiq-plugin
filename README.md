@@ -35,6 +35,7 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
 - CMake 3.15+
 - C++17 compatible compiler
 - JUCE framework (will be downloaded automatically by CMake)
+- Doxygen (for building documentation)
 
 ### Build Steps
 
@@ -54,8 +55,27 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
 
 3. Open your IDE _after_ you build so JUCE is correctly downloaded. This will help with linter issues.
 
+4. To build the documentation:
+   ```bash
+   cmake --build build --target docs
+   ```
+   The documentation will be generated in the `docs/html` directory.
 
 The plugin will be built in the `build` directory. The first build might take longer as it downloads JUCE automatically.
+
+## Documentation
+
+The project documentation is automatically generated using Doxygen and is available in two places:
+
+1. **Local Documentation**: After building, you can find the documentation in the `docs/html` directory. Open `index.html` in your web browser to view it.
+
+2. **Online Documentation**: The latest documentation is automatically built and deployed to GitHub Pages whenever changes are pushed to the main branch. You can find it at: https://mazureth.github.io/analogiq-client/
+
+The documentation includes:
+- Detailed API documentation
+- Class hierarchies and relationships
+- Source code cross-references
+- Call graphs and dependency diagrams
 
 ## Usage
 
