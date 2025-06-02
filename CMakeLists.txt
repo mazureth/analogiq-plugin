@@ -2,11 +2,17 @@ cmake_minimum_required(VERSION 3.15)
 
 project(AnalogIQ VERSION 0.1.0)
 
+# Find Doxygen
+find_package(Doxygen REQUIRED)
+
 # Set compiler flags for macOS 15.0 compatibility
 if(APPLE)
     add_compile_options(-Wno-deprecated-declarations)
     add_compile_options(-Wno-unused-but-set-variable)
 endif()
+
+# Generate compile_commands.json
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Use FetchContent to get JUCE
 include(FetchContent)
@@ -66,6 +72,7 @@ target_sources(AnalogIQ PRIVATE
 target_compile_definitions(AnalogIQ
     PUBLIC
     JUCE_WEB_BROWSER=0
+    JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
 # Link with JUCE modules
@@ -91,3 +98,25 @@ target_link_libraries(AnalogIQ
 
 # Generate JuceHeader.h
 juce_generate_juce_header(AnalogIQ)
+
+# Add documentation target
+if(DOXYGEN_FOUND)
+    # Create docs directory
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+
+    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
+    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+    # Request to configure the file
+    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+
+    # Add a custom target to run Doxygen
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM)
+
+    # Make sure the docs target depends on the main target
+    add_dependencies(docs AnalogIQ)
+endif()
