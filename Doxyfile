@@ -1,0 +1,132 @@
+# Project information
+PROJECT_NAME           = "AnalogIQ"
+PROJECT_NUMBER         = 0.1.0
+PROJECT_BRIEF         = "Audio plugin for managing and simulating audio gear"
+OUTPUT_DIRECTORY      = docs
+CREATE_SUBDIRS        = YES
+OUTPUT_LANGUAGE       = English
+BRIEF_MEMBER_DESC     = YES
+REPEAT_BRIEF          = YES
+ABBREVIATE_BRIEF      = "The $name class" \
+                       "The $name widget" \
+                       "The $name file" \
+                       is \
+                       provides \
+                       specifies \
+                       contains \
+                       represents \
+                       a \
+                       an \
+                       the
+
+# Input settings
+INPUT                  = Source
+FILE_PATTERNS         = *.cpp *.h
+RECURSIVE             = YES
+EXTRACT_ALL           = YES
+EXTRACT_PRIVATE       = YES
+EXTRACT_STATIC        = YES
+EXTRACT_LOCAL_CLASSES = YES
+
+# Source code settings
+SOURCE_BROWSER        = YES
+INLINE_SOURCES        = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION   = YES
+REFERENCES_LINK_SOURCE = YES
+SOURCE_TOOLTIPS       = YES
+USE_HTAGS            = NO
+VERBATIM_HEADERS     = YES
+
+# HTML output settings
+GENERATE_HTML         = YES
+HTML_OUTPUT          = html
+HTML_FILE_EXTENSION  = .html
+HTML_HEADER          =
+HTML_FOOTER          =
+HTML_STYLESHEET      =
+HTML_EXTRA_STYLESHEET =
+HTML_EXTRA_FILES     =
+HTML_COLORSTYLE_HUE  = 220
+HTML_COLORSTYLE_SAT  = 100
+HTML_COLORSTYLE_GAMMA = 80
+HTML_TIMESTAMP       = YES
+HTML_DYNAMIC_MENUS   = YES
+HTML_DYNAMIC_SECTIONS = NO
+
+# LaTeX output settings
+GENERATE_LATEX        = NO
+
+# RTF output settings
+GENERATE_RTF          = NO
+
+# Man page output settings
+GENERATE_MAN          = NO
+
+# XML output settings
+GENERATE_XML          = NO
+
+# DocBook output settings
+GENERATE_DOCBOOK      = NO
+
+# DIA output settings
+GENERATE_DIA          = NO
+
+# PlantUML output settings
+GENERATE_PLANTUML     = NO
+
+# Graph settings
+CLASS_DIAGRAMS        = YES
+HIDE_UNDOC_RELATIONS  = YES
+CLASS_GRAPH           = YES
+COLLABORATION_GRAPH   = YES
+UML_LOOK             = YES
+UML_LIMIT_NUM_FIELDS  = 50
+TEMPLATE_RELATIONS    = YES
+INCLUDE_GRAPH         = YES
+INCLUDED_BY_GRAPH     = YES
+CALL_GRAPH           = YES
+CALLER_GRAPH         = YES
+GRAPHICAL_HIERARCHY   = YES
+DIRECTORY_GRAPH       = YES
+DOT_IMAGE_FORMAT     = png
+INTERACTIVE_SVG      = NO
+DOT_PATH             =
+DOTFILE_DIRS         =
+MSCFILE_DIRS         =
+DIAFILE_DIRS         =
+PLANTUML_JAR_PATH    =
+PLANTUML_OPTIONS     =
+PLANTUML_LIMIT_NUM_FIELDS = 50
+
+# Preprocessing settings
+ENABLE_PREPROCESSING  = YES
+MACRO_EXPANSION      = YES
+EXPAND_ONLY_PREDEF   = NO
+SEARCH_INCLUDES      = YES
+INCLUDE_PATH         = build/_deps/juce-src/modules \
+                      build/AnalogIQ_artefacts/JuceLibraryCode
+INCLUDE_FILE_PATTERNS =
+PREDEFINED          = JUCE_MODAL_LOOPS_PERMITTED=1 \
+                      JUCE_WEB_BROWSER=0 \
+                      JUCE_USE_CURL=0 \
+                      JUCE_STRICT_REFCOUNTEDPOINTER=1 \
+                      JUCE_DISPLAY_SPLASH_SCREEN=0 \
+                      JUCE_REPORT_APP_USAGE=0
+EXPAND_AS_DEFINED    =
+SKIP_FUNCTION_MACROS = YES
+
+# External references
+TAGFILES             =
+GENERATE_TAGFILE     =
+ALLEXTERNALS         = NO
+EXTERNAL_GROUPS      = YES
+EXTERNAL_PAGES       = YES
+
+# Configuration options related to the dot tool
+DOT_GRAPH_MAX_NODES = 100
+MAX_DOT_GRAPH_DEPTH = 0
+DOT_TRANSPARENT     = NO
+DOT_MULTI_TARGETS   = NO
+GENERATE_LEGEND     = YES
+DOT_CLEANUP         = YES 
