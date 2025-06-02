@@ -1,0 +1,32 @@
+CompileFlags:
+  Add: 
+    - -Ibuild/_deps/juce-src/modules
+    - -Ibuild
+    - -Ibuild/AnalogIQ_artefacts/JuceLibraryCode
+    - -std=c++17
+    - -DJUCE_MODAL_LOOPS_PERMITTED=1
+    - -DJUCE_WEB_BROWSER=0
+    - -DJUCE_USE_CURL=0
+    - -DJUCE_STRICT_REFCOUNTEDPOINTER=1
+  Remove: [-W*]
+
+Diagnostics:
+  ClangTidy:
+    Add: 
+      - performance-*
+      - modernize-*
+      - bugprone-*
+      - cppcoreguidelines-*
+    Remove:
+      - modernize-use-trailing-return-type
+      - modernize-use-nodiscard
+
+Index:
+  Background: Build
+  StandardLibrary: Yes
+
+Hover:
+  ShowAKA: Yes
+
+Completion:
+  AllScopes: Yes 

@@ -2,11 +2,20 @@ cmake_minimum_required(VERSION 3.15)
 
 project(AnalogIQ VERSION 0.1.0)
 
-# Find the JUCE library
-add_subdirectory(JUCE)
+# Set compiler flags for macOS 15.0 compatibility
+if(APPLE)
+    add_compile_options(-Wno-deprecated-declarations)
+    add_compile_options(-Wno-unused-but-set-variable)
+endif()
 
-# Initialize JUCE
-include(JUCE/extras/Build/CMake/JUCEUtils.cmake)
+# Use FetchContent to get JUCE
+include(FetchContent)
+FetchContent_Declare(
+    JUCE
+    GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
+    GIT_TAG master  # Using master branch for latest macOS 15.0 support
+)
+FetchContent_MakeAvailable(JUCE)
 
 # Add options for AAX, VST3, etc.
 option(ANALOGIQ_BUILD_AAX "Build AAX plugin" ON)
