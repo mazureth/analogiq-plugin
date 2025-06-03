@@ -7,7 +7,7 @@
 class RackTests : public juce::UnitTest
 {
 public:
-    RackTests() : UnitTest("Rack Tests") {}
+    RackTests() : UnitTest("RackTests") {}
 
     void runTest() override
     {
@@ -27,14 +27,12 @@ public:
             gearItem->categoryString = "Effects";
             gearItem->type = GearType::Series500;
             gearItem->category = GearCategory::EQ;
-
-            // Get the first slot and add the gear item
             auto slot = rack.getSlot(0);
             if (slot != nullptr)
             {
                 slot->setGearItem(gearItem.get());
                 expect(!slot->isAvailable());
-                expect(slot->getGearItem()->name == "Test Gear");
+                expect(slot->getGearItem()->name == "Test Gore");
             }
         }
 
@@ -48,8 +46,6 @@ public:
             gearItem->categoryString = "Effects";
             gearItem->type = GearType::Series500;
             gearItem->category = GearCategory::EQ;
-
-            // Get the first slot and add the gear item
             auto slot = rack.getSlot(0);
             if (slot != nullptr)
             {
@@ -57,7 +53,6 @@ public:
                 rack.createInstance(0);
                 expect(rack.isInstance(0));
                 expect(!rack.getInstanceId(0).isEmpty());
-
                 rack.resetToSource(0);
                 expect(!rack.isInstance(0));
             }
@@ -73,7 +68,6 @@ public:
             gearItem1->categoryString = "Effects";
             gearItem1->type = GearType::Series500;
             gearItem1->category = GearCategory::EQ;
-
             auto gearItem2 = std::make_unique<GearItem>();
             gearItem2->unitId = "test_gear_2";
             gearItem2->name = "Test Gear 2";
@@ -81,20 +75,16 @@ public:
             gearItem2->categoryString = "Effects";
             gearItem2->type = GearType::Series500;
             gearItem2->category = GearCategory::EQ;
-
-            // Get slots and add gear items
             auto slot1 = rack.getSlot(0);
             auto slot2 = rack.getSlot(1);
             if (slot1 != nullptr && slot2 != nullptr)
             {
                 slot1->setGearItem(gearItem1.get());
                 slot2->setGearItem(gearItem2.get());
-
                 rack.createInstance(0);
                 rack.createInstance(1);
                 expect(rack.isInstance(0));
                 expect(rack.isInstance(1));
-
                 rack.resetAllInstances();
                 expect(!rack.isInstance(0));
                 expect(!rack.isInstance(1));

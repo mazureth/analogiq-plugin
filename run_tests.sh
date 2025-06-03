@@ -16,4 +16,4 @@ cmake .. -DANALOGIQ_BUILD_TESTS=ON
 cmake --build . --target analogiq_tests
 
 # Run the tests
-ctest --output-on-failure 
+./tests/analogiq_tests

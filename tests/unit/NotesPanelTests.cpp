@@ -1,10 +1,10 @@
 #include <JuceHeader.h>
-#include "NotesPanel.h"
+#include "../../Source/NotesPanel.h"
 
 class NotesPanelTests : public juce::UnitTest
 {
 public:
-    NotesPanelTests() : UnitTest("NotesPanel Tests") {}
+    NotesPanelTests() : UnitTest("NotesPanelTests") {}
 
     void runTest() override
     {
@@ -42,5 +42,4 @@ public:
     }
 };
 
-// This creates the static instance that JUCE will use to run the tests
 static NotesPanelTests notesPanelTests;

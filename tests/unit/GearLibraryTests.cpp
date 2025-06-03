@@ -4,7 +4,7 @@
 class GearLibraryTests : public juce::UnitTest
 {
 public:
-    GearLibraryTests() : UnitTest("GearLibrary Tests") {}
+    GearLibraryTests() : UnitTest("GearLibraryTests") {}
 
     void runTest() override
     {
@@ -17,36 +17,25 @@ public:
         beginTest("Adding Items");
         {
             GearLibrary library;
-
-            // Test adding a gear item with all required parameters
-            library.addItem("Test Gear", "Effects", "A test gear item", "Test Co");
-
-            // Verify the item was added
+            library.addItem("Test Gear", "Compressor", "A test gear item", "Test Co");
             expect(library.getItems().size() == 1);
             expect(library.getItems()[0].name == "Test Gear");
             expect(library.getItems()[0].manufacturer == "Test Co");
-            expect(library.getItems()[0].categoryString == "Effects");
+            expect(library.getItems()[0].categoryString == "compressor");
         }
 
         beginTest("Item Retrieval");
         {
             GearLibrary library;
-
-            // Add a test item
-            library.addItem("Test Gear", "Effects", "A test gear item", "Test Co");
-
-            // Test getGearItem
+            library.addItem("Test Gear", "Compressor", "A test gear item", "Test Co");
             auto *item = library.getGearItem(0);
             expect(item != nullptr);
             expect(item->name == "Test Gear");
-
-            // Test invalid index
             expect(library.getGearItem(999) == nullptr);
         }
 
         beginTest("URL Construction");
         {
-            // Test various URL construction scenarios
             expect(GearLibrary::getFullUrl("http://example.com") == "http://example.com");
             expect(GearLibrary::getFullUrl("/absolute/path") == "/absolute/path");
             expect(GearLibrary::getFullUrl("assets/image.jpg").contains("assets/"));
@@ -55,5 +44,4 @@ public:
     }
 };
 
-// This creates the static instance that JUCE will use to run the tests
 static GearLibraryTests gearLibraryTests;

@@ -1,11 +1,11 @@
 #include <JuceHeader.h>
-#include "RackSlot.h"
+#include "../../Source/RackSlot.h"
 #include "GearItem.h"
 
 class RackSlotTests : public juce::UnitTest
 {
 public:
-    RackSlotTests() : UnitTest("RackSlot Tests") {}
+    RackSlotTests() : UnitTest("RackSlotTests") {}
 
     void runTest() override
     {

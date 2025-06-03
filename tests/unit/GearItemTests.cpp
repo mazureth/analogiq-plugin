@@ -4,7 +4,7 @@
 class GearItemTests : public juce::UnitTest
 {
 public:
-    GearItemTests() : UnitTest("GearItem Tests") {}
+    GearItemTests() : UnitTest("GearItemTests") {}
 
     void runTest() override
     {
@@ -41,9 +41,7 @@ public:
             GearItem item;
             item.name = "Original Gear";
             item.unitId = "test.unit.1";
-
             item.createInstance(item.unitId);
-
             expect(item.isInstance);
             expect(item.sourceUnitId == item.unitId);
             expect(item.name == "Original Gear");
@@ -54,17 +52,13 @@ public:
         {
             GearItem item;
             item.unitId = "test.unit.1";
-
-            expect(!item.isInstanceOf("test.unit.1")); // Not an instance
-            expect(!item.isInstanceOf("test.unit.2")); // Wrong ID
-
+            expect(!item.isInstanceOf("test.unit.1"));
+            expect(!item.isInstanceOf("test.unit.2"));
             item.createInstance("test.unit.1");
-
-            expect(item.isInstanceOf("test.unit.1"));  // Correct instance
-            expect(!item.isInstanceOf("test.unit.2")); // Wrong ID
+            expect(item.isInstanceOf("test.unit.1"));
+            expect(!item.isInstanceOf("test.unit.2"));
         }
     }
 };
 
-// This creates the static instance that JUCE will use to run the tests
 static GearItemTests gearItemTests;

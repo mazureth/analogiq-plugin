@@ -32,12 +32,6 @@ target_link_libraries(analogiq_tests
     juce::juce_audio_plugin_client
     juce::juce_audio_processors
     juce::juce_audio_utils
-    juce::juce_core
-    juce::juce_data_structures
-    juce::juce_events
-    juce::juce_graphics
-    juce::juce_gui_basics
-    juce::juce_gui_extra
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags
@@ -52,4 +46,12 @@ target_include_directories(analogiq_tests
 )
 
 # Add test to CTest
-add_test(NAME analogiq_tests COMMAND analogiq_tests) 
+add_test(NAME analogiq_tests COMMAND analogiq_tests)
+
+# Set JUCE unit test specific definitions
+target_compile_definitions(analogiq_tests
+    PRIVATE
+    JUCE_UNIT_TESTS=1
+    JUCE_STRICT_REFCOUNTEDPOINTER=1
+    JUCE_UNIT_TESTS_VERBOSE=1
+) 
