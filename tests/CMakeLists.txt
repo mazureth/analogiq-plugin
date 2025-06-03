@@ -1,0 +1,55 @@
+# Enable testing
+enable_testing()
+
+# Create test executable
+add_executable(analogiq_tests
+    main.cpp
+    unit/GearLibraryTests.cpp
+    unit/GearItemTests.cpp
+    unit/RackTests.cpp
+    unit/RackSlotTests.cpp
+    unit/DraggableListBoxTests.cpp
+    unit/NotesPanelTests.cpp
+    unit/PluginProcessorTests.cpp
+    unit/PluginEditorTests.cpp
+)
+
+# Set C++ standard
+target_compile_features(analogiq_tests PRIVATE cxx_std_17)
+
+# Link with JUCE modules
+target_link_libraries(analogiq_tests
+    PRIVATE
+    juce::juce_core
+    juce::juce_data_structures
+    juce::juce_events
+    juce::juce_graphics
+    juce::juce_gui_basics
+    juce::juce_gui_extra
+    juce::juce_audio_basics
+    juce::juce_audio_devices
+    juce::juce_audio_formats
+    juce::juce_audio_plugin_client
+    juce::juce_audio_processors
+    juce::juce_audio_utils
+    juce::juce_core
+    juce::juce_data_structures
+    juce::juce_events
+    juce::juce_graphics
+    juce::juce_gui_basics
+    juce::juce_gui_extra
+    juce::juce_recommended_config_flags
+    juce::juce_recommended_lto_flags
+    juce::juce_recommended_warning_flags
+    AnalogIQ
+)
+
+# Add include directories
+target_include_directories(analogiq_tests
+    PRIVATE
+    ${CMAKE_SOURCE_DIR}/Source
+    ${CMAKE_BINARY_DIR}/AnalogIQ_artefacts/JuceLibraryCode # For JuceHeader.h
+)
+
+# Add test to CTest
+add_test(NAME analogiq_tests COMMAND analogiq_tests) 
