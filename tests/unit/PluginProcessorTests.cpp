@@ -1,6 +1,7 @@
 #include <JuceHeader.h>
 #include "../../Source/PluginProcessor.h"
 #include "../../Source/GearItem.h"
+#include "../../Source/PluginEditor.h"
 
 class PluginProcessorTests : public juce::UnitTest
 {
@@ -78,40 +79,118 @@ public:
                    "State should remain unchanged after save/load cycle");
         }
 
-        beginTest("Gear Instance State Management");
+        beginTest("Gear Save Instance");
+        {
+            AnalogIQProcessor processor;
+
+            // Create test gear instance with control values
+            testGear = createTestGearInstance();
+            testGear.controls.add(GearControl(GearControl::Type::Knob, "Control 0", juce::Rectangle<float>(0, 0, 50, 50)));
+            testGear.controls.add(GearControl(GearControl::Type::Knob, "Control 1", juce::Rectangle<float>(60, 0, 50, 50)));
+
+            // Set control values
+            auto &control0 = testGear.controls.getReference(0);
+            control0.value = 0.5f;
+            control0.initialValue = 0.0f;
+            auto &control1 = testGear.controls.getReference(1);
+            control1.value = 1.0f;
+            control1.initialValue = 1.0f;
+
+            // Create editor and get rack
+            auto *editor = dynamic_cast<AnalogIQEditor *>(processor.createEditor());
+            expect(editor != nullptr, "Editor should be created");
+
+            if (editor != nullptr)
+            {
+                auto *rack = editor->getRack();
+                expect(rack != nullptr, "Rack should exist");
+
+                if (rack != nullptr)
+                {
+                    // Set the gear item in the slot
+                    if (auto *slot = rack->getSlot(0))
+                    {
+                        slot->setGearItem(&testGear);
+
+                        // Create instance in the slot
+                        slot->createInstance();
+
+                        // Save instance state
+                        auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
+                        processor.saveInstanceStateFromRack(rack, instanceTree);
+
+                        // Verify instance state was saved correctly
+                        auto &state = processor.getState();
+
+                        auto instanceTreeVerify = state.state.getChildWithName("instances");
+                        expect(instanceTreeVerify.isValid(), "Instance tree should exist in state");
+                        expect(instanceTreeVerify.getNumChildren() > 0, "Instance tree should have children");
+
+                        // Verify slot tree exists and has correct instance ID
+                        auto slotTree = instanceTreeVerify.getChildWithName("slot_0");
+                        expect(slotTree.isValid(), "Slot tree should exist in state");
+                        expectEquals(slotTree.getProperty("instanceId").toString(), testGear.instanceId,
+                                     "Slot tree should have the correct instance ID");
+
+                        // Verify controls tree exists and has correct values
+                        auto controlsTree = slotTree.getChildWithName("controls");
+                        expect(controlsTree.isValid(), "Controls tree should exist in state");
+                        expect(controlsTree.getNumChildren() == 2, "Controls tree should have 2 children");
+
+                        // Verify control values
+                        auto controlTree = controlsTree.getChildWithName("control_0");
+                        expect(controlTree.isValid(), "Control tree should exist in state");
+                        if (controlTree.isValid())
+                        {
+                            expectEquals(controlTree.getProperty("value").toString(), juce::String("0.5"),
+                                         "Control value should be 0.5");
+                            expectEquals(controlTree.getProperty("initialValue").toString(), juce::String("0.5"),
+                                         "Control initial value should match current value");
+                        }
+
+                        // Verify control 1 values
+                        auto control1Tree = controlsTree.getChildWithName("control_1");
+                        expect(control1Tree.isValid(), "Control 1 tree should exist in state");
+                        expectEquals(static_cast<double>(control1Tree.getProperty("value")), 1.0,
+                                     "Control 1 value should be 1.0");
+                        expectEquals(static_cast<double>(control1Tree.getProperty("initialValue")), 1.0,
+                                     "Control 1 initial value should be 1.0");
+                    }
+                }
+
+                // Clean up
+                delete editor;
+            }
+        }
+
+        beginTest("Gear Load Instance");
         {
             AnalogIQProcessor processor;
 
             // Create and save initial test gear instance
-            auto testGear = createTestGearInstance();
-            processor.saveInstanceState();
+            testGear = createTestGearInstance();
+            // Load saved state and assert an instance exists and has a value we expect
+            processor.loadInstanceState();
+        }
+
+        beginTest("Gear Reset Instance");
+        {
+            AnalogIQProcessor processor;
+
+            // Create and save initial test gear instance
+            testGear = createTestGearInstance();
+            // Load saved state
+            processor.loadInstanceState();
 
             // Reset instances
             processor.resetAllInstances();
 
-            // Load saved state
-            processor.loadInstanceState();
-
-            // Get the loaded gear instance and verify its state
-            // TODO: Need to add a way to get the loaded gear instance from the processor
-            // This might require adding a test helper method to the processor
-        }
-
-        beginTest("Instance Reset");
-        {
-            AnalogIQProcessor processor;
-
-            // Create test gear instance
-            auto testGear = createTestGearInstance();
-
-            // Reset all instances
-            processor.resetAllInstances();
-
-            // Verify the gear instance is back to default state
-            // TODO: Need to add a way to get the reset gear instance from the processor
-            // This might require adding a test helper method to the processor
+            // assert an instance values are reset
         }
     }
+
+private:
+    GearItem testGear; // Make the gear item persist for the duration of the test
 };
 
 static PluginProcessorTests pluginProcessorTests;

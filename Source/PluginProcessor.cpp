@@ -253,34 +253,45 @@ void AnalogIQProcessor::saveInstanceState()
     {
         if (auto *rack = editor->getRack())
         {
-            // Save instance data for each slot
-            for (int i = 0; i < rack->getNumSlots(); ++i)
+            saveInstanceStateFromRack(rack, instanceTree);
+        }
+    }
+}
+
+void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree)
+{
+    // Save instance data for each slot
+    for (int i = 0; i < rack->getNumSlots(); ++i)
+    {
+        if (auto *slot = rack->getSlot(i))
+        {
+            if (auto *item = slot->getGearItem())
             {
-                if (rack->isInstance(i))
+
+                // Save state if this is an instance with a valid instance ID
+                if (item->isInstance && !item->instanceId.isEmpty() && !item->unitId.isEmpty())
                 {
                     auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), nullptr);
-                    slotTree.setProperty("instanceId", rack->getInstanceId(i), nullptr);
+                    slotTree.setProperty("instanceId", item->instanceId, nullptr);
 
-                    // Get the gear item for this slot
-                    if (auto *slot = rack->getSlot(i))
+                    // Save control values
+                    auto controlsTree = slotTree.getOrCreateChildWithName("controls", nullptr);
+                    for (int j = 0; j < item->controls.size(); ++j)
                     {
-                        if (auto *item = slot->getGearItem())
+                        const auto &control = item->controls[j];
+                        auto controlTree = controlsTree.getOrCreateChildWithName("control_" + juce::String(j), nullptr);
+                        controlTree.setProperty("value", control.value, nullptr);
+                        controlTree.setProperty("initialValue", control.initialValue, nullptr);
+                        if (control.type == GearControl::Type::Switch)
                         {
-                            // Save control values
-                            auto controlsTree = slotTree.getOrCreateChildWithName("controls", nullptr);
-                            for (int j = 0; j < item->controls.size(); ++j)
-                            {
-                                const auto &control = item->controls[j];
-                                auto controlTree = controlsTree.getOrCreateChildWithName("control_" + juce::String(j), nullptr);
-                                controlTree.setProperty("value", control.value, nullptr);
-                                controlTree.setProperty("initialValue", control.initialValue, nullptr);
-                                if (control.type == GearControl::Type::Switch)
-                                {
-                                    controlTree.setProperty("currentIndex", control.currentIndex, nullptr);
-                                }
-                            }
+                            controlTree.setProperty("currentIndex", control.currentIndex, nullptr);
                         }
                     }
+                }
+                else
+                {
+                    // TODO: Remove this logging and handle this case
+                    juce::Logger::writeToLog("Not saving state for slot " + juce::String(i) + " - not an instance or missing instance ID or unit ID");
                 }
             }
         }

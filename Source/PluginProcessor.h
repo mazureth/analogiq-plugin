@@ -11,6 +11,10 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Rack.h"
+
+// Forward declare the test class
+class PluginProcessorTests;
 
 /**
  * @brief Main audio processor for the AnalogIQ plugin.
@@ -21,6 +25,8 @@
  */
 class AnalogIQProcessor : public juce::AudioProcessor
 {
+    friend class PluginProcessorTests; // Allow test class to access private members
+
 public:
     /**
      * @brief Constructs a new AnalogIQProcessor.
@@ -187,6 +193,14 @@ public:
 private:
     juce::AudioProcessorValueTreeState state; ///< State management system
     juce::UndoManager undoManager;            ///< Undo/redo management system
+
+    /**
+     * @brief Saves the state of all gear instances from a rack.
+     *
+     * @param rack The rack containing the gear instances
+     * @param instanceTree The value tree to save the state to
+     */
+    void saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };
