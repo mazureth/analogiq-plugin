@@ -12,7 +12,7 @@ public:
         beginTest("Initial State");
         {
             RackSlot slot(0);
-            expect(slot.isAvailable());
+            expect(slot.isAvailable(), "Slot should be available");
         }
 
         beginTest("Gear Item Management");
@@ -23,8 +23,8 @@ public:
             item->type = GearType::Series500;
             item->category = GearCategory::EQ;
             slot.setGearItem(item.get());
-            expect(!slot.isAvailable());
-            expect(slot.getGearItem()->name == "Test Gear");
+            expect(!slot.isAvailable(), "Slot should not be available");
+            expect(slot.getGearItem()->name == "Test Gear", "Gear item name should match");
         }
 
         beginTest("Clear Gear Item");
@@ -36,7 +36,7 @@ public:
             item->category = GearCategory::EQ;
             slot.setGearItem(item.get());
             slot.clearGearItem();
-            expect(slot.isAvailable());
+            expect(slot.isAvailable(), "Slot should be available");
         }
 
         beginTest("Instance Management");
@@ -48,9 +48,9 @@ public:
             item->category = GearCategory::EQ;
             slot.setGearItem(item.get());
             slot.createInstance();
-            expect(slot.isInstance());
+            expect(slot.isInstance(), "Slot should be an instance");
             slot.resetToSource();
-            expect(!slot.isInstance());
+            expect(!slot.isInstance(), "Slot should not be an instance");
         }
     }
 };

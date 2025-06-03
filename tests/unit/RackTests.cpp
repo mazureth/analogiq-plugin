@@ -14,7 +14,7 @@ public:
         beginTest("Initial State");
         {
             Rack rack;
-            expect(rack.getNumSlots() == 0);
+            expectEquals(rack.getNumSlots(), 16, "Rack should have zero slots");
         }
 
         beginTest("Slot Management");
@@ -31,8 +31,8 @@ public:
             if (slot != nullptr)
             {
                 slot->setGearItem(gearItem.get());
-                expect(!slot->isAvailable());
-                expect(slot->getGearItem()->name == "Test Gore");
+                expect(!slot->isAvailable(), "Slot should not be available");
+                expect(slot->getGearItem()->name == "Test Gear", "Gear item name should match");
             }
         }
 
@@ -51,10 +51,10 @@ public:
             {
                 slot->setGearItem(gearItem.get());
                 rack.createInstance(0);
-                expect(rack.isInstance(0));
-                expect(!rack.getInstanceId(0).isEmpty());
+                expect(rack.isInstance(0), "Slot should be an instance");
+                expect(!rack.getInstanceId(0).isEmpty(), "Instance ID should not be empty");
                 rack.resetToSource(0);
-                expect(!rack.isInstance(0));
+                expect(!rack.isInstance(0), "Slot should not be an instance");
             }
         }
 
@@ -83,11 +83,11 @@ public:
                 slot2->setGearItem(gearItem2.get());
                 rack.createInstance(0);
                 rack.createInstance(1);
-                expect(rack.isInstance(0));
-                expect(rack.isInstance(1));
+                expect(rack.isInstance(0), "Slot should be an instance");
+                expect(rack.isInstance(1), "Slot should be an instance");
                 rack.resetAllInstances();
-                expect(!rack.isInstance(0));
-                expect(!rack.isInstance(1));
+                expect(!rack.isInstance(0), "Slot should not be an instance");
+                expect(!rack.isInstance(1), "Slot should not be an instance");
             }
         }
     }
