@@ -3,6 +3,7 @@
 #include "RackSlot.h"
 #include "GearItem.h"
 #include "GearLibrary.h"
+#include "TestFixture.h"
 
 class RackTests : public juce::UnitTest
 {
@@ -11,6 +12,7 @@ public:
 
     void runTest() override
     {
+        TestFixture fixture;
         beginTest("Initial State");
         {
             Rack rack;

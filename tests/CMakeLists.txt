@@ -55,3 +55,15 @@ target_compile_definitions(analogiq_tests
     JUCE_STRICT_REFCOUNTEDPOINTER=1
     JUCE_UNIT_TESTS_VERBOSE=1
 ) 
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Enabling code coverage for test target")
+
+    target_compile_options(analogiq_tests PRIVATE
+        -O0 -g --coverage -fprofile-instr-generate -fcoverage-mapping
+    )
+
+    target_link_options(analogiq_tests PRIVATE
+        --coverage -fprofile-instr-generate -fcoverage-mapping
+    )
+endif()

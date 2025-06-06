@@ -1,5 +1,6 @@
 #include <JuceHeader.h>
-#include "../../Source/DraggableListBox.h"
+#include "DraggableListBox.h"
+#include "TestFixture.h"
 
 // TODO: If DraggableListBox or ListBoxModel are abstract, create a concrete test class or mock.
 
@@ -22,6 +23,7 @@ public:
 
     void runTest() override
     {
+        TestFixture fixture;
         beginTest("Construction");
         {
             auto model = std::make_unique<MockListBoxModel>();

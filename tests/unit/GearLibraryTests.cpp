@@ -1,5 +1,6 @@
 #include <JuceHeader.h>
-#include "../../Source/GearLibrary.h"
+#include "GearLibrary.h"
+#include "TestFixture.h"
 
 class GearLibraryTests : public juce::UnitTest
 {
@@ -8,6 +9,7 @@ public:
 
     void runTest() override
     {
+        TestFixture fixture;
         beginTest("Construction");
         {
             GearLibrary library;

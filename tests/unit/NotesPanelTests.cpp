@@ -1,5 +1,6 @@
 #include <JuceHeader.h>
-#include "../../Source/NotesPanel.h"
+#include "NotesPanel.h"
+#include "TestFixture.h"
 
 class NotesPanelTests : public juce::UnitTest
 {
@@ -8,6 +9,7 @@ public:
 
     void runTest() override
     {
+        TestFixture fixture;
         beginTest("Construction");
         {
             NotesPanel panel;

@@ -1,7 +1,8 @@
 #include <JuceHeader.h>
-#include "../../Source/PluginProcessor.h"
-#include "../../Source/GearItem.h"
-#include "../../Source/PluginEditor.h"
+#include "PluginProcessor.h"
+#include "GearItem.h"
+#include "PluginEditor.h"
+#include "TestFixture.h"
 
 class PluginProcessorTests : public juce::UnitTest
 {
@@ -52,6 +53,7 @@ public:
 
     void runTest() override
     {
+        TestFixture fixture;
         beginTest("Construction");
         {
             AnalogIQProcessor processor;

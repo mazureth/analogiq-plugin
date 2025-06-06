@@ -1,6 +1,7 @@
 #include <JuceHeader.h>
-#include "../../Source/RackSlot.h"
+#include "RackSlot.h"
 #include "GearItem.h"
+#include "TestFixture.h"
 
 class RackSlotTests : public juce::UnitTest
 {
@@ -9,6 +10,7 @@ public:
 
     void runTest() override
     {
+        TestFixture fixture;
         beginTest("Initial State");
         {
             RackSlot slot(0);

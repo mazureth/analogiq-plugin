@@ -10,7 +10,7 @@ mkdir -p build
 cd build
 
 # Configure with CMake
-cmake .. -DANALOGIQ_BUILD_TESTS=ON
+cmake .. -DANALOGIQ_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
 
 # Build the tests
 cmake --build . --target analogiq_tests

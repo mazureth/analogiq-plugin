@@ -1,6 +1,7 @@
 #include <JuceHeader.h>
-#include "../../Source/PluginEditor.h"
+#include "PluginEditor.h"
 #include "PluginProcessor.h"
+#include "TestFixture.h"
 
 class PluginEditorTests : public juce::UnitTest
 {
@@ -9,6 +10,7 @@ public:
 
     void runTest() override
     {
+        TestFixture fixture;
         beginTest("Construction");
         {
             // TODO: Create a concrete test processor class
