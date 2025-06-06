@@ -69,13 +69,10 @@ bool GearItem::loadImage()
                 // If successfully loaded image, return true
                 if (image.isValid())
                 {
-                    DBG("Successfully loaded thumbnail image for " + name);
                     return true;
                 }
             }
         }
-
-        DBG("Failed to load thumbnail image for " + name + ", using placeholder");
     }
 
     // If we get here, loading the actual image failed, so create a placeholder

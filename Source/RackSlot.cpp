@@ -13,23 +13,6 @@
 #include "Rack.h"
 #include <fstream>
 
-// Add at the top of the file, after includes
-static std::ofstream logFile("/tmp/rack_slot.log");
-
-/**
- * @brief Helper function for logging messages to a file.
- *
- * @param message The message to log
- */
-static void logToFile(const juce::String &message)
-{
-    if (logFile.is_open())
-    {
-        logFile << message << std::endl;
-        logFile.flush();
-    }
-}
-
 /**
  * @brief Constructs a new RackSlot instance.
  *
@@ -116,8 +99,6 @@ RackSlot::RackSlot(int slotIndex)
 
     // Initial button state
     updateButtonStates();
-
-    DBG("Created RackSlot with index " + juce::String(index));
 }
 
 /**
@@ -163,24 +144,12 @@ void RackSlot::paint(juce::Graphics &g)
     // If we have a gear item, draw its details and image
     if (!isAvailable() && gearItem != nullptr)
     {
-        // Debug info about the gear item
-        DBG("RackSlot::paint - Slot " + juce::String(index) + " painting gear item: " + gearItem->name);
-        DBG("  - Has faceplate image: " + juce::String(gearItem->faceplateImage.isValid() ? "YES" : "NO"));
-        if (gearItem->faceplateImage.isValid())
-        {
-            DBG("  - Faceplate dimensions: " +
-                juce::String(gearItem->faceplateImage.getWidth()) + "x" +
-                juce::String(gearItem->faceplateImage.getHeight()));
-        }
-        DBG("  - Has thumbnail image: " + juce::String(gearItem->image.isValid() ? "YES" : "NO"));
 
         // Check if we have a faceplate image
         bool hasFaceplate = gearItem->faceplateImage.isValid();
 
         if (hasFaceplate)
         {
-            DBG("Drawing faceplate image for " + gearItem->name + " in slot " + juce::String(index));
-
             // Calculate faceplate area
             juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
 
@@ -218,10 +187,7 @@ void RackSlot::paint(juce::Graphics &g)
             // Reset scale factor when no faceplate
             currentFaceplateScale = 1.0f;
 
-            DBG("No faceplate image available for " + gearItem->name + " in slot " + juce::String(index) + ", using standard display");
-
             // No faceplate, use the original rendering with name, manufacturer and thumbnail
-
             // Draw name
             g.setFont(16.0f);
             g.setColour(juce::Colours::white);
@@ -337,16 +303,6 @@ void RackSlot::drawSwitch(juce::Graphics &g, const GearControl &control, int x, 
             float scaledFrameWidth = frame.width * currentFaceplateScale;
             float scaledFrameHeight = frame.height * currentFaceplateScale;
 
-            logToFile("--- Sprite sheet dimensions: " +
-                      juce::String(originalSpriteWidth) + "x" + juce::String(originalSpriteHeight) +
-                      " scaled to: " + juce::String(scaledSpriteWidth) + "x" + juce::String(scaledSpriteHeight));
-
-            logToFile("---- Frame dimensions: " +
-                      juce::String(frame.x) + "," + juce::String(frame.y) + " " +
-                      juce::String(frame.width) + "x" + juce::String(frame.height) +
-                      " scaled to: " + juce::String(scaledFrameX) + "," + juce::String(scaledFrameY) + " " +
-                      juce::String(scaledFrameWidth) + "x" + juce::String(scaledFrameHeight));
-
             // Create the source rectangle using the scaled coordinates and dimensions
             juce::Rectangle<int> sourceRect(
                 (int)scaledFrameX,
@@ -363,12 +319,6 @@ void RackSlot::drawSwitch(juce::Graphics &g, const GearControl &control, int x, 
                         destRect.getWidth(), destRect.getHeight(),
                         sourceRect.getX(), sourceRect.getY(),
                         sourceRect.getWidth(), sourceRect.getHeight());
-
-            logToFile("---- Drawing switch frame " + juce::String(currentIndex) +
-                      " for control: " + control.name +
-                      "\n----- at position: " + juce::String(x) + "," + juce::String(y) +
-                      "\n----- with dimensions: " + juce::String(scaledFrameWidth) + "x" + juce::String(scaledFrameHeight) +
-                      "\n----- faceplate scale: " + juce::String(currentFaceplateScale));
         }
     }
     else
@@ -445,12 +395,6 @@ void RackSlot::drawButton(juce::Graphics &g, const GearControl &control, int x, 
     const float buttonWidth = baseWidth * currentFaceplateScale;
     const float buttonHeight = baseHeight * currentFaceplateScale;
 
-    // Debug logging for button sprite sheet
-    logToFile("Drawing button: " + control.name);
-    logToFile("  Has sprite sheet: " + juce::String(control.buttonSpriteSheet.isValid() ? "YES" : "NO"));
-    logToFile("  Number of frames: " + juce::String(control.buttonFrames.size()));
-    logToFile("  Is momentary: " + juce::String(control.momentary ? "YES" : "NO"));
-
     // Draw the button using sprite sheet if available
     if (control.buttonSpriteSheet.isValid() && control.buttonFrames.size() > 0)
     {
@@ -471,12 +415,6 @@ void RackSlot::drawButton(juce::Graphics &g, const GearControl &control, int x, 
         float scaledFrameY = frame.y * currentFaceplateScale;
         float scaledFrameWidth = frame.width * currentFaceplateScale;
         float scaledFrameHeight = frame.height * currentFaceplateScale;
-
-        logToFile("  Frame dimensions: " +
-                  juce::String(frame.x) + "," + juce::String(frame.y) + " " +
-                  juce::String(frame.width) + "x" + juce::String(frame.height) +
-                  " scaled to: " + juce::String(scaledFrameX) + "," + juce::String(scaledFrameY) + " " +
-                  juce::String(scaledFrameWidth) + "x" + juce::String(scaledFrameHeight));
 
         // Create the source rectangle using the scaled coordinates and dimensions
         juce::Rectangle<int> sourceRect(
@@ -535,17 +473,6 @@ void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, i
     const float faderWidth = baseWidth * currentFaceplateScale;
     const float handleSize = std::max(baseWidth, baseHeight) * currentFaceplateScale;
 
-    // Debug logging for fader image
-    logToFile("Drawing fader: " + control.name);
-    logToFile("  Has fader image: " + juce::String(control.faderImage.isValid() ? "YES" : "NO"));
-    if (control.faderImage.isValid())
-    {
-        logToFile("  Image dimensions: " +
-                  juce::String(control.faderImage.getWidth()) + "x" +
-                  juce::String(control.faderImage.getHeight()));
-        logToFile("  Image format: " + juce::String(control.faderImage.getFormat()));
-    }
-
     // Calculate the fader bounds based on orientation
     juce::Rectangle<float> faderBounds;
     if (isVertical)
@@ -590,13 +517,6 @@ void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, i
             scaledHeight = handleSize / aspectRatio;
         }
 
-        logToFile("  Drawing image at: " +
-                  juce::String(handleX - scaledWidth / 2) + "," +
-                  juce::String(handleY - scaledHeight / 2) +
-                  " with size: " +
-                  juce::String(scaledWidth) + "x" +
-                  juce::String(scaledHeight));
-
         // Draw the fader image centered at the handle position
         g.drawImageWithin(control.faderImage,
                           handleX - scaledWidth / 2,
@@ -607,7 +527,6 @@ void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, i
     }
     else
     {
-        logToFile("  Using fallback white handle");
         // Fallback to basic handle drawing if no image is provided
         g.setColour(juce::Colours::white);
         if (isVertical)
@@ -633,11 +552,6 @@ void RackSlot::drawFader(juce::Graphics &g, const GearControl &control, int x, i
  */
 void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, int y)
 {
-    DBG("drawKnob - Control: " + control.name +
-        " Value: " + juce::String(control.value) +
-        " StartAngle: " + juce::String(control.startAngle) +
-        " EndAngle: " + juce::String(control.endAngle));
-
     // Calculate knob size based on faceplate scale factor
     float knobSize;
     if (control.loadedImage.isValid())
@@ -661,20 +575,12 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
     // Draw the knob image if available
     if (control.loadedImage.isValid())
     {
-        DBG("Drawing knob image for control: " + control.name +
-            " at position: " + juce::String(x) + "," + juce::String(y) +
-            " with dimensions: " + juce::String(control.loadedImage.getWidth()) + "x" +
-            juce::String(control.loadedImage.getHeight()) +
-            " scaled to: " + juce::String(knobSize) + "x" + juce::String(knobSize) +
-            " angle: " + juce::String(control.value));
-
         // Save the current graphics state
         g.saveState();
 
         // Use the control value directly as degrees, but subtract 180 to align with JUCE's coordinate system
         // where 0 is at 12 o'clock and we want 0 to be at 6 o'clock
         float angle = control.value - 180.0f;
-        DBG("Drawing knob at angle: " + juce::String(angle));
 
         // Translate to the center of the knob
         g.addTransform(juce::AffineTransform::translation(knobBounds.getCentreX(), knobBounds.getCentreY()));
@@ -696,7 +602,6 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
     }
     else
     {
-        DBG("No valid knob image for control: " + control.name + ", using fallback drawing");
         // Fallback to basic drawing if no image is provided
         g.setColour(juce::Colours::darkgrey);
         g.fillEllipse(knobBounds);
@@ -706,7 +611,6 @@ void RackSlot::drawKnob(juce::Graphics &g, const GearControl &control, int x, in
         // Draw position indicator
         g.setColour(juce::Colours::white);
         float angle = control.value - 180.0f; // Subtract 90 to align with JUCE's coordinate system
-        DBG("Drawing fallback knob at angle: " + juce::String(angle));
         float radius = knobBounds.getWidth() * 0.4f;
         float centreX = knobBounds.getCentreX();
         float centreY = knobBounds.getCentreY();
@@ -816,7 +720,6 @@ void RackSlot::moveUp()
 
     if (parentComponent == nullptr)
     {
-        DBG("ERROR: Could not find parent component in moveUp()");
         return;
     }
 
@@ -840,7 +743,6 @@ void RackSlot::moveUp()
     }
     else
     {
-        DBG("ERROR: Could not find parent Rack in moveUp()");
     }
 }
 
@@ -863,7 +765,6 @@ void RackSlot::moveDown()
 
     if (parentComponent == nullptr)
     {
-        DBG("ERROR: Could not find parent component in moveDown()");
         return;
     }
 
@@ -891,7 +792,6 @@ void RackSlot::moveDown()
     }
     else
     {
-        DBG("ERROR: Could not find parent Rack in moveDown()");
     }
 }
 
@@ -916,8 +816,6 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
     activeControl = findControlAtPosition(e.position, faceplateArea);
     if (activeControl != nullptr)
     {
-        logToFile("Mouse down on control: " + activeControl->name + " type: " + juce::String((int)activeControl->type));
-
         // Calculate control bounds
         int x = faceplateArea.getX() + (int)(activeControl->position.getX() * faceplateArea.getWidth());
         int y = faceplateArea.getY() + (int)(activeControl->position.getY() * faceplateArea.getHeight());
@@ -965,12 +863,8 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
 {
     if (!isDragging || activeControl == nullptr)
     {
-        logToFile(juce::String("Drag ignored - isDragging: ") + (isDragging ? "true" : "false") +
-                  juce::String(" activeControl: ") + (activeControl != nullptr ? "true" : "false"));
         return;
     }
-
-    logToFile("Mouse drag - Current position: " + e.position.toString());
 
     // Calculate faceplate area
     juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
@@ -1045,8 +939,6 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
         }
 
         activeControl->value = newValue;
-        logToFile("Fader - Value: " + juce::String(activeControl->value) +
-                  " Position: " + e.position.toString());
         repaint();
         break;
     }
@@ -1083,14 +975,10 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
             }
 
             newValue = closestStep;
-            DBG("Stepped knob - Snapped to step: " + juce::String(newValue) + " degrees");
         }
 
         activeControl->value = newValue;
 
-        logToFile("Knob - Angle: " + juce::String(activeControl->value) +
-                  " Delta Y: " + juce::String(deltaY) +
-                  " Delta Angle: " + juce::String(deltaAngle));
         repaint();
         break;
     }
@@ -1114,7 +1002,6 @@ void RackSlot::mouseUp(const juce::MouseEvent &)
 {
     if (isDragging)
     {
-        logToFile("Mouse up - Final value: " + (activeControl ? juce::String(activeControl->value) : "no control"));
         isDragging = false;
     }
     activeControl = nullptr;
@@ -1152,7 +1039,6 @@ void RackSlot::mouseDoubleClick(const juce::MouseEvent &e)
             control->value = control->initialValue;
             break;
         case GearControl::Type::Knob:
-            DBG("Resetting knob to initial value: " + juce::String(control->initialValue));
             control->value = control->initialValue;
             break;
         }
@@ -1440,8 +1326,6 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &details
  */
 void RackSlot::setGearItem(GearItem *newGearItem)
 {
-    DBG("RackSlot::setGearItem for slot " + juce::String(index));
-
     // If we already have a gear item and it's an instance, preserve its state
     if (gearItem != nullptr && gearItem->isInstance)
     {
@@ -1500,7 +1384,6 @@ void RackSlot::setGearItem(GearItem *newGearItem)
  */
 void RackSlot::clearGearItem()
 {
-    DBG("RackSlot::clearGearItem for slot " + juce::String(index));
     gearItem = nullptr;
     updateButtonStates(); // Update button states when gear is removed
     repaint();            // Trigger repaint to update
@@ -1546,9 +1429,6 @@ void RackSlot::createInstance()
 
     // Create a new instance of the current gear item
     gearItem->createInstance(gearItem->unitId);
-
-    // Log the instance creation
-    DBG("Created instance of " + gearItem->name + " with ID: " + gearItem->instanceId);
 
     // Repaint to show the instance state
     repaint();

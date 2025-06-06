@@ -59,9 +59,6 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
     // Configure drag and drop
     // This is critical - make sure this component is configured as the DragAndDropContainer
     setInterceptsMouseClicks(false, true);
-
-    // Debug info
-    DBG("AnalogIQEditor constructed as DragAndDropContainer. Components set up.");
 }
 
 /**

@@ -11,22 +11,6 @@
 #include "GearLibrary.h"
 #include <fstream>
 
-// Set up logging to file
-static std::ofstream logFile("/tmp/rack.log");
-
-// Helper function for logging
-static void logToFile(const juce::String &message)
-{
-    if (logFile.is_open())
-    {
-        logFile << message << std::endl;
-        logFile.flush();
-    }
-}
-
-// Replace DBG with logToFile
-#define DBG(msg) logToFile(msg)
-
 /**
  * @brief Constructs a new Rack instance.
  *
@@ -35,7 +19,6 @@ static void logToFile(const juce::String &message)
  */
 Rack::Rack()
 {
-    DBG("Rack constructor");
     setComponentID("Rack");
 
     // Create viewport and container
@@ -48,7 +31,6 @@ Rack::Rack()
     rackContainer->rack = this;
 
     // Create rack slots
-    DBG("Creating " + juce::String(numSlots) + " rack slots");
     for (int i = 0; i < numSlots; ++i)
     {
         RackSlot *newSlot = new RackSlot(i);
@@ -67,7 +49,6 @@ Rack::Rack()
  */
 Rack::~Rack()
 {
-    DBG("Rack destructor");
     // unique_ptr members will be automatically deleted
 }
 
@@ -132,8 +113,6 @@ int Rack::getSlotHeight(int slotIndex) const
  */
 void Rack::resized()
 {
-    DBG("Rack::resized");
-
     // Size the viewport to fill our area
     auto area = getLocalBounds();
     rackViewport->setBounds(area);
@@ -170,9 +149,6 @@ void Rack::resized()
 
         currentY += slotHeight + slotSpacing;
     }
-
-    DBG("Rack resized: viewport=" + rackViewport->getBounds().toString() +
-        ", container=" + rackContainer->getBounds().toString());
 }
 
 /**
@@ -258,13 +234,10 @@ void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails & /*dragSou
  */
 void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
 {
-    DBG("Rack::itemDropped");
-
     // Find the nearest slot to the drop position
     RackSlot *targetSlot = findNearestSlot(details.localPosition);
     if (targetSlot == nullptr)
     {
-        DBG("No target slot found for drop position");
         return;
     }
 
@@ -282,8 +255,6 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
 
         if (item != nullptr)
         {
-            DBG("Adding gear item from listbox: " + item->name + " to slot " + juce::String(targetSlot->getIndex()));
-
             // Create a new instance of the item
             GearItem *newItem = new GearItem(*item); // Use copy constructor
             targetSlot->setGearItem(newItem);
@@ -309,8 +280,6 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
 
                 if (item != nullptr)
                 {
-                    DBG("Adding gear item from TreeView: " + item->name + " to slot " + juce::String(targetSlot->getIndex()));
-
                     // Create a new instance of the item
                     GearItem *newItem = new GearItem(*item); // Use copy constructor
                     targetSlot->setGearItem(newItem);
@@ -332,9 +301,6 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
 
             sourceSlot->setGearItem(targetItem);
             targetSlot->setGearItem(sourceItem);
-
-            DBG("Swapped gear items between slots " + juce::String(sourceSlot->getIndex()) +
-                " and " + juce::String(targetSlot->getIndex()));
         }
     }
 }
@@ -347,16 +313,11 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
  */
 void Rack::rearrangeGearAsSortableList(int sourceSlotIndex, int targetSlotIndex)
 {
-    DBG("===============================================");
-    DBG("Rack::rearrangeGearAsSortableList - sourceIndex: " + juce::String(sourceSlotIndex) +
-        ", targetIndex: " + juce::String(targetSlotIndex));
-
     // Validate indices
     if (sourceSlotIndex < 0 || sourceSlotIndex >= slots.size() ||
         targetSlotIndex < 0 || targetSlotIndex >= slots.size() ||
         sourceSlotIndex == targetSlotIndex)
     {
-        DBG("Invalid source or target index, or they are the same. Aborting rearrangement.");
         return;
     }
 
@@ -366,7 +327,6 @@ void Rack::rearrangeGearAsSortableList(int sourceSlotIndex, int targetSlotIndex)
 
     if (sourceSlot == nullptr || targetSlot == nullptr)
     {
-        DBG("Source or target slot is null. Aborting rearrangement.");
         return;
     }
 
@@ -376,13 +336,10 @@ void Rack::rearrangeGearAsSortableList(int sourceSlotIndex, int targetSlotIndex)
 
     if (sourceGearItem == nullptr)
     {
-        DBG("Source gear item is null. Cannot move an empty slot. Aborting rearrangement.");
         return;
     }
 
     // Simply swap the two slots
-    DBG("Swapping gear items between slot " + juce::String(sourceSlotIndex) +
-        " and slot " + juce::String(targetSlotIndex));
 
     // First clear both slots
     sourceSlot->clearGearItem();
@@ -399,9 +356,6 @@ void Rack::rearrangeGearAsSortableList(int sourceSlotIndex, int targetSlotIndex)
 
     // Update the rack view - call resized() on the rack itself to recalculate all slot heights
     resized();
-
-    DBG("Gear items successfully swapped.");
-    DBG("===============================================");
 }
 
 /**
@@ -455,11 +409,8 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
 {
     if (item == nullptr || item->schemaPath.isEmpty())
     {
-        DBG("Cannot fetch schema: item is null or schema path is empty");
         return;
     }
-
-    DBG("Fetching schema for " + item->name + " from " + item->schemaPath);
 
     // Construct the full URL if it's a relative path
     juce::String fullUrl = item->schemaPath;
@@ -467,8 +418,6 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
     {
         fullUrl = GearLibrary::getFullUrl(fullUrl);
     }
-
-    DBG("Full schema URL: " + fullUrl);
 
     // Use JUCE's URL class to fetch the schema asynchronously
     juce::URL schemaUrl(fullUrl);
@@ -512,8 +461,6 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
          */
         void run() override
         {
-            DBG("SchemaDownloader thread started for " + item->name);
-
             // Download the schema data
             schemaData = url.readEntireTextStream(false);
 
@@ -527,12 +474,10 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
                                             {
                 if (success)
                 {
-                    DBG("Successfully downloaded schema for " + item->name);
                     rack->parseSchema(schemaData, item);
                 }
                 else
                 {
-                    DBG("Failed to download schema for " + item->name);
                 }
                 delete this; });
         }
@@ -560,7 +505,6 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
     auto schemaJson = juce::JSON::parse(schemaData);
     if (!schemaJson.isObject())
     {
-        DBG("Failed to parse schema JSON");
         return;
     }
 
@@ -576,7 +520,6 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
             faceplateImagePath = schemaJson.getProperty(propName, "").toString();
             if (faceplateImagePath.isNotEmpty())
             {
-                DBG("Found faceplate image with property name '" + propName + "': " + faceplateImagePath);
                 foundFaceplate = true;
 
                 // Store the path in the gear item
@@ -591,7 +534,6 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
 
     if (!foundFaceplate)
     {
-        DBG("No faceplate image found in schema. Using thumbnail image instead.");
     }
 
     // Update controls if available
@@ -632,7 +574,6 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 if (existingControl.id == controlId)
                 {
                     controlExists = true;
-                    DBG("Control with ID " + controlId + " already exists, skipping duplicate");
                     break;
                 }
             }
@@ -653,7 +594,6 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
             // Create control
             GearControl control(controlType, controlName, position);
             control.id = controlId; // Set the control ID
-            DBG("Created control: " + controlName + " with ID: " + controlId);
             control.value = controlVar.getProperty("value", 0.0f);
 
             // Set type-specific properties
@@ -702,12 +642,10 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 // Fetch the switch sprite sheet if one is specified
                 if (control.image.isNotEmpty())
                 {
-                    DBG("Attempting to fetch switch sprite sheet for control: " + control.name);
                     fetchSwitchSpriteSheet(item, item->controls.size() - 1);
                 }
                 else
                 {
-                    DBG("No image path specified for switch control: " + control.name);
                 }
                 break;
             }
@@ -721,23 +659,16 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 control.initialValue = control.value; // Store initial value
                 control.image = controlVar.getProperty("image", "").toString();
 
-                DBG("Creating fader control: " + control.name +
-                    " Orientation: " + control.orientation +
-                    " Length: " + juce::String(control.length) +
-                    " InitialValue: " + juce::String(control.value));
-
                 // Add control to item before fetching image
                 item->controls.add(control);
 
                 // Fetch the fader image if one is specified
                 if (control.image.isNotEmpty())
                 {
-                    DBG("Attempting to fetch fader image for control: " + control.name);
                     fetchFaderImage(item, item->controls.size() - 1);
                 }
                 else
                 {
-                    DBG("No image path specified for fader control: " + control.name);
                 }
                 break;
             }
@@ -749,17 +680,11 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 float endAngle = controlVar.getProperty("endAngle", 360.0f);
                 float value = controlVar.getProperty("value", 0.0f);
 
-                DBG("Creating knob control: " + control.name +
-                    " StartAngle: " + juce::String(startAngle) +
-                    " EndAngle: " + juce::String(endAngle) +
-                    " InitialValue: " + juce::String(value));
-
                 control.startAngle = startAngle;
                 control.endAngle = endAngle;
                 control.value = value;
                 control.initialValue = value; // Store the initial value from schema
                 control.image = controlVar.getProperty("image", "").toString();
-                DBG("Knob image path from schema: " + control.image);
 
                 // Handle stepped knobs
                 if (controlVar.hasProperty("steps") && controlVar["steps"].isArray())
@@ -776,13 +701,11 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 // Fetch the knob image if one is specified
                 if (control.image.isNotEmpty())
                 {
-                    DBG("Attempting to fetch knob image for control: " + control.name);
                     // Pass the index of the control we just added
                     fetchKnobImage(item, item->controls.size() - 1);
                 }
                 else
                 {
-                    DBG("No image path specified for knob control: " + control.name);
                 }
                 break;
             }
@@ -839,12 +762,10 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 // Fetch the button sprite sheet if one is specified
                 if (control.image.isNotEmpty())
                 {
-                    DBG("Attempting to fetch button sprite sheet for control: " + control.name);
                     fetchButtonSpriteSheet(item, item->controls.size() - 1);
                 }
                 else
                 {
-                    DBG("No image path specified for button control: " + control.name);
                 }
                 break;
             }
@@ -855,12 +776,9 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
                 break;
             }
         }
-
-        DBG("Added " + juce::String(item->controls.size()) + " controls to " + item->name);
     }
 
     // Notify that the schema has been loaded
-    DBG("Schema successfully parsed for " + item->name);
 }
 
 /**
@@ -872,11 +790,8 @@ void Rack::fetchFaceplateImage(GearItem *item)
 {
     if (item == nullptr || item->faceplateImagePath.isEmpty())
     {
-        DBG("Cannot fetch faceplate image: item is null or faceplate path is empty");
         return;
     }
-
-    DBG("Fetching faceplate image for " + item->name + " from " + item->faceplateImagePath);
 
     // Construct the full URL if it's a relative path
     juce::String fullUrl = item->faceplateImagePath;
@@ -889,13 +804,10 @@ void Rack::fetchFaceplateImage(GearItem *item)
         }
     }
 
-    DBG("Full faceplate image URL: " + fullUrl);
-
     // Use JUCE's URL class to fetch the image asynchronously
     juce::URL imageUrl(fullUrl);
 
     // Direct image loading isn't available in this version of JUCE, so skip straight to async
-    DBG("Starting async download for faceplate image...");
 
     /**
      * @brief Thread for downloading faceplate images.
@@ -936,15 +848,11 @@ void Rack::fetchFaceplateImage(GearItem *item)
          */
         void run() override
         {
-            DBG("FaceplateImageDownloader thread started for " + item->name);
-
             // Try to download using the simple API - this is for older JUCE versions
             std::unique_ptr<juce::InputStream> inputStream = url.createInputStream(false);
 
             if (inputStream == nullptr || threadShouldExit())
             {
-                DBG("Failed to create input stream for faceplate image: " + url.toString(true));
-
                 // Clean up on the message thread
                 juce::MessageManager::callAsync([this]()
                                                 { delete this; });
@@ -980,14 +888,9 @@ void Rack::fetchFaceplateImage(GearItem *item)
 
             if (downloadedImage.isValid())
             {
-                DBG("Successfully loaded image with dimensions: " +
-                    juce::String(downloadedImage.getWidth()) + "x" +
-                    juce::String(downloadedImage.getHeight()));
-
                 // Need to get back on the message thread to update the UI
                 juce::MessageManager::callAsync([this, downloadedImage]()
                                                 {
-                    DBG("Successfully downloaded faceplate image for " + item->name);
                     
                     // Update the item's faceplate image
                     item->faceplateImage = downloadedImage;
@@ -1000,7 +903,6 @@ void Rack::fetchFaceplateImage(GearItem *item)
                             RackSlot *slot = rack->getSlot(i);
                             if (slot && slot->getGearItem() == item)
                             {
-                                DBG("Repainting slot " + juce::String(i) + " with faceplate image");
                                 slot->repaint();
                             }
                         }
@@ -1016,7 +918,6 @@ void Rack::fetchFaceplateImage(GearItem *item)
                 // Image loading failed, clean up
                 juce::MessageManager::callAsync([this]()
                                                 {
-                    DBG("Failed to load faceplate image for " + item->name);
                     
                     // Create a placeholder image instead
                     juce::Image placeholderImage(juce::Image::RGB, 200, 100, true);
@@ -1067,18 +968,14 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
     {
-        DBG("Cannot fetch knob image: invalid item or control index");
         return;
     }
 
     GearControl &control = item->controls.getReference(controlIndex);
     if (control.image.isEmpty())
     {
-        DBG("Cannot fetch knob image: image path is empty");
         return;
     }
-
-    DBG("Fetching knob image from " + control.image);
 
     // Construct the full URL if it's a relative path
     juce::String fullUrl = control.image;
@@ -1088,11 +985,8 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
         if (fullUrl.startsWith("assets/") || !fullUrl.contains("/"))
         {
             fullUrl = GearLibrary::getFullUrl(fullUrl);
-            DBG("Resolved relative path to full URL: " + fullUrl);
         }
     }
-
-    DBG("Full knob image URL: " + fullUrl);
 
     // Use JUCE's URL class to fetch the image asynchronously
     juce::URL imageUrl(fullUrl);
@@ -1143,14 +1037,11 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
          */
         void run() override
         {
-            DBG("KnobImageDownloader thread started for control: " + controlName);
-
             // Try to download using the simple API - this is for older JUCE versions
             std::unique_ptr<juce::InputStream> inputStream = url.createInputStream(false);
 
             if (inputStream == nullptr || threadShouldExit())
             {
-                DBG("Failed to create input stream for knob image: " + url.toString(true));
                 juce::MessageManager::callAsync([this]()
                                                 { delete this; });
                 return;
@@ -1184,19 +1075,12 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
 
             if (downloadedImage.isValid())
             {
-                DBG("Successfully loaded knob image with dimensions: " +
-                    juce::String(downloadedImage.getWidth()) + "x" +
-                    juce::String(downloadedImage.getHeight()));
-
                 // Need to get back on the message thread to update the UI
                 juce::MessageManager::callAsync([this, downloadedImage]()
                                                 {
-                    DBG("KnobImageDownloader callback started for control: " + controlName);
-                    
                     // Validate item and control index are still valid
                     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
                     {
-                        DBG("Item or control index is no longer valid for: " + controlName);
                         delete this;
                         return;
                     }
@@ -1205,14 +1089,12 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
                     GearControl &control = item->controls.getReference(controlIndex);
                     if (control.id != controlId)
                     {
-                        DBG("Control ID mismatch in callback. Expected: " + controlId + ", Got: " + control.id);
                         delete this;
                         return;
                     }
 
                     // Update the control's loaded image
                     control.loadedImage = downloadedImage;
-                    DBG("Setting loaded image for control: " + controlName + " with ID: " + controlId);
                     
                     // Notify any slots that have this item to repaint
                     if (rack != nullptr)
@@ -1232,7 +1114,6 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
             }
             else
             {
-                DBG("Failed to load knob image for control: " + controlName);
                 juce::MessageManager::callAsync([this]()
                                                 { delete this; });
             }
@@ -1260,23 +1141,17 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
     {
-        DBG("Invalid item or control index for fader image fetch");
         return;
     }
 
     const GearControl &control = item->controls[controlIndex];
     if (control.image.isEmpty())
     {
-        DBG("No image path specified for fader control: " + control.name);
         return;
     }
 
     // Use GearLibrary::getFullUrl to resolve the image path
     juce::String fullUrl = GearLibrary::getFullUrl(control.image);
-
-    DBG("Fetching fader image from URL: " + fullUrl);
-    DBG("Original image path: " + control.image);
-    DBG("Full URL after resolution: " + fullUrl);
 
     juce::URL imageUrl(fullUrl);
 
@@ -1325,14 +1200,11 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
          */
         void run() override
         {
-            DBG("FaderImageDownloader thread started for control: " + controlName);
-
             // Try to download using the simple API - this is for older JUCE versions
             std::unique_ptr<juce::InputStream> inputStream = url.createInputStream(false);
 
             if (inputStream == nullptr || threadShouldExit())
             {
-                DBG("Failed to create input stream for fader image: " + url.toString(true));
                 juce::MessageManager::callAsync([this]()
                                                 { delete this; });
                 return;
@@ -1366,19 +1238,13 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
 
             if (downloadedImage.isValid())
             {
-                DBG("Successfully loaded fader image with dimensions: " +
-                    juce::String(downloadedImage.getWidth()) + "x" +
-                    juce::String(downloadedImage.getHeight()));
-
                 // Need to get back on the message thread to update the UI
                 juce::MessageManager::callAsync([this, downloadedImage]()
                                                 {
-                    DBG("FaderImageDownloader callback started for control: " + controlName);
                     
                     // Validate item and control index are still valid
                     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
                     {
-                        DBG("Item or control index is no longer valid for: " + controlName);
                         delete this;
                         return;
                     }
@@ -1387,14 +1253,12 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
                     GearControl &control = item->controls.getReference(controlIndex);
                     if (control.id != controlId)
                     {
-                        DBG("Control ID mismatch in callback. Expected: " + controlId + ", Got: " + control.id);
                         delete this;
                         return;
                     }
 
                     // Update the control's fader image
                     control.faderImage = downloadedImage;
-                    DBG("Setting fader image for control: " + controlName + " with ID: " + controlId);
                     
                     // Notify any slots that have this item to repaint
                     if (rack != nullptr)
@@ -1414,7 +1278,6 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
             }
             else
             {
-                DBG("Failed to load fader image for control: " + controlName);
                 juce::MessageManager::callAsync([this]()
                                                 { delete this; });
             }
@@ -1442,18 +1305,14 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
     {
-        DBG("Cannot fetch switch sprite sheet: invalid item or control index");
         return;
     }
 
     GearControl &control = item->controls.getReference(controlIndex);
     if (control.image.isEmpty())
     {
-        DBG("Cannot fetch switch sprite sheet: image path is empty");
         return;
     }
-
-    DBG("Fetching switch sprite sheet from " + control.image);
 
     // Construct the full URL if it's a relative path
     juce::String fullUrl = control.image;
@@ -1463,11 +1322,8 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
         if (fullUrl.startsWith("assets/") || !fullUrl.contains("/"))
         {
             fullUrl = GearLibrary::getFullUrl(fullUrl);
-            DBG("Resolved relative path to full URL: " + fullUrl);
         }
     }
-
-    DBG("Full switch sprite sheet URL: " + fullUrl);
 
     // Use JUCE's URL class to fetch the image asynchronously
     juce::URL imageUrl(fullUrl);
@@ -1518,14 +1374,12 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
          */
         void run() override
         {
-            DBG("SwitchSpriteSheetDownloader thread started for control: " + controlName);
 
             // Try to download using the simple API - this is for older JUCE versions
             std::unique_ptr<juce::InputStream> inputStream = url.createInputStream(false);
 
             if (inputStream == nullptr || threadShouldExit())
             {
-                DBG("Failed to create input stream for switch sprite sheet: " + url.toString(true));
                 juce::MessageManager::callAsync([this]()
                                                 { delete this; });
                 return;
@@ -1559,19 +1413,13 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
 
             if (downloadedImage.isValid())
             {
-                DBG("Successfully loaded switch sprite sheet with dimensions: " +
-                    juce::String(downloadedImage.getWidth()) + "x" +
-                    juce::String(downloadedImage.getHeight()));
-
                 // Need to get back on the message thread to update the UI
                 juce::MessageManager::callAsync([this, downloadedImage]()
                                                 {
-                    DBG("SwitchSpriteSheetDownloader callback started for control: " + controlName);
                     
                     // Validate item and control index are still valid
                     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
                     {
-                        DBG("Item or control index is no longer valid for: " + controlName);
                         delete this;
                         return;
                     }
@@ -1580,14 +1428,12 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
                     GearControl &control = item->controls.getReference(controlIndex);
                     if (control.id != controlId)
                     {
-                        DBG("Control ID mismatch in callback. Expected: " + controlId + ", Got: " + control.id);
                         delete this;
                         return;
                     }
 
                     // Update the control's sprite sheet
                     control.switchSpriteSheet = downloadedImage;
-                    DBG("Setting sprite sheet for control: " + controlName + " with ID: " + controlId);
                     
                     // Notify any slots that have this item to repaint
                     if (rack != nullptr)
@@ -1607,7 +1453,6 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
             }
             else
             {
-                DBG("Failed to load switch sprite sheet for control: " + controlName);
                 juce::MessageManager::callAsync([this]()
                                                 { delete this; });
             }
@@ -1635,18 +1480,14 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
 {
     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
     {
-        DBG("Cannot fetch button sprite sheet: invalid item or control index");
         return;
     }
 
     GearControl &control = item->controls.getReference(controlIndex);
     if (control.image.isEmpty())
     {
-        DBG("Cannot fetch button sprite sheet: image path is empty");
         return;
     }
-
-    DBG("Fetching button sprite sheet from " + control.image);
 
     // Construct the full URL if it's a relative path
     juce::String fullUrl = control.image;
@@ -1656,11 +1497,8 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
         if (fullUrl.startsWith("assets/") || !fullUrl.contains("/"))
         {
             fullUrl = GearLibrary::getFullUrl(fullUrl);
-            DBG("Resolved relative path to full URL: " + fullUrl);
         }
     }
-
-    DBG("Full button sprite sheet URL: " + fullUrl);
 
     // Use JUCE's URL class to fetch the image asynchronously
     juce::URL imageUrl(fullUrl);
@@ -1711,14 +1549,11 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
          */
         void run() override
         {
-            DBG("ButtonSpriteSheetDownloader thread started for control: " + controlName);
-
             // Try to download using the simple API - this is for older JUCE versions
             std::unique_ptr<juce::InputStream> inputStream = url.createInputStream(false);
 
             if (inputStream == nullptr || threadShouldExit())
             {
-                DBG("Failed to create input stream for button sprite sheet: " + url.toString(true));
                 juce::MessageManager::callAsync([this]()
                                                 { delete this; });
                 return;
@@ -1752,19 +1587,13 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
 
             if (downloadedImage.isValid())
             {
-                DBG("Successfully loaded button sprite sheet with dimensions: " +
-                    juce::String(downloadedImage.getWidth()) + "x" +
-                    juce::String(downloadedImage.getHeight()));
-
                 // Need to get back on the message thread to update the UI
                 juce::MessageManager::callAsync([this, downloadedImage]()
                                                 {
-                    DBG("ButtonSpriteSheetDownloader callback started for control: " + controlName);
                     
                     // Validate item and control index are still valid
                     if (item == nullptr || controlIndex < 0 || controlIndex >= item->controls.size())
                     {
-                        DBG("Item or control index is no longer valid for: " + controlName);
                         delete this;
                         return;
                     }
@@ -1773,14 +1602,12 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
                     GearControl &control = item->controls.getReference(controlIndex);
                     if (control.id != controlId)
                     {
-                        DBG("Control ID mismatch in callback. Expected: " + controlId + ", Got: " + control.id);
                         delete this;
                         return;
                     }
 
                     // Update the control's sprite sheet
                     control.buttonSpriteSheet = downloadedImage;
-                    DBG("Setting sprite sheet for control: " + controlName + " with ID: " + controlId);
                     
                     // Notify any slots that have this item to repaint
                     if (rack != nullptr)
@@ -1800,7 +1627,6 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
             }
             else
             {
-                DBG("Failed to load button sprite sheet for control: " + controlName);
                 juce::MessageManager::callAsync([this]()
                                                 { delete this; });
             }
