@@ -1561,18 +1561,11 @@ void RackSlot::createInstance()
  */
 void RackSlot::resetToSource()
 {
-
-    juce::Logger::writeToLog("in RackSlot::resetToSource(), gearItem = " + (gearItem != nullptr ? gearItem->name : "nullptr"));
-    juce::Logger::writeToLog("in RackSlot::resetToSource(), gearItem->isInstance = " + juce::String(gearItem->isInstance ? "true" : "false"));
-
     if (gearItem == nullptr || !gearItem->isInstance)
         return;
 
     // Reset the instance to match its source
     gearItem->resetToSource();
-
-    // Log the reset
-    juce::Logger::writeToLog("Reset instance " + gearItem->instanceId + " to source " + gearItem->sourceUnitId);
 
     // Repaint to show the updated state
     repaint();

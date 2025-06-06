@@ -53,8 +53,16 @@ public:
                 rack.createInstance(0);
                 expect(rack.isInstance(0), "Slot should be an instance");
                 expect(!rack.getInstanceId(0).isEmpty(), "Instance ID should not be empty");
+
+                // Store the instance ID before reset
+                auto instanceId = rack.getInstanceId(0);
+
+                // Reset the instance
                 rack.resetToSource(0);
-                expect(!rack.isInstance(0), "Slot should not be an instance");
+
+                // Verify instance state is preserved
+                expect(rack.isInstance(0), "Slot should still be an instance after reset");
+                expect(rack.getInstanceId(0) == instanceId, "Instance ID should be preserved after reset");
             }
         }
 
@@ -83,11 +91,21 @@ public:
                 slot2->setGearItem(gearItem2.get());
                 rack.createInstance(0);
                 rack.createInstance(1);
-                expect(rack.isInstance(0), "Slot should be an instance");
-                expect(rack.isInstance(1), "Slot should be an instance");
+                expect(rack.isInstance(0), "Slot 1 should be an instance");
+                expect(rack.isInstance(1), "Slot 2 should be an instance");
+
+                // Store instance IDs before reset
+                auto instanceId1 = rack.getInstanceId(0);
+                auto instanceId2 = rack.getInstanceId(1);
+
+                // Reset all instances
                 rack.resetAllInstances();
-                expect(!rack.isInstance(0), "Slot should not be an instance");
-                expect(!rack.isInstance(1), "Slot should not be an instance");
+
+                // Verify instance states are preserved
+                expect(rack.isInstance(0), "Slot 1 should still be an instance after reset");
+                expect(rack.isInstance(1), "Slot 2 should still be an instance after reset");
+                expect(rack.getInstanceId(0) == instanceId1, "Slot 1 instance ID should be preserved after reset");
+                expect(rack.getInstanceId(1) == instanceId2, "Slot 2 instance ID should be preserved after reset");
             }
         }
     }

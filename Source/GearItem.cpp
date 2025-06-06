@@ -171,9 +171,6 @@ void GearItem::createInstance(const juce::String &sourceUnitId)
  */
 void GearItem::resetToSource()
 {
-    juce::Logger::writeToLog("in GearItem::resetToSource(), gearItem = " + name);
-    juce::Logger::writeToLog("in GearItem::resetToSource(), isInstance = " + juce::String(isInstance ? "true" : "false"));
-
     if (!isInstance)
         return;
 
@@ -181,13 +178,11 @@ void GearItem::resetToSource()
     // Reset all control values to their initial values
     for (auto &control : controls)
     {
-        juce::Logger::writeToLog("in GearItem::resetToSource(), control.name = " + control.name);
-        juce::Logger::writeToLog("in GearItem::resetToSource(), control.value = " + juce::String(control.value));
-        juce::Logger::writeToLog("in GearItem::resetToSource(), control.initialValue = " + juce::String(control.initialValue));
         control.value = control.initialValue;
     }
 
-    // Do not clear instance state
+    // Do not clear instance state here. Users can have multiple instances of the
+    // same gear item in the rack. Their uniqueness is determined by the instanceId.
     // isInstance = false;
     // instanceId = juce::String();
     // sourceUnitId = juce::String();

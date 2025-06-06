@@ -219,6 +219,7 @@ private:
     juce::AudioProcessorValueTreeState state;                ///< The processor's state tree
     juce::UndoManager undoManager;                           ///< Undo manager for state changes
     juce::AudioProcessorEditor *lastCreatedEditor = nullptr; ///< Pointer to the last created editor (for testing)
+    Rack *rack = nullptr;                                    ///< Pointer to the rack (for testing)
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };

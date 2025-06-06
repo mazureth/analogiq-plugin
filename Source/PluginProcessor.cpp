@@ -206,6 +206,10 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
     auto *editor = new AnalogIQEditor(*this);
     lastCreatedEditor = editor;
+    if (auto *rackEditor = dynamic_cast<AnalogIQEditor *>(editor))
+    {
+        rack = rackEditor->getRack();
+    }
     return editor;
 }
 
@@ -438,13 +442,20 @@ void AnalogIQProcessor::loadInstanceState()
  */
 void AnalogIQProcessor::resetAllInstances()
 {
-    // Get the rack from the editor
+    // First try to get the rack from the editor
     if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
     {
         if (auto *rack = editor->getRack())
         {
             rack->resetAllInstances();
+            return;
         }
+    }
+
+    // If no editor is available (e.g. in tests), try to get the rack directly
+    if (rack != nullptr)
+    {
+        rack->resetAllInstances();
     }
 }
 
