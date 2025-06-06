@@ -151,16 +151,11 @@ void GearItem::createInstance(const juce::String &sourceUnitId)
     {
         // Restore our current control values
         controls = currentControls;
-
-        // Update initial values to match current values
-        for (auto &control : controls)
-        {
-            control.initialValue = control.value;
-        }
+        // Don't update initial values when recreating an instance
     }
     else
     {
-        // For new instances, keep the current control values
+        // For new instances, set initial values to current values
         for (auto &control : controls)
         {
             control.initialValue = control.value;
@@ -176,21 +171,26 @@ void GearItem::createInstance(const juce::String &sourceUnitId)
  */
 void GearItem::resetToSource()
 {
+    juce::Logger::writeToLog("in GearItem::resetToSource(), gearItem = " + name);
+    juce::Logger::writeToLog("in GearItem::resetToSource(), isInstance = " + juce::String(isInstance ? "true" : "false"));
+
     if (!isInstance)
         return;
 
     // Reset the instance to match its source
-    // This will be implemented when we add the gear library reference
-    // For now, we'll just reset the values to their initial values
+    // Reset all control values to their initial values
     for (auto &control : controls)
     {
+        juce::Logger::writeToLog("in GearItem::resetToSource(), control.name = " + control.name);
+        juce::Logger::writeToLog("in GearItem::resetToSource(), control.value = " + juce::String(control.value));
+        juce::Logger::writeToLog("in GearItem::resetToSource(), control.initialValue = " + juce::String(control.initialValue));
         control.value = control.initialValue;
     }
 
-    // Clear instance state
-    isInstance = false;
-    instanceId = juce::String();
-    sourceUnitId = juce::String();
+    // Do not clear instance state
+    // isInstance = false;
+    // instanceId = juce::String();
+    // sourceUnitId = juce::String();
 }
 
 /**

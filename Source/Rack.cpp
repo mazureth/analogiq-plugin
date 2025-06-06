@@ -1879,12 +1879,15 @@ juce::String Rack::getInstanceId(int slotIndex) const
  */
 void Rack::resetAllInstances()
 {
+    juce::Logger::writeToLog("in Rack::resetAllInstances(), rack has " + juce::String(slots.size()) + " slots");
     for (int i = 0; i < slots.size(); ++i)
     {
         if (auto *slot = getSlot(i))
         {
+            juce::Logger::writeToLog("in Rack::resetAllInstances(), slot " + juce::String(i) + " isInstance() = " + juce::String(slot->isInstance() ? "true" : "false"));
             if (slot->isInstance())
             {
+                juce::Logger::writeToLog("in Rack::resetAllInstances(), slot " + juce::String(i) + " isInstance(), calling resetToSource()");
                 slot->resetToSource();
             }
         }

@@ -434,11 +434,14 @@ void AnalogIQProcessor::loadInstanceState()
  */
 void AnalogIQProcessor::resetAllInstances()
 {
+    juce::Logger::writeToLog("called AnalogIQProcessor::resetAllInstances()");
     // Get the rack from the editor
     if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
     {
+        juce::Logger::writeToLog("inside if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))");
         if (auto *rack = editor->getRack())
         {
+            juce::Logger::writeToLog("we have a rack, calling rack->resetAllInstances()");
             rack->resetAllInstances();
         }
     }
