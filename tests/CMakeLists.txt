@@ -4,6 +4,8 @@ enable_testing()
 # Create test executable
 add_executable(analogiq_tests
     main.cpp
+    unit/TestHelpers.h
+    unit/TestFixture.h
     unit/GearLibraryTests.cpp
     unit/GearItemTests.cpp
     unit/RackTests.cpp

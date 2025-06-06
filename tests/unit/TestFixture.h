@@ -13,6 +13,13 @@ public:
 
     ~TestFixture()
     {
+        // Process any pending messages
+        if (auto *mm = juce::MessageManager::getInstance())
+        {
+            // Clear any pending broadcast messages
+            mm->deliverBroadcastMessage(juce::String());
+        }
+
         // Clean up JUCE's message thread
         juceInit.reset();
     }
