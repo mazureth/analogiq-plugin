@@ -93,7 +93,7 @@ private:
  * Initializes the UI components including the title label, search box,
  * refresh button, add user gear button, and both list and tree views.
  */
-GearLibrary::GearLibrary()
+GearLibrary::GearLibrary(bool autoLoad)
 {
     // Set up title label
     titleLabel.setFont(juce::Font(18.0f, juce::Font::bold));
@@ -172,8 +172,11 @@ GearLibrary::GearLibrary()
 
     addAndMakeVisible(gearTreeView.get());
 
-    // Load initial data
-    loadLibraryAsync();
+    // Load initial data only if autoLoad is true
+    if (autoLoad)
+    {
+        loadLibraryAsync();
+    }
 }
 
 /**
@@ -591,12 +594,11 @@ void GearLibrary::loadGearItemsAsync()
             // Read the data from the stream
             jsonData = urlStream->readEntireStreamAsString();
             loadedSuccessfully = true;
-            DBG("Successfully fetched gear library from remote URL");
+
         }
         else
         {
             // Failed to connect, use fallback data
-            DBG("Failed to connect to remote URL, using fallback data");
             jsonData = R"({
                 "units": [
                     {
@@ -885,11 +887,8 @@ void GearLibrary::saveLibraryAsync()
     // We'll use a background thread to simulate the save operation
     juce::Thread::launch([this]()
                          {
-        // Simulate saving to a file or server
-        juce::Thread::sleep(500);
-        
-        // Log the save operation completion
-        DBG("Library saved successfully"); });
+                             // Simulate saving to a file or server
+                             juce::Thread::sleep(500); });
 }
 
 /**

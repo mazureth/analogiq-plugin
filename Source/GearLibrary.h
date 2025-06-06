@@ -63,8 +63,10 @@ class GearLibrary : public juce::Component,
 public:
     /**
      * @brief Constructs a new GearLibrary.
+     *
+     * @param autoLoad Whether to automatically load the library data (default: true)
      */
-    GearLibrary();
+    GearLibrary(bool autoLoad = true);
 
     /**
      * @brief Destructor for GearLibrary.
@@ -201,8 +203,6 @@ public:
      */
     static juce::String getFullUrl(const juce::String &relativePath)
     {
-        DBG("GearLibrary::getFullUrl called with path: " + relativePath);
-
         // If already a full URL, return as is
         if (relativePath.startsWith("http"))
             return relativePath;
@@ -236,7 +236,6 @@ public:
             result = RemoteResources::BASE_URL + relativePath;
         }
 
-        DBG("Full URL constructed: " + result);
         return result;
     }
 
@@ -611,8 +610,6 @@ public:
 
             // Use the newer API to start the drag operation
             container->startDragging(dragDesc, comp, dragImage, true, &imageOffset, nullptr);
-
-            DBG("Started dragging item: " + dragDesc);
         }
     }
 

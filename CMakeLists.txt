@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.15)
 
 project(AnalogIQ VERSION 0.1.0)
 
+# Enable testing
+enable_testing()
+
 # Find Doxygen
 find_package(Doxygen REQUIRED)
 
@@ -28,6 +31,7 @@ option(ANALOGIQ_BUILD_AAX "Build AAX plugin" ON)
 option(ANALOGIQ_BUILD_VST3 "Build VST3 plugin" ON)
 option(ANALOGIQ_BUILD_AU "Build Audio Unit plugin" ON)
 option(ANALOGIQ_BUILD_STANDALONE "Build Standalone app" ON)
+option(ANALOGIQ_BUILD_TESTS "Build and run tests" ON)
 
 # Set up the plugin target with JUCE modules
 juce_add_plugin(AnalogIQ
@@ -119,4 +123,12 @@ if(DOXYGEN_FOUND)
 
     # Make sure the docs target depends on the main target
     add_dependencies(docs AnalogIQ)
+endif()
+
+# Add subdirectories
+add_subdirectory(Source)
+
+# Add tests if enabled
+if(ANALOGIQ_BUILD_TESTS)
+    add_subdirectory(tests)
 endif()

@@ -144,7 +144,6 @@ public:
           buttonFrames(other.buttonFrames),
           buttonSpriteSheet(other.buttonSpriteSheet)
     {
-        DBG("GearControl copy constructor called for control: " + name + " with ID: " + id);
     }
 
     /**
@@ -179,7 +178,6 @@ public:
             momentary = other.momentary;
             buttonFrames = other.buttonFrames;
             buttonSpriteSheet = other.buttonSpriteSheet;
-            DBG("GearControl assignment operator called for control: " + name + " with ID: " + id);
         }
         return *this;
     }

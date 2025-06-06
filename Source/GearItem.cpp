@@ -69,13 +69,10 @@ bool GearItem::loadImage()
                 // If successfully loaded image, return true
                 if (image.isValid())
                 {
-                    DBG("Successfully loaded thumbnail image for " + name);
                     return true;
                 }
             }
         }
-
-        DBG("Failed to load thumbnail image for " + name + ", using placeholder");
     }
 
     // If we get here, loading the actual image failed, so create a placeholder
@@ -151,16 +148,11 @@ void GearItem::createInstance(const juce::String &sourceUnitId)
     {
         // Restore our current control values
         controls = currentControls;
-
-        // Update initial values to match current values
-        for (auto &control : controls)
-        {
-            control.initialValue = control.value;
-        }
+        // Don't update initial values when recreating an instance
     }
     else
     {
-        // For new instances, keep the current control values
+        // For new instances, set initial values to current values
         for (auto &control : controls)
         {
             control.initialValue = control.value;
@@ -180,17 +172,17 @@ void GearItem::resetToSource()
         return;
 
     // Reset the instance to match its source
-    // This will be implemented when we add the gear library reference
-    // For now, we'll just reset the values to their initial values
+    // Reset all control values to their initial values
     for (auto &control : controls)
     {
         control.value = control.initialValue;
     }
 
-    // Clear instance state
-    isInstance = false;
-    instanceId = juce::String();
-    sourceUnitId = juce::String();
+    // Do not clear instance state here. Users can have multiple instances of the
+    // same gear item in the rack. Their uniqueness is determined by the instanceId.
+    // isInstance = false;
+    // instanceId = juce::String();
+    // sourceUnitId = juce::String();
 }
 
 /**
