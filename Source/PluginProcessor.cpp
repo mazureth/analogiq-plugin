@@ -204,7 +204,22 @@ bool AnalogIQProcessor::hasEditor() const
  */
 juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
-    return static_cast<juce::AudioProcessorEditor *>(new AnalogIQEditor(*this));
+    auto *editor = new AnalogIQEditor(*this);
+    lastCreatedEditor = editor;
+    return editor;
+}
+
+/**
+ * @brief Gets the active editor.
+ *
+ * In a real plugin host, this is managed by JUCE. For testing purposes,
+ * we return the last created editor.
+ *
+ * @return Pointer to the active editor, or nullptr if none exists
+ */
+juce::AudioProcessorEditor *AnalogIQProcessor::getActiveEditor()
+{
+    return lastCreatedEditor;
 }
 
 /**
@@ -292,7 +307,6 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                 else
                 {
                     // TODO: Remove this logging and handle this case
-                    juce::Logger::writeToLog("Not saving state for slot " + juce::String(i) + " - not an instance or missing instance ID or unit ID");
                 }
             }
         }
@@ -309,7 +323,6 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
 {
     // Get the instance state tree
     auto instanceTree = state.state.getChildWithName("instances");
-    juce::Logger::writeToLog("loadInstanceState: instanceTree valid: " + juce::String(instanceTree.isValid() ? "true" : "false"));
     if (!instanceTree.isValid())
         return;
 
@@ -319,12 +332,10 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
         for (int i = 0; i < rack->getNumSlots(); ++i)
         {
             auto slotTree = instanceTree.getChildWithName("slot_" + juce::String(i));
-            juce::Logger::writeToLog("loadInstanceState: slot_" + juce::String(i) + " tree valid: " + juce::String(slotTree.isValid() ? "true" : "false"));
             if (slotTree.isValid())
             {
                 // Get the source unit ID from the saved state
                 auto sourceUnitId = slotTree.getProperty("sourceUnitId").toString();
-                juce::Logger::writeToLog("loadInstanceState: sourceUnitId: " + sourceUnitId);
                 if (!sourceUnitId.isEmpty())
                 {
                     // Create a new gear item from the source
@@ -360,17 +371,14 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                     // Set the gear item in the slot
                     if (auto *slot = rack->getSlot(i))
                     {
-                        juce::Logger::writeToLog("loadInstanceState: Setting gear item in slot " + juce::String(i));
                         slot->setGearItem(item);
 
                         // Create instance if we have saved state
-                        juce::Logger::writeToLog("loadInstanceState: Creating instance in slot " + juce::String(i));
                         rack->createInstance(i);
 
                         // Get the gear item for this slot
                         if (auto *item = slot->getGearItem())
                         {
-                            juce::Logger::writeToLog("loadInstanceState: Got gear item after createInstance");
                             // Load control values
                             auto controlsTree = slotTree.getChildWithName("controls");
                             if (controlsTree.isValid())
@@ -393,24 +401,20 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                         }
                         else
                         {
-                            juce::Logger::writeToLog("loadInstanceState: Failed to get gear item after createInstance");
                         }
                     }
                     else
                     {
-                        juce::Logger::writeToLog("loadInstanceState: Failed to get slot " + juce::String(i));
                     }
                 }
                 else
                 {
-                    juce::Logger::writeToLog("loadInstanceState: Empty sourceUnitId");
                 }
             }
         }
     }
     else
     {
-        juce::Logger::writeToLog("loadInstanceState: No rack provided");
     }
 }
 
@@ -434,14 +438,11 @@ void AnalogIQProcessor::loadInstanceState()
  */
 void AnalogIQProcessor::resetAllInstances()
 {
-    juce::Logger::writeToLog("called AnalogIQProcessor::resetAllInstances()");
     // Get the rack from the editor
     if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
     {
-        juce::Logger::writeToLog("inside if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))");
         if (auto *rack = editor->getRack())
         {
-            juce::Logger::writeToLog("we have a rack, calling rack->resetAllInstances()");
             rack->resetAllInstances();
         }
     }

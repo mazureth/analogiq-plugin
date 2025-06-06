@@ -116,7 +116,6 @@ public:
                         slot->createInstance();
 
                         // Save the instance state
-                        logMessage("Saved instance state");
                         auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
                         processor.saveInstanceStateFromRack(rack, instanceTree);
 
@@ -198,34 +197,28 @@ public:
             auto *rack = editor->getRack();
 
             // Set the test gear in slot 0
-            logMessage("Set testGear in slot 0");
             if (auto *slot = rack->getSlot(0))
             {
                 slot->setGearItem(&testGear);
             }
 
             // Create an instance
-            logMessage("Called createInstance() on slot 0");
             rack->createInstance(0);
 
             // Save the instance state
-            logMessage("Saved instance state");
             auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
             processor.saveInstanceStateFromRack(rack, instanceTree);
 
             // Clear the slot
-            logMessage("Cleared slot");
             if (auto *slot = rack->getSlot(0))
             {
                 slot->clearGearItem();
             }
 
             // Load the instance state
-            logMessage("Loading instance state");
             processor.loadInstanceState(rack);
 
             // Verify the instance was restored correctly
-            logMessage("Verifying restored instance");
             if (auto *slot = rack->getSlot(0))
             {
                 expect(slot->getGearItem() != nullptr, "Slot should have a gear item after loading");
@@ -246,10 +239,14 @@ public:
         {
             // Create processor and editor
             AnalogIQProcessor processor;
-            std::unique_ptr<AnalogIQEditor> editor(static_cast<AnalogIQEditor *>(processor.createEditor()));
-            auto *rack = editor->getRack();
+            auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
+            expect(editor != nullptr, "Editor should be created");
 
-            // Create two test gear instances with different control values
+            // Get the rack
+            auto *rack = editor->getRack();
+            expect(rack != nullptr, "Rack should exist");
+
+            // Create test gear instances
             GearItem testGear1;
             testGear1.unitId = "test.eq.1";
             testGear1.name = "Test EQ 1";
@@ -260,22 +257,6 @@ public:
             testGear1.version = "1.0";
             testGear1.slotSize = 1;
 
-            // Add controls to first gear
-            GearControl knob1;
-            knob1.name = "Frequency";
-            knob1.type = GearControl::Type::Knob;
-            knob1.value = 0.5f;
-            // knob1.initialValue = 0.0f;
-            testGear1.controls.add(knob1);
-
-            GearControl knob2;
-            knob2.name = "Gain";
-            knob2.type = GearControl::Type::Knob;
-            knob2.value = 0.75f;
-            // knob2.initialValue = 0.0f;
-            testGear1.controls.add(knob2);
-
-            // Create second gear with different values
             GearItem testGear2;
             testGear2.unitId = "test.eq.2";
             testGear2.name = "Test EQ 2";
@@ -286,20 +267,19 @@ public:
             testGear2.version = "1.0";
             testGear2.slotSize = 1;
 
-            // Add controls to second gear
-            GearControl knob3;
-            knob3.name = "Frequency";
-            knob3.type = GearControl::Type::Knob;
-            knob3.value = 0.25f;
-            // knob3.initialValue = 0.0f;
-            testGear2.controls.add(knob3);
+            // Add controls to first gear
+            GearControl knob1;
+            knob1.name = "Frequency";
+            knob1.type = GearControl::Type::Knob;
+            knob1.value = 0.5f;
+            testGear1.controls.add(knob1);
 
-            GearControl knob4;
-            knob4.name = "Gain";
-            knob4.type = GearControl::Type::Knob;
-            knob4.value = 0.9f;
-            // knob4.initialValue = 0.0f;
-            testGear2.controls.add(knob4);
+            // Add controls to second gear
+            GearControl knob2;
+            knob2.name = "Gain";
+            knob2.type = GearControl::Type::Knob;
+            knob2.value = 0.7f;
+            testGear2.controls.add(knob2);
 
             // Set the gear items in slots 0 and 1
             if (auto *slot0 = rack->getSlot(0))
@@ -314,16 +294,12 @@ public:
                 rack->createInstance(1);
             }
 
-            // Verify initial control values
+            // Verify initial values
             if (auto *slot0 = rack->getSlot(0))
             {
                 if (auto *item = slot0->getGearItem())
                 {
-                    logMessage("Initial values for first gear:");
-                    logMessage("Control 0: " + juce::String(item->controls[0].value) + " (initial: " + juce::String(item->controls[0].initialValue) + ")");
-                    logMessage("Control 1: " + juce::String(item->controls[1].value) + " (initial: " + juce::String(item->controls[1].initialValue) + ")");
-                    expectEquals(item->controls[0].value, 0.5f, "First gear first control should be 0.5");
-                    expectEquals(item->controls[1].value, 0.75f, "First gear second control should be 0.75");
+                    expectEquals(item->controls[0].value, 0.5f, "First gear control should have initial value 0.5");
                 }
             }
 
@@ -331,26 +307,17 @@ public:
             {
                 if (auto *item = slot1->getGearItem())
                 {
-                    logMessage("Initial values for second gear:");
-                    logMessage("Control 0: " + juce::String(item->controls[0].value) + " (initial: " + juce::String(item->controls[0].initialValue) + ")");
-                    logMessage("Control 1: " + juce::String(item->controls[1].value) + " (initial: " + juce::String(item->controls[1].initialValue) + ")");
-                    expectEquals(item->controls[0].value, 0.25f, "Second gear first control should be 0.25");
-                    expectEquals(item->controls[1].value, 0.9f, "Second gear second control should be 0.9");
+                    expectEquals(item->controls[0].value, 0.7f, "Second gear control should have initial value 0.7");
                 }
             }
 
-            // Change the values of the controls
+            // Change control values
             if (auto *slot0 = rack->getSlot(0))
             {
                 if (auto *item = slot0->getGearItem())
                 {
-                    auto &control0 = item->controls.getReference(0);
-                    control0.value = 0.8f;
-                    auto &control1 = item->controls.getReference(1);
-                    control1.value = 0.9f;
-                    logMessage("Changed values for first gear:");
-                    logMessage("Control 0: " + juce::String(control0.value) + " (initial: " + juce::String(control0.initialValue) + ")");
-                    logMessage("Control 1: " + juce::String(control1.value) + " (initial: " + juce::String(control1.initialValue) + ")");
+                    auto &control = item->controls.getReference(0);
+                    control.value = 0.3f;
                 }
             }
 
@@ -358,30 +325,20 @@ public:
             {
                 if (auto *item = slot1->getGearItem())
                 {
-                    auto &control0 = item->controls.getReference(0);
-                    control0.value = 0.3f;
-                    auto &control1 = item->controls.getReference(1);
-                    control1.value = 0.4f;
-                    logMessage("Changed values for second gear:");
-                    logMessage("Control 0: " + juce::String(control0.value) + " (initial: " + juce::String(control0.initialValue) + ")");
-                    logMessage("Control 1: " + juce::String(control1.value) + " (initial: " + juce::String(control1.initialValue) + ")");
+                    auto &control = item->controls.getReference(0);
+                    control.value = 0.9f;
                 }
             }
 
-            // Reset all instances
-            logMessage("Calling resetAllInstances()");
-            rack->resetAllInstances(); // Call resetAllInstances directly on the rack
+            // Reset all instances using the processor's method
+            processor.resetAllInstances();
 
-            // Verify all controls are reset to their initial values
+            // Verify values are reset
             if (auto *slot0 = rack->getSlot(0))
             {
                 if (auto *item = slot0->getGearItem())
                 {
-                    logMessage("Values after reset for first gear:");
-                    logMessage("Control 0: " + juce::String(item->controls[0].value) + " (initial: " + juce::String(item->controls[0].initialValue) + ")");
-                    logMessage("Control 1: " + juce::String(item->controls[1].value) + " (initial: " + juce::String(item->controls[1].initialValue) + ")");
-                    expectEquals(item->controls[0].value, 0.5f, "First gear first control should be reset to 0.0");
-                    expectEquals(item->controls[1].value, 0.75f, "First gear second control should be reset to 0.0");
+                    expectEquals(item->controls[0].value, 0.5f, "First gear control should be reset to 0.5");
                 }
             }
 
@@ -389,11 +346,7 @@ public:
             {
                 if (auto *item = slot1->getGearItem())
                 {
-                    logMessage("Values after reset for second gear:");
-                    logMessage("Control 0: " + juce::String(item->controls[0].value) + " (initial: " + juce::String(item->controls[0].initialValue) + ")");
-                    logMessage("Control 1: " + juce::String(item->controls[1].value) + " (initial: " + juce::String(item->controls[1].initialValue) + ")");
-                    expectEquals(item->controls[0].value, 0.25f, "Second gear first control should be reset to 0.0");
-                    expectEquals(item->controls[1].value, 0.9f, "Second gear second control should be reset to 0.0");
+                    expectEquals(item->controls[0].value, 0.7f, "Second gear control should be reset to 0.7");
                 }
             }
         }

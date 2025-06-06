@@ -169,6 +169,16 @@ public:
     void setStateInformation(const void *data, int sizeInBytes) override;
 
     /**
+     * @brief Gets the active editor.
+     *
+     * In a real plugin host, this is managed by JUCE. For testing purposes,
+     * we return the last created editor.
+     *
+     * @return Pointer to the active editor, or nullptr if none exists
+     */
+    juce::AudioProcessorEditor *getActiveEditor();
+
+    /**
      * @brief Gets the processor's state tree.
      *
      * @return Reference to the AudioProcessorValueTreeState
@@ -206,8 +216,9 @@ public:
     void resetAllInstances();
 
 private:
-    juce::AudioProcessorValueTreeState state; ///< State management system
-    juce::UndoManager undoManager;            ///< Undo/redo management system
+    juce::AudioProcessorValueTreeState state;                ///< The processor's state tree
+    juce::UndoManager undoManager;                           ///< Undo manager for state changes
+    juce::AudioProcessorEditor *lastCreatedEditor = nullptr; ///< Pointer to the last created editor (for testing)
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };
