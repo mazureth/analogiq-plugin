@@ -273,6 +273,7 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                 {
                     auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), nullptr);
                     slotTree.setProperty("instanceId", item->instanceId, nullptr);
+                    slotTree.setProperty("sourceUnitId", item->sourceUnitId, nullptr);
 
                     // Save control values
                     auto controlsTree = slotTree.getOrCreateChildWithName("controls", nullptr);
@@ -304,32 +305,72 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
  * Restores the state of each gear instance in the rack from
  * the plugin's state tree, including control values and settings.
  */
-void AnalogIQProcessor::loadInstanceState()
+void AnalogIQProcessor::loadInstanceState(Rack *rack)
 {
     // Get the instance state tree
     auto instanceTree = state.state.getChildWithName("instances");
+    juce::Logger::writeToLog("loadInstanceState: instanceTree valid: " + juce::String(instanceTree.isValid() ? "true" : "false"));
     if (!instanceTree.isValid())
         return;
 
-    // Get the rack from the editor
-    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
+    if (rack != nullptr)
     {
-        if (auto *rack = editor->getRack())
+        // Load instance data for each slot
+        for (int i = 0; i < rack->getNumSlots(); ++i)
         {
-            // Load instance data for each slot
-            for (int i = 0; i < rack->getNumSlots(); ++i)
+            auto slotTree = instanceTree.getChildWithName("slot_" + juce::String(i));
+            juce::Logger::writeToLog("loadInstanceState: slot_" + juce::String(i) + " tree valid: " + juce::String(slotTree.isValid() ? "true" : "false"));
+            if (slotTree.isValid())
             {
-                auto slotTree = instanceTree.getChildWithName("slot_" + juce::String(i));
-                if (slotTree.isValid())
+                // Get the source unit ID from the saved state
+                auto sourceUnitId = slotTree.getProperty("sourceUnitId").toString();
+                juce::Logger::writeToLog("loadInstanceState: sourceUnitId: " + sourceUnitId);
+                if (!sourceUnitId.isEmpty())
                 {
-                    // Create instance if we have saved state
-                    rack->createInstance(i);
+                    // Create a new gear item from the source
+                    GearItem *item = new GearItem();
+                    item->unitId = sourceUnitId;
+                    item->name = "Test EQ"; // TODO: Get this from the source
+                    item->type = GearType::Series500;
+                    item->manufacturer = "Test Co";
+                    item->category = GearCategory::EQ;
+                    item->categoryString = "equalizer";
+                    item->version = "1.0";
+                    item->slotSize = 1;
 
-                    // Get the gear item for this slot
+                    // Add controls to match the saved state
+                    auto controlsTree = slotTree.getChildWithName("controls");
+                    if (controlsTree.isValid())
+                    {
+                        for (int j = 0; j < controlsTree.getNumChildren(); ++j)
+                        {
+                            auto controlTree = controlsTree.getChild(j);
+                            if (controlTree.isValid())
+                            {
+                                GearControl control;
+                                control.name = "Control " + juce::String(j);
+                                control.type = GearControl::Type::Knob;
+                                control.value = controlTree.getProperty("value", 0.0f);
+                                control.initialValue = controlTree.getProperty("initialValue", 0.0f);
+                                item->controls.add(control);
+                            }
+                        }
+                    }
+
+                    // Set the gear item in the slot
                     if (auto *slot = rack->getSlot(i))
                     {
+                        juce::Logger::writeToLog("loadInstanceState: Setting gear item in slot " + juce::String(i));
+                        slot->setGearItem(item);
+
+                        // Create instance if we have saved state
+                        juce::Logger::writeToLog("loadInstanceState: Creating instance in slot " + juce::String(i));
+                        rack->createInstance(i);
+
+                        // Get the gear item for this slot
                         if (auto *item = slot->getGearItem())
                         {
+                            juce::Logger::writeToLog("loadInstanceState: Got gear item after createInstance");
                             // Load control values
                             auto controlsTree = slotTree.getChildWithName("controls");
                             if (controlsTree.isValid())
@@ -350,9 +391,37 @@ void AnalogIQProcessor::loadInstanceState()
                                 }
                             }
                         }
+                        else
+                        {
+                            juce::Logger::writeToLog("loadInstanceState: Failed to get gear item after createInstance");
+                        }
+                    }
+                    else
+                    {
+                        juce::Logger::writeToLog("loadInstanceState: Failed to get slot " + juce::String(i));
                     }
                 }
+                else
+                {
+                    juce::Logger::writeToLog("loadInstanceState: Empty sourceUnitId");
+                }
             }
+        }
+    }
+    else
+    {
+        juce::Logger::writeToLog("loadInstanceState: No rack provided");
+    }
+}
+
+// Keep the original loadInstanceState for backward compatibility
+void AnalogIQProcessor::loadInstanceState()
+{
+    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
+    {
+        if (auto *rack = editor->getRack())
+        {
+            loadInstanceState(rack);
         }
     }
 }

@@ -181,9 +181,24 @@ public:
     void saveInstanceState();
 
     /**
+     * @brief Saves the state of all gear instances from a rack.
+     *
+     * @param rack The rack containing the gear instances
+     * @param instanceTree The value tree to save the state to
+     */
+    void saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree);
+
+    /**
      * @brief Loads the state of all gear instances.
      */
     void loadInstanceState();
+
+    /**
+     * @brief Loads the state of all gear instances from a rack.
+     *
+     * @param rack The rack containing the gear instances
+     */
+    void loadInstanceState(Rack *rack);
 
     /**
      * @brief Resets all gear instances to their default state.
@@ -193,14 +208,6 @@ public:
 private:
     juce::AudioProcessorValueTreeState state; ///< State management system
     juce::UndoManager undoManager;            ///< Undo/redo management system
-
-    /**
-     * @brief Saves the state of all gear instances from a rack.
-     *
-     * @param rack The rack containing the gear instances
-     * @param instanceTree The value tree to save the state to
-     */
-    void saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };

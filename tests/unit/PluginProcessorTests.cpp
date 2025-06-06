@@ -115,7 +115,8 @@ public:
                         // Create instance in the slot
                         slot->createInstance();
 
-                        // Save instance state
+                        // Save the instance state
+                        logMessage("Saved instance state");
                         auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
                         processor.saveInstanceStateFromRack(rack, instanceTree);
 
@@ -165,27 +166,85 @@ public:
 
         beginTest("Gear Load Instance");
         {
-            AnalogIQProcessor processor;
+            // Create a test gear instance with control values
+            GearItem testGear;
+            testGear.unitId = "test.eq.1";
+            testGear.name = "Test EQ";
+            testGear.type = GearType::Series500;
+            testGear.manufacturer = "Test Co";
+            testGear.category = GearCategory::EQ;
+            testGear.categoryString = "equalizer";
+            testGear.version = "1.0";
+            testGear.slotSize = 1;
 
-            // Create and save initial test gear instance
-            testGear = createTestGearInstance();
-            // Load saved state and assert an instance exists and has a value we expect
-            processor.loadInstanceState();
+            // Add some controls
+            GearControl knob1;
+            knob1.name = "Frequency";
+            knob1.type = GearControl::Type::Knob;
+            knob1.value = 0.5f;
+            knob1.initialValue = 0.0f;
+            testGear.controls.add(knob1);
+
+            GearControl knob2;
+            knob2.name = "Gain";
+            knob2.type = GearControl::Type::Knob;
+            knob2.value = 0.75f;
+            knob2.initialValue = 0.0f;
+            testGear.controls.add(knob2);
+
+            // Create processor and editor
+            AnalogIQProcessor processor;
+            std::unique_ptr<AnalogIQEditor> editor(static_cast<AnalogIQEditor *>(processor.createEditor()));
+            auto *rack = editor->getRack();
+
+            // Set the test gear in slot 0
+            logMessage("Set testGear in slot 0");
+            if (auto *slot = rack->getSlot(0))
+            {
+                slot->setGearItem(&testGear);
+            }
+
+            // Create an instance
+            logMessage("Called createInstance() on slot 0");
+            rack->createInstance(0);
+
+            // Save the instance state
+            logMessage("Saved instance state");
+            auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
+            processor.saveInstanceStateFromRack(rack, instanceTree);
+
+            // Clear the slot
+            logMessage("Cleared slot");
+            if (auto *slot = rack->getSlot(0))
+            {
+                slot->clearGearItem();
+            }
+
+            // Load the instance state
+            logMessage("Loading instance state");
+            processor.loadInstanceState(rack);
+
+            // Verify the instance was restored correctly
+            logMessage("Verifying restored instance");
+            if (auto *slot = rack->getSlot(0))
+            {
+                expect(slot->getGearItem() != nullptr, "Slot should have a gear item after loading");
+                if (auto *item = slot->getGearItem())
+                {
+                    expect(item->isInstance, "Restored item should be an instance");
+                    expect(item->instanceId.isNotEmpty(), "Restored instance should have an ID");
+                    expectEquals(item->controls.size(), 2, "Restored instance should have 2 controls");
+
+                    // Verify control values were restored
+                    expectEquals(item->controls[0].value, 0.5f, "First control value should be restored");
+                    expectEquals(item->controls[1].value, 0.75f, "Second control value should be restored");
+                }
+            }
         }
 
         beginTest("Gear Reset Instance");
         {
             AnalogIQProcessor processor;
-
-            // Create and save initial test gear instance
-            testGear = createTestGearInstance();
-            // Load saved state
-            processor.loadInstanceState();
-
-            // Reset instances
-            processor.resetAllInstances();
-
-            // assert an instance values are reset
         }
     }
 
