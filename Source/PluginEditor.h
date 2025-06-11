@@ -15,6 +15,7 @@
 #include "GearLibrary.h"
 #include "Rack.h"
 #include "NotesPanel.h"
+#include "NetworkFetcher.h"
 
 /**
  * @brief Main editor interface for the AnalogIQ plugin.
@@ -60,6 +61,7 @@ public:
 
 private:
     AnalogIQProcessor &audioProcessor; ///< Reference to the associated AudioProcessor
+    NetworkFetcher networkFetcher;     ///< Network fetcher for making HTTP requests
 
     // UI Components
     juce::TabbedComponent mainTabs{juce::TabbedButtonBar::TabsAtTop}; ///< Main tabbed interface

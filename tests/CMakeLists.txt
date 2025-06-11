@@ -6,6 +6,7 @@ add_executable(analogiq_tests
     main.cpp
     unit/TestHelpers.h
     unit/TestFixture.h
+    unit/MockNetworkFetcher.h
     unit/GearLibraryTests.cpp
     unit/GearItemTests.cpp
     unit/RackTests.cpp
@@ -56,6 +57,7 @@ target_compile_definitions(analogiq_tests
     JUCE_UNIT_TESTS=1
     JUCE_STRICT_REFCOUNTEDPOINTER=1
     JUCE_UNIT_TESTS_VERBOSE=1
+    JUCE_DONT_ENABLE_LEAK_DETECTOR=1
 ) 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

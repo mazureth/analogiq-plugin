@@ -12,6 +12,7 @@
 #include <JuceHeader.h>
 #include "DraggableListBox.h"
 #include "GearItem.h"
+#include "INetworkFetcher.h"
 
 /**
  * @brief Namespace containing remote resource URLs and paths.
@@ -64,9 +65,10 @@ public:
     /**
      * @brief Constructs a new GearLibrary.
      *
+     * @param networkFetcher The network fetcher to use for remote requests
      * @param autoLoad Whether to automatically load the library data (default: true)
      */
-    GearLibrary(bool autoLoad = true);
+    explicit GearLibrary(INetworkFetcher &networkFetcher, bool autoLoad = true);
 
     /**
      * @brief Destructor for GearLibrary.
@@ -293,6 +295,8 @@ private:
      * @brief Updates the filtered items in both list and tree views.
      */
     void updateFilteredItems();
+
+    INetworkFetcher &fetcher; ///< Reference to the network fetcher
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GearLibrary)
 };

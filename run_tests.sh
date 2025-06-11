@@ -9,6 +9,9 @@ mkdir -p build
 # Navigate to build directory
 cd build
 
+# Clean up any existing .gcda files
+find . -name "*.gcda" -delete
+
 # Configure with CMake
 cmake .. -DANALOGIQ_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
 

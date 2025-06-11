@@ -70,6 +70,9 @@ target_sources(AnalogIQ PRIVATE
     Source/RackSlot.cpp
     Source/NotesPanel.cpp
     Source/NotesPanel.h
+    Source/NetworkFetcher.cpp
+    Source/NetworkFetcher.h
+    Source/INetworkFetcher.h
 )
 
 # Set up JUCE dependencies

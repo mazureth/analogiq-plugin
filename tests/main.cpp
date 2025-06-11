@@ -2,6 +2,10 @@
 
 int main(int argc, char *argv[])
 {
+
+    // Ensure JUCE GUI + threading systems are initialized
+    juce::ScopedJuceInitialiser_GUI guiInit;
+
     juce::UnitTestRunner testRunner;
 
     // JUCE will run all tests (including theirs) automatically
@@ -29,5 +33,10 @@ int main(int argc, char *argv[])
         std::cout << " - " << test->getName() << std::endl;
 
     testRunner.runTests(selectedTests);
+
+    // Explicit teardown for lingering threads/resources
+    juce::DeletedAtShutdown::deleteAll();
+    juce::MessageManager::deleteInstance();
+
     return 0;
 }

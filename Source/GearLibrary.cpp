@@ -93,7 +93,8 @@ private:
  * Initializes the UI components including the title label, search box,
  * refresh button, add user gear button, and both list and tree views.
  */
-GearLibrary::GearLibrary(bool autoLoad)
+GearLibrary::GearLibrary(INetworkFetcher &networkFetcher, bool autoLoad)
+    : fetcher(networkFetcher)
 {
     // Set up title label
     titleLabel.setFont(juce::Font(18.0f, juce::Font::bold));
@@ -167,7 +168,7 @@ GearLibrary::GearLibrary(bool autoLoad)
     gearTreeView->setMultiSelectEnabled(false);
     gearTreeView->setOpenCloseButtonsVisible(true);
 
-    rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Root", this);
+    rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Gear Library", this);
     gearTreeView->setRootItem(rootItem.get());
 
     addAndMakeVisible(gearTreeView.get());
@@ -575,75 +576,22 @@ void GearLibrary::loadFiltersAsync()
  */
 void GearLibrary::loadGearItemsAsync()
 {
-    // Use a background thread to avoid blocking the message thread
-    juce::Thread::launch([this]()
-                         {
-        // Create URL for the remote endpoint using the helper method
-        juce::URL url(getFullUrl(RemoteResources::LIBRARY_PATH));
-        
-        // Fetch the JSON data
-        auto urlStream = url.createInputStream(juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
-                                                   .withConnectionTimeoutMs(10000)
-                                                   .withNumRedirectsToFollow(5));
-        
-        juce::String jsonData;
-        bool loadedSuccessfully = false;
-        
-        if (urlStream != nullptr)
-        {
-            // Read the data from the stream
-            jsonData = urlStream->readEntireStreamAsString();
-            loadedSuccessfully = true;
+    // Create URL for the remote endpoint using the helper method
+    juce::URL url(getFullUrl(RemoteResources::LIBRARY_PATH));
 
-        }
-        else
-        {
-            // Failed to connect, use fallback data
-            jsonData = R"({
-                "units": [
-                    {
-                        "unitId": "la2a-compressor",
-                        "name": "LA-2A Compressor",
-                        "manufacturer": "Teletronix/Universal Audio",
-                        "category": "compressor",
-                        "version": "1.0.0",
-                        "schemaPath": "units/la2a-compressor-1.0.0.json",
-                        "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                        "tags": [
-                            "UA", "Universal Audio", "Teletronix", "optical", "tube", "vintage", "leveling amplifier"
-                        ]
-                    },
-                    {
-                        "unitId": "api-560-eq",
-                        "name": "API 560 10-Band Graphic Equalizer",
-                        "manufacturer": "Automated Processes Inc.",
-                        "category": "equalizer",
-                        "version": "1.0.0",
-                        "schemaPath": "units/api-560-eq-1.0.0.json",
-                        "thumbnailImage": "assets/thumbnails/api-560-eq-1.0.0.jpg",
-                        "tags": [
-                            "API", "500 series", "graphic EQ", "10-band", "hardware"
-                        ]
-                    }
-                ]
-            })";
-        }
-        
-        // Send the result back to the message thread
-        juce::MessageManager::callAsync([this, jsonData, loadedSuccessfully]() {
-            // Clear existing items before adding new ones
-            gearItems.clear();
-            
-            // Parse the JSON data into gear items
-            parseGearLibrary(jsonData);
-            
-            // Update the UI to reflect the changes
-            updateFilteredItems();
-            
-            // If loaded successfully, save the library to local cache
-            if (loadedSuccessfully)
-                saveLibraryAsync();
-        }); });
+    // Use the injected network fetcher to get the data
+    bool success = false;
+    juce::String jsonData = fetcher.fetchJsonBlocking(url, success);
+
+    if (success && jsonData.isNotEmpty())
+    {
+        parseGearLibrary(jsonData);
+    }
+    else
+    {
+        // TODO: Handle error case
+        juce::Logger::writeToLog("Failed to load gear items from: " + url.toString(false));
+    }
 }
 
 /**

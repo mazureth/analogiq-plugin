@@ -20,14 +20,15 @@
  * @param p Reference to the associated AudioProcessor
  */
 AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
-    : AudioProcessorEditor(&p), audioProcessor(p),
+    : AudioProcessorEditor(&p),
+      audioProcessor(p),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
     // Set component IDs for debugging
     setComponentID("AnalogIQEditor");
 
     // Create our components
-    gearLibrary = std::make_unique<GearLibrary>();
+    gearLibrary = std::make_unique<GearLibrary>(networkFetcher);
     rack = std::make_unique<Rack>();
     notesPanel = std::make_unique<NotesPanel>();
 
