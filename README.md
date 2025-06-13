@@ -45,17 +45,33 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
    cd analogiq-client
    ```
 
-2. Create a build directory and run CMake:
+2. Build the project using one of the provided scripts:
    ```bash
-   mkdir build
-   cd build
-   cmake ..
-   cmake --build .
+   # Normal build
+   ./build.sh
+   
+   # Clean build (removes build directory first)
+   ./clean_build.sh
    ```
 
-3. Open your IDE _after_ you build so JUCE is correctly downloaded. This will help with linter issues.
+   Both scripts will accept flags that will be passed through to the build command
 
-4. To build the documentation:
+   ```
+   # Build with verbose output
+   ./build.sh --verbose
+   
+   # Build with specific CMake flags
+   ./build.sh --parallel 4
+   ```
+
+3. Run the tests:
+   ```bash
+   ./run_tests.sh
+   ```
+
+4. Open your IDE _after_ you build so JUCE is correctly downloaded. This will help with linter issues.
+
+5. To build the documentation:
    ```bash
    cmake --build build --target docs
    ```

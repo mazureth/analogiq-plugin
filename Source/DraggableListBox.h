@@ -38,9 +38,6 @@ public:
         // CRITICAL: Ensure listbox captures mouse events correctly
         setWantsKeyboardFocus(true);
 
-        // Debugging info - log when object is created
-        DBG("DraggableListBox constructed - ID: " + getComponentID());
-
         // Add a mouse listener to log clicks for debugging
         addMouseListener(this, true);
     }
@@ -62,22 +59,11 @@ public:
         // Track the initial position for the drag
         dragStartPosition = e.getPosition();
 
-        // VERY CLEAR debug output - CRITICAL FOR IDENTIFYING ISSUES
-        juce::String msg = "\n\n****** MOUSE DOWN DETECTED ON DRAGGABLE LISTBOX ******\n";
-        msg += "Row clicked: " + juce::String(draggedRow) + "\n";
-        msg += "Position: " + dragStartPosition.toString() + "\n";
-        msg += "Number of rows: " + juce::String(getModel() ? getModel()->getNumRows() : 0) + "\n";
-        msg += "Row height: " + juce::String(getRowHeight()) + "\n";
-        msg += "Selected row: " + juce::String(getSelectedRow()) + "\n";
-        msg += "***************************************************\n\n";
-        DBG(msg);
-
         // Let the base class handle selection
         ListBox::mouseDown(e);
 
         // IMPORTANT: Store the selected row after the base class has handled it
         draggedRow = getSelectedRow();
-        DBG("After ListBox::mouseDown, selected row is now: " + juce::String(draggedRow));
     }
 
     /**
@@ -98,12 +84,6 @@ public:
         // 2. The mouse has moved a reasonable distance (to avoid accidental drags)
         // 3. We haven't already started dragging
 
-        // CLEAR debug output every time mouseDrag is called
-        DBG("DraggableListBox: mouseDrag called, draggedRow=" + juce::String(draggedRow) +
-            ", selectedRow=" + juce::String(getSelectedRow()) +
-            ", isDragging=" + juce::String(isDragging) +
-            ", distance=" + juce::String(e.getDistanceFromDragStart()));
-
         // CRITICAL FIX: Use the selected row if the dragged row is invalid
         int rowToDrag = (draggedRow >= 0) ? draggedRow : getSelectedRow();
 
@@ -116,8 +96,6 @@ public:
 
             if (dndContainer)
             {
-                DBG("DraggableListBox: Starting drag operation for row " + juce::String(rowToDrag));
-
                 // Create drag data (simple integer with row index) - CRITICAL FIX: use rowToDrag
                 juce::var dragData(rowToDrag);
 
@@ -139,21 +117,13 @@ public:
 
                 // Start the actual drag operation with a bright visible image
                 dndContainer->startDragging(dragData, this, juce::ScaledImage(dragImage), false);
-
-                DBG("DraggableListBox: Drag operation started - container ID: " +
-                    dndContainer->getComponentID() + ", row: " + juce::String(rowToDrag));
             }
             else
             {
-                DBG("DraggableListBox: ERROR - No DragAndDropContainer found!");
-
                 // Show component hierarchy for debugging
                 juce::Component *parent = getParentComponent();
                 while (parent != nullptr)
                 {
-                    DBG("Parent component: ID=" +
-                        parent->getComponentID() + ", class=" +
-                        typeid(*parent).name());
                     parent = parent->getParentComponent();
                 }
             }

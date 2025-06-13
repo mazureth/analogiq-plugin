@@ -20,21 +20,22 @@
  * @param p Reference to the associated AudioProcessor
  */
 AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
-    : AudioProcessorEditor(&p), audioProcessor(p),
+    : AudioProcessorEditor(&p),
+      audioProcessor(p),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
     // Set component IDs for debugging
     setComponentID("AnalogIQEditor");
 
     // Create our components
-    gearLibrary = std::make_unique<GearLibrary>();
-    rack = std::make_unique<Rack>();
+    gearLibrary = std::make_unique<GearLibrary>(audioProcessor.getNetworkFetcher());
+    rack = std::make_unique<Rack>(audioProcessor.getNetworkFetcher());
     notesPanel = std::make_unique<NotesPanel>();
 
     // Set component IDs
     gearLibrary->setComponentID("GearLibrary");
-    rack->setComponentID("Rack");
-    notesPanel->setComponentID("NotesPanel");
+    rack->setComponentID("RackTab");
+    notesPanel->setComponentID("NotesTab");
 
     // Connect the Rack to the GearLibrary for drag and drop
     rack->setGearLibrary(gearLibrary.get());
@@ -44,8 +45,11 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
 
     // Set up tabs
     mainTabs.setComponentID("MainTabs");
+
+    // Add tabs with components
     mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
     mainTabs.addTab("Notes", juce::Colours::darkgrey, notesPanel.get(), false);
+
     mainTabs.setTabBarDepth(30);
     mainTabs.setInterceptsMouseClicks(false, true);
     addAndMakeVisible(mainTabs);
@@ -59,9 +63,6 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
     // Configure drag and drop
     // This is critical - make sure this component is configured as the DragAndDropContainer
     setInterceptsMouseClicks(false, true);
-
-    // Debug info
-    DBG("AnalogIQEditor constructed as DragAndDropContainer. Components set up.");
 }
 
 /**

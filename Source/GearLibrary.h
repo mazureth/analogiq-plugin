@@ -12,6 +12,7 @@
 #include <JuceHeader.h>
 #include "DraggableListBox.h"
 #include "GearItem.h"
+#include "INetworkFetcher.h"
 
 /**
  * @brief Namespace containing remote resource URLs and paths.
@@ -63,8 +64,11 @@ class GearLibrary : public juce::Component,
 public:
     /**
      * @brief Constructs a new GearLibrary.
+     *
+     * @param networkFetcher The network fetcher to use for remote requests
+     * @param autoLoad Whether to automatically load the library data (default: true)
      */
-    GearLibrary();
+    explicit GearLibrary(INetworkFetcher &networkFetcher, bool autoLoad = true);
 
     /**
      * @brief Destructor for GearLibrary.
@@ -201,8 +205,6 @@ public:
      */
     static juce::String getFullUrl(const juce::String &relativePath)
     {
-        DBG("GearLibrary::getFullUrl called with path: " + relativePath);
-
         // If already a full URL, return as is
         if (relativePath.startsWith("http"))
             return relativePath;
@@ -236,7 +238,6 @@ public:
             result = RemoteResources::BASE_URL + relativePath;
         }
 
-        DBG("Full URL constructed: " + result);
         return result;
     }
 
@@ -294,6 +295,8 @@ private:
      * @brief Updates the filtered items in both list and tree views.
      */
     void updateFilteredItems();
+
+    INetworkFetcher &fetcher; ///< Reference to the network fetcher
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GearLibrary)
 };
@@ -611,8 +614,6 @@ public:
 
             // Use the newer API to start the drag operation
             container->startDragging(dragDesc, comp, dragImage, true, &imageOffset, nullptr);
-
-            DBG("Started dragging item: " + dragDesc);
         }
     }
 
