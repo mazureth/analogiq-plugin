@@ -21,19 +21,89 @@ public:
             R"({
                 "units": [
                     {
-                        "unitId": "test.eq.1",
-                        "name": "Test EQ",
-                        "type": "Series500",
-                        "manufacturer": "Test Co",
-                        "category": "EQ",
-                        "categoryString": "equalizer",
-                        "version": "1.0",
-                        "schemaPath": "units/test.eq.1.json",
-                        "thumbnailImage": "assets/test.eq.1.png",
-                        "tags": ["eq", "test"]
+                        "unitId": "la2a-compressor",
+                        "name": "LA-2A Tube Compressor",
+                        "manufacturer": "Universal Audio",
+                        "category": "compressor",
+                        "version": "1.0.0",
+                        "schemaPath": "units/la2a-compressor-1.0.0.json",
+                        "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                        "tags": [
+                            "compressor",
+                            "tube",
+                            "optical",
+                            "vintage",
+                            "hardware"
+                        ]
                     }
                 ]
             })");
+
+        // Set up mock response for the compressor image
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/faceplates/la2a-compressor-1.0.0.jpg",
+            "mock_image_data"); // The actual content doesn't matter for the test
+
+        // Set up mock response for the compressor image
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/thumbnails/la2a-compressor-1.0.0.jpg",
+            "mock_image_data"); // The actual content doesn't matter for the test
+
+        // Set up mock response for the compressor image
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/controls/knobs/bakelite-lg-black.png",
+            "mock_image_data"); // The actual content doesn't matter for the test
+
+        // Set up mock response for the compressor schema
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/la2a-compressor-1.0.0.json",
+            R"({
+                    "unitId": "la2a-compressor",
+                    "name": "LA-2A Tube Compressor",
+                    "manufacturer": "Universal Audio",
+                    "tags": [
+                        "compressor",
+                        "tube",
+                        "optical",
+                        "vintage",
+                        "hardware"
+                    ],
+                    "version": "1.0.0",
+                    "category": "compressor",
+                    "formFactor": "19-inch-rack",
+                    "faceplateImage": "assets/faceplates/la2a-compressor-1.0.0.jpg",
+                    "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                    "width": 1900,
+                    "height": 525,
+                    "controls": [
+                        {
+                            "id": "peak-reduction",
+                            "label": "Peak Reduction",
+                            "type": "knob",
+                            "position": {
+                            "x": 0.68,
+                            "y": 0.44
+                            },
+                            "value": 180,
+                            "startAngle": 40,
+                            "endAngle": 322,
+                            "image": "assets/controls/knobs/bakelite-lg-black.png"
+                        },
+                        {
+                            "id": "gain",
+                            "label": "Gain",
+                            "type": "knob",
+                            "position": {
+                                "x": 0.257,
+                                "y": 0.44
+                            },
+                            "value": 180,
+                            "startAngle": 40,
+                            "endAngle": 322,
+                            "image": "assets/controls/knobs/bakelite-lg-black.png"
+                        }
+                    ]
+                    })");
 
         beginTest("Construction");
         {

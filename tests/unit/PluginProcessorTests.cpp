@@ -45,19 +45,89 @@ public:
             R"({
                 "units": [
                     {
-                        "unitId": "test.eq.1",
-                        "name": "Test EQ",
-                        "type": "Series500",
-                        "manufacturer": "Test Co",
-                        "category": "EQ",
-                        "categoryString": "equalizer",
-                        "version": "1.0",
-                        "schemaPath": "units/test.eq.1.json",
-                        "thumbnailImage": "assets/test.eq.1.png",
-                        "tags": ["eq", "test"]
+                        "unitId": "la2a-compressor",
+                        "name": "LA-2A Tube Compressor",
+                        "manufacturer": "Universal Audio",
+                        "category": "compressor",
+                        "version": "1.0.0",
+                        "schemaPath": "units/la2a-compressor-1.0.0.json",
+                        "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                        "tags": [
+                            "compressor",
+                            "tube",
+                            "optical",
+                            "vintage",
+                            "hardware"
+                        ]
                     }
                 ]
             })");
+
+        // Set up mock response for the compressor image
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/faceplates/la2a-compressor-1.0.0.jpg",
+            "mock_image_data"); // The actual content doesn't matter for the test
+
+        // Set up mock response for the compressor image
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/thumbnails/la2a-compressor-1.0.0.jpg",
+            "mock_image_data"); // The actual content doesn't matter for the test
+
+        // Set up mock response for the compressor image
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/controls/knobs/bakelite-lg-black.png",
+            "mock_image_data"); // The actual content doesn't matter for the test
+
+        // Set up mock response for the compressor schema
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/la2a-compressor-1.0.0.json",
+            R"({
+                    "unitId": "la2a-compressor",
+                    "name": "LA-2A Tube Compressor",
+                    "manufacturer": "Universal Audio",
+                    "tags": [
+                        "compressor",
+                        "tube",
+                        "optical",
+                        "vintage",
+                        "hardware"
+                    ],
+                    "version": "1.0.0",
+                    "category": "compressor",
+                    "formFactor": "19-inch-rack",
+                    "faceplateImage": "assets/faceplates/la2a-compressor-1.0.0.jpg",
+                    "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                    "width": 1900,
+                    "height": 525,
+                    "controls": [
+                        {
+                            "id": "peak-reduction",
+                            "label": "Peak Reduction",
+                            "type": "knob",
+                            "position": {
+                            "x": 0.68,
+                            "y": 0.44
+                            },
+                            "value": 180,
+                            "startAngle": 40,
+                            "endAngle": 322,
+                            "image": "assets/controls/knobs/bakelite-lg-black.png"
+                        },
+                        {
+                            "id": "gain",
+                            "label": "Gain",
+                            "type": "knob",
+                            "position": {
+                                "x": 0.257,
+                                "y": 0.44
+                            },
+                            "value": 180,
+                            "startAngle": 40,
+                            "endAngle": 322,
+                            "image": "assets/controls/knobs/bakelite-lg-black.png"
+                        }
+                    ]
+                    })");
 
         beginTest("Construction");
         {
@@ -90,29 +160,6 @@ public:
         {
             AnalogIQProcessor processor(mockFetcher);
 
-            // Create test gear instance with control values
-            GearItem testGear;
-            testGear.unitId = "test.eq.1";
-            testGear.name = "Test EQ";
-            testGear.type = GearType::Series500;
-            testGear.manufacturer = "Test Co";
-            testGear.category = GearCategory::EQ;
-            testGear.categoryString = "equalizer";
-            testGear.version = "1.0";
-            testGear.slotSize = 1;
-            testGear.createInstance(testGear.unitId);
-
-            testGear.controls.add(GearControl(GearControl::Type::Knob, "Control 0", juce::Rectangle<float>(0, 0, 50, 50)));
-            testGear.controls.add(GearControl(GearControl::Type::Knob, "Control 1", juce::Rectangle<float>(60, 0, 50, 50)));
-
-            // Set control values
-            auto &control0 = testGear.controls.getReference(0);
-            control0.value = 0.5f;
-            control0.initialValue = 0.0f;
-            auto &control1 = testGear.controls.getReference(1);
-            control1.value = 1.0f;
-            control1.initialValue = 1.0f;
-
             // Create editor and get rack
             auto *editor = dynamic_cast<AnalogIQEditor *>(processor.createEditor());
             expect(editor != nullptr, "Editor should be created");
@@ -124,6 +171,31 @@ public:
 
                 if (rack != nullptr)
                 {
+                    // Create a gear item using the constructor
+                    GearItem testGear(
+                        "la2a-compressor",
+                        "LA-2A Tube Compressor",
+                        "Universal Audio",
+                        "compressor",
+                        "1.0.0",
+                        "units/la2a-compressor-1.0.0.json",
+                        "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                        juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                        mockFetcher,
+                        GearType::Rack19Inch,
+                        GearCategory::Compressor);
+                    testGear.createInstance(testGear.unitId);
+
+                    // Add the LA-2A controls
+                    testGear.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
+                    testGear.controls.add(GearControl(GearControl::Type::Knob, "Gain", juce::Rectangle<float>(60, 0, 50, 50)));
+
+                    // Set control values
+                    auto &peakReduction = testGear.controls.getReference(0);
+                    peakReduction.value = 200;
+                    auto &gain = testGear.controls.getReference(1);
+                    gain.value = 70;
+
                     // Set the gear item in the slot
                     if (auto *slot = rack->getSlot(0))
                     {
@@ -159,19 +231,22 @@ public:
                         expect(controlTree.isValid(), "Control tree should exist in state");
                         if (controlTree.isValid())
                         {
-                            expectEquals(controlTree.getProperty("value").toString(), juce::String("0.5"),
-                                         "Control value should be 0.5");
-                            expectEquals(controlTree.getProperty("initialValue").toString(), juce::String("0.5"),
-                                         "Control initial value should match current value");
+                            expectEquals(controlTree.getProperty("value").toString(), juce::String("200.0"),
+                                         "Peak Reduction value should be 200");
+                            expectEquals(controlTree.getProperty("initialValue").toString(), juce::String("200.0"),
+                                         "Peak Reduction initial value should be 200");
                         }
 
                         // Verify control 1 values
                         auto control1Tree = controlsTree.getChildWithName("control_1");
                         expect(control1Tree.isValid(), "Control 1 tree should exist in state");
-                        expectEquals(static_cast<double>(control1Tree.getProperty("value")), 1.0,
-                                     "Control 1 value should be 1.0");
-                        expectEquals(static_cast<double>(control1Tree.getProperty("initialValue")), 1.0,
-                                     "Control 1 initial value should be 1.0");
+                        if (controlTree.isValid())
+                        {
+                            expectEquals(control1Tree.getProperty("value").toString(), juce::String("70.0"),
+                                         "Gain value should be 70");
+                            expectEquals(control1Tree.getProperty("initialValue").toString(), juce::String("70.0"),
+                                         "Gain initial value should be 70");
+                        }
                     }
                 }
 
@@ -182,36 +257,35 @@ public:
 
         beginTest("Gear Load Instance");
         {
-            // Create a test gear instance with control values
-            GearItem testGear;
-            testGear.unitId = "test.eq.1";
-            testGear.name = "Test EQ";
-            testGear.type = GearType::Series500;
-            testGear.manufacturer = "Test Co";
-            testGear.category = GearCategory::EQ;
-            testGear.categoryString = "equalizer";
-            testGear.version = "1.0";
-            testGear.slotSize = 1;
-
-            // Add some controls
-            GearControl knob1;
-            knob1.name = "Frequency";
-            knob1.type = GearControl::Type::Knob;
-            knob1.value = 0.5f;
-            knob1.initialValue = 0.0f;
-            testGear.controls.add(knob1);
-
-            GearControl knob2;
-            knob2.name = "Gain";
-            knob2.type = GearControl::Type::Knob;
-            knob2.value = 0.75f;
-            knob2.initialValue = 0.0f;
-            testGear.controls.add(knob2);
-
             // Create processor and editor
             AnalogIQProcessor processor(mockFetcher);
             std::unique_ptr<AnalogIQEditor> editor(static_cast<AnalogIQEditor *>(processor.createEditor()));
             auto *rack = editor->getRack();
+
+            // Create a gear item using the constructor
+            GearItem testGear(
+                "la2a-compressor",
+                "LA-2A Tube Compressor",
+                "Universal Audio",
+                "compressor",
+                "1.0.0",
+                "units/la2a-compressor-1.0.0.json",
+                "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                mockFetcher,
+                GearType::Rack19Inch,
+                GearCategory::Compressor);
+            testGear.createInstance(testGear.unitId);
+
+            // Add the LA-2A controls
+            testGear.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
+            testGear.controls.add(GearControl(GearControl::Type::Knob, "Gain", juce::Rectangle<float>(60, 0, 50, 50)));
+
+            // Set control values
+            auto &peakReduction = testGear.controls.getReference(0);
+            peakReduction.value = 0.5f;
+            auto &gain = testGear.controls.getReference(1);
+            gain.value = 0.75f;
 
             // Set the test gear in slot 0
             if (auto *slot = rack->getSlot(0))
@@ -246,8 +320,8 @@ public:
                     expectEquals(item->controls.size(), 2, "Restored instance should have 2 controls");
 
                     // Verify control values were restored
-                    expectEquals(item->controls[0].value, 0.5f, "First control value should be restored");
-                    expectEquals(item->controls[1].value, 0.75f, "Second control value should be restored");
+                    expectEquals(item->controls[0].value, 0.5f, "Peak Reduction value should be restored");
+                    expectEquals(item->controls[1].value, 0.75f, "Gain value should be restored");
                 }
             }
         }
@@ -263,52 +337,58 @@ public:
             auto *rack = editor->getRack();
             expect(rack != nullptr, "Rack should exist");
 
-            // Create test gear instances
-            GearItem testGear1;
-            testGear1.unitId = "test.eq.1";
-            testGear1.name = "Test EQ 1";
-            testGear1.type = GearType::Series500;
-            testGear1.manufacturer = "Test Co";
-            testGear1.category = GearCategory::EQ;
-            testGear1.categoryString = "equalizer";
-            testGear1.version = "1.0";
-            testGear1.slotSize = 1;
-
-            GearItem testGear2;
-            testGear2.unitId = "test.eq.2";
-            testGear2.name = "Test EQ 2";
-            testGear2.type = GearType::Series500;
-            testGear2.manufacturer = "Test Co";
-            testGear2.category = GearCategory::EQ;
-            testGear2.categoryString = "equalizer";
-            testGear2.version = "1.0";
-            testGear2.slotSize = 1;
+            // Create two gear items using the constructor
+            GearItem testGear1(
+                "la2a-compressor",
+                "LA-2A Tube Compressor",
+                "Universal Audio",
+                "compressor",
+                "1.0.0",
+                "units/la2a-compressor-1.0.0.json",
+                "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                mockFetcher,
+                GearType::Rack19Inch,
+                GearCategory::Compressor);
 
             // Add controls to first gear
-            GearControl knob1;
-            knob1.name = "Frequency";
-            knob1.type = GearControl::Type::Knob;
-            knob1.value = 0.5f;
-            testGear1.controls.add(knob1);
+            testGear1.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
+            auto &peakReduction1 = testGear1.controls.getReference(0);
+            peakReduction1.value = 180;
+
+            // Create instance after setting value
+            testGear1.createInstance(testGear1.unitId);
+
+            GearItem testGear2(
+                "la2a-compressor",
+                "LA-2A Tube Compressor",
+                "Universal Audio",
+                "compressor",
+                "1.0.0",
+                "units/la2a-compressor-1.0.0.json",
+                "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                mockFetcher,
+                GearType::Rack19Inch,
+                GearCategory::Compressor);
 
             // Add controls to second gear
-            GearControl knob2;
-            knob2.name = "Gain";
-            knob2.type = GearControl::Type::Knob;
-            knob2.value = 0.7f;
-            testGear2.controls.add(knob2);
+            testGear2.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
+            auto &peakReduction2 = testGear2.controls.getReference(0);
+            peakReduction2.value = 180;
+
+            // Create instance after setting value
+            testGear2.createInstance(testGear2.unitId);
 
             // Set the gear items in slots 0 and 1
             if (auto *slot0 = rack->getSlot(0))
             {
                 slot0->setGearItem(&testGear1);
-                rack->createInstance(0);
             }
 
             if (auto *slot1 = rack->getSlot(1))
             {
                 slot1->setGearItem(&testGear2);
-                rack->createInstance(1);
             }
 
             // Verify initial values
@@ -316,7 +396,7 @@ public:
             {
                 if (auto *item = slot0->getGearItem())
                 {
-                    expectEquals(item->controls[0].value, 0.5f, "First gear control should have initial value 0.5");
+                    expectEquals(item->controls[0].value, 180.0f, "First gear Peak Reduction should have initial value 180");
                 }
             }
 
@@ -324,7 +404,7 @@ public:
             {
                 if (auto *item = slot1->getGearItem())
                 {
-                    expectEquals(item->controls[0].value, 0.7f, "Second gear control should have initial value 0.7");
+                    expectEquals(item->controls[0].value, 180.0f, "Second gear Peak Reduction should have initial value 180");
                 }
             }
 
@@ -334,7 +414,7 @@ public:
                 if (auto *item = slot0->getGearItem())
                 {
                     auto &control = item->controls.getReference(0);
-                    control.value = 0.3f;
+                    control.value = 200;
                 }
             }
 
@@ -343,7 +423,7 @@ public:
                 if (auto *item = slot1->getGearItem())
                 {
                     auto &control = item->controls.getReference(0);
-                    control.value = 0.9f;
+                    control.value = 100;
                 }
             }
 
@@ -355,7 +435,7 @@ public:
             {
                 if (auto *item = slot0->getGearItem())
                 {
-                    expectEquals(item->controls[0].value, 0.5f, "First gear control should be reset to 0.5");
+                    expectEquals(item->controls[0].value, 180.0f, "First gear Peak Reduction should be reset to 180");
                 }
             }
 
@@ -363,7 +443,7 @@ public:
             {
                 if (auto *item = slot1->getGearItem())
                 {
-                    expectEquals(item->controls[0].value, 0.7f, "Second gear control should be reset to 0.7");
+                    expectEquals(item->controls[0].value, 180.0f, "Second gear Peak Reduction should be reset to 180");
                 }
             }
         }

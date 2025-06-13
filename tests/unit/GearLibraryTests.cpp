@@ -22,19 +22,89 @@ public:
                 R"({
                     "units": [
                         {
-                            "unitId": "test.compressor.1",
-                            "name": "Test Gear",
-                            "type": "Series500",
-                            "manufacturer": "Test Co",
-                            "category": "Compressor",
-                            "categoryString": "compressor",
-                            "version": "1.0",
-                            "schemaPath": "units/test.compressor.1.json",
-                            "thumbnailImage": "assets/test.compressor.1.png",
-                            "tags": ["compressor", "test"]
+                            "unitId": "la2a-compressor",
+                            "name": "LA-2A Tube Compressor",
+                            "manufacturer": "Universal Audio",
+                            "category": "compressor",
+                            "version": "1.0.0",
+                            "schemaPath": "units/la2a-compressor-1.0.0.json",
+                            "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                            "tags": [
+                                "compressor",
+                                "tube",
+                                "optical",
+                                "vintage",
+                                "hardware"
+                            ]
                         }
                     ]
                 })");
+
+            // Set up mock response for the compressor image
+            mockFetcher.setResponse(
+                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/faceplates/la2a-compressor-1.0.0.jpg",
+                "mock_image_data"); // The actual content doesn't matter for the test
+
+            // Set up mock response for the compressor image
+            mockFetcher.setResponse(
+                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                "mock_image_data"); // The actual content doesn't matter for the test
+
+            // Set up mock response for the compressor image
+            mockFetcher.setResponse(
+                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/controls/knobs/bakelite-lg-black.png",
+                "mock_image_data"); // The actual content doesn't matter for the test
+
+            // Set up mock response for the compressor schema
+            mockFetcher.setResponse(
+                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/la2a-compressor-1.0.0.json",
+                R"({
+                    "unitId": "la2a-compressor",
+                    "name": "LA-2A Tube Compressor",
+                    "manufacturer": "Universal Audio",
+                    "tags": [
+                        "compressor",
+                        "tube",
+                        "optical",
+                        "vintage",
+                        "hardware"
+                    ],
+                    "version": "1.0.0",
+                    "category": "compressor",
+                    "formFactor": "19-inch-rack",
+                    "faceplateImage": "assets/faceplates/la2a-compressor-1.0.0.jpg",
+                    "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                    "width": 1900,
+                    "height": 525,
+                    "controls": [
+                        {
+                            "id": "peak-reduction",
+                            "label": "Peak Reduction",
+                            "type": "knob",
+                            "position": {
+                            "x": 0.68,
+                            "y": 0.44
+                            },
+                            "value": 180,
+                            "startAngle": 40,
+                            "endAngle": 322,
+                            "image": "assets/controls/knobs/bakelite-lg-black.png"
+                        },
+                        {
+                            "id": "gain",
+                            "label": "Gain",
+                            "type": "knob",
+                            "position": {
+                                "x": 0.257,
+                                "y": 0.44
+                            },
+                            "value": 180,
+                            "startAngle": 40,
+                            "endAngle": 322,
+                            "image": "assets/controls/knobs/bakelite-lg-black.png"
+                        }
+                    ]
+                    })");
 
             GearLibrary library(mockFetcher);
             expectEquals(library.getItems().size(), 1, "Library should have one item after loading");
@@ -45,9 +115,9 @@ public:
             GearLibrary library(mockFetcher);
             library.addItem("Test Gear 2", "EQ", "A test gear item", "Test Co 2");
             expectEquals(library.getItems().size(), 2, "Library should have exactly one item after adding");
-            expectEquals(library.getItems()[0].name, juce::String("Test Gear"), "Default Item name should match");
-            expectEquals(library.getItems()[0].manufacturer, juce::String("Test Co"), "Default Manufacturer should match");
-            expectEquals(library.getItems()[0].categoryString, juce::String("Compressor"), "Default Category should match");
+            expectEquals(library.getItems()[0].name, juce::String("LA-2A Tube Compressor"), "Default Item name should match");
+            expectEquals(library.getItems()[0].manufacturer, juce::String("Universal Audio"), "Default Manufacturer should match");
+            expectEquals(library.getItems()[0].categoryString, juce::String("compressor"), "Default Category should match");
             expectEquals(library.getItems()[1].name, juce::String("Test Gear 2"), "Added Item name should match");
             expectEquals(library.getItems()[1].manufacturer, juce::String("Test Co 2"), "Added Manufacturer should match");
             expectEquals(library.getItems()[1].categoryString, juce::String("equalizer"), "Added Category should match");
@@ -78,16 +148,20 @@ public:
                 R"({
                     "units": [
                         {
-                            "unitId": "test.compressor.1",
-                            "name": "Test Gear",
-                            "type": "Series500",
-                            "manufacturer": "Test Co",
-                            "category": "Compressor",
-                            "categoryString": "compressor",
-                            "version": "1.0",
-                            "schemaPath": "units/test.compressor.1.json",
-                            "thumbnailImage": "assets/test.compressor.1.png",
-                            "tags": ["compressor", "test"]
+                            "unitId": "la2a-compressor",
+                            "name": "LA-2A Tube Compressor",
+                            "manufacturer": "Universal Audio",
+                            "category": "compressor",
+                            "version": "1.0.0",
+                            "schemaPath": "units/la2a-compressor-1.0.0.json",
+                            "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                            "tags": [
+                                "compressor",
+                                "tube",
+                                "optical",
+                                "vintage",
+                                "hardware"
+                            ]
                         }
                     ]
                 })");
