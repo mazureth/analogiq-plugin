@@ -23,6 +23,15 @@ NotesPanel::NotesPanel()
     titleLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(titleLabel);
 
+    // Create viewport and container
+    notesViewport = std::make_unique<juce::Viewport>();
+    notesContainer = std::make_unique<NotesContainer>();
+    notesViewport->setViewedComponent(notesContainer.get(), false); // false = don't delete when viewport is deleted
+    addAndMakeVisible(notesViewport.get());
+
+    // Set up the container
+    notesContainer->panel = this;
+
     // Set up text editor
     textEditor.setMultiLine(true);
     textEditor.setReturnKeyStartsNewLine(true);
@@ -34,7 +43,7 @@ NotesPanel::NotesPanel()
     textEditor.setColour(juce::TextEditor::textColourId, juce::Colours::black);
     textEditor.setColour(juce::TextEditor::outlineColourId, juce::Colours::grey);
     textEditor.setText("Enter your session notes here. Document patchbay connections, settings, and any other important details.");
-    addAndMakeVisible(textEditor);
+    notesContainer->addAndMakeVisible(textEditor);
 }
 
 /**
@@ -42,6 +51,7 @@ NotesPanel::NotesPanel()
  */
 NotesPanel::~NotesPanel()
 {
+    // unique_ptr members will be automatically deleted
 }
 
 /**
@@ -66,8 +76,16 @@ void NotesPanel::resized()
     // Title at top
     titleLabel.setBounds(bounds.removeFromTop(40));
 
-    // Text editor fills the rest
-    textEditor.setBounds(bounds);
+    // Viewport fills the rest
+    notesViewport->setBounds(bounds);
+
+    // Size the container to match the viewport width
+    const int containerWidth = notesViewport->getWidth();
+    const int containerHeight = juce::jmax(notesViewport->getHeight(), 400); // Minimum height of 400
+    notesContainer->setSize(containerWidth, containerHeight);
+
+    // Text editor fills the container
+    textEditor.setBounds(notesContainer->getLocalBounds().reduced(10));
 }
 
 /**

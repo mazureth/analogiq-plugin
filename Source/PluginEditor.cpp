@@ -34,8 +34,8 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
 
     // Set component IDs
     gearLibrary->setComponentID("GearLibrary");
-    rack->setComponentID("Rack");
-    notesPanel->setComponentID("NotesPanel");
+    rack->setComponentID("RackTab");
+    notesPanel->setComponentID("NotesTab");
 
     // Connect the Rack to the GearLibrary for drag and drop
     rack->setGearLibrary(gearLibrary.get());
@@ -45,8 +45,11 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
 
     // Set up tabs
     mainTabs.setComponentID("MainTabs");
+
+    // Add tabs with components
     mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
     mainTabs.addTab("Notes", juce::Colours::darkgrey, notesPanel.get(), false);
+
     mainTabs.setTabBarDepth(30);
     mainTabs.setInterceptsMouseClicks(false, true);
     addAndMakeVisible(mainTabs);
