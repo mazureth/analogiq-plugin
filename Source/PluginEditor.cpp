@@ -28,8 +28,8 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
     setComponentID("AnalogIQEditor");
 
     // Create our components
-    gearLibrary = std::make_unique<GearLibrary>(networkFetcher);
-    rack = std::make_unique<Rack>();
+    gearLibrary = std::make_unique<GearLibrary>(audioProcessor.getNetworkFetcher());
+    rack = std::make_unique<Rack>(audioProcessor.getNetworkFetcher());
     notesPanel = std::make_unique<NotesPanel>();
 
     // Set component IDs

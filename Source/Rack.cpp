@@ -17,7 +17,8 @@
  * Initializes the rack with a viewport and container, creates the specified number
  * of rack slots, and sets up drag-and-drop functionality.
  */
-Rack::Rack()
+Rack::Rack(INetworkFetcher &networkFetcher)
+    : networkFetcher(networkFetcher)
 {
     setComponentID("Rack");
 
@@ -256,7 +257,7 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
         if (item != nullptr)
         {
             // Create a new instance of the item
-            GearItem *newItem = new GearItem(*item); // Use copy constructor
+            GearItem *newItem = new GearItem(*item, networkFetcher); // Use copy constructor
             targetSlot->setGearItem(newItem);
 
             // Fetch schema for this item
@@ -281,7 +282,7 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
                 if (item != nullptr)
                 {
                     // Create a new instance of the item
-                    GearItem *newItem = new GearItem(*item); // Use copy constructor
+                    GearItem *newItem = new GearItem(*item, networkFetcher); // Use copy constructor
                     targetSlot->setGearItem(newItem);
 
                     // Fetch schema for this item

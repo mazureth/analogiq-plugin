@@ -4,6 +4,7 @@
 #include "GearItem.h"
 #include "GearLibrary.h"
 #include "TestFixture.h"
+#include "MockNetworkFetcher.h"
 
 class RackTests : public juce::UnitTest
 {
@@ -13,15 +14,18 @@ public:
     void runTest() override
     {
         TestFixture fixture;
+        auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        mockFetcher.reset();
+
         beginTest("Initial State");
         {
-            Rack rack;
+            Rack rack(mockFetcher);
             expectEquals(rack.getNumSlots(), 16, "Rack should have zero slots");
         }
 
         beginTest("Slot Management");
         {
-            Rack rack;
+            Rack rack(mockFetcher);
             auto gearItem = std::make_unique<GearItem>();
             gearItem->unitId = "test_gear";
             gearItem->name = "Test Gear";
@@ -40,7 +44,7 @@ public:
 
         beginTest("Instance Management");
         {
-            Rack rack;
+            Rack rack(mockFetcher);
             auto gearItem = std::make_unique<GearItem>();
             gearItem->unitId = "test_gear";
             gearItem->name = "Test Gear";
@@ -70,7 +74,7 @@ public:
 
         beginTest("Multiple Slots");
         {
-            Rack rack;
+            Rack rack(mockFetcher);
             auto gearItem1 = std::make_unique<GearItem>();
             gearItem1->unitId = "test_gear_1";
             gearItem1->name = "Test Gear 1";

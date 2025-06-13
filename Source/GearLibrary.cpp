@@ -668,7 +668,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 }
 
                 GearItem item(unitId, name, manufacturer, category, version, schemaPath,
-                              thumbnailImage, tags, GearType::Other, GearCategory::Other,
+                              thumbnailImage, tags, fetcher, GearType::Other, GearCategory::Other,
                               slotSize, controls);
 
                 // If thumbnailImage is provided, try to load the image
@@ -728,7 +728,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 juce::Array<GearControl> controls;
 
                 // Create gear item using the legacy constructor
-                GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls);
+                GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls, fetcher);
 
                 // If thumbnailUrl is provided, try to load the image
                 if (thumbnailUrl.isNotEmpty())
@@ -817,7 +817,7 @@ void GearLibrary::addItem(const juce::String &name, const juce::String &category
     juce::Array<GearControl> controls;
 
     // Add the new item to the list
-    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls));
+    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls, fetcher));
 
     // Update the UI
     if (rootItem != nullptr)

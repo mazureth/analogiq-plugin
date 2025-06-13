@@ -5,12 +5,24 @@
 #include <set>
 
 /**
- * @brief Mock implementation of INetworkFetcher for testing purposes.
+ * @brief Abstract base class for network fetcher interface.
  *
- * This class provides a singleton instance that can be used across test cases
- * to mock network responses and verify network calls.
+ * This class defines the interface for network operations.
+ * The concrete implementation is provided by ConcreteMockNetworkFetcher.
  */
 class MockNetworkFetcher : public INetworkFetcher
+{
+public:
+    virtual ~MockNetworkFetcher() = default;
+};
+
+/**
+ * @brief Concrete implementation of MockNetworkFetcher for testing purposes.
+ *
+ * This class provides the actual implementation of network operations
+ * and includes functionality for mocking responses and verifying network calls.
+ */
+class ConcreteMockNetworkFetcher : public MockNetworkFetcher
 {
 public:
     /**
@@ -18,9 +30,9 @@ public:
      *
      * @return Reference to the singleton instance
      */
-    static MockNetworkFetcher &getInstance()
+    static ConcreteMockNetworkFetcher &getInstance()
     {
-        static MockNetworkFetcher instance;
+        static ConcreteMockNetworkFetcher instance;
         return instance;
     }
 
@@ -36,6 +48,17 @@ public:
     }
 
     /**
+     * @brief Set a mock binary response for a specific URL.
+     *
+     * @param url The URL to mock
+     * @param response The binary response to return for this URL
+     */
+    void setBinaryResponse(const juce::String &url, const juce::MemoryBlock &response)
+    {
+        binaryResponses[url] = response;
+    }
+
+    /**
      * @brief Set a URL to return an error.
      *
      * @param url The URL that should return an error
@@ -43,6 +66,30 @@ public:
     void setError(const juce::String &url)
     {
         errors.insert(url);
+    }
+
+    /**
+     * @brief Check if a URL was requested.
+     *
+     * @param url The URL to check
+     * @return true if the URL was requested, false otherwise
+     */
+    bool wasUrlRequested(const juce::String &url) const
+    {
+        return requestedUrls.find(url) != requestedUrls.end();
+    }
+
+    /**
+     * @brief Reset the mock state.
+     *
+     * Clears all responses, errors, and requested URLs.
+     */
+    void reset()
+    {
+        responses.clear();
+        binaryResponses.clear();
+        errors.clear();
+        requestedUrls.clear();
     }
 
     /**
@@ -75,31 +122,38 @@ public:
     }
 
     /**
-     * @brief Check if a URL was requested.
+     * @brief Implementation of INetworkFetcher::fetchBinaryBlocking.
      *
-     * @param url The URL to check
-     * @return true if the URL was requested, false otherwise
+     * @param url The URL to fetch
+     * @param success Output parameter indicating if the fetch was successful
+     * @return The binary response data, or empty MemoryBlock on error
      */
-    bool wasUrlRequested(const juce::String &url) const
+    juce::MemoryBlock fetchBinaryBlocking(const juce::URL &url, bool &success) override
     {
-        return requestedUrls.find(url) != requestedUrls.end();
-    }
+        auto urlString = url.toString(false);
+        requestedUrls.insert(urlString);
 
-    /**
-     * @brief Reset the mock state.
-     *
-     * Clears all responses, errors, and requested URLs.
-     */
-    void reset()
-    {
-        responses.clear();
-        errors.clear();
-        requestedUrls.clear();
+        if (errors.find(urlString) != errors.end())
+        {
+            success = false;
+            return juce::MemoryBlock();
+        }
+
+        auto it = binaryResponses.find(urlString);
+        if (it != binaryResponses.end())
+        {
+            success = true;
+            return it->second;
+        }
+
+        success = false;
+        return juce::MemoryBlock();
     }
 
 private:
-    MockNetworkFetcher() = default; // Private constructor for singleton
+    ConcreteMockNetworkFetcher() = default; // Private constructor for singleton
     std::map<juce::String, juce::String> responses;
+    std::map<juce::String, juce::MemoryBlock> binaryResponses;
     std::set<juce::String> errors;
     std::set<juce::String> requestedUrls;
 };

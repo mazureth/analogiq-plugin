@@ -32,45 +32,37 @@ bool GearItem::loadImage()
         // Create URL object for the image
         juce::URL url(imageUrl);
 
-        // Try to download the image
-        auto urlStream = url.createInputStream(juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
-                                                   .withConnectionTimeoutMs(10000)
-                                                   .withNumRedirectsToFollow(5));
+        // Try to download the image using the network fetcher
+        bool success = false;
+        juce::MemoryBlock imageData = networkFetcher.fetchBinaryBlocking(url, success);
 
-        if (urlStream != nullptr)
+        if (success && imageData.getSize() > 0)
         {
-            // Read the image data
-            juce::MemoryBlock imageData;
-            urlStream->readIntoMemoryBlock(imageData);
+            // Create image from the memory block
+            juce::MemoryInputStream inputStream(imageData, false);
+            juce::JPEGImageFormat jpegFormat;
+            juce::PNGImageFormat pngFormat;
 
-            if (imageData.getSize() > 0)
+            // Try to load as JPEG first, then PNG
+            if (jpegFormat.canUnderstand(inputStream))
             {
-                // Create image from the memory block
-                juce::MemoryInputStream inputStream(imageData, false);
-                juce::JPEGImageFormat jpegFormat;
-                juce::PNGImageFormat pngFormat;
-
-                // Try to load as JPEG first, then PNG
-                if (jpegFormat.canUnderstand(inputStream))
+                inputStream.setPosition(0);
+                image = jpegFormat.decodeImage(inputStream);
+            }
+            else
+            {
+                inputStream.setPosition(0);
+                if (pngFormat.canUnderstand(inputStream))
                 {
                     inputStream.setPosition(0);
-                    image = jpegFormat.decodeImage(inputStream);
+                    image = pngFormat.decodeImage(inputStream);
                 }
-                else
-                {
-                    inputStream.setPosition(0);
-                    if (pngFormat.canUnderstand(inputStream))
-                    {
-                        inputStream.setPosition(0);
-                        image = pngFormat.decodeImage(inputStream);
-                    }
-                }
+            }
 
-                // If successfully loaded image, return true
-                if (image.isValid())
-                {
-                    return true;
-                }
+            // If successfully loaded image, return true
+            if (image.isValid())
+            {
+                return true;
             }
         }
     }
@@ -294,9 +286,10 @@ void GearItem::saveToJSON(juce::File destinationFile)
  * including controls, tags, and instance data.
  *
  * @param sourceFile The JSON file to load from
+ * @param networkFetcher Reference to network fetcher
  * @return A new GearItem instance with the loaded data
  */
-GearItem GearItem::loadFromJSON(juce::File sourceFile)
+GearItem GearItem::loadFromJSON(juce::File sourceFile, INetworkFetcher &networkFetcher)
 {
     // Read the JSON from file
     juce::String jsonString = sourceFile.loadFileAsString();
@@ -306,7 +299,7 @@ GearItem GearItem::loadFromJSON(juce::File sourceFile)
 
     // Check if we have a valid JSON object
     if (!jsonVar.isObject())
-        return GearItem(); // Return empty gear item
+        throw std::runtime_error("Invalid JSON format in gear item file");
 
     // Extract fields from JSON
     juce::String unitId = jsonVar.getProperty("unitId", "");
@@ -388,7 +381,7 @@ GearItem GearItem::loadFromJSON(juce::File sourceFile)
 
     // Create and return the gear item with the new constructor
     GearItem item(unitId, name, manufacturer, categoryStr, version, schemaPath,
-                  thumbnailImage, tags, type, category, slotSize, controls);
+                  thumbnailImage, tags, networkFetcher, type, category, slotSize, controls);
 
     // Try to load the image
     item.loadImage();

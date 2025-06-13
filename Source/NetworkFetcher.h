@@ -8,4 +8,5 @@ class NetworkFetcher : public INetworkFetcher
 {
 public:
     juce::String fetchJsonBlocking(const juce::URL &url, bool &success) override;
+    juce::MemoryBlock fetchBinaryBlocking(const juce::URL &url, bool &success) override;
 };

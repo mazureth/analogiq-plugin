@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 #include "Rack.h"
+#include "NetworkFetcher.h"
 
 // Forward declare the test class
 class PluginProcessorTests;
@@ -186,6 +187,13 @@ public:
     juce::AudioProcessorValueTreeState &getState() { return state; }
 
     /**
+     * @brief Gets the processor's network fetcher.
+     *
+     * @return Reference to the network fetcher
+     */
+    INetworkFetcher &getNetworkFetcher() { return networkFetcher; }
+
+    /**
      * @brief Saves the current state of all gear instances.
      */
     void saveInstanceState();
@@ -220,6 +228,7 @@ private:
     juce::UndoManager undoManager;                           ///< Undo manager for state changes
     juce::AudioProcessorEditor *lastCreatedEditor = nullptr; ///< Pointer to the last created editor (for testing)
     Rack *rack = nullptr;                                    ///< Pointer to the rack (for testing)
+    NetworkFetcher networkFetcher;                           ///< Network fetcher for making HTTP requests
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };

@@ -343,15 +343,23 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                 if (!sourceUnitId.isEmpty())
                 {
                     // Create a new gear item from the source
-                    GearItem *item = new GearItem();
-                    item->unitId = sourceUnitId;
-                    item->name = "Test EQ"; // TODO: Get this from the source
-                    item->type = GearType::Series500;
-                    item->manufacturer = "Test Co";
-                    item->category = GearCategory::EQ;
-                    item->categoryString = "equalizer";
-                    item->version = "1.0";
-                    item->slotSize = 1;
+                    // TODO: why is this using inline test data instead of whatever is
+                    // stored in the instanceTree?
+                    GearItem *item = new GearItem(
+                        sourceUnitId,              // unitId
+                        "Test EQ",                 // name
+                        "Test Co",                 // manufacturer
+                        "equalizer",               // categoryString
+                        "1.0",                     // version
+                        "",                        // schemaPath
+                        "",                        // thumbnailImage
+                        juce::StringArray(),       // tags
+                        networkFetcher,            // networkFetcher (required)
+                        GearType::Series500,       // type
+                        GearCategory::EQ,          // category
+                        1,                         // slotSize
+                        juce::Array<GearControl>() // controls
+                    );
 
                     // Add controls to match the saved state
                     auto controlsTree = slotTree.getChildWithName("controls");

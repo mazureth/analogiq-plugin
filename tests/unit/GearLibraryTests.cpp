@@ -11,7 +11,7 @@ public:
     void runTest() override
     {
         TestFixture fixture;
-        auto &mockFetcher = MockNetworkFetcher::getInstance();
+        auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
         mockFetcher.reset();
 
         beginTest("Construction");

@@ -9,25 +9,6 @@ class PluginProcessorTests : public juce::UnitTest
 public:
     PluginProcessorTests() : UnitTest("PluginProcessorTests") {}
 
-    // Helper function to create a test gear instance with known state
-    GearItem createTestGearInstance()
-    {
-        GearItem item;
-        item.name = "Test EQ";
-        item.type = GearType::Series500;
-        item.manufacturer = "Test Co";
-        item.category = GearCategory::EQ;
-        item.categoryString = "equalizer";
-        item.version = "1.0";
-        item.slotSize = 1;
-        item.unitId = "test.eq.1";
-
-        // Create an instance of this gear
-        item.createInstance(item.unitId);
-
-        return item;
-    }
-
     // Helper function to verify a gear instance matches our test state
     void verifyTestGearInstance(const GearItem &item)
     {
@@ -86,7 +67,17 @@ public:
             AnalogIQProcessor processor;
 
             // Create test gear instance with control values
-            testGear = createTestGearInstance();
+            GearItem testGear;
+            testGear.unitId = "test.eq.1";
+            testGear.name = "Test EQ";
+            testGear.type = GearType::Series500;
+            testGear.manufacturer = "Test Co";
+            testGear.category = GearCategory::EQ;
+            testGear.categoryString = "equalizer";
+            testGear.version = "1.0";
+            testGear.slotSize = 1;
+            testGear.createInstance(testGear.unitId);
+
             testGear.controls.add(GearControl(GearControl::Type::Knob, "Control 0", juce::Rectangle<float>(0, 0, 50, 50)));
             testGear.controls.add(GearControl(GearControl::Type::Knob, "Control 1", juce::Rectangle<float>(60, 0, 50, 50)));
 
@@ -353,9 +344,6 @@ public:
             }
         }
     }
-
-private:
-    GearItem testGear; // Make the gear item persist for the duration of the test
 };
 
 static PluginProcessorTests pluginProcessorTests;
