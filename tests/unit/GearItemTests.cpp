@@ -1,6 +1,7 @@
 #include <JuceHeader.h>
 #include "GearItem.h"
 #include "TestFixture.h"
+#include "MockNetworkFetcher.h"
 
 class GearItemTests : public juce::UnitTest
 {
@@ -10,18 +11,21 @@ public:
        void runTest() override
        {
               TestFixture fixture;
+              auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+              mockFetcher.reset();
+
               beginTest("Construction");
               {
-                     GearItem item;
+                     GearItem item("", "", "", "", "", "", "", {}, mockFetcher);
                      expectEquals(item.name, juce::String(), "New item should have empty name");
-                     expect(item.type == GearType::Series500,
+                     expect(item.type == GearType::Other,
                             "New item should have GearType::Other, but got: " + juce::String(static_cast<int>(item.type)));
                      expectEquals(item.manufacturer, juce::String(), "New item should have empty manufacturer");
-                     expect(item.category == GearCategory::EQ,
+                     expect(item.category == GearCategory::Other,
                             "New item should have GearCategory::Other, but got: " + juce::String(static_cast<int>(item.category)));
                      expectEquals(item.categoryString, juce::String(), "New item should have empty category string");
                      expectEquals(item.version, juce::String(), "New item should have empty version");
-                     expectEquals(item.slotSize, 0, "New item should have zero slot size");
+                     expectEquals(item.slotSize, 1, "New item should have slot size of 1");
                      expect(!item.isInstance,
                             "New item should not be an instance, but isInstance is: " + juce::String(item.isInstance ? "true" : "false"));
                      expectEquals(item.unitId, juce::String(), "New item should have empty unit ID");
@@ -31,7 +35,7 @@ public:
 
               beginTest("Property Assignment");
               {
-                     GearItem item;
+                     GearItem item("", "", "", "", "", "", "", {}, mockFetcher);
                      item.name = "Test Gear";
                      item.type = GearType::Series500;
                      item.manufacturer = "Test Co";
@@ -53,9 +57,7 @@ public:
 
               beginTest("Instance Creation");
               {
-                     GearItem item;
-                     item.name = "Original Gear";
-                     item.unitId = "test.unit.1";
+                     GearItem item("test.unit.1", "Original Gear", "Test Co", "equalizer", "1.0", "", "", {}, mockFetcher);
                      item.createInstance(item.unitId);
 
                      expect(item.isInstance,
@@ -68,8 +70,7 @@ public:
 
               beginTest("Instance Checking");
               {
-                     GearItem item;
-                     item.unitId = "test.unit.1";
+                     GearItem item("test.unit.1", "Test Gear", "Test Co", "equalizer", "1.0", "", "", {}, mockFetcher);
 
                      expect(!item.isInstanceOf("test.unit.1"),
                             "Non-instance should not be instance of test.unit.1, but isInstanceOf returned: " +

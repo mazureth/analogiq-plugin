@@ -3,6 +3,7 @@
 #include "GearItem.h"
 #include "PluginEditor.h"
 #include "TestFixture.h"
+#include "MockNetworkFetcher.h"
 
 class PluginProcessorTests : public juce::UnitTest
 {
@@ -35,16 +36,39 @@ public:
     void runTest() override
     {
         TestFixture fixture;
+        auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        mockFetcher.reset();
+
+        // Set up mock response for the units index
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json",
+            R"({
+                "units": [
+                    {
+                        "unitId": "test.eq.1",
+                        "name": "Test EQ",
+                        "type": "Series500",
+                        "manufacturer": "Test Co",
+                        "category": "EQ",
+                        "categoryString": "equalizer",
+                        "version": "1.0",
+                        "schemaPath": "units/test.eq.1.json",
+                        "thumbnailImage": "assets/test.eq.1.png",
+                        "tags": ["eq", "test"]
+                    }
+                ]
+            })");
+
         beginTest("Construction");
         {
-            AnalogIQProcessor processor;
+            AnalogIQProcessor processor(mockFetcher);
             expectEquals(processor.getName(), juce::String("AnalogIQ"),
                          "Processor name should be AnalogIQ, but got: " + processor.getName());
         }
 
         beginTest("Plugin State Management");
         {
-            AnalogIQProcessor processor;
+            AnalogIQProcessor processor(mockFetcher);
 
             // Save initial state
             juce::MemoryBlock state;
@@ -64,7 +88,7 @@ public:
 
         beginTest("Gear Save Instance");
         {
-            AnalogIQProcessor processor;
+            AnalogIQProcessor processor(mockFetcher);
 
             // Create test gear instance with control values
             GearItem testGear;
@@ -185,7 +209,7 @@ public:
             testGear.controls.add(knob2);
 
             // Create processor and editor
-            AnalogIQProcessor processor;
+            AnalogIQProcessor processor(mockFetcher);
             std::unique_ptr<AnalogIQEditor> editor(static_cast<AnalogIQEditor *>(processor.createEditor()));
             auto *rack = editor->getRack();
 
@@ -231,7 +255,7 @@ public:
         beginTest("Gear Reset Instance");
         {
             // Create processor and editor
-            AnalogIQProcessor processor;
+            AnalogIQProcessor processor(mockFetcher);
             auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
             expect(editor != nullptr, "Editor should be created");
 

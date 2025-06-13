@@ -31,8 +31,10 @@ class AnalogIQProcessor : public juce::AudioProcessor
 public:
     /**
      * @brief Constructs a new AnalogIQProcessor.
+     *
+     * @param networkFetcher Reference to the network fetcher to use
      */
-    AnalogIQProcessor();
+    AnalogIQProcessor(INetworkFetcher &networkFetcher);
 
     /**
      * @brief Destructor for AnalogIQProcessor.
@@ -228,7 +230,7 @@ private:
     juce::UndoManager undoManager;                           ///< Undo manager for state changes
     juce::AudioProcessorEditor *lastCreatedEditor = nullptr; ///< Pointer to the last created editor (for testing)
     Rack *rack = nullptr;                                    ///< Pointer to the rack (for testing)
-    NetworkFetcher networkFetcher;                           ///< Network fetcher for making HTTP requests
+    INetworkFetcher &networkFetcher;                         ///< Reference to the network fetcher for making HTTP requests
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };

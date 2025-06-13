@@ -16,12 +16,15 @@
  *
  * Initializes the processor with stereo input and output buses,
  * and sets up the state management system.
+ *
+ * @param networkFetcher Reference to the network fetcher to use
  */
-AnalogIQProcessor::AnalogIQProcessor()
+AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &networkFetcher)
     : AudioProcessor(BusesProperties()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
-      state(*this, &undoManager, "Parameters", {})
+      state(*this, &undoManager, "Parameters", {}),
+      networkFetcher(networkFetcher)
 {
 }
 
@@ -474,5 +477,6 @@ void AnalogIQProcessor::resetAllInstances()
  */
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
-    return new AnalogIQProcessor();
+    static NetworkFetcher networkFetcher;
+    return new AnalogIQProcessor(networkFetcher);
 }
