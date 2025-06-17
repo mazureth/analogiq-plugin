@@ -38,7 +38,7 @@ public:
     /**
      * @brief Destructor for the Rack class.
      *
-     * Cleans up resources and logs the destruction.
+     * Cleans up resources and ensures all images are properly released.
      */
     ~Rack() override;
 

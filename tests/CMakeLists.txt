@@ -63,6 +63,15 @@ target_compile_definitions(analogiq_tests
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Enabling code coverage for test target")
 
+    # Coverage for main library
+    target_compile_options(AnalogIQ PRIVATE
+        -O0 -g --coverage -fprofile-instr-generate -fcoverage-mapping
+    )
+    target_link_options(AnalogIQ PRIVATE
+        --coverage -fprofile-instr-generate -fcoverage-mapping
+    )
+
+    # Coverage for tests
     target_compile_options(analogiq_tests PRIVATE
         -O0 -g --coverage -fprofile-instr-generate -fcoverage-mapping
     )

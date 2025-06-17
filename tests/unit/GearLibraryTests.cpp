@@ -40,20 +40,36 @@ public:
                     ]
                 })");
 
+            // Create a simple JPEG image for testing
+            juce::Image testImage(juce::Image::RGB, 24, 24, true);
+            {
+                juce::Graphics g(testImage);
+                g.fillAll(juce::Colours::darkgrey);
+                g.setColour(juce::Colours::white);
+                g.drawText("Test", testImage.getBounds(), juce::Justification::centred, true);
+            }
+
+            // Convert to JPEG format
+            juce::MemoryOutputStream stream;
+            juce::JPEGImageFormat jpegFormat;
+            jpegFormat.setQuality(0.8f);
+            jpegFormat.writeImageToStream(testImage, stream);
+            juce::MemoryBlock imageData(stream.getData(), stream.getDataSize());
+
             // Set up mock response for the compressor image
-            mockFetcher.setResponse(
+            mockFetcher.setBinaryResponse(
                 "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/faceplates/la2a-compressor-1.0.0.jpg",
-                "mock_image_data"); // The actual content doesn't matter for the test
+                imageData);
 
-            // Set up mock response for the compressor image
-            mockFetcher.setResponse(
+            // Set up mock response for the compressor thumbnail
+            mockFetcher.setBinaryResponse(
                 "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                "mock_image_data"); // The actual content doesn't matter for the test
+                imageData);
 
-            // Set up mock response for the compressor image
-            mockFetcher.setResponse(
+            // Set up mock response for the compressor knob
+            mockFetcher.setBinaryResponse(
                 "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/controls/knobs/bakelite-lg-black.png",
-                "mock_image_data"); // The actual content doesn't matter for the test
+                imageData);
 
             // Set up mock response for the compressor schema
             mockFetcher.setResponse(
@@ -82,8 +98,8 @@ public:
                             "label": "Peak Reduction",
                             "type": "knob",
                             "position": {
-                            "x": 0.68,
-                            "y": 0.44
+                                "x": 0.68,
+                                "y": 0.44
                             },
                             "value": 180,
                             "startAngle": 40,
@@ -104,10 +120,19 @@ public:
                             "image": "assets/controls/knobs/bakelite-lg-black.png"
                         }
                     ]
-                    })");
+                })");
 
             GearLibrary library(mockFetcher);
             expectEquals(library.getItems().size(), 1, "Library should have one item after loading");
+
+            // Verify image was loaded
+            if (library.getItems().size() > 0)
+            {
+                const auto &item = library.getItems().getReference(0);
+                expect(item.image.isValid(), "Gear item should have a valid image");
+                expectEquals(item.image.getWidth(), 24, "Image width should be 24");
+                expectEquals(item.image.getHeight(), 24, "Image height should be 24");
+            }
         }
 
         beginTest("Adding Items");
@@ -186,6 +211,9 @@ public:
             expect(library.getItems().isEmpty(), "Library should be empty after failed load");
             expect(mockFetcher.wasUrlRequested("https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json"), "Library should attempt to request units/index.json");
         }
+
+        // Clean up mock responses
+        mockFetcher.reset();
     }
 };
 

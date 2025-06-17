@@ -102,6 +102,19 @@ public:
     }
 
     /**
+     * @brief Destructor.
+     *
+     * Cleans up any loaded images to prevent memory leaks.
+     */
+    ~GearControl()
+    {
+        loadedImage = juce::Image();
+        switchSpriteSheet = juce::Image();
+        faderImage = juce::Image();
+        buttonSpriteSheet = juce::Image();
+    }
+
+    /**
      * @brief Constructor with basic parameters.
      *
      * @param typeParam The type of control
@@ -246,6 +259,27 @@ public:
           sourceUnitId(""),
           networkFetcher(INetworkFetcher::getDummy())
     {
+    }
+
+    /**
+     * @brief Destructor.
+     *
+     * Cleans up any loaded images to prevent memory leaks.
+     */
+    ~GearItem()
+    {
+        // Clear the main images
+        image = juce::Image();
+        faceplateImage = juce::Image();
+
+        // Clear images in controls
+        for (auto &control : controls)
+        {
+            control.loadedImage = juce::Image();
+            control.switchSpriteSheet = juce::Image();
+            control.faderImage = juce::Image();
+            control.buttonSpriteSheet = juce::Image();
+        }
     }
 
     /**

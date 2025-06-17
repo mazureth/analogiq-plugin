@@ -531,7 +531,7 @@ void GearLibrary::listBoxItemDoubleClicked(int row, const juce::MouseEvent & /*e
 void GearLibrary::loadLibraryAsync()
 {
     // Start both async loading operations
-    loadFiltersAsync();
+    // loadFiltersAsync();
     loadGearItemsAsync();
 }
 

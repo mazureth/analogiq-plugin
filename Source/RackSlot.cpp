@@ -104,10 +104,26 @@ RackSlot::RackSlot(int slotIndex)
 /**
  * @brief Destructor for the RackSlot class.
  *
- * Cleans up by removing button listeners before the buttons are destroyed.
+ * Cleans up resources and ensures all images are properly released.
  */
 RackSlot::~RackSlot()
 {
+    if (gearItem != nullptr)
+    {
+        // Clear the main images
+        gearItem->image = juce::Image();
+        gearItem->faceplateImage = juce::Image();
+
+        // Clear images in controls
+        for (auto &control : gearItem->controls)
+        {
+            control.loadedImage = juce::Image();
+            control.switchSpriteSheet = juce::Image();
+            control.faderImage = juce::Image();
+            control.buttonSpriteSheet = juce::Image();
+        }
+    }
+
     // Make sure to remove listeners before buttons are destroyed
     if (upButton != nullptr)
         upButton->removeListener(this);

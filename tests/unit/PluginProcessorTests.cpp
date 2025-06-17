@@ -33,11 +33,26 @@ public:
                      "Unit ID should be test.eq.1, but got: " + item.unitId);
     }
 
-    void runTest() override
+    // Helper function to set up all mock responses
+    void setUpMocks(ConcreteMockNetworkFetcher &mockFetcher)
     {
-        TestFixture fixture;
-        auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
         mockFetcher.reset();
+
+        // Create a simple JPEG image for testing
+        juce::Image testImage(juce::Image::RGB, 24, 24, true);
+        {
+            juce::Graphics g(testImage);
+            g.fillAll(juce::Colours::darkgrey);
+            g.setColour(juce::Colours::white);
+            g.drawText("Test", testImage.getBounds(), juce::Justification::centred, true);
+        }
+
+        // Convert to JPEG format
+        juce::MemoryOutputStream stream;
+        juce::JPEGImageFormat jpegFormat;
+        jpegFormat.setQuality(0.8f);
+        jpegFormat.writeImageToStream(testImage, stream);
+        juce::MemoryBlock imageData(stream.getData(), stream.getDataSize());
 
         // Set up mock response for the units index
         mockFetcher.setResponse(
@@ -63,20 +78,18 @@ public:
                 ]
             })");
 
-        // Set up mock response for the compressor image
-        mockFetcher.setResponse(
+        // Set up mock responses for images using binary data
+        mockFetcher.setBinaryResponse(
             "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/faceplates/la2a-compressor-1.0.0.jpg",
-            "mock_image_data"); // The actual content doesn't matter for the test
+            imageData);
 
-        // Set up mock response for the compressor image
-        mockFetcher.setResponse(
+        mockFetcher.setBinaryResponse(
             "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/thumbnails/la2a-compressor-1.0.0.jpg",
-            "mock_image_data"); // The actual content doesn't matter for the test
+            imageData);
 
-        // Set up mock response for the compressor image
-        mockFetcher.setResponse(
+        mockFetcher.setBinaryResponse(
             "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/controls/knobs/bakelite-lg-black.png",
-            "mock_image_data"); // The actual content doesn't matter for the test
+            imageData);
 
         // Set up mock response for the compressor schema
         mockFetcher.setResponse(
@@ -128,9 +141,16 @@ public:
                         }
                     ]
                     })");
+    }
+
+    void runTest() override
+    {
+        TestFixture fixture;
+        auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
 
         beginTest("Construction");
         {
+            setUpMocks(mockFetcher);
             AnalogIQProcessor processor(mockFetcher);
             expectEquals(processor.getName(), juce::String("AnalogIQ"),
                          "Processor name should be AnalogIQ, but got: " + processor.getName());
@@ -138,6 +158,7 @@ public:
 
         beginTest("Plugin State Management");
         {
+            setUpMocks(mockFetcher);
             AnalogIQProcessor processor(mockFetcher);
 
             // Save initial state
@@ -158,6 +179,7 @@ public:
 
         beginTest("Gear Save Instance");
         {
+            setUpMocks(mockFetcher);
             AnalogIQProcessor processor(mockFetcher);
 
             // Create editor and get rack
@@ -257,6 +279,7 @@ public:
 
         beginTest("Gear Load Instance");
         {
+            setUpMocks(mockFetcher);
             // Create processor and editor
             AnalogIQProcessor processor(mockFetcher);
             std::unique_ptr<AnalogIQEditor> editor(static_cast<AnalogIQEditor *>(processor.createEditor()));
@@ -328,6 +351,7 @@ public:
 
         beginTest("Gear Reset Instance");
         {
+            setUpMocks(mockFetcher);
             // Create processor and editor
             AnalogIQProcessor processor(mockFetcher);
             auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));

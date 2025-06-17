@@ -39,6 +39,8 @@ public:
 
     /**
      * @brief Destructor for the RackSlot class.
+     *
+     * Cleans up resources and ensures all images are properly released.
      */
     ~RackSlot() override;
 

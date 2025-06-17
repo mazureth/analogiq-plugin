@@ -46,11 +46,33 @@ Rack::Rack(INetworkFetcher &networkFetcher)
 /**
  * @brief Destructor for the Rack class.
  *
- * Cleans up resources and logs the destruction.
+ * Cleans up resources and ensures all images are properly released.
  */
 Rack::~Rack()
 {
-    // unique_ptr members will be automatically deleted
+    // Clean up images in all slots
+    for (auto *slot : slots)
+    {
+        if (slot != nullptr)
+        {
+            GearItem *item = slot->getGearItem();
+            if (item != nullptr)
+            {
+                // Clear the main images
+                item->image = juce::Image();
+                item->faceplateImage = juce::Image();
+
+                // Clear images in controls
+                for (auto &control : item->controls)
+                {
+                    control.loadedImage = juce::Image();
+                    control.switchSpriteSheet = juce::Image();
+                    control.faderImage = juce::Image();
+                    control.buttonSpriteSheet = juce::Image();
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -856,8 +878,13 @@ void Rack::fetchFaceplateImage(GearItem *item)
             {
                 // Clean up on the message thread
                 juce::MessageManager::callAsync([this]()
-                                                { delete this; });
-
+                                                { 
+                    // Clear any existing images
+                    if (item != nullptr)
+                    {
+                        item->faceplateImage = juce::Image();
+                    }
+                    delete this; });
                 return;
             }
 
@@ -892,9 +919,17 @@ void Rack::fetchFaceplateImage(GearItem *item)
                 // Need to get back on the message thread to update the UI
                 juce::MessageManager::callAsync([this, downloadedImage]()
                                                 {
+                    // Clear any existing images first
+                    if (item != nullptr)
+                    {
+                        item->faceplateImage = juce::Image();
+                    }
                     
                     // Update the item's faceplate image
-                    item->faceplateImage = downloadedImage;
+                    if (item != nullptr)
+                    {
+                        item->faceplateImage = downloadedImage;
+                    }
                     
                     // Notify any slots that have this item to repaint
                     if (rack != nullptr)
@@ -919,6 +954,11 @@ void Rack::fetchFaceplateImage(GearItem *item)
                 // Image loading failed, clean up
                 juce::MessageManager::callAsync([this]()
                                                 {
+                    // Clear any existing images
+                    if (item != nullptr)
+                    {
+                        item->faceplateImage = juce::Image();
+                    }
                     
                     // Create a placeholder image instead
                     juce::Image placeholderImage(juce::Image::RGB, 200, 100, true);
@@ -928,7 +968,10 @@ void Rack::fetchFaceplateImage(GearItem *item)
                     g.drawText("Faceplate Unavailable", placeholderImage.getBounds(), juce::Justification::centred, true);
                     
                     // Set as faceplate image
-                    item->faceplateImage = placeholderImage;
+                    if (item != nullptr)
+                    {
+                        item->faceplateImage = placeholderImage;
+                    }
                     
                     // Repaint any slots with this item
                     if (rack != nullptr)
@@ -1044,7 +1087,13 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
             if (inputStream == nullptr || threadShouldExit())
             {
                 juce::MessageManager::callAsync([this]()
-                                                { delete this; });
+                                                { 
+                    // Clear any existing images
+                    if (item != nullptr && controlIndex >= 0 && controlIndex < item->controls.size())
+                    {
+                        item->controls[controlIndex].loadedImage = juce::Image();
+                    }
+                    delete this; });
                 return;
             }
 
@@ -1116,7 +1165,13 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
             else
             {
                 juce::MessageManager::callAsync([this]()
-                                                { delete this; });
+                                                { 
+                    // Clear any existing images
+                    if (item != nullptr && controlIndex >= 0 && controlIndex < item->controls.size())
+                    {
+                        item->controls[controlIndex].loadedImage = juce::Image();
+                    }
+                    delete this; });
             }
         }
 
@@ -1207,7 +1262,13 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
             if (inputStream == nullptr || threadShouldExit())
             {
                 juce::MessageManager::callAsync([this]()
-                                                { delete this; });
+                                                { 
+                    // Clear any existing images
+                    if (item != nullptr && controlIndex >= 0 && controlIndex < item->controls.size())
+                    {
+                        item->controls[controlIndex].faderImage = juce::Image();
+                    }
+                    delete this; });
                 return;
             }
 
@@ -1280,7 +1341,13 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
             else
             {
                 juce::MessageManager::callAsync([this]()
-                                                { delete this; });
+                                                { 
+                    // Clear any existing images
+                    if (item != nullptr && controlIndex >= 0 && controlIndex < item->controls.size())
+                    {
+                        item->controls[controlIndex].faderImage = juce::Image();
+                    }
+                    delete this; });
             }
         }
 
@@ -1375,14 +1442,19 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
          */
         void run() override
         {
-
             // Try to download using the simple API - this is for older JUCE versions
             std::unique_ptr<juce::InputStream> inputStream = url.createInputStream(false);
 
             if (inputStream == nullptr || threadShouldExit())
             {
                 juce::MessageManager::callAsync([this]()
-                                                { delete this; });
+                                                { 
+                    // Clear any existing images
+                    if (item != nullptr && controlIndex >= 0 && controlIndex < item->controls.size())
+                    {
+                        item->controls[controlIndex].switchSpriteSheet = juce::Image();
+                    }
+                    delete this; });
                 return;
             }
 
@@ -1455,7 +1527,13 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
             else
             {
                 juce::MessageManager::callAsync([this]()
-                                                { delete this; });
+                                                { 
+                    // Clear any existing images
+                    if (item != nullptr && controlIndex >= 0 && controlIndex < item->controls.size())
+                    {
+                        item->controls[controlIndex].switchSpriteSheet = juce::Image();
+                    }
+                    delete this; });
             }
         }
 
@@ -1556,7 +1634,13 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
             if (inputStream == nullptr || threadShouldExit())
             {
                 juce::MessageManager::callAsync([this]()
-                                                { delete this; });
+                                                { 
+                    // Clear any existing images
+                    if (item != nullptr && controlIndex >= 0 && controlIndex < item->controls.size())
+                    {
+                        item->controls[controlIndex].buttonSpriteSheet = juce::Image();
+                    }
+                    delete this; });
                 return;
             }
 
@@ -1629,7 +1713,13 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
             else
             {
                 juce::MessageManager::callAsync([this]()
-                                                { delete this; });
+                                                { 
+                    // Clear any existing images
+                    if (item != nullptr && controlIndex >= 0 && controlIndex < item->controls.size())
+                    {
+                        item->controls[controlIndex].buttonSpriteSheet = juce::Image();
+                    }
+                    delete this; });
             }
         }
 
