@@ -10,6 +10,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "INetworkFetcher.h"
 
 /**
  * @brief Enumeration of possible gear types.
@@ -101,6 +102,19 @@ public:
     }
 
     /**
+     * @brief Destructor.
+     *
+     * Cleans up any loaded images to prevent memory leaks.
+     */
+    ~GearControl()
+    {
+        loadedImage = juce::Image();
+        switchSpriteSheet = juce::Image();
+        faderImage = juce::Image();
+        buttonSpriteSheet = juce::Image();
+    }
+
+    /**
      * @brief Constructor with basic parameters.
      *
      * @param typeParam The type of control
@@ -144,7 +158,6 @@ public:
           buttonFrames(other.buttonFrames),
           buttonSpriteSheet(other.buttonSpriteSheet)
     {
-        DBG("GearControl copy constructor called for control: " + name + " with ID: " + id);
     }
 
     /**
@@ -179,7 +192,6 @@ public:
             momentary = other.momentary;
             buttonFrames = other.buttonFrames;
             buttonSpriteSheet = other.buttonSpriteSheet;
-            DBG("GearControl assignment operator called for control: " + name + " with ID: " + id);
         }
         return *this;
     }
@@ -227,24 +239,65 @@ class GearItem
 public:
     /**
      * @brief Default constructor.
+     *
+     * Initializes a gear item with default values.
      */
-    GearItem() = default;
+    GearItem()
+        : unitId(""),
+          name(""),
+          manufacturer(""),
+          categoryString(""),
+          version(""),
+          schemaPath(""),
+          thumbnailImage(""),
+          tags(),
+          type(GearType::Other),
+          category(GearCategory::Other),
+          slotSize(1),
+          controls(),
+          isInstance(false),
+          sourceUnitId(""),
+          networkFetcher(INetworkFetcher::getDummy())
+    {
+    }
 
     /**
-     * @brief Constructor with full parameter set.
+     * @brief Destructor.
      *
-     * @param unitIdParam Unique identifier for the gear
-     * @param nameParam Name of the gear
-     * @param manufacturerParam Manufacturer name
-     * @param categoryParam Category string
-     * @param versionParam Version string
-     * @param schemaPathParam Path to schema file
-     * @param thumbnailImageParam Path to thumbnail image
-     * @param tagsParam Array of tags
-     * @param typeParam Type of gear
-     * @param gearCategoryParam Category of gear
-     * @param slotSizeParam Size in rack slots
-     * @param controlsParam Array of controls
+     * Cleans up any loaded images to prevent memory leaks.
+     */
+    ~GearItem()
+    {
+        // Clear the main images
+        image = juce::Image();
+        faceplateImage = juce::Image();
+
+        // Clear images in controls
+        for (auto &control : controls)
+        {
+            control.loadedImage = juce::Image();
+            control.switchSpriteSheet = juce::Image();
+            control.faderImage = juce::Image();
+            control.buttonSpriteSheet = juce::Image();
+        }
+    }
+
+    /**
+     * @brief Constructor with all parameters.
+     *
+     * @param unitIdParam The unique identifier for the gear item
+     * @param nameParam The name of the gear item
+     * @param manufacturerParam The manufacturer of the gear item
+     * @param categoryParam The category of the gear item
+     * @param versionParam The version of the gear item
+     * @param schemaPathParam The path to the schema file
+     * @param thumbnailImageParam The path to the thumbnail image
+     * @param tagsParam The tags associated with the gear item
+     * @param networkFetcherParam The network fetcher to use for loading resources
+     * @param typeParam The type of gear
+     * @param gearCategoryParam The category of gear
+     * @param slotSizeParam The size of the slot required
+     * @param controlsParam The controls available on the gear
      */
     GearItem(const juce::String &unitIdParam,
              const juce::String &nameParam,
@@ -254,6 +307,7 @@ public:
              const juce::String &schemaPathParam,
              const juce::String &thumbnailImageParam,
              const juce::StringArray &tagsParam,
+             INetworkFetcher &networkFetcherParam,
              GearType typeParam = GearType::Other,
              GearCategory gearCategoryParam = GearCategory::Other,
              int slotSizeParam = 1,
@@ -269,7 +323,8 @@ public:
           thumbnailImage(thumbnailImageParam),
           categoryString(categoryParam),
           tags(tagsParam),
-          controls(controlsParam)
+          controls(controlsParam),
+          networkFetcher(networkFetcherParam)
     {
         // Map category string to enum (for backward compatibility)
         if (categoryString == "equalizer" || categoryString == "eq")
@@ -298,6 +353,7 @@ public:
      * @param slotSizeParam Size in rack slots
      * @param imageUrlParam Path to image
      * @param controlsParam Array of controls
+     * @param networkFetcherParam Reference to network fetcher
      */
     GearItem(const juce::String &nameParam,
              const juce::String &manufacturerParam,
@@ -305,7 +361,8 @@ public:
              GearCategory categoryParam,
              int slotSizeParam,
              const juce::String &imageUrlParam,
-             const juce::Array<GearControl> &controlsParam)
+             const juce::Array<GearControl> &controlsParam,
+             INetworkFetcher &networkFetcherParam)
         : unitId(nameParam.toLowerCase().replaceCharacter(' ', '-')),
           name(nameParam),
           manufacturer(manufacturerParam),
@@ -317,7 +374,8 @@ public:
           thumbnailImage(imageUrlParam),
           categoryString(""),
           tags(),
-          controls(controlsParam)
+          controls(controlsParam),
+          networkFetcher(networkFetcherParam)
     {
         // Map category enum to string
         switch (category)
@@ -366,7 +424,7 @@ public:
 
     bool loadImage();
     void saveToJSON(juce::File destinationFile);
-    static GearItem loadFromJSON(juce::File sourceFile);
+    static GearItem loadFromJSON(juce::File sourceFile, INetworkFetcher &networkFetcher);
 
     /**
      * @brief Copy constructor.
@@ -375,8 +433,9 @@ public:
      * The new instance is not marked as an instance of the source.
      *
      * @param other The GearItem to copy from
+     * @param networkFetcherParam Reference to network fetcher
      */
-    GearItem(const GearItem &other)
+    GearItem(const GearItem &other, INetworkFetcher &networkFetcherParam)
         : unitId(other.unitId),
           name(other.name),
           manufacturer(other.manufacturer),
@@ -391,15 +450,18 @@ public:
           controls(other.controls),
           image(other.image),
           faceplateImage(other.faceplateImage),
-          isInstance(false),           // New instances start as non-instances
-          instanceId(juce::String()),  // New instances get a new ID
-          sourceUnitId(juce::String()) // New instances start with no source
+          isInstance(false),            // New instances start as non-instances
+          instanceId(juce::String()),   // New instances get a new ID
+          sourceUnitId(juce::String()), // New instances start with no source
+          networkFetcher(networkFetcherParam)
     {
         // Load the image
         loadImage();
     }
 
 private:
+    INetworkFetcher &networkFetcher;
+
     /**
      * @brief Creates a placeholder image for the gear item.
      *

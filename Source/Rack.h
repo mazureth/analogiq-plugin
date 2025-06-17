@@ -13,6 +13,7 @@
 #include "RackSlot.h"
 #include "GearItem.h"
 #include "GearLibrary.h"
+#include "INetworkFetcher.h"
 
 /**
  * @class Rack
@@ -32,12 +33,12 @@ public:
      * Initializes the rack with a viewport and container, creates the specified number
      * of rack slots, and sets up drag-and-drop functionality.
      */
-    Rack();
+    Rack(INetworkFetcher &networkFetcher);
 
     /**
      * @brief Destructor for the Rack class.
      *
-     * Cleans up resources and logs the destruction.
+     * Cleans up resources and ensures all images are properly released.
      */
     ~Rack() override;
 
@@ -261,6 +262,9 @@ private:
 
     // Reference to the gear library (for drag and drop)
     GearLibrary *gearLibrary = nullptr; ///< Reference to the gear library
+
+    // Reference to the network fetcher
+    INetworkFetcher &networkFetcher; ///< Reference to the network fetcher
 
     /**
      * @brief Gets the height of a specific rack slot.

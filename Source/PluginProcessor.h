@@ -11,6 +11,11 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Rack.h"
+#include "NetworkFetcher.h"
+
+// Forward declare the test class
+class PluginProcessorTests;
 
 /**
  * @brief Main audio processor for the AnalogIQ plugin.
@@ -21,11 +26,15 @@
  */
 class AnalogIQProcessor : public juce::AudioProcessor
 {
+    friend class PluginProcessorTests; // Allow test class to access private members
+
 public:
     /**
      * @brief Constructs a new AnalogIQProcessor.
+     *
+     * @param networkFetcher Reference to the network fetcher to use
      */
-    AnalogIQProcessor();
+    AnalogIQProcessor(INetworkFetcher &networkFetcher);
 
     /**
      * @brief Destructor for AnalogIQProcessor.
@@ -163,6 +172,16 @@ public:
     void setStateInformation(const void *data, int sizeInBytes) override;
 
     /**
+     * @brief Gets the active editor.
+     *
+     * In a real plugin host, this is managed by JUCE. For testing purposes,
+     * we return the last created editor.
+     *
+     * @return Pointer to the active editor, or nullptr if none exists
+     */
+    juce::AudioProcessorEditor *getActiveEditor();
+
+    /**
      * @brief Gets the processor's state tree.
      *
      * @return Reference to the AudioProcessorValueTreeState
@@ -170,9 +189,24 @@ public:
     juce::AudioProcessorValueTreeState &getState() { return state; }
 
     /**
+     * @brief Gets the processor's network fetcher.
+     *
+     * @return Reference to the network fetcher
+     */
+    INetworkFetcher &getNetworkFetcher() { return networkFetcher; }
+
+    /**
      * @brief Saves the current state of all gear instances.
      */
     void saveInstanceState();
+
+    /**
+     * @brief Saves the state of all gear instances from a rack.
+     *
+     * @param rack The rack containing the gear instances
+     * @param instanceTree The value tree to save the state to
+     */
+    void saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree);
 
     /**
      * @brief Loads the state of all gear instances.
@@ -180,13 +214,23 @@ public:
     void loadInstanceState();
 
     /**
+     * @brief Loads the state of all gear instances from a rack.
+     *
+     * @param rack The rack containing the gear instances
+     */
+    void loadInstanceState(Rack *rack);
+
+    /**
      * @brief Resets all gear instances to their default state.
      */
     void resetAllInstances();
 
 private:
-    juce::AudioProcessorValueTreeState state; ///< State management system
-    juce::UndoManager undoManager;            ///< Undo/redo management system
+    juce::AudioProcessorValueTreeState state;                ///< The processor's state tree
+    juce::UndoManager undoManager;                           ///< Undo manager for state changes
+    juce::AudioProcessorEditor *lastCreatedEditor = nullptr; ///< Pointer to the last created editor (for testing)
+    Rack *rack = nullptr;                                    ///< Pointer to the rack (for testing)
+    INetworkFetcher &networkFetcher;                         ///< Reference to the network fetcher for making HTTP requests
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };

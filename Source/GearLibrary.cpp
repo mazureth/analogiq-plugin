@@ -93,7 +93,8 @@ private:
  * Initializes the UI components including the title label, search box,
  * refresh button, add user gear button, and both list and tree views.
  */
-GearLibrary::GearLibrary()
+GearLibrary::GearLibrary(INetworkFetcher &networkFetcher, bool autoLoad)
+    : fetcher(networkFetcher)
 {
     // Set up title label
     titleLabel.setFont(juce::Font(18.0f, juce::Font::bold));
@@ -167,13 +168,16 @@ GearLibrary::GearLibrary()
     gearTreeView->setMultiSelectEnabled(false);
     gearTreeView->setOpenCloseButtonsVisible(true);
 
-    rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Root", this);
+    rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Gear Library", this);
     gearTreeView->setRootItem(rootItem.get());
 
     addAndMakeVisible(gearTreeView.get());
 
-    // Load initial data
-    loadLibraryAsync();
+    // Load initial data only if autoLoad is true
+    if (autoLoad)
+    {
+        loadLibraryAsync();
+    }
 }
 
 /**
@@ -527,7 +531,7 @@ void GearLibrary::listBoxItemDoubleClicked(int row, const juce::MouseEvent & /*e
 void GearLibrary::loadLibraryAsync()
 {
     // Start both async loading operations
-    loadFiltersAsync();
+    // loadFiltersAsync();
     loadGearItemsAsync();
 }
 
@@ -572,76 +576,22 @@ void GearLibrary::loadFiltersAsync()
  */
 void GearLibrary::loadGearItemsAsync()
 {
-    // Use a background thread to avoid blocking the message thread
-    juce::Thread::launch([this]()
-                         {
-        // Create URL for the remote endpoint using the helper method
-        juce::URL url(getFullUrl(RemoteResources::LIBRARY_PATH));
-        
-        // Fetch the JSON data
-        auto urlStream = url.createInputStream(juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
-                                                   .withConnectionTimeoutMs(10000)
-                                                   .withNumRedirectsToFollow(5));
-        
-        juce::String jsonData;
-        bool loadedSuccessfully = false;
-        
-        if (urlStream != nullptr)
-        {
-            // Read the data from the stream
-            jsonData = urlStream->readEntireStreamAsString();
-            loadedSuccessfully = true;
-            DBG("Successfully fetched gear library from remote URL");
-        }
-        else
-        {
-            // Failed to connect, use fallback data
-            DBG("Failed to connect to remote URL, using fallback data");
-            jsonData = R"({
-                "units": [
-                    {
-                        "unitId": "la2a-compressor",
-                        "name": "LA-2A Compressor",
-                        "manufacturer": "Teletronix/Universal Audio",
-                        "category": "compressor",
-                        "version": "1.0.0",
-                        "schemaPath": "units/la2a-compressor-1.0.0.json",
-                        "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                        "tags": [
-                            "UA", "Universal Audio", "Teletronix", "optical", "tube", "vintage", "leveling amplifier"
-                        ]
-                    },
-                    {
-                        "unitId": "api-560-eq",
-                        "name": "API 560 10-Band Graphic Equalizer",
-                        "manufacturer": "Automated Processes Inc.",
-                        "category": "equalizer",
-                        "version": "1.0.0",
-                        "schemaPath": "units/api-560-eq-1.0.0.json",
-                        "thumbnailImage": "assets/thumbnails/api-560-eq-1.0.0.jpg",
-                        "tags": [
-                            "API", "500 series", "graphic EQ", "10-band", "hardware"
-                        ]
-                    }
-                ]
-            })";
-        }
-        
-        // Send the result back to the message thread
-        juce::MessageManager::callAsync([this, jsonData, loadedSuccessfully]() {
-            // Clear existing items before adding new ones
-            gearItems.clear();
-            
-            // Parse the JSON data into gear items
-            parseGearLibrary(jsonData);
-            
-            // Update the UI to reflect the changes
-            updateFilteredItems();
-            
-            // If loaded successfully, save the library to local cache
-            if (loadedSuccessfully)
-                saveLibraryAsync();
-        }); });
+    // Create URL for the remote endpoint using the helper method
+    juce::URL url(getFullUrl(RemoteResources::LIBRARY_PATH));
+
+    // Use the injected network fetcher to get the data
+    bool success = false;
+    juce::String jsonData = fetcher.fetchJsonBlocking(url, success);
+
+    if (success && jsonData.isNotEmpty())
+    {
+        parseGearLibrary(jsonData);
+    }
+    else
+    {
+        // TODO: Handle error case
+        juce::Logger::writeToLog("Failed to load gear items from: " + url.toString(false));
+    }
 }
 
 /**
@@ -718,7 +668,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 }
 
                 GearItem item(unitId, name, manufacturer, category, version, schemaPath,
-                              thumbnailImage, tags, GearType::Other, GearCategory::Other,
+                              thumbnailImage, tags, fetcher, GearType::Other, GearCategory::Other,
                               slotSize, controls);
 
                 // If thumbnailImage is provided, try to load the image
@@ -778,7 +728,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 juce::Array<GearControl> controls;
 
                 // Create gear item using the legacy constructor
-                GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls);
+                GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls, fetcher);
 
                 // If thumbnailUrl is provided, try to load the image
                 if (thumbnailUrl.isNotEmpty())
@@ -867,7 +817,7 @@ void GearLibrary::addItem(const juce::String &name, const juce::String &category
     juce::Array<GearControl> controls;
 
     // Add the new item to the list
-    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls));
+    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls, fetcher));
 
     // Update the UI
     if (rootItem != nullptr)
@@ -885,11 +835,8 @@ void GearLibrary::saveLibraryAsync()
     // We'll use a background thread to simulate the save operation
     juce::Thread::launch([this]()
                          {
-        // Simulate saving to a file or server
-        juce::Thread::sleep(500);
-        
-        // Log the save operation completion
-        DBG("Library saved successfully"); });
+                             // Simulate saving to a file or server
+                             juce::Thread::sleep(500); });
 }
 
 /**

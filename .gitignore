@@ -2,3 +2,6 @@
 build/
 docs/
 AnalogIQ.code-workspace
+coverage_html/
+default.profdata
+default.profraw

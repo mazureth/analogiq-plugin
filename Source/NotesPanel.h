@@ -58,9 +58,38 @@ public:
      */
     juce::String getText() const;
 
+    /**
+     * @class NotesContainer
+     * @brief Internal container class for notes content.
+     *
+     * This class provides a container component that holds the notes content
+     * and is managed by the viewport.
+     */
+    class NotesContainer : public juce::Component
+    {
+    public:
+        /**
+         * @brief Constructs a new NotesContainer.
+         *
+         * Sets the component ID for debugging purposes.
+         */
+        NotesContainer() { setComponentID("NotesContainer"); }
+
+        /**
+         * @brief Paints the container's background.
+         *
+         * @param g The graphics context to paint with
+         */
+        void paint(juce::Graphics &g) override { g.fillAll(juce::Colours::darkgrey.darker(0.2f)); }
+
+        NotesPanel *panel = nullptr; ///< Reference to the parent panel
+    };
+
 private:
-    juce::TextEditor textEditor; ///< Text editor component for entering notes
-    juce::Label titleLabel;      ///< Label displaying the panel title
+    juce::TextEditor textEditor;                    ///< Text editor component for entering notes
+    juce::Label titleLabel;                         ///< Label displaying the panel title
+    std::unique_ptr<juce::Viewport> notesViewport;  ///< Viewport for scrolling the notes
+    std::unique_ptr<NotesContainer> notesContainer; ///< Container for notes content
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NotesPanel)
 };
