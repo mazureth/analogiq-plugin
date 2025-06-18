@@ -32,6 +32,22 @@ option(ANALOGIQ_BUILD_VST3 "Build VST3 plugin" ON)
 option(ANALOGIQ_BUILD_AU "Build Audio Unit plugin" ON)
 option(ANALOGIQ_BUILD_STANDALONE "Build Standalone app" ON)
 option(ANALOGIQ_BUILD_TESTS "Build and run tests" ON)
+option(ANALOGIQ_COPY_PLUGINS "Copy plugins after build" ON)
+
+# Build the list of formats based on options
+set(PLUGIN_FORMATS "")
+if(ANALOGIQ_BUILD_AAX)
+    list(APPEND PLUGIN_FORMATS AAX)
+endif()
+if(ANALOGIQ_BUILD_VST3)
+    list(APPEND PLUGIN_FORMATS VST3)
+endif()
+if(ANALOGIQ_BUILD_AU)
+    list(APPEND PLUGIN_FORMATS AU)
+endif()
+if(ANALOGIQ_BUILD_STANDALONE)
+    list(APPEND PLUGIN_FORMATS Standalone)
+endif()
 
 # Set up the plugin target with JUCE modules
 juce_add_plugin(AnalogIQ
@@ -42,14 +58,10 @@ juce_add_plugin(AnalogIQ
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
-    COPY_PLUGIN_AFTER_BUILD TRUE
+    COPY_PLUGIN_AFTER_BUILD ${ANALOGIQ_COPY_PLUGINS}
     PLUGIN_MANUFACTURER_CODE Yoco
     PLUGIN_CODE Ana1
-    FORMATS
-        AAX
-        VST3
-        AU
-        Standalone
+    FORMATS ${PLUGIN_FORMATS}
     VST3_CATEGORIES "Tools"
     AAX_CATEGORY "AAX_ePlugInCategory_Dynamics"
     AU_MAIN_TYPE "kAudioUnitType_Effect"
