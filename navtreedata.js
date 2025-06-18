@@ -25,6 +25,17 @@
 var NAVTREE =
 [
   [ "AnalogIQ", "index.html", [
+    [ "Features", "index.html#autotoc_md1", null ],
+    [ "Building the Plugin", "index.html#autotoc_md2", [
+      [ "Requirements", "index.html#autotoc_md3", null ],
+      [ "Build Steps", "index.html#autotoc_md4", null ]
+    ] ],
+    [ "Building and Viewing Documentation Locally", "index.html#autotoc_md5", null ],
+    [ "Documentation", "index.html#autotoc_md6", null ],
+    [ "Usage", "index.html#autotoc_md7", null ],
+    [ "Project Structure", "index.html#autotoc_md8", null ],
+    [ "Contributing", "index.html#autotoc_md9", null ],
+    [ "License", "index.html#autotoc_md10", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [

@@ -6,5 +6,6 @@ var searchData=
   ['updatebuttonstates_3',['updateButtonStates',['../dc/dde/class_rack_slot.html#a4e11cf0282f711f39fb75925526decb6',1,'RackSlot']]],
   ['updatefilterbox_4',['updateFilterBox',['../d5/d8c/class_gear_library.html#a514b9975145b848827e18d843514bf49',1,'GearLibrary']]],
   ['updatefiltereditems_5',['updateFilteredItems',['../d5/d8c/class_gear_library.html#a5adc5749ef27eee5dc6116f9c2862e40',1,'GearLibrary']]],
-  ['usercreated_6',['UserCreated',['../d2/d9a/_gear_item_8h.html#a77e0c5e3b198c001abd1e74890a16771ab8171504eeed8b09fed5c58a12d6b7f1',1,'GearItem.h']]]
+  ['usage_6',['Usage',['../index.html#autotoc_md7',1,'']]],
+  ['usercreated_7',['UserCreated',['../d2/d9a/_gear_item_8h.html#a77e0c5e3b198c001abd1e74890a16771ab8171504eeed8b09fed5c58a12d6b7f1',1,'GearItem.h']]]
 ];

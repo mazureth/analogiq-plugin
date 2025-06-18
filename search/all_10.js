@@ -23,9 +23,11 @@ var searchData=
   ['sourceunitid_20',['sourceUnitId',['../dd/dee/class_gear_item.html#a2c5336f0e8d1dcd39dcdc6d5f847f46b',1,'GearItem']]],
   ['startangle_21',['startAngle',['../dc/d76/class_gear_control.html#af98fc5b93284bfda0e69897cbf9b8757',1,'GearControl']]],
   ['state_22',['state',['../d5/d18/class_analog_i_q_processor.html#af20d9509b1e472e3cd30c7bc95bf6257',1,'AnalogIQProcessor']]],
-  ['steps_23',['steps',['../dc/d76/class_gear_control.html#a35717d28c62fb8605c1d4b87c63d7788',1,'GearControl']]],
-  ['switch_24',['Switch',['../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521abbc155fb2b111bf61c4f5ff892915e6b',1,'GearControl']]],
-  ['switchframes_25',['switchFrames',['../dc/d76/class_gear_control.html#a7c222196311140f605608100f51c0093',1,'GearControl']]],
-  ['switchoptionframe_26',['SwitchOptionFrame',['../df/d72/struct_gear_control_1_1_switch_option_frame.html',1,'GearControl']]],
-  ['switchspritesheet_27',['switchSpriteSheet',['../dc/d76/class_gear_control.html#a60d36f5169699b7f48c732504f481e9f',1,'GearControl']]]
+  ['steps_23',['Build Steps',['../index.html#autotoc_md4',1,'']]],
+  ['steps_24',['steps',['../dc/d76/class_gear_control.html#a35717d28c62fb8605c1d4b87c63d7788',1,'GearControl']]],
+  ['structure_25',['Project Structure',['../index.html#autotoc_md8',1,'']]],
+  ['switch_26',['Switch',['../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521abbc155fb2b111bf61c4f5ff892915e6b',1,'GearControl']]],
+  ['switchframes_27',['switchFrames',['../dc/d76/class_gear_control.html#a7c222196311140f605608100f51c0093',1,'GearControl']]],
+  ['switchoptionframe_28',['SwitchOptionFrame',['../df/d72/struct_gear_control_1_1_switch_option_frame.html',1,'GearControl']]],
+  ['switchspritesheet_29',['switchSpriteSheet',['../dc/d76/class_gear_control.html#a60d36f5169699b7f48c732504f481e9f',1,'GearControl']]]
 ];

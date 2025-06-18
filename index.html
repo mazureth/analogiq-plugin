@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>AnalogIQ: Main Page</title>
+<title>AnalogIQ: AnalogIQ</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,10 +88,138 @@ $(function(){initNavTree('index.html','',''); });
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">AnalogIQ Documentation</div></div>
+<div><div class="header">
+  <div class="headertitle"><div class="title">AnalogIQ </div></div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a></p>
+<p>AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio engineers to visualize and document their analog gear signal chain without affecting the audio signal.</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
+Features</h1>
+<ul>
+<li><b>Virtual Rack System</b>: Organize and visualize your outboard gear in a virtual 500-series and 19" rack environment</li>
+<li><b>Gear Library</b>: Browse and add gear from a comprehensive library of popular analog equipment<ul>
+<li>Hierarchical tree view for easy navigation</li>
+<li>Search functionality</li>
+<li>Filter by type and category</li>
+<li>Remote gear library with automatic updates</li>
+</ul>
+</li>
+<li><b>Drag-and-Drop Interface</b>: Easily arrange gear in the rack via intuitive drag-and-drop</li>
+<li><b>Gear Controls</b>: Interactive controls for each piece of gear<ul>
+<li>Knobs with customizable ranges and steps</li>
+<li>Faders with vertical/horizontal orientation</li>
+<li>Switches with multiple states</li>
+<li>Buttons with momentary/latching behavior</li>
+</ul>
+</li>
+<li><b>Session Notes</b>: Document patchbay connections, settings, and other important session details</li>
+<li><b>Instance Management</b>: Create and manage multiple instances of the same gear<ul>
+<li>Save and load instance states</li>
+<li>Reset instances to source settings</li>
+<li>Track instance IDs and relationships</li>
+</ul>
+</li>
+<li><b>Remote Resource Management</b>: Automatic downloading and caching of gear resources<ul>
+<li>Faceplate images</li>
+<li>Control images (knobs, faders, switches, buttons)</li>
+<li>Gear schemas and metadata</li>
+</ul>
+</li>
+<li><b>User-Created Gear</b>: Import your own gear images and create custom controls (coming soon)</li>
+<li><b>MIDI/OSC Integration</b>: Control your digital-enabled analog gear directly from the plugin (coming soon)</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
+Building the Plugin</h1>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+Requirements</h2>
+<ul>
+<li>CMake 3.15+</li>
+<li>C++17 compatible compiler</li>
+<li>JUCE framework (will be downloaded automatically by CMake)</li>
+<li>Doxygen (for building documentation)</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
+Build Steps</h2>
+<ol type="1">
+<li>Clone the repository: <div class="fragment"><div class="line">git clone https://github.com/mazureth/analogiq-client.git</div>
+<div class="line">cd analogiq-client</div>
+</div><!-- fragment --></li>
+<li><p class="startli">Build the project using one of the provided scripts: </p><div class="fragment"><div class="line"># Normal build</div>
+<div class="line">./build.sh</div>
+<div class="line"> </div>
+<div class="line"># Clean build (removes build directory first)</div>
+<div class="line">./clean_build.sh</div>
+</div><!-- fragment --><p class="startli">Both scripts will accept flags that will be passed through to the build command</p>
+<div class="fragment"><div class="line"># Build with verbose output</div>
+<div class="line">./build.sh --verbose</div>
+<div class="line"> </div>
+<div class="line"># Build with specific CMake flags</div>
+<div class="line">./build.sh --parallel 4</div>
+</div><!-- fragment --></li>
+<li>Run the tests: <div class="fragment"><div class="line">./run_tests.sh</div>
+</div><!-- fragment --></li>
+<li>Open your IDE <em>after</em> you build so JUCE is correctly downloaded. This will help with linter issues.</li>
+<li>To build the documentation: <div class="fragment"><div class="line">cmake --build build --target docs</div>
+</div><!-- fragment --> The documentation will be generated in the <span class="tt">docs/html</span> directory.</li>
+</ol>
+<p>The plugin will be built in the <span class="tt">build</span> directory. The first build might take longer as it downloads JUCE automatically.</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
+Building and Viewing Documentation Locally</h1>
+<p>You can easily build and view the Doxygen-generated documentation using the provided helper script:</p>
+<div class="fragment"><div class="line">./build_docs.sh</div>
+</div><!-- fragment --><p>This script will:</p><ul>
+<li>Configure the project with CMake</li>
+<li>Build the documentation</li>
+<li>Prompt you to open the generated docs in your browser</li>
+</ul>
+<p>The documentation will be generated in <span class="tt">docs/html/index.html</span>.</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
+Documentation</h1>
+<p>The project documentation is automatically generated using Doxygen and is available in two places:</p>
+<ol type="1">
+<li><b>Local Documentation</b>: After building, you can find the documentation in the <span class="tt">docs/html</span> directory. Open <span class="tt">index.html</span> in your web browser to view it.</li>
+<li><b>Online Documentation</b>: The latest documentation is automatically built and deployed to GitHub Pages whenever changes are pushed to the main branch. You can find it at: <a href="https://mazureth.github.io/analogiq-client/">https://mazureth.github.io/analogiq-client/</a></li>
+</ol>
+<p>The documentation includes:</p><ul>
+<li>Detailed API documentation</li>
+<li>Class hierarchies and relationships</li>
+<li>Source code cross-references</li>
+<li>Call graphs and dependency diagrams</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
+Usage</h1>
+<ol type="1">
+<li>Add the AnalogIQ plugin to a track in your DAW</li>
+<li>Browse the gear library and drag items into the rack</li>
+<li>Arrange gear in your preferred signal flow</li>
+<li>Interact with gear controls to document settings</li>
+<li>Use the notes section to document critical details about your setup</li>
+<li>Save your DAW project to preserve your rack configuration and notes</li>
+</ol>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
+Project Structure</h1>
+<ul>
+<li><span class="tt">Source/</span> - All source files<ul>
+<li><span class="tt">PluginProcessor.*</span> - Core plugin functionality</li>
+<li><span class="tt">PluginEditor.*</span> - Main UI components</li>
+<li><span class="tt">GearLibrary.*</span> - Gear browser and library management</li>
+<li><span class="tt">GearItem.*</span> - Individual gear item representation</li>
+<li><span class="tt">Rack.*</span> - Virtual rack system</li>
+<li><span class="tt">RackSlot.*</span> - Individual rack slot</li>
+<li><span class="tt">NotesPanel.*</span> - Session notes functionality</li>
+</ul>
+</li>
+<li><span class="tt">Assets/</span> - Images and other resources</li>
+<li><span class="tt">CMakeLists.txt</span> - CMake build configuration</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
+Contributing</h1>
+<p>Contributions to AnalogIQ are welcome! Please feel free to submit pull requests, create issues or contact the maintainers.</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
+License</h1>
+<p>This project is licensed under the MIT License - see the LICENSE file for details. </p>
+</div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->
 </div><!-- doc-content -->
