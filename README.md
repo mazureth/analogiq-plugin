@@ -79,6 +79,21 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
 
 The plugin will be built in the `build` directory. The first build might take longer as it downloads JUCE automatically.
 
+## Building and Viewing Documentation Locally
+
+You can easily build and view the Doxygen-generated documentation using the provided helper script:
+
+```sh
+./build_docs.sh
+```
+
+This script will:
+- Configure the project with CMake
+- Build the documentation
+- Prompt you to open the generated docs in your browser
+
+The documentation will be generated in `docs/html/index.html`.
+
 ## Documentation
 
 The project documentation is automatically generated using Doxygen and is available in two places:
