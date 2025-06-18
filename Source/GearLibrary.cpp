@@ -131,24 +131,6 @@ GearLibrary::GearLibrary(INetworkFetcher &networkFetcher, bool autoLoad)
                             nullptr, nullptr, nullptr, nullptr);
     addAndMakeVisible(refreshButton);
 
-    // Set up add user gear button with plus icon
-    addUserGearButton.setColour(juce::DrawableButton::backgroundColourId, juce::Colours::darkgrey);
-    addUserGearButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colours::darkgrey.brighter(0.2f));
-    addUserGearButton.addListener(this);
-    addUserGearButton.setTooltip("Add Custom Gear");
-
-    // Create plus icon using Unicode character
-    auto normalPlusIcon = std::make_unique<juce::DrawableText>();
-    normalPlusIcon->setText("+"); // Unicode Plus sign
-    normalPlusIcon->setFont(juce::Font(24.0f, juce::Font::plain), true);
-    normalPlusIcon->setColour(juce::Colours::white);
-    normalPlusIcon->setJustification(juce::Justification::centred);
-
-    // Use the same icon for normal and hover states
-    addUserGearButton.setImages(normalPlusIcon.get(), nullptr, nullptr, nullptr,
-                                nullptr, nullptr, nullptr, nullptr);
-    addAndMakeVisible(addUserGearButton);
-
     // Set up list box (legacy)
     gearListModel = std::make_unique<GearListBoxModel>(*this);
 
@@ -216,7 +198,6 @@ void GearLibrary::resized()
     // Control area
     auto controlArea = bounds.removeFromTop(40);
     refreshButton.setBounds(controlArea.removeFromRight(80).reduced(5));
-    addUserGearButton.setBounds(controlArea.removeFromRight(120).reduced(5));
     searchBox.setBounds(controlArea.reduced(5));
 
     // List area (legacy)
@@ -851,10 +832,6 @@ void GearLibrary::buttonClicked(juce::Button *button)
     if (button == &refreshButton)
     {
         loadLibraryAsync();
-    }
-    else if (button == &addUserGearButton)
-    {
-        // Open user gear creation dialog (to be implemented)
     }
 }
 

@@ -262,10 +262,9 @@ private:
     void updateFilterBox();
 
     // UI components
-    juce::Label titleLabel{"titleLabel", "Gear Library"};                                                                    ///< Title label for the library
-    juce::TextEditor searchBox;                                                                                              ///< Search box for filtering items
-    juce::DrawableButton refreshButton{"RefreshButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground};         ///< Button to refresh the library
-    juce::DrawableButton addUserGearButton{"AddUserGearButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground}; ///< Button to add custom gear
+    juce::Label titleLabel{"titleLabel", "Gear Library"};                                                            ///< Title label for the library
+    juce::DrawableButton refreshButton{"RefreshButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground}; ///< Button to refresh the gear list
+    juce::TextEditor searchBox;                                                                                      ///< Text box for searching gear items
 
     // List box components (for legacy support)
     std::unique_ptr<GearListBoxModel> gearListModel; ///< Model for the legacy list box
