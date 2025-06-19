@@ -214,41 +214,100 @@ void GearLibrary::resized()
 }
 
 /**
- * @brief Determines if a gear item should be shown based on current filters.
+ * @brief Gets the list of characters to ignore during search.
  *
- * Checks both search text and category/type filters to determine
- * if an item should be visible in the current view.
+ * @return Array of characters that should be ignored during fuzzy matching
+ */
+juce::Array<juce::juce_wchar> GearLibrary::getIgnoredCharacters()
+{
+    return {
+        '-',  // Hyphens (e.g., "LA-2A" matches "la2a")
+        ' ',  // Spaces (e.g., "Tube Compressor" matches "tubecompressor")
+        '_',  // Underscores
+        '.',  // Dots
+        '(',  // Parentheses
+        ')',  // Parentheses
+        '[',  // Brackets
+        ']',  // Brackets
+        '/',  // Forward slashes
+        '\\', // Backward slashes
+        '&',  // Ampersands
+        '+',  // Plus signs
+        '=',  // Equals signs
+        '#'   // Hash symbols
+    };
+}
+
+/**
+ * @brief Normalizes text for fuzzy search by removing ignored characters.
+ *
+ * @param text The text to normalize
+ * @return The normalized text (lowercase with ignored characters removed)
+ */
+juce::String GearLibrary::normalizeForSearch(const juce::String &text) const
+{
+    juce::String normalized = text.toLowerCase();
+    auto ignoredChars = getIgnoredCharacters();
+
+    // Build a string of characters to remove
+    juce::String charsToRemove;
+    for (auto ignoredChar : ignoredChars)
+    {
+        charsToRemove += ignoredChar;
+    }
+
+    // Remove all ignored characters at once
+    normalized = normalized.removeCharacters(charsToRemove);
+
+    return normalized;
+}
+
+/**
+ * @brief Determines if a gear item should be shown based on current search.
+ *
+ * Checks search text to determine if an item should be visible in the current view.
+ * Uses fuzzy matching to ignore common separators and special characters.
  *
  * @param item The gear item to check
  * @return true if the item should be shown
  */
 bool GearLibrary::shouldShowItem(const GearItem &item) const
 {
-    // First check the search text
+    // Check the search text
     if (!currentSearchText.isEmpty())
     {
+        // Normalize the search term
+        juce::String normalizedSearch = normalizeForSearch(currentSearchText);
+
+        // Debug output
+        juce::String normalizedName = normalizeForSearch(item.name);
+        juce::String normalizedManufacturer = normalizeForSearch(item.manufacturer);
+
+        // Uncomment the next line for debug output
+        juce::Logger::writeToLog("Search: '" + currentSearchText + "' -> '" + normalizedSearch + "' | Item: '" + item.name + "' -> '" + normalizedName + "' | Match: " + (normalizedName.contains(normalizedSearch) ? "YES" : "NO"));
+
         bool matchesSearch = false;
 
-        // Check name and manufacturer
-        if (item.name.containsIgnoreCase(currentSearchText) ||
-            item.manufacturer.containsIgnoreCase(currentSearchText))
+        // Check normalized name and manufacturer
+        if (normalizedName.contains(normalizedSearch) ||
+            normalizedManufacturer.contains(normalizedSearch))
         {
             matchesSearch = true;
         }
 
-        // Check category string
+        // Check normalized category string
         if (!matchesSearch && !item.categoryString.isEmpty() &&
-            item.categoryString.containsIgnoreCase(currentSearchText))
+            normalizeForSearch(item.categoryString).contains(normalizedSearch))
         {
             matchesSearch = true;
         }
 
-        // Check tags
+        // Check normalized tags
         if (!matchesSearch && item.tags.size() > 0)
         {
             for (const auto &tag : item.tags)
             {
-                if (tag.containsIgnoreCase(currentSearchText))
+                if (normalizeForSearch(tag).contains(normalizedSearch))
                 {
                     matchesSearch = true;
                     break;
@@ -256,51 +315,17 @@ bool GearLibrary::shouldShowItem(const GearItem &item) const
             }
         }
 
-        if (!matchesSearch)
-            return false;
+        return matchesSearch;
     }
 
-    // Then check the filter
-    if (currentFilter.first == FilterCategory::All)
-        return true;
-
-    if (currentFilter.first == FilterCategory::Type)
-    {
-        if (currentFilter.second == "500Series")
-            return item.type == GearType::Series500;
-        if (currentFilter.second == "Rack19Inch")
-            return item.type == GearType::Rack19Inch;
-        if (currentFilter.second == "UserCreated")
-            return item.type == GearType::UserCreated;
-    }
-    else if (currentFilter.first == FilterCategory::Category)
-    {
-        // Check both the enum category and the string category for flexibility
-        if (currentFilter.second == "EQ" || currentFilter.second == "equalizer")
-            return (item.category == GearCategory::EQ ||
-                    item.categoryString.equalsIgnoreCase("equalizer") ||
-                    item.categoryString.equalsIgnoreCase("eq"));
-
-        if (currentFilter.second == "Preamp" || currentFilter.second == "preamp")
-            return (item.category == GearCategory::Preamp ||
-                    item.categoryString.equalsIgnoreCase("preamp"));
-
-        if (currentFilter.second == "Compressor" || currentFilter.second == "compressor")
-            return (item.category == GearCategory::Compressor ||
-                    item.categoryString.equalsIgnoreCase("compressor"));
-
-        if (currentFilter.second == "Other" || currentFilter.second == "other")
-            return (item.category == GearCategory::Other ||
-                    item.categoryString.equalsIgnoreCase("other"));
-    }
-
+    // If no search text, show all items
     return true;
 }
 
 /**
  * @brief Updates the filtered items in both list and tree views.
  *
- * Refreshes the display of items based on current search and filter criteria.
+ * Refreshes the display of items based on current search criteria.
  */
 void GearLibrary::updateFilteredItems()
 {
@@ -316,107 +341,107 @@ void GearLibrary::updateFilteredItems()
     {
         bool isSearching = !currentSearchText.isEmpty();
 
-        // If we're searching or the root item has no children yet, refresh from scratch
-        if (isSearching || rootItem->getNumSubItems() == 0)
-        {
-            rootItem->clearSubItems();
-            rootItem->refreshSubItems();
-        }
+        // Clear and rebuild the tree structure
+        rootItem->clearSubItems();
 
-        // Recursively expand and hide/show nodes based on search results
         if (isSearching)
         {
-            // First see if any item in the entire tree matches the search
-            bool anyMatches = false;
+            // Find all matching items
+            juce::Array<GearItem *> matchingItems;
             for (int i = 0; i < gearItems.size(); ++i)
             {
                 if (shouldShowItem(gearItems.getReference(i)))
                 {
-                    anyMatches = true;
-                    break;
+                    matchingItems.add(&gearItems.getReference(i));
                 }
             }
 
-            // If we have matches, expand everything to show them
-            if (anyMatches)
+            if (matchingItems.size() > 0)
             {
-                // Make sure the root categories node is expanded
-                for (int i = 0; i < rootItem->getNumSubItems(); ++i)
+                // Group matching items by category
+                juce::HashMap<juce::String, juce::Array<GearItem *>> categoryGroups;
+
+                for (auto *item : matchingItems)
                 {
-                    if (auto categoriesNode = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
+                    juce::String category = item->categoryString;
+                    if (category.isEmpty())
                     {
-                        categoriesNode->setOpen(true);
-
-                        // For each category, check if it contains matching items
-                        for (int j = 0; j < categoriesNode->getNumSubItems(); ++j)
+                        // Fallback to enum-based category
+                        switch (item->category)
                         {
-                            if (auto categoryNode = dynamic_cast<GearTreeItem *>(categoriesNode->getSubItem(j)))
+                        case GearCategory::EQ:
+                            category = "equalizer";
+                            break;
+                        case GearCategory::Compressor:
+                            category = "compressor";
+                            break;
+                        case GearCategory::Preamp:
+                            category = "preamp";
+                            break;
+                        case GearCategory::Other:
+                            category = "other";
+                            break;
+                        }
+                    }
+
+                    if (!categoryGroups.contains(category))
+                        categoryGroups.set(category, juce::Array<GearItem *>());
+
+                    categoryGroups.getReference(category).add(item);
+                }
+
+                // Create the "Categories" node
+                auto categoriesNode = new GearTreeItem(GearTreeItem::ItemType::Category, "Categories", this);
+                rootItem->addSubItem(categoriesNode);
+
+                // Add each category that has matching items
+                for (auto it = categoryGroups.begin(); it != categoryGroups.end(); ++it)
+                {
+                    juce::String categoryName = it.getKey();
+                    juce::String displayName = categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1);
+
+                    auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this);
+                    categoriesNode->addSubItem(categoryNode);
+
+                    // Add matching items to this category
+                    for (auto *item : it.getValue())
+                    {
+                        // Find the index of this item in the original array
+                        int itemIndex = -1;
+                        for (int i = 0; i < gearItems.size(); ++i)
+                        {
+                            if (&gearItems.getReference(i) == item)
                             {
-                                bool categoryHasMatches = false;
-
-                                // If the node hasn't loaded its items yet, refresh it
-                                if (categoryNode->getNumSubItems() == 0)
-                                {
-                                    categoryNode->refreshSubItems();
-                                }
-
-                                // Check each gear item to see if it matches
-                                for (int k = 0; k < categoryNode->getNumSubItems(); ++k)
-                                {
-                                    if (auto gearNode = dynamic_cast<GearTreeItem *>(categoryNode->getSubItem(k)))
-                                    {
-                                        if (GearItem *gearItem = gearNode->getGearItem())
-                                        {
-                                            // Check if this item matches the search
-                                            bool matches = shouldShowItem(*gearItem);
-                                            gearNode->setVisible(matches);
-
-                                            if (matches)
-                                                categoryHasMatches = true;
-                                        }
-                                    }
-                                }
-
-                                // Only show and expand categories that have matching items
-                                categoryNode->setVisible(categoryHasMatches);
-                                categoryNode->setOpen(categoryHasMatches);
+                                itemIndex = i;
+                                break;
                             }
+                        }
+
+                        if (itemIndex >= 0)
+                        {
+                            categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, item, itemIndex));
                         }
                     }
                 }
-            }
-            else
-            {
-                // If no matches, don't expand anything
-                rootItem->setOpenness(false);
+
+                // Expand the tree to show all matching items
+                rootItem->setOpen(true);
+                categoriesNode->setOpen(true);
+
+                // Expand all category nodes that contain matching items
+                for (int i = 0; i < categoriesNode->getNumSubItems(); ++i)
+                {
+                    if (auto categoryNode = dynamic_cast<GearTreeItem *>(categoriesNode->getSubItem(i)))
+                    {
+                        categoryNode->setOpen(true);
+                    }
+                }
             }
         }
         else
         {
-            // When not searching, make all nodes visible
-            for (int i = 0; i < rootItem->getNumSubItems(); ++i)
-            {
-                if (auto categoriesNode = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
-                {
-                    categoriesNode->setVisible(true);
-
-                    for (int j = 0; j < categoriesNode->getNumSubItems(); ++j)
-                    {
-                        if (auto categoryNode = dynamic_cast<GearTreeItem *>(categoriesNode->getSubItem(j)))
-                        {
-                            categoryNode->setVisible(true);
-
-                            for (int k = 0; k < categoryNode->getNumSubItems(); ++k)
-                            {
-                                if (auto gearNode = dynamic_cast<GearTreeItem *>(categoryNode->getSubItem(k)))
-                                {
-                                    gearNode->setVisible(true);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            // When not searching, restore the normal hierarchical structure
+            rootItem->refreshSubItems();
         }
 
         gearTreeView->repaint();
@@ -507,46 +532,12 @@ void GearLibrary::listBoxItemDoubleClicked(int row, const juce::MouseEvent & /*e
 /**
  * @brief Loads the gear library data asynchronously.
  *
- * Initiates both filter and gear item loading operations in parallel.
+ * Initiates gear item loading operations.
  */
 void GearLibrary::loadLibraryAsync()
 {
-    // Start both async loading operations
-    // loadFiltersAsync();
+    // Start async loading operation
     loadGearItemsAsync();
-}
-
-/**
- * @brief Loads filter options asynchronously.
- *
- * Fetches filter options from a remote source or uses fallback data
- * if the remote source is unavailable.
- */
-void GearLibrary::loadFiltersAsync()
-{
-    // Use a background thread to avoid blocking the message thread
-    juce::Thread::launch([this]()
-                         {
-        // Simulate network delay
-        juce::Thread::sleep(500); 
-        
-        // Create a copy of the JSON data to avoid any threading issues
-        juce::String filterJson = R"({
-            "filters": [
-                {"displayName": "500 Series", "category": "Type", "value": "500Series"},
-                {"displayName": "19\" Rack", "category": "Type", "value": "Rack19Inch"},
-                {"displayName": "User Created", "category": "Type", "value": "UserCreated"},
-                {"displayName": "EQ", "category": "Category", "value": "EQ"},
-                {"displayName": "Preamp", "category": "Category", "value": "Preamp"},
-                {"displayName": "Compressor", "category": "Category", "value": "Compressor"},
-                {"displayName": "Other", "category": "Category", "value": "Other"}
-            ]
-        })";
-        
-        // Send the result back to the message thread
-        juce::MessageManager::callAsync([this, filterJson]() {
-            parseFilterOptions(filterJson);
-        }); });
 }
 
 /**
@@ -823,7 +814,7 @@ void GearLibrary::saveLibraryAsync()
 /**
  * @brief Handles button click events.
  *
- * Processes clicks on the refresh and add user gear buttons.
+ * Processes clicks on the refresh button.
  *
  * @param button Pointer to the clicked button
  */
@@ -833,64 +824,4 @@ void GearLibrary::buttonClicked(juce::Button *button)
     {
         loadLibraryAsync();
     }
-}
-
-/**
- * @brief Parses filter options from JSON data.
- *
- * Processes JSON data containing filter options and populates
- * the filter options list.
- *
- * @param jsonData The JSON string containing filter options
- */
-void GearLibrary::parseFilterOptions(const juce::String &jsonData)
-{
-    // This method is retained for backwards compatibility but simplified
-    // since we no longer use the filter box
-    auto json = juce::JSON::parse(jsonData);
-
-    if (json.hasProperty("filters") && json["filters"].isArray())
-    {
-        auto filterArray = json["filters"].getArray();
-        filterOptions.clear();
-
-        // Always add "All Items" as the first option
-        filterOptions.add({"All Items", FilterCategory::All, ""});
-
-        for (auto &filterJson : *filterArray)
-        {
-            if (filterJson.isObject())
-            {
-                auto obj = filterJson.getDynamicObject();
-
-                juce::String displayName = obj->getProperty("displayName");
-                juce::String category = obj->getProperty("category");
-                juce::String value = obj->getProperty("value");
-
-                FilterCategory filterCategory;
-                if (category == "Type")
-                    filterCategory = FilterCategory::Type;
-                else if (category == "Category")
-                    filterCategory = FilterCategory::Category;
-                else
-                    continue; // Skip invalid categories
-
-                filterOptions.add({displayName, filterCategory, value});
-            }
-        }
-    }
-}
-
-/**
- * @brief Updates the filter box state.
- *
- * Updates the current filter and refreshes the display
- * based on the selected filter.
- */
-void GearLibrary::updateFilterBox()
-{
-    // This method is now a no-op since we removed the filter box
-    // but we keep it for API compatibility
-    currentFilter = {FilterCategory::All, ""};
-    updateFilteredItems();
 }

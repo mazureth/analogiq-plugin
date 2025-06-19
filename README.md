@@ -8,7 +8,7 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
 - **Gear Library**: Browse and add gear from a comprehensive library of popular analog equipment
   - Hierarchical tree view for easy navigation
   - Search functionality
-  - Filter by type and category
+  - Search by name, manufacturer, category, and tags
   - Remote gear library with automatic updates
 - **Drag-and-Drop Interface**: Easily arrange gear in the rack via intuitive drag-and-drop
 - **Gear Controls**: Interactive controls for each piece of gear
