@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['gearcategory_0',['GearCategory',['../d2/d9a/_gear_item_8h.html#a7399b7fdb7d0d7011f384db9a47267dd',1,'GearItem.h']]],
-  ['geartype_1',['GearType',['../d2/d9a/_gear_item_8h.html#a77e0c5e3b198c001abd1e74890a16771',1,'GearItem.h']]]
+  ['itemtype_0',['ItemType',['../d6/dc0/class_gear_tree_item.html#a0985fbf51e0b3edb71ba7f86343cb03e',1,'GearTreeItem']]]
 ];

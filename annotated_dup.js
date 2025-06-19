@@ -4,7 +4,6 @@ var annotated_dup =
     [ "AnalogIQProcessor", "d5/d18/class_analog_i_q_processor.html", "d5/d18/class_analog_i_q_processor" ],
     [ "DraggableListBox", "d6/d30/class_draggable_list_box.html", "d6/d30/class_draggable_list_box" ],
     [ "DummyNetworkFetcher", "d6/dad/class_dummy_network_fetcher.html", "d6/dad/class_dummy_network_fetcher" ],
-    [ "FilterOption", "d1/d68/struct_filter_option.html", "d1/d68/struct_filter_option" ],
     [ "GearControl", "dc/d76/class_gear_control.html", "dc/d76/class_gear_control" ],
     [ "GearItem", "dd/dee/class_gear_item.html", "dd/dee/class_gear_item" ],
     [ "GearLibrary", "d5/d8c/class_gear_library.html", "d5/d8c/class_gear_library" ],

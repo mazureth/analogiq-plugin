@@ -14,10 +14,7 @@ var searchData=
   ['fetchknobimage_11',['fetchKnobImage',['../d0/dc7/class_rack.html#a79a2c9c6b634c62533bb73340c1f591e',1,'Rack']]],
   ['fetchschemaforgearitem_12',['fetchSchemaForGearItem',['../d0/dc7/class_rack.html#a52950c4ad2f1b075a3b3dfd70bc45353',1,'Rack']]],
   ['fetchswitchspritesheet_13',['fetchSwitchSpriteSheet',['../d0/dc7/class_rack.html#a9ab46a9d421779c4f036db37313c0c34',1,'Rack']]],
-  ['filtercategory_14',['FilterCategory',['../de/da8/_gear_library_8h.html#ad7e50da6071c603d9c84b8c41a80d77e',1,'GearLibrary.h']]],
-  ['filteroption_15',['FilterOption',['../d1/d68/struct_filter_option.html',1,'']]],
-  ['filteroptions_16',['filterOptions',['../d5/d8c/class_gear_library.html#a3be1d18170086564cdcc8a53e2901acf',1,'GearLibrary']]],
-  ['findcontrolatposition_17',['findControlAtPosition',['../dc/dde/class_rack_slot.html#ab15709c651bdd8a93eb9a32896227fd8',1,'RackSlot']]],
-  ['findnearestslot_18',['findNearestSlot',['../d0/dc7/class_rack.html#a6e406e2ad71ce489731812feaef68068',1,'Rack']]],
-  ['findparentrackcomponent_19',['findParentRackComponent',['../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28',1,'RackSlot']]]
+  ['findcontrolatposition_14',['findControlAtPosition',['../dc/dde/class_rack_slot.html#ab15709c651bdd8a93eb9a32896227fd8',1,'RackSlot']]],
+  ['findnearestslot_15',['findNearestSlot',['../d0/dc7/class_rack.html#a6e406e2ad71ce489731812feaef68068',1,'Rack']]],
+  ['findparentrackcomponent_16',['findParentRackComponent',['../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28',1,'RackSlot']]]
 ];

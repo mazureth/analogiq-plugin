@@ -136,8 +136,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae585caef1ac3fe8aa8a7e9277051a023"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the full array of gear items.  <br /></td></tr>
 <tr class="memitem:af112c469e6db0d314c11202cd33d0826" id="r_af112c469e6db0d314c11202cd33d0826"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af112c469e6db0d314c11202cd33d0826">loadLibraryAsync</a> ()</td></tr>
 <tr class="memdesc:af112c469e6db0d314c11202cd33d0826"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads the gear library data asynchronously.  <br /></td></tr>
-<tr class="memitem:accd2e28ac42f4e9ecb5019ca54685476" id="r_accd2e28ac42f4e9ecb5019ca54685476"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#accd2e28ac42f4e9ecb5019ca54685476">loadFiltersAsync</a> ()</td></tr>
-<tr class="memdesc:accd2e28ac42f4e9ecb5019ca54685476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads filter options asynchronously.  <br /></td></tr>
 <tr class="memitem:aa7b268a3a0caddde39aed00520a800e3" id="r_aa7b268a3a0caddde39aed00520a800e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa7b268a3a0caddde39aed00520a800e3">loadGearItemsAsync</a> ()</td></tr>
 <tr class="memdesc:aa7b268a3a0caddde39aed00520a800e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads gear items asynchronously.  <br /></td></tr>
 <tr class="memitem:a3d6d583b29b7daa9e159834bfeb18086" id="r_a3d6d583b29b7daa9e159834bfeb18086"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3d6d583b29b7daa9e159834bfeb18086">saveLibraryAsync</a> ()</td></tr>
@@ -153,28 +151,29 @@ Static Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:aecbf7ffd8229a58e22ca83eb74da2c01" id="r_aecbf7ffd8229a58e22ca83eb74da2c01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecbf7ffd8229a58e22ca83eb74da2c01">parseGearLibrary</a> (const juce::String &amp;jsonData)</td></tr>
-<tr class="memdesc:aecbf7ffd8229a58e22ca83eb74da2c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the gear library JSON data.  <br /></td></tr>
-<tr class="memitem:a6d807f71ddf79c254ac906a0cfce3de1" id="r_a6d807f71ddf79c254ac906a0cfce3de1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d807f71ddf79c254ac906a0cfce3de1">parseFilterOptions</a> (const juce::String &amp;jsonData)</td></tr>
-<tr class="memdesc:a6d807f71ddf79c254ac906a0cfce3de1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses filter options from JSON data.  <br /></td></tr>
-<tr class="memitem:a514b9975145b848827e18d843514bf49" id="r_a514b9975145b848827e18d843514bf49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a514b9975145b848827e18d843514bf49">updateFilterBox</a> ()</td></tr>
-<tr class="memdesc:a514b9975145b848827e18d843514bf49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the filter box state.  <br /></td></tr>
+<tr class="memdesc:aecbf7ffd8229a58e22ca83eb74da2c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the gear library data from JSON format.  <br /></td></tr>
 <tr class="memitem:a38f9c79cba66e4559ea5545fc9843922" id="r_a38f9c79cba66e4559ea5545fc9843922"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38f9c79cba66e4559ea5545fc9843922">shouldShowItem</a> (const <a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> &amp;item) const</td></tr>
-<tr class="memdesc:a38f9c79cba66e4559ea5545fc9843922"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if a gear item should be shown based on current filters.  <br /></td></tr>
+<tr class="memdesc:a38f9c79cba66e4559ea5545fc9843922"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if a gear item should be shown based on current search.  <br /></td></tr>
 <tr class="memitem:a5adc5749ef27eee5dc6116f9c2862e40" id="r_a5adc5749ef27eee5dc6116f9c2862e40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5adc5749ef27eee5dc6116f9c2862e40">updateFilteredItems</a> ()</td></tr>
 <tr class="memdesc:a5adc5749ef27eee5dc6116f9c2862e40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the filtered items in both list and tree views.  <br /></td></tr>
+<tr class="memitem:a65c6503f1cf09260961cdfedad8c7923" id="r_a65c6503f1cf09260961cdfedad8c7923"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65c6503f1cf09260961cdfedad8c7923">normalizeForSearch</a> (const juce::String &amp;text) const</td></tr>
+<tr class="memdesc:a65c6503f1cf09260961cdfedad8c7923"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes text for fuzzy search by removing ignored characters.  <br /></td></tr>
 <tr class="memitem:a8847365d71a3c1fb7d960e4db32e0cd0" id="r_a8847365d71a3c1fb7d960e4db32e0cd0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8847365d71a3c1fb7d960e4db32e0cd0">GearLibrary</a> (const <a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a> &amp;)=delete</td></tr>
 <tr class="memitem:acb1ee776414f7db6fc92fc83e69ce22f" id="r_acb1ee776414f7db6fc92fc83e69ce22f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb1ee776414f7db6fc92fc83e69ce22f">operator=</a> (const <a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a> &amp;)=delete</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-static-methods" class="groupheader"><a id="pri-static-methods" name="pri-static-methods"></a>
+Static Private Member Functions</h2></td></tr>
+<tr class="memitem:ab4d6e447aef17a0fbbde8e97e11185c3" id="r_ab4d6e447aef17a0fbbde8e97e11185c3"><td class="memItemLeft" align="right" valign="top">static juce::Array&lt; juce::juce_wchar &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4d6e447aef17a0fbbde8e97e11185c3">getIgnoredCharacters</a> ()</td></tr>
+<tr class="memdesc:ab4d6e447aef17a0fbbde8e97e11185c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the list of characters to ignore during search.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:af691084a39b97fadd3f111e960e80733" id="r_af691084a39b97fadd3f111e960e80733"><td class="memItemLeft" align="right" valign="top">juce::Label&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af691084a39b97fadd3f111e960e80733">titleLabel</a> {&quot;titleLabel&quot;, &quot;Gear Library&quot;}</td></tr>
 <tr class="memdesc:af691084a39b97fadd3f111e960e80733"><td class="mdescLeft">&#160;</td><td class="mdescRight">Title label for the library.  <br /></td></tr>
-<tr class="memitem:a7a7e443c9ec5aafc4852eedbd043b4e4" id="r_a7a7e443c9ec5aafc4852eedbd043b4e4"><td class="memItemLeft" align="right" valign="top">juce::TextEditor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a7e443c9ec5aafc4852eedbd043b4e4">searchBox</a></td></tr>
-<tr class="memdesc:a7a7e443c9ec5aafc4852eedbd043b4e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search box for filtering items.  <br /></td></tr>
 <tr class="memitem:ab92488c09168e4c3868d9dcffbff6663" id="r_ab92488c09168e4c3868d9dcffbff6663"><td class="memItemLeft" align="right" valign="top">juce::DrawableButton&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab92488c09168e4c3868d9dcffbff6663">refreshButton</a> {&quot;RefreshButton&quot;, juce::DrawableButton::ButtonStyle::ImageOnButtonBackground}</td></tr>
-<tr class="memdesc:ab92488c09168e4c3868d9dcffbff6663"><td class="mdescLeft">&#160;</td><td class="mdescRight">Button to refresh the library.  <br /></td></tr>
-<tr class="memitem:a3851e6784736aed1623e9ecd56ab4eb6" id="r_a3851e6784736aed1623e9ecd56ab4eb6"><td class="memItemLeft" align="right" valign="top">juce::DrawableButton&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3851e6784736aed1623e9ecd56ab4eb6">addUserGearButton</a> {&quot;AddUserGearButton&quot;, juce::DrawableButton::ButtonStyle::ImageOnButtonBackground}</td></tr>
-<tr class="memdesc:a3851e6784736aed1623e9ecd56ab4eb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Button to add custom gear.  <br /></td></tr>
+<tr class="memdesc:ab92488c09168e4c3868d9dcffbff6663"><td class="mdescLeft">&#160;</td><td class="mdescRight">Button to refresh the gear list.  <br /></td></tr>
+<tr class="memitem:a7a7e443c9ec5aafc4852eedbd043b4e4" id="r_a7a7e443c9ec5aafc4852eedbd043b4e4"><td class="memItemLeft" align="right" valign="top">juce::TextEditor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a7e443c9ec5aafc4852eedbd043b4e4">searchBox</a></td></tr>
+<tr class="memdesc:a7a7e443c9ec5aafc4852eedbd043b4e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Text box for searching gear items.  <br /></td></tr>
 <tr class="memitem:ae5d7c3ae141c254cef3e5966d8628b8e" id="r_ae5d7c3ae141c254cef3e5966d8628b8e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="../../d2/d9a/class_gear_list_box_model.html">GearListBoxModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5d7c3ae141c254cef3e5966d8628b8e">gearListModel</a></td></tr>
 <tr class="memdesc:ae5d7c3ae141c254cef3e5966d8628b8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Model for the legacy list box.  <br /></td></tr>
 <tr class="memitem:ac3d270c2c1cf04832831405a0ef41314" id="r_ac3d270c2c1cf04832831405a0ef41314"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="../../d6/d30/class_draggable_list_box.html">DraggableListBox</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3d270c2c1cf04832831405a0ef41314">gearListBox</a></td></tr>
@@ -185,12 +184,8 @@ Private Attributes</h2></td></tr>
 <tr class="memdesc:aedd74eb3421f26b4062cd377225fd961"><td class="mdescLeft">&#160;</td><td class="mdescRight">Root item of the tree view.  <br /></td></tr>
 <tr class="memitem:a00136cbdaf0497b292e10e2227f82f45" id="r_a00136cbdaf0497b292e10e2227f82f45"><td class="memItemLeft" align="right" valign="top">juce::Array&lt; <a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00136cbdaf0497b292e10e2227f82f45">gearItems</a></td></tr>
 <tr class="memdesc:a00136cbdaf0497b292e10e2227f82f45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array of all gear items.  <br /></td></tr>
-<tr class="memitem:a3be1d18170086564cdcc8a53e2901acf" id="r_a3be1d18170086564cdcc8a53e2901acf"><td class="memItemLeft" align="right" valign="top">juce::Array&lt; <a class="el" href="../../d1/d68/struct_filter_option.html">FilterOption</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3be1d18170086564cdcc8a53e2901acf">filterOptions</a></td></tr>
-<tr class="memdesc:a3be1d18170086564cdcc8a53e2901acf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Available filter options.  <br /></td></tr>
 <tr class="memitem:ac4fb0e9c12d423d50d7e2a36ced502d5" id="r_ac4fb0e9c12d423d50d7e2a36ced502d5"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac4fb0e9c12d423d50d7e2a36ced502d5">currentSearchText</a></td></tr>
 <tr class="memdesc:ac4fb0e9c12d423d50d7e2a36ced502d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current search text.  <br /></td></tr>
-<tr class="memitem:a0fd500fadfa89706679d96144915d2c1" id="r_a0fd500fadfa89706679d96144915d2c1"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="../../de/da8/_gear_library_8h.html#ad7e50da6071c603d9c84b8c41a80d77e">FilterCategory</a>, juce::String &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fd500fadfa89706679d96144915d2c1">currentFilter</a> {<a class="el" href="../../de/da8/_gear_library_8h.html#ad7e50da6071c603d9c84b8c41a80d77eab1c94ca2fbc3e78fc30069c8d0f01680">FilterCategory::All</a>, &quot;&quot;}</td></tr>
-<tr class="memdesc:a0fd500fadfa89706679d96144915d2c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current filter selection.  <br /></td></tr>
 <tr class="memitem:aee90af59a6e56a2e2e7fe4562bc74c10" id="r_aee90af59a6e56a2e2e7fe4562bc74c10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/dbe/class_i_network_fetcher.html">INetworkFetcher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee90af59a6e56a2e2e7fe4562bc74c10">fetcher</a></td></tr>
 <tr class="memdesc:aee90af59a6e56a2e2e7fe4562bc74c10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the network fetcher.  <br /></td></tr>
 </table>
@@ -198,7 +193,7 @@ Private Attributes</h2></td></tr>
 <div class="textblock"><p>Main class for managing and displaying audio gear items. </p>
 <p>The <a class="el" href="../../d5/d8c/class_gear_library.html" title="Main class for managing and displaying audio gear items.">GearLibrary</a> class provides a user interface for browsing, searching, and managing audio gear items. It supports both a legacy list view and a new hierarchical tree view. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00061">61</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00041">41</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aff4564190478eb1b53d0706bf3dff168" name="aff4564190478eb1b53d0706bf3dff168"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aff4564190478eb1b53d0706bf3dff168">&#9670;&#160;</a></span>GearLibrary() <span class="overload">[1/2]</span></h2>
@@ -239,7 +234,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">96</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00268">addUserGearButton</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00283">currentSearchText</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00299">fetcher</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00272">gearListBox</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00271">gearListModel</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00275">gearTreeView</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00531">loadLibraryAsync()</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00267">refreshButton</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00318">GearTreeItem::Root</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00276">rootItem</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00266">searchBox</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00265">titleLabel</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00324">updateFilteredItems()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00257">currentSearchText</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00274">fetcher</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00247">gearListBox</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00246">gearListModel</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00250">gearTreeView</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00537">loadLibraryAsync()</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00242">refreshButton</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00293">GearTreeItem::Root</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00251">rootItem</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00243">searchBox</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00241">titleLabel</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">updateFilteredItems()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="#a8847365d71a3c1fb7d960e4db32e0cd0">GearLibrary()</a>.</p>
 
@@ -271,9 +266,9 @@ Private Attributes</h2></td></tr>
 <p>Destructor for <a class="el" href="../../d5/d8c/class_gear_library.html" title="Main class for managing and displaying audio gear items.">GearLibrary</a>. </p>
 <p>Ensures proper cleanup of the tree view root item. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00188">188</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00170">170</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00275">gearTreeView</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00250">gearTreeView</a>.</p>
 
 </div>
 </div>
@@ -355,9 +350,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00786">786</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00768">768</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00038">Compressor</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00037">EQ</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00299">fetcher</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00279">gearItems</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00040">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00039">Preamp</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00024">Rack19Inch</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00023">Series500</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00038">Compressor</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00037">EQ</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00274">fetcher</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00254">gearItems</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00040">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00039">Preamp</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00024">Rack19Inch</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00251">rootItem</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00023">Series500</a>.</p>
 
 </div>
 </div>
@@ -391,7 +386,7 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>Processes clicks on the refresh and add user gear buttons.</p>
+<p>Processes clicks on the refresh button.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">button</td><td>Pointer to the clicked button </td></tr>
@@ -399,7 +394,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00839">839</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00821">821</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00537">loadLibraryAsync()</a>, and <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00242">refreshButton</a>.</p>
 
 </div>
 </div>
@@ -435,11 +432,11 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The full URL </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00206">206</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00181">181</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
 <p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00026">RemoteResources::ASSETS_PATH</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00022">RemoteResources::BASE_URL</a>, and <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00027">RemoteResources::SCHEMAS_PATH</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01558">Rack::fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00812">Rack::fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01196">Rack::fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01011">Rack::fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00431">Rack::fetchSchemaForGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01372">Rack::fetchSwitchSpriteSheet()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00020">GearItem::loadImage()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01558">Rack::fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00812">Rack::fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01196">Rack::fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01011">Rack::fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00431">Rack::fetchSchemaForGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01372">Rack::fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00549">loadGearItemsAsync()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00020">GearItem::loadImage()</a>.</p>
 
 </div>
 </div>
@@ -467,9 +464,41 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the gear item, or nullptr if index is invalid </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00746">746</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00728">728</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00276">rootItem</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00254">gearItems</a>.</p>
+
+</div>
+</div>
+<a id="ab4d6e447aef17a0fbbde8e97e11185c3" name="ab4d6e447aef17a0fbbde8e97e11185c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4d6e447aef17a0fbbde8e97e11185c3">&#9670;&#160;</a></span>getIgnoredCharacters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">juce::Array&lt; juce::juce_wchar &gt; GearLibrary::getIgnoredCharacters </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the list of characters to ignore during search. </p>
+<dl class="section return"><dt>Returns</dt><dd>Array of characters that should be ignored during fuzzy matching </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00221">221</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00247">normalizeForSearch()</a>.</p>
 
 </div>
 </div>
@@ -499,9 +528,9 @@ Private Attributes</h2></td></tr>
 <p>Gets the full array of gear items. </p>
 <dl class="section return"><dt>Returns</dt><dd>Constant reference to the array of gear items </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00168">168</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00148">148</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00279">gearItems</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00254">gearItems</a>.</p>
 
 </div>
 </div>
@@ -523,9 +552,9 @@ Private Attributes</h2></td></tr>
 <p>Gets the number of rows in the gear list. </p>
 <dl class="section return"><dt>Returns</dt><dd>The total number of gear items in the library </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00450">450</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00456">456</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00279">gearItems</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00254">gearItems</a>.</p>
 
 </div>
 </div>
@@ -557,9 +586,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00508">508</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00514">514</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00272">gearListBox</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00247">gearListBox</a>.</p>
 
 </div>
 </div>
@@ -591,29 +620,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00521">521</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
-
-</div>
-</div>
-<a id="accd2e28ac42f4e9ecb5019ca54685476" name="accd2e28ac42f4e9ecb5019ca54685476"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#accd2e28ac42f4e9ecb5019ca54685476">&#9670;&#160;</a></span>loadFiltersAsync()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void GearLibrary::loadFiltersAsync </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Loads filter options asynchronously. </p>
-<p>Fetches filter options from a remote source or uses fallback data if the remote source is unavailable. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00544">544</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00527">527</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
 </div>
 </div>
@@ -635,9 +642,11 @@ Private Attributes</h2></td></tr>
 <p>Loads gear items asynchronously. </p>
 <p>Fetches gear items from a remote source or uses fallback data if the remote source is unavailable. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00567">567</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00549">549</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00531">loadLibraryAsync()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00274">fetcher</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00181">getFullUrl()</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00025">RemoteResources::LIBRARY_PATH</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00577">parseGearLibrary()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00537">loadLibraryAsync()</a>.</p>
 
 </div>
 </div>
@@ -657,13 +666,13 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Loads the gear library data asynchronously. </p>
-<p>Initiates both filter and gear item loading operations in parallel. </p>
+<p>Initiates gear item loading operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00531">531</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00537">537</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00567">loadGearItemsAsync()</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00549">loadGearItemsAsync()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00821">buttonClicked()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>.</p>
 
 </div>
 </div>
@@ -698,9 +707,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00759">759</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00279">gearItems</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00741">741</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
 </div>
 </div>
@@ -735,7 +742,47 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00770">770</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00752">752</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a65c6503f1cf09260961cdfedad8c7923" name="a65c6503f1cf09260961cdfedad8c7923"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65c6503f1cf09260961cdfedad8c7923">&#9670;&#160;</a></span>normalizeForSearch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">juce::String GearLibrary::normalizeForSearch </td>
+          <td>(</td>
+          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>text</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Normalizes text for fuzzy search by removing ignored characters. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">text</td><td>The text to normalize </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The normalized text (lowercase with ignored characters removed) </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00247">247</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00221">getIgnoredCharacters()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00274">shouldShowItem()</a>.</p>
 
 </div>
 </div>
@@ -795,7 +842,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00199">199</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00181">181</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
 </div>
 </div>
@@ -845,51 +892,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00464">464</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00470">470</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00279">gearItems</a>.</p>
-
-</div>
-</div>
-<a id="a6d807f71ddf79c254ac906a0cfce3de1" name="a6d807f71ddf79c254ac906a0cfce3de1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6d807f71ddf79c254ac906a0cfce3de1">&#9670;&#160;</a></span>parseFilterOptions()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void GearLibrary::parseFilterOptions </td>
-          <td>(</td>
-          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>jsonData</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Parses filter options from JSON data. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">jsonData</td><td>The JSON string containing filter options</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Processes JSON data containing filter options and populates the filter options list.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">jsonData</td><td>The JSON string containing filter options </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00859">859</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00254">gearItems</a>.</p>
 
 </div>
 </div>
@@ -916,7 +921,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Parses the gear library JSON data. </p>
+<p>Parses the gear library data from JSON format. </p>
+<p>Parses the gear library JSON data.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">jsonData</td><td>The JSON string containing gear library data</td></tr>
@@ -931,7 +937,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00595">595</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00577">577</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00026">RemoteResources::ASSETS_PATH</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00038">Compressor</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00037">EQ</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00274">fetcher</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00254">gearItems</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00020">GearItem::loadImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00026">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00039">Preamp</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00024">Rack19Inch</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00251">rootItem</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00027">RemoteResources::SCHEMAS_PATH</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00023">Series500</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00025">UserCreated</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00549">loadGearItemsAsync()</a>.</p>
 
 </div>
 </div>
@@ -970,7 +980,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The component to display for the row, or nullptr if using default painting </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00496">496</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00502">502</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
 </div>
 </div>
@@ -1000,9 +1010,9 @@ Private Attributes</h2></td></tr>
 <p>Handles resizing of the <a class="el" href="../../d5/d8c/class_gear_library.html" title="Main class for managing and displaying audio gear items.">GearLibrary</a> component. </p>
 <p>Updates the bounds of all child components based on the new size. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00209">209</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00191">191</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00268">addUserGearButton</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00272">gearListBox</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00275">gearTreeView</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00267">refreshButton</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00266">searchBox</a>, and <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00265">titleLabel</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00247">gearListBox</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00250">gearTreeView</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00242">refreshButton</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00243">searchBox</a>, and <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00241">titleLabel</a>.</p>
 
 </div>
 </div>
@@ -1024,9 +1034,7 @@ Private Attributes</h2></td></tr>
 <p>Saves the gear library data asynchronously. </p>
 <p>Initiates an asynchronous save operation for the current library state. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00822">822</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00276">rootItem</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00804">804</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
 </div>
 </div>
@@ -1053,7 +1061,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Determines if a gear item should be shown based on current filters. </p>
+<p>Determines if a gear item should be shown based on current search. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">item</td><td>The gear item to check </td></tr>
@@ -1061,7 +1069,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the item should be shown</dd></dl>
-<p>Checks both search text and category/type filters to determine if an item should be visible in the current view.</p>
+<p>Checks search text to determine if an item should be visible in the current view. Uses fuzzy matching to ignore common separators and special characters.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">item</td><td>The gear item to check </td></tr>
@@ -1070,41 +1078,11 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the item should be shown </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00244">244</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00274">274</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00035">All</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00037">Category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00413">GearItem::category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00418">GearItem::categoryString</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00038">Compressor</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00284">currentFilter</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00283">currentSearchText</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00037">EQ</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00411">GearItem::manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00410">GearItem::name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00040">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00039">Preamp</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00024">Rack19Inch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00023">Series500</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00419">GearItem::tags</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00036">Type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00412">GearItem::type</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00025">UserCreated</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00418">GearItem::categoryString</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00257">currentSearchText</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00411">GearItem::manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00410">GearItem::name</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00247">normalizeForSearch()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00419">GearItem::tags</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00324">updateFilteredItems()</a>.</p>
-
-</div>
-</div>
-<a id="a514b9975145b848827e18d843514bf49" name="a514b9975145b848827e18d843514bf49"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a514b9975145b848827e18d843514bf49">&#9670;&#160;</a></span>updateFilterBox()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void GearLibrary::updateFilterBox </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Updates the filter box state. </p>
-<p>Updates the current filter and refreshes the display based on the selected filter. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00903">903</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">updateFilteredItems()</a>.</p>
 
 </div>
 </div>
@@ -1132,73 +1110,17 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Updates the filtered items in both list and tree views. </p>
-<p>Refreshes the display of items based on current search and filter criteria. </p>
+<p>Refreshes the display of items based on current search criteria. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00324">324</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">330</a> of file <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html">GearLibrary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00283">currentSearchText</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00279">gearItems</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00272">gearListBox</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00275">gearTreeView</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00276">rootItem</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00244">shouldShowItem()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00294">GearTreeItem::Category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00038">Compressor</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00257">currentSearchText</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00037">EQ</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00296">GearTreeItem::Gear</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00254">gearItems</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00247">gearListBox</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00250">gearTreeView</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00040">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00039">Preamp</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00251">rootItem</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00274">shouldShowItem()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="a3851e6784736aed1623e9ecd56ab4eb6" name="a3851e6784736aed1623e9ecd56ab4eb6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3851e6784736aed1623e9ecd56ab4eb6">&#9670;&#160;</a></span>addUserGearButton</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">juce::DrawableButton GearLibrary::addUserGearButton {&quot;AddUserGearButton&quot;, juce::DrawableButton::ButtonStyle::ImageOnButtonBackground}</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Button to add custom gear. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00268">268</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00209">resized()</a>.</p>
-
-</div>
-</div>
-<a id="a0fd500fadfa89706679d96144915d2c1" name="a0fd500fadfa89706679d96144915d2c1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0fd500fadfa89706679d96144915d2c1">&#9670;&#160;</a></span>currentFilter</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::pair&lt;<a class="el" href="../../de/da8/_gear_library_8h.html#ad7e50da6071c603d9c84b8c41a80d77e">FilterCategory</a>, juce::String&gt; GearLibrary::currentFilter {<a class="el" href="../../de/da8/_gear_library_8h.html#ad7e50da6071c603d9c84b8c41a80d77eab1c94ca2fbc3e78fc30069c8d0f01680">FilterCategory::All</a>, &quot;&quot;}</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Current filter selection. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00284">284</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00244">shouldShowItem()</a>.</p>
-
-</div>
-</div>
 <a id="ac4fb0e9c12d423d50d7e2a36ced502d5" name="ac4fb0e9c12d423d50d7e2a36ced502d5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac4fb0e9c12d423d50d7e2a36ced502d5">&#9670;&#160;</a></span>currentSearchText</h2>
 
@@ -1221,9 +1143,9 @@ Private Attributes</h2></td></tr>
 
 <p>Current search text. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00283">283</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00257">257</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00244">shouldShowItem()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00324">updateFilteredItems()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00274">shouldShowItem()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">updateFilteredItems()</a>.</p>
 
 </div>
 </div>
@@ -1249,35 +1171,9 @@ Private Attributes</h2></td></tr>
 
 <p>Reference to the network fetcher. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00299">299</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00274">274</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00786">addItem()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>.</p>
-
-</div>
-</div>
-<a id="a3be1d18170086564cdcc8a53e2901acf" name="a3be1d18170086564cdcc8a53e2901acf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3be1d18170086564cdcc8a53e2901acf">&#9670;&#160;</a></span>filterOptions</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">juce::Array&lt;<a class="el" href="../../d1/d68/struct_filter_option.html">FilterOption</a>&gt; GearLibrary::filterOptions</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Available filter options. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00280">280</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00768">addItem()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00549">loadGearItemsAsync()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00577">parseGearLibrary()</a>.</p>
 
 </div>
 </div>
@@ -1303,9 +1199,9 @@ Private Attributes</h2></td></tr>
 
 <p>Array of all gear items. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00279">279</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00254">254</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00786">addItem()</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00168">getItems()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00450">getNumRows()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00759">mouseDown()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00464">paintListBoxItem()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00324">updateFilteredItems()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00768">addItem()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00728">getGearItem()</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00148">getItems()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00456">getNumRows()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00470">paintListBoxItem()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00577">parseGearLibrary()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">updateFilteredItems()</a>.</p>
 
 </div>
 </div>
@@ -1331,9 +1227,9 @@ Private Attributes</h2></td></tr>
 
 <p>Legacy list box component. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00272">272</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00247">247</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00508">listBoxItemClicked()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00209">resized()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00324">updateFilteredItems()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00514">listBoxItemClicked()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00191">resized()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">updateFilteredItems()</a>.</p>
 
 </div>
 </div>
@@ -1359,7 +1255,7 @@ Private Attributes</h2></td></tr>
 
 <p>Model for the legacy list box. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00271">271</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00246">246</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>.</p>
 
@@ -1387,9 +1283,9 @@ Private Attributes</h2></td></tr>
 
 <p>Tree view for hierarchical display. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00275">275</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00250">250</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00209">resized()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00324">updateFilteredItems()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00188">~GearLibrary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00191">resized()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">updateFilteredItems()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00170">~GearLibrary()</a>.</p>
 
 </div>
 </div>
@@ -1413,11 +1309,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Button to refresh the library. </p>
+<p>Button to refresh the gear list. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00267">267</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00242">242</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00209">resized()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00821">buttonClicked()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00191">resized()</a>.</p>
 
 </div>
 </div>
@@ -1443,9 +1339,9 @@ Private Attributes</h2></td></tr>
 
 <p>Root item of the tree view. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00276">276</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00251">251</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00746">getGearItem()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00822">saveLibraryAsync()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00324">updateFilteredItems()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00768">addItem()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00577">parseGearLibrary()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">updateFilteredItems()</a>.</p>
 
 </div>
 </div>
@@ -1469,11 +1365,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Search box for filtering items. </p>
+<p>Text box for searching gear items. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00266">266</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00243">243</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00209">resized()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00191">resized()</a>.</p>
 
 </div>
 </div>
@@ -1499,9 +1395,9 @@ Private Attributes</h2></td></tr>
 
 <p>Title label for the library. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00265">265</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00241">241</a> of file <a class="el" href="../../de/da8/_gear_library_8h_source.html">GearLibrary.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00209">resized()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00096">GearLibrary()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00191">resized()</a>.</p>
 
 </div>
 </div>

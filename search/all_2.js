@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['category_0',['Category',['../d6/dc0/class_gear_tree_item.html#a0985fbf51e0b3edb71ba7f86343cb03ea3adbdb3ac060038aa0e6e6c138ef9873',1,'GearTreeItem::Category'],['../de/da8/_gear_library_8h.html#ad7e50da6071c603d9c84b8c41a80d77ea3adbdb3ac060038aa0e6e6c138ef9873',1,'Category:&#160;GearLibrary.h']]],
-  ['category_1',['category',['../dd/dee/class_gear_item.html#a1d5c172dac42879dcdaf992c1f83cf73',1,'GearItem::category'],['../d1/d68/struct_filter_option.html#a10d071647843413f4b3821a09fec02b9',1,'FilterOption::category']]],
+  ['category_0',['Category',['../d6/dc0/class_gear_tree_item.html#a0985fbf51e0b3edb71ba7f86343cb03ea3adbdb3ac060038aa0e6e6c138ef9873',1,'GearTreeItem']]],
+  ['category_1',['category',['../dd/dee/class_gear_item.html#a1d5c172dac42879dcdaf992c1f83cf73',1,'GearItem']]],
   ['categorystring_2',['categoryString',['../dd/dee/class_gear_item.html#a16a0e2127c7c76834c5233711179d03a',1,'GearItem']]],
   ['changeprogramname_3',['changeProgramName',['../d5/d18/class_analog_i_q_processor.html#a36b6d062327108f24bdc87b30b8dffc5',1,'AnalogIQProcessor']]],
   ['cleargearitem_4',['clearGearItem',['../dc/dde/class_rack_slot.html#ac86e2c0b7ccc78375316a5fa726793b9',1,'RackSlot']]],
@@ -13,8 +13,7 @@ var searchData=
   ['createplaceholderimage_10',['createPlaceholderImage',['../dd/dee/class_gear_item.html#a108b7a8405950b4eea1ee1a275c9c5a0',1,'GearItem']]],
   ['createpluginfilter_11',['createPluginFilter',['../df/dd5/_plugin_processor_8cpp.html#a3edfa635b1fe1f805b544718ce61e094',1,'PluginProcessor.cpp']]],
   ['currentfaceplatescale_12',['currentFaceplateScale',['../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c',1,'RackSlot']]],
-  ['currentfilter_13',['currentFilter',['../d5/d8c/class_gear_library.html#a0fd500fadfa89706679d96144915d2c1',1,'GearLibrary']]],
-  ['currentindex_14',['currentIndex',['../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b',1,'GearControl']]],
-  ['currentsearchtext_15',['currentSearchText',['../d5/d8c/class_gear_library.html#ac4fb0e9c12d423d50d7e2a36ced502d5',1,'GearLibrary']]],
-  ['currentstepindex_16',['currentStepIndex',['../dc/d76/class_gear_control.html#ab2b447b372cecaa1f116c8bcdbe14cb3',1,'GearControl']]]
+  ['currentindex_13',['currentIndex',['../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b',1,'GearControl']]],
+  ['currentsearchtext_14',['currentSearchText',['../d5/d8c/class_gear_library.html#ac4fb0e9c12d423d50d7e2a36ced502d5',1,'GearLibrary']]],
+  ['currentstepindex_15',['currentStepIndex',['../dc/d76/class_gear_control.html#ab2b447b372cecaa1f116c8bcdbe14cb3',1,'GearControl']]]
 ];

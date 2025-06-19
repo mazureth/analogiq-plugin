@@ -21,7 +21,6 @@ var hierarchy =
       [ "Rack", "d0/dc7/class_rack.html", null ],
       [ "RackSlot", "dc/dde/class_rack_slot.html", null ]
     ] ],
-    [ "FilterOption", "d1/d68/struct_filter_option.html", null ],
     [ "GearControl", "dc/d76/class_gear_control.html", null ],
     [ "GearItem", "dd/dee/class_gear_item.html", null ],
     [ "INetworkFetcher", "d0/dbe/class_i_network_fetcher.html", [
