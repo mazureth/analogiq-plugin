@@ -27,26 +27,6 @@ namespace RemoteResources
     const juce::String SCHEMAS_PATH = "units/";
 }
 
-/**
- * @brief Enumeration of filter categories for gear items.
- */
-enum class FilterCategory
-{
-    All,     ///< Show all items
-    Type,    ///< Filter by gear type
-    Category ///< Filter by gear category
-};
-
-/**
- * @brief Structure representing a filter option in the gear library.
- */
-struct FilterOption
-{
-    juce::String displayName; ///< User-friendly name for the filter
-    FilterCategory category;  ///< Category of the filter
-    juce::String value;       ///< Value to filter by
-};
-
 // Forward declarations
 class GearListBoxModel;
 class GearTreeItem;
@@ -173,11 +153,6 @@ public:
     void loadLibraryAsync();
 
     /**
-     * @brief Loads filter options asynchronously.
-     */
-    void loadFiltersAsync();
-
-    /**
      * @brief Loads gear items asynchronously.
      */
     void loadGearItemsAsync();
@@ -243,48 +218,14 @@ public:
 
 private:
     /**
-     * @brief Parses the gear library JSON data.
+     * @brief Parses the gear library data from JSON format.
      *
      * @param jsonData The JSON string containing gear library data
      */
     void parseGearLibrary(const juce::String &jsonData);
 
     /**
-     * @brief Parses filter options from JSON data.
-     *
-     * @param jsonData The JSON string containing filter options
-     */
-    void parseFilterOptions(const juce::String &jsonData);
-
-    /**
-     * @brief Updates the filter box state.
-     */
-    void updateFilterBox();
-
-    // UI components
-    juce::Label titleLabel{"titleLabel", "Gear Library"};                                                                    ///< Title label for the library
-    juce::TextEditor searchBox;                                                                                              ///< Search box for filtering items
-    juce::DrawableButton refreshButton{"RefreshButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground};         ///< Button to refresh the library
-    juce::DrawableButton addUserGearButton{"AddUserGearButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground}; ///< Button to add custom gear
-
-    // List box components (for legacy support)
-    std::unique_ptr<GearListBoxModel> gearListModel; ///< Model for the legacy list box
-    std::unique_ptr<DraggableListBox> gearListBox;   ///< Legacy list box component
-
-    // TreeView components (new hierarchical view)
-    std::unique_ptr<juce::TreeView> gearTreeView; ///< Tree view for hierarchical display
-    std::unique_ptr<GearTreeItem> rootItem;       ///< Root item of the tree view
-
-    // Data
-    juce::Array<GearItem> gearItems;         ///< Array of all gear items
-    juce::Array<FilterOption> filterOptions; ///< Available filter options
-
-    // Filter state
-    juce::String currentSearchText;                                                 ///< Current search text
-    std::pair<FilterCategory, juce::String> currentFilter{FilterCategory::All, ""}; ///< Current filter selection
-
-    /**
-     * @brief Determines if a gear item should be shown based on current filters.
+     * @brief Determines if a gear item should be shown based on current search.
      *
      * @param item The gear item to check
      * @return true if the item should be shown
@@ -295,6 +236,40 @@ private:
      * @brief Updates the filtered items in both list and tree views.
      */
     void updateFilteredItems();
+
+    // UI components
+    juce::Label titleLabel{"titleLabel", "Gear Library"};                                                            ///< Title label for the library
+    juce::DrawableButton refreshButton{"RefreshButton", juce::DrawableButton::ButtonStyle::ImageOnButtonBackground}; ///< Button to refresh the gear list
+    juce::TextEditor searchBox;                                                                                      ///< Text box for searching gear items
+
+    // List box components (for legacy support)
+    std::unique_ptr<GearListBoxModel> gearListModel; ///< Model for the legacy list box
+    std::unique_ptr<DraggableListBox> gearListBox;   ///< Legacy list box component
+
+    // TreeView components (new hierarchical view)
+    std::unique_ptr<juce::TreeView> gearTreeView; ///< Tree view for hierarchical display
+    std::unique_ptr<GearTreeItem> rootItem;       ///< Root item of the tree view
+
+    // Data
+    juce::Array<GearItem> gearItems; ///< Array of all gear items
+
+    // Search state
+    juce::String currentSearchText; ///< Current search text
+
+    /**
+     * @brief Normalizes text for fuzzy search by removing ignored characters.
+     *
+     * @param text The text to normalize
+     * @return The normalized text (lowercase with ignored characters removed)
+     */
+    juce::String normalizeForSearch(const juce::String &text) const;
+
+    /**
+     * @brief Gets the list of characters to ignore during search.
+     *
+     * @return Array of characters that should be ignored during fuzzy matching
+     */
+    static juce::Array<juce::juce_wchar> getIgnoredCharacters();
 
     INetworkFetcher &fetcher; ///< Reference to the network fetcher
 

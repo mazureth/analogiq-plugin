@@ -1403,6 +1403,28 @@ void RackSlot::clearGearItem()
     gearItem = nullptr;
     updateButtonStates(); // Update button states when gear is removed
     repaint();            // Trigger repaint to update
+
+    // Trigger re-layout of parent rack to resize slot back to default height
+    juce::Component *parentComponent = findParentRackComponent();
+    if (parentComponent != nullptr)
+    {
+        if (parentComponent->getComponentID() == "Rack")
+        {
+            Rack *parentRack = dynamic_cast<Rack *>(parentComponent);
+            if (parentRack != nullptr)
+            {
+                parentRack->resized();
+            }
+        }
+        else if (parentComponent->getComponentID() == "RackContainer")
+        {
+            auto *container = dynamic_cast<Rack::RackContainer *>(parentComponent);
+            if (container != nullptr && container->rack != nullptr)
+            {
+                container->rack->resized();
+            }
+        }
+    }
 }
 
 /**

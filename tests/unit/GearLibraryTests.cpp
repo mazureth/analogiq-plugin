@@ -205,7 +205,7 @@ public:
             GearLibrary library(mockFetcher);
             library.loadLibraryAsync();
 
-            // Wait for both async operations to complete (filters + gear items)
+            // Wait for async operation to complete
             juce::Thread::sleep(100);
 
             expect(library.getItems().isEmpty(), "Library should be empty after failed load");
