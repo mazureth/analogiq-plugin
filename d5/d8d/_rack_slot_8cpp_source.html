@@ -1070,349 +1070,408 @@ $(function(){initNavTree('d5/d8d/_rack_slot_8cpp_source.html','../../',''); });
 <div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span>        <span class="keywordtype">int</span> x = faceplateArea.getX() + (int)(control.position.getX() * faceplateArea.getWidth());</div>
 <div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span>        <span class="keywordtype">int</span> y = faceplateArea.getY() + (int)(control.position.getY() * faceplateArea.getHeight());</div>
 <div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span> </div>
-<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span>        <span class="comment">// Adjust size based on control type</span></div>
-<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span>        <span class="keywordtype">int</span> width, height;</div>
-<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span>        <span class="keywordflow">switch</span> (control.type)</div>
-<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span>        {</div>
-<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="../../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521abbc155fb2b111bf61c4f5ff892915e6b">GearControl::Type::Switch</a>:</div>
-<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span>            width = 30;</div>
-<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span>            height = 60;</div>
-<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span>            <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="../../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521a87b7760f14fbff78d8819291f36ab9a0">GearControl::Type::Button</a>:</div>
-<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span>            width = height = 30;</div>
-<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span>            <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="../../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521ae2ab411666fc635dd5d29fd5e143d4ef">GearControl::Type::Fader</a>:</div>
-<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span>        {</div>
-<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> isVertical = control.orientation == <span class="stringliteral">&quot;vertical&quot;</span>;</div>
-<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> faderLength = control.length * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
-<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> faderWidth = 20.0f * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
-<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> handleSize = 10.0f * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
-<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span> </div>
-<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span>            <span class="comment">// Calculate handle position based on current value</span></div>
-<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span>            <span class="keywordtype">float</span> handleX, handleY;</div>
-<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span>            <span class="keywordflow">if</span> (isVertical)</div>
-<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span>            {</div>
-<div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span>                handleX = x;</div>
-<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span>                handleY = y + (1.0f - control.value) * faderLength;</div>
-<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span>            }</div>
-<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span>            {</div>
-<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span>                handleX = x + control.value * faderLength;</div>
-<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span>                handleY = y;</div>
-<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span>            }</div>
-<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span> </div>
-<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span>            <span class="comment">// Create handle bounds</span></div>
-<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span>            juce::Rectangle&lt;float&gt; handleBounds(</div>
-<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span>                handleX - handleSize / 2,</div>
-<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span>                handleY - handleSize / 2,</div>
-<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>                isVertical ? faderWidth + handleSize : handleSize,</div>
-<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>                isVertical ? handleSize : faderWidth + handleSize);</div>
+<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span>        <span class="comment">// Calculate actual rendered bounds based on control type</span></div>
+<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span>        juce::Rectangle&lt;float&gt; controlBounds;</div>
+<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span> </div>
+<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span>        <span class="keywordflow">switch</span> (control.type)</div>
+<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span>        {</div>
+<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="../../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521abbc155fb2b111bf61c4f5ff892915e6b">GearControl::Type::Switch</a>:</div>
+<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span>        {</div>
+<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span>            <span class="keywordflow">if</span> (control.switchSpriteSheet.isValid() &amp;&amp; control.switchFrames.size() &gt; 0)</div>
+<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>            {</div>
+<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span>                <span class="comment">// Use sprite frame dimensions (same as drawing)</span></div>
+<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span>                <span class="keywordtype">int</span> currentIndex = control.currentIndex;</div>
+<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>                <span class="keywordflow">if</span> (currentIndex &gt;= control.switchFrames.size())</div>
+<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span>                    currentIndex = 0;</div>
+<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span> </div>
+<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span>                <span class="keyword">const</span> <span class="keyword">auto</span> &amp;frame = control.switchFrames[currentIndex];</div>
+<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span>                <span class="keywordtype">float</span> scaledFrameWidth = frame.width * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span>                <span class="keywordtype">float</span> scaledFrameHeight = frame.height * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span>                controlBounds = juce::Rectangle&lt;float&gt;(x, y, scaledFrameWidth, scaledFrameHeight);</div>
+<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span>            }</div>
+<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span>            {</div>
+<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span>                <span class="comment">// Fallback to basic dimensions (same as drawing)</span></div>
+<div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> switchWidth = 30;</div>
+<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> switchHeight = 60;</div>
+<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span>                controlBounds = juce::Rectangle&lt;float&gt;(x, y, switchWidth, switchHeight);</div>
+<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span>            }</div>
+<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span>        }</div>
+<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span> </div>
+<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="../../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521a87b7760f14fbff78d8819291f36ab9a0">GearControl::Type::Button</a>:</div>
+<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span>        {</div>
+<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span>            <span class="keywordflow">if</span> (control.buttonSpriteSheet.isValid() &amp;&amp; control.buttonFrames.size() &gt; 0)</div>
+<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span>            {</div>
+<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span>                <span class="comment">// Use sprite frame dimensions (same as drawing)</span></div>
+<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span>                <span class="keywordtype">int</span> frameIndex = control.currentIndex;</div>
+<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>                <span class="keywordflow">if</span> (frameIndex &gt;= control.buttonFrames.size())</div>
+<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>                    frameIndex = 0;</div>
 <div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span> </div>
-<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>            <span class="comment">// Check if click is within handle bounds</span></div>
-<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>            <span class="keywordflow">if</span> (handleBounds.contains(position))</div>
-<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>                <span class="keywordflow">return</span> &amp;control;</div>
-<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>            <span class="keywordflow">continue</span>; <span class="comment">// Skip to next control if not clicking handle</span></div>
-<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>        }</div>
-<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="../../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521a848c38c91fcb0189d65c35746c884e36">GearControl::Type::Knob</a>:</div>
-<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span>            width = height = 40;</div>
-<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>            <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span>        <span class="keywordflow">default</span>:</div>
-<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span>            width = height = 40;</div>
-<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>        }</div>
-<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span> </div>
-<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>        juce::Rectangle&lt;int&gt; controlBounds(x, y, width, height);</div>
-<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>        <span class="keywordflow">if</span> (controlBounds.contains(position.toInt()))</div>
-<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>            <span class="keywordflow">return</span> &amp;control;</div>
-<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>    }</div>
-<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span> </div>
-<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>}</div>
+<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>                <span class="keyword">const</span> <span class="keyword">auto</span> &amp;frame = control.buttonFrames[frameIndex];</div>
+<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>                <span class="keywordtype">float</span> scaledFrameWidth = frame.width * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>                <span class="keywordtype">float</span> scaledFrameHeight = frame.height * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>                controlBounds = juce::Rectangle&lt;float&gt;(x, y, scaledFrameWidth, scaledFrameHeight);</div>
+<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>            }</div>
+<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span>            {</div>
+<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>                <span class="comment">// Fallback to basic dimensions (same as drawing)</span></div>
+<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> buttonWidth = 30.0f * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> buttonHeight = 30.0f * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>                controlBounds = juce::Rectangle&lt;float&gt;(x, y, buttonWidth, buttonHeight);</div>
+<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span>            }</div>
+<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>        }</div>
+<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span> </div>
+<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="../../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521ae2ab411666fc635dd5d29fd5e143d4ef">GearControl::Type::Fader</a>:</div>
+<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span>        {</div>
+<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>            <span class="comment">// Use the same handle calculation logic as drawing</span></div>
+<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> isVertical = control.orientation == <span class="stringliteral">&quot;vertical&quot;</span>;</div>
+<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> faderLength = control.length * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> faderWidth = 20.0f * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> handleSize = 10.0f * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span> </div>
+<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>            <span class="comment">// Calculate handle position (same as drawing)</span></div>
+<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>            <span class="keywordtype">float</span> handleX, handleY;</div>
+<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span>            <span class="keywordflow">if</span> (isVertical)</div>
+<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>            {</div>
+<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span>                handleX = x;</div>
+<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>                handleY = y + (1.0f - control.value) * faderLength;</div>
+<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>            }</div>
+<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>            {</div>
+<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>                handleX = x + control.value * faderLength;</div>
+<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>                handleY = y;</div>
+<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>            }</div>
+<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span> </div>
+<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span>            <span class="comment">// Create handle bounds (same as drawing)</span></div>
+<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>            controlBounds = juce::Rectangle&lt;float&gt;(</div>
+<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>                handleX - handleSize / 2,</div>
+<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span>                handleY - handleSize / 2,</div>
+<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span>                isVertical ? faderWidth + handleSize : handleSize,</div>
+<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>                isVertical ? handleSize : faderWidth + handleSize);</div>
+<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>        }</div>
+<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span> </div>
+<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="../../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521a848c38c91fcb0189d65c35746c884e36">GearControl::Type::Knob</a>:</div>
+<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>        {</div>
+<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>            <span class="comment">// Use the same logic as drawKnob() to calculate knob size</span></div>
+<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>            <span class="keywordtype">float</span> knobSize;</div>
+<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>            <span class="keywordflow">if</span> (control.loadedImage.isValid())</div>
+<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>            {</div>
+<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>                <span class="comment">// Use the original image dimensions as the base size (same as drawing)</span></div>
+<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span>                <span class="keywordtype">float</span> originalWidth = (float)control.loadedImage.getWidth();</div>
+<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>                <span class="keywordtype">float</span> originalHeight = (float)control.loadedImage.getHeight();</div>
+<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>                <span class="comment">// Use the larger dimension to ensure the knob is properly sized</span></div>
+<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>                knobSize = std::max(originalWidth, originalHeight) * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>            }</div>
+<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>            {</div>
+<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>                <span class="comment">// Fallback to standard size if no image (same as drawing)</span></div>
+<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> baseKnobSize = 40.0f;</div>
+<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>                knobSize = baseKnobSize * <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">currentFaceplateScale</a>;</div>
+<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span>            }</div>
+<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>            controlBounds = juce::Rectangle&lt;float&gt;(x, y, knobSize, knobSize);</div>
+<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>        }</div>
+<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span> </div>
+<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>        <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>            controlBounds = juce::Rectangle&lt;float&gt;(x, y, 40, 40);</div>
+<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>        }</div>
+<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span> </div>
+<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>        <span class="comment">// Check if position is within the actual rendered bounds</span></div>
+<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>        <span class="keywordflow">if</span> (controlBounds.contains(position))</div>
+<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span>            <span class="keywordflow">return</span> &amp;control;</div>
+<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>    }</div>
+<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span> </div>
+<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>}</div>
 </div>
-<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span></div>
-<div class="foldopen" id="foldopen01151" data-start="{" data-end="}">
-<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a26ea927ff55b10dbea7edcc699fb29ee"> 1151</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a26ea927ff55b10dbea7edcc699fb29ee">RackSlot::handleSwitchInteraction</a>(<a class="code hl_class" href="../../dc/d76/class_gear_control.html">GearControl</a> &amp;control)</div>
-<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>{</div>
-<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>    <span class="comment">// Toggle between options</span></div>
-<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>    control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> = (control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> + 1) % control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7b4a8b268df7e97485af54cdee0cbb83">options</a>.size();</div>
-<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>    control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> = (float)control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a>; <span class="comment">// Simply use the index as the value</span></div>
-<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>}</div>
+<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span></div>
+<div class="foldopen" id="foldopen01210" data-start="{" data-end="}">
+<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a26ea927ff55b10dbea7edcc699fb29ee"> 1210</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a26ea927ff55b10dbea7edcc699fb29ee">RackSlot::handleSwitchInteraction</a>(<a class="code hl_class" href="../../dc/d76/class_gear_control.html">GearControl</a> &amp;control)</div>
+<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>{</div>
+<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>    <span class="comment">// Toggle between options</span></div>
+<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span>    control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> = (control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> + 1) % control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7b4a8b268df7e97485af54cdee0cbb83">options</a>.size();</div>
+<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span>    control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> = (float)control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a>; <span class="comment">// Simply use the index as the value</span></div>
+<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span>}</div>
 </div>
-<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span></div>
-<div class="foldopen" id="foldopen01166" data-start="{" data-end="}">
-<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#ab115bb3cd0b8f21461d5fdaa7e87af96"> 1166</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ab115bb3cd0b8f21461d5fdaa7e87af96">RackSlot::handleButtonInteraction</a>(<a class="code hl_class" href="../../dc/d76/class_gear_control.html">GearControl</a> &amp;control)</div>
-<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>{</div>
-<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>    <span class="keywordflow">if</span> (control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a02d1f07ff07c45993a40c88422f176f4">momentary</a>)</div>
-<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>    {</div>
-<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>        <span class="comment">// For momentary buttons, use value 1.0 for &quot;on&quot; state (index 1) and 0.0 for &quot;off&quot; state (index 0)</span></div>
-<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>        control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> = control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> &gt; 0.5f ? 0.0f : 1.0f;</div>
-<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>        control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> = (int)control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a>;</div>
-<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>    }</div>
-<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>    {</div>
-<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span>        <span class="comment">// For latching buttons, cycle through options like switches</span></div>
-<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>        control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> = (control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> + 1) % control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7b4a8b268df7e97485af54cdee0cbb83">options</a>.size();</div>
-<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>        control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> = (float)control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a>;</div>
-<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>    }</div>
-<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>}</div>
+<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span></div>
+<div class="foldopen" id="foldopen01225" data-start="{" data-end="}">
+<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#ab115bb3cd0b8f21461d5fdaa7e87af96"> 1225</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ab115bb3cd0b8f21461d5fdaa7e87af96">RackSlot::handleButtonInteraction</a>(<a class="code hl_class" href="../../dc/d76/class_gear_control.html">GearControl</a> &amp;control)</div>
+<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span>{</div>
+<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span>    <span class="keywordflow">if</span> (control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a02d1f07ff07c45993a40c88422f176f4">momentary</a>)</div>
+<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span>    {</div>
+<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span>        <span class="comment">// For momentary buttons, use value 1.0 for &quot;on&quot; state (index 1) and 0.0 for &quot;off&quot; state (index 0)</span></div>
+<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span>        control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> = control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> &gt; 0.5f ? 0.0f : 1.0f;</div>
+<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span>        control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> = (int)control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a>;</div>
+<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>    }</div>
+<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span>    {</div>
+<div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span>        <span class="comment">// For latching buttons, cycle through options like switches</span></div>
+<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span>        control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> = (control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a> + 1) % control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7b4a8b268df7e97485af54cdee0cbb83">options</a>.size();</div>
+<div class="line"><a id="l01237" name="l01237"></a><span class="lineno"> 1237</span>        control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> = (float)control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#ab7166c5505092956998ce988b9acbe1b">currentIndex</a>;</div>
+<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span>    }</div>
+<div class="line"><a id="l01239" name="l01239"></a><span class="lineno"> 1239</span>}</div>
 </div>
-<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span></div>
-<div class="foldopen" id="foldopen01191" data-start="{" data-end="}">
-<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#adcc30fa4839236aeb2018f2c44a4850c"> 1191</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#adcc30fa4839236aeb2018f2c44a4850c">RackSlot::handleFaderInteraction</a>(<a class="code hl_class" href="../../dc/d76/class_gear_control.html">GearControl</a> &amp;control, <span class="keyword">const</span> juce::Point&lt;float&gt; &amp;mousePos, <span class="keyword">const</span> juce::Rectangle&lt;int&gt; &amp;controlBounds)</div>
-<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>{</div>
-<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>    <span class="comment">// Map vertical position to value</span></div>
-<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>    <span class="keywordtype">float</span> normalizedY = 1.0f - (float)(mousePos.y - controlBounds.getY()) / controlBounds.getHeight();</div>
-<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>    control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> = juce::jlimit(0.0f, 1.0f, normalizedY);</div>
-<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>}</div>
+<div class="line"><a id="l01240" name="l01240"></a><span class="lineno"> 1240</span></div>
+<div class="foldopen" id="foldopen01250" data-start="{" data-end="}">
+<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#adcc30fa4839236aeb2018f2c44a4850c"> 1250</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#adcc30fa4839236aeb2018f2c44a4850c">RackSlot::handleFaderInteraction</a>(<a class="code hl_class" href="../../dc/d76/class_gear_control.html">GearControl</a> &amp;control, <span class="keyword">const</span> juce::Point&lt;float&gt; &amp;mousePos, <span class="keyword">const</span> juce::Rectangle&lt;int&gt; &amp;controlBounds)</div>
+<div class="line"><a id="l01251" name="l01251"></a><span class="lineno"> 1251</span>{</div>
+<div class="line"><a id="l01252" name="l01252"></a><span class="lineno"> 1252</span>    <span class="comment">// Map vertical position to value</span></div>
+<div class="line"><a id="l01253" name="l01253"></a><span class="lineno"> 1253</span>    <span class="keywordtype">float</span> normalizedY = 1.0f - (float)(mousePos.y - controlBounds.getY()) / controlBounds.getHeight();</div>
+<div class="line"><a id="l01254" name="l01254"></a><span class="lineno"> 1254</span>    control.<a class="code hl_variable" href="../../dc/d76/class_gear_control.html#a7236a81a72aeaa4dfd868dd956a07aed">value</a> = juce::jlimit(0.0f, 1.0f, normalizedY);</div>
+<div class="line"><a id="l01255" name="l01255"></a><span class="lineno"> 1255</span>}</div>
 </div>
-<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span></div>
-<div class="foldopen" id="foldopen01207" data-start="{" data-end="}">
-<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a9b6ba072f14ec7fa8ad45a6063291d4a"> 1207</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a9b6ba072f14ec7fa8ad45a6063291d4a">RackSlot::isInterestedInDragSource</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp;sourceDetails)</div>
-<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span>{</div>
-<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>    <span class="comment">// We&#39;re not using drag-and-drop for reordering anymore, but keeping the code for GearLibrary drags</span></div>
-<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span> </div>
-<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>    <span class="comment">// Accept drag sources from the GearLibrary list box (legacy)</span></div>
-<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>    <span class="keywordflow">if</span> (sourceDetails.description.isInt())</div>
-<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span>    {</div>
-<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span>        <span class="keyword">auto</span> *sourceComp = sourceDetails.sourceComponent.get();</div>
-<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span>        <span class="keywordflow">if</span> (sourceComp &amp;&amp; (sourceComp-&gt;getComponentID() == <span class="stringliteral">&quot;DraggableListBox&quot;</span> ||</div>
-<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span>                           sourceComp-&gt;getComponentID() == <span class="stringliteral">&quot;GearListBox&quot;</span>))</div>
-<div class="line"><a id="l01217" name="l01217"></a><span class="lineno"> 1217</span>        {</div>
-<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span>        }</div>
-<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span>    }</div>
-<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span> </div>
-<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>    <span class="comment">// Accept drag sources from TreeView (new hierarchical view)</span></div>
-<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span>    <span class="keywordflow">if</span> (sourceDetails.description.isString())</div>
-<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span>    {</div>
-<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>        juce::String desc = sourceDetails.description.toString();</div>
-<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span>        <span class="keywordflow">if</span> (desc.startsWith(<span class="stringliteral">&quot;GEAR:&quot;</span>))</div>
-<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span>        {</div>
-<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span>            <span class="keyword">auto</span> *sourceComp = sourceDetails.sourceComponent.get();</div>
-<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span>            <span class="keywordflow">if</span> (sourceComp &amp;&amp; <span class="keyword">dynamic_cast&lt;</span>juce::TreeView *<span class="keyword">&gt;</span>(sourceComp) != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span>            {</div>
-<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span>                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>            }</div>
-<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>        }</div>
-<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span>    }</div>
-<div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span> </div>
-<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01237" name="l01237"></a><span class="lineno"> 1237</span>}</div>
+<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"> 1256</span></div>
+<div class="foldopen" id="foldopen01266" data-start="{" data-end="}">
+<div class="line"><a id="l01266" name="l01266"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a9b6ba072f14ec7fa8ad45a6063291d4a"> 1266</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a9b6ba072f14ec7fa8ad45a6063291d4a">RackSlot::isInterestedInDragSource</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp;sourceDetails)</div>
+<div class="line"><a id="l01267" name="l01267"></a><span class="lineno"> 1267</span>{</div>
+<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"> 1268</span>    <span class="comment">// We&#39;re not using drag-and-drop for reordering anymore, but keeping the code for GearLibrary drags</span></div>
+<div class="line"><a id="l01269" name="l01269"></a><span class="lineno"> 1269</span> </div>
+<div class="line"><a id="l01270" name="l01270"></a><span class="lineno"> 1270</span>    <span class="comment">// Accept drag sources from the GearLibrary list box (legacy)</span></div>
+<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span>    <span class="keywordflow">if</span> (sourceDetails.description.isInt())</div>
+<div class="line"><a id="l01272" name="l01272"></a><span class="lineno"> 1272</span>    {</div>
+<div class="line"><a id="l01273" name="l01273"></a><span class="lineno"> 1273</span>        <span class="keyword">auto</span> *sourceComp = sourceDetails.sourceComponent.get();</div>
+<div class="line"><a id="l01274" name="l01274"></a><span class="lineno"> 1274</span>        <span class="keywordflow">if</span> (sourceComp &amp;&amp; (sourceComp-&gt;getComponentID() == <span class="stringliteral">&quot;DraggableListBox&quot;</span> ||</div>
+<div class="line"><a id="l01275" name="l01275"></a><span class="lineno"> 1275</span>                           sourceComp-&gt;getComponentID() == <span class="stringliteral">&quot;GearListBox&quot;</span>))</div>
+<div class="line"><a id="l01276" name="l01276"></a><span class="lineno"> 1276</span>        {</div>
+<div class="line"><a id="l01277" name="l01277"></a><span class="lineno"> 1277</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01278" name="l01278"></a><span class="lineno"> 1278</span>        }</div>
+<div class="line"><a id="l01279" name="l01279"></a><span class="lineno"> 1279</span>    }</div>
+<div class="line"><a id="l01280" name="l01280"></a><span class="lineno"> 1280</span> </div>
+<div class="line"><a id="l01281" name="l01281"></a><span class="lineno"> 1281</span>    <span class="comment">// Accept drag sources from TreeView (new hierarchical view)</span></div>
+<div class="line"><a id="l01282" name="l01282"></a><span class="lineno"> 1282</span>    <span class="keywordflow">if</span> (sourceDetails.description.isString())</div>
+<div class="line"><a id="l01283" name="l01283"></a><span class="lineno"> 1283</span>    {</div>
+<div class="line"><a id="l01284" name="l01284"></a><span class="lineno"> 1284</span>        juce::String desc = sourceDetails.description.toString();</div>
+<div class="line"><a id="l01285" name="l01285"></a><span class="lineno"> 1285</span>        <span class="keywordflow">if</span> (desc.startsWith(<span class="stringliteral">&quot;GEAR:&quot;</span>))</div>
+<div class="line"><a id="l01286" name="l01286"></a><span class="lineno"> 1286</span>        {</div>
+<div class="line"><a id="l01287" name="l01287"></a><span class="lineno"> 1287</span>            <span class="keyword">auto</span> *sourceComp = sourceDetails.sourceComponent.get();</div>
+<div class="line"><a id="l01288" name="l01288"></a><span class="lineno"> 1288</span>            <span class="keywordflow">if</span> (sourceComp &amp;&amp; <span class="keyword">dynamic_cast&lt;</span>juce::TreeView *<span class="keyword">&gt;</span>(sourceComp) != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l01289" name="l01289"></a><span class="lineno"> 1289</span>            {</div>
+<div class="line"><a id="l01290" name="l01290"></a><span class="lineno"> 1290</span>                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01291" name="l01291"></a><span class="lineno"> 1291</span>            }</div>
+<div class="line"><a id="l01292" name="l01292"></a><span class="lineno"> 1292</span>        }</div>
+<div class="line"><a id="l01293" name="l01293"></a><span class="lineno"> 1293</span>    }</div>
+<div class="line"><a id="l01294" name="l01294"></a><span class="lineno"> 1294</span> </div>
+<div class="line"><a id="l01295" name="l01295"></a><span class="lineno"> 1295</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01296" name="l01296"></a><span class="lineno"> 1296</span>}</div>
 </div>
-<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span></div>
-<div class="foldopen" id="foldopen01246" data-start="{" data-end="}">
-<div class="line"><a id="l01246" name="l01246"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#afecc9a1f02b652873899ad1048e10a08"> 1246</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#afecc9a1f02b652873899ad1048e10a08">RackSlot::itemDragEnter</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp; <span class="comment">/*details*/</span>)</div>
-<div class="line"><a id="l01247" name="l01247"></a><span class="lineno"> 1247</span>{</div>
-<div class="line"><a id="l01248" name="l01248"></a><span class="lineno"> 1248</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">setHighlighted</a>(<span class="keyword">true</span>);</div>
-<div class="line"><a id="l01249" name="l01249"></a><span class="lineno"> 1249</span>}</div>
+<div class="line"><a id="l01297" name="l01297"></a><span class="lineno"> 1297</span></div>
+<div class="foldopen" id="foldopen01305" data-start="{" data-end="}">
+<div class="line"><a id="l01305" name="l01305"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#afecc9a1f02b652873899ad1048e10a08"> 1305</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#afecc9a1f02b652873899ad1048e10a08">RackSlot::itemDragEnter</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp; <span class="comment">/*details*/</span>)</div>
+<div class="line"><a id="l01306" name="l01306"></a><span class="lineno"> 1306</span>{</div>
+<div class="line"><a id="l01307" name="l01307"></a><span class="lineno"> 1307</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">setHighlighted</a>(<span class="keyword">true</span>);</div>
+<div class="line"><a id="l01308" name="l01308"></a><span class="lineno"> 1308</span>}</div>
 </div>
-<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"> 1250</span></div>
-<div class="foldopen" id="foldopen01256" data-start="{" data-end="}">
-<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a381738319731279c753d21860dcb8406"> 1256</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a381738319731279c753d21860dcb8406">RackSlot::itemDragMove</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp; <span class="comment">/*details*/</span>)</div>
-<div class="line"><a id="l01257" name="l01257"></a><span class="lineno"> 1257</span>{</div>
-<div class="line"><a id="l01258" name="l01258"></a><span class="lineno"> 1258</span>    <span class="comment">// Nothing needed here</span></div>
-<div class="line"><a id="l01259" name="l01259"></a><span class="lineno"> 1259</span>}</div>
+<div class="line"><a id="l01309" name="l01309"></a><span class="lineno"> 1309</span></div>
+<div class="foldopen" id="foldopen01315" data-start="{" data-end="}">
+<div class="line"><a id="l01315" name="l01315"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a381738319731279c753d21860dcb8406"> 1315</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a381738319731279c753d21860dcb8406">RackSlot::itemDragMove</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp; <span class="comment">/*details*/</span>)</div>
+<div class="line"><a id="l01316" name="l01316"></a><span class="lineno"> 1316</span>{</div>
+<div class="line"><a id="l01317" name="l01317"></a><span class="lineno"> 1317</span>    <span class="comment">// Nothing needed here</span></div>
+<div class="line"><a id="l01318" name="l01318"></a><span class="lineno"> 1318</span>}</div>
 </div>
-<div class="line"><a id="l01260" name="l01260"></a><span class="lineno"> 1260</span></div>
-<div class="foldopen" id="foldopen01268" data-start="{" data-end="}">
-<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a7ff9f66884af0462e35571ef471f0ebc"> 1268</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a7ff9f66884af0462e35571ef471f0ebc">RackSlot::itemDragExit</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp; <span class="comment">/*details*/</span>)</div>
-<div class="line"><a id="l01269" name="l01269"></a><span class="lineno"> 1269</span>{</div>
-<div class="line"><a id="l01270" name="l01270"></a><span class="lineno"> 1270</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">setHighlighted</a>(<span class="keyword">false</span>);</div>
-<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span>}</div>
+<div class="line"><a id="l01319" name="l01319"></a><span class="lineno"> 1319</span></div>
+<div class="foldopen" id="foldopen01327" data-start="{" data-end="}">
+<div class="line"><a id="l01327" name="l01327"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a7ff9f66884af0462e35571ef471f0ebc"> 1327</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a7ff9f66884af0462e35571ef471f0ebc">RackSlot::itemDragExit</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp; <span class="comment">/*details*/</span>)</div>
+<div class="line"><a id="l01328" name="l01328"></a><span class="lineno"> 1328</span>{</div>
+<div class="line"><a id="l01329" name="l01329"></a><span class="lineno"> 1329</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">setHighlighted</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l01330" name="l01330"></a><span class="lineno"> 1330</span>}</div>
 </div>
-<div class="line"><a id="l01272" name="l01272"></a><span class="lineno"> 1272</span></div>
-<div class="foldopen" id="foldopen01281" data-start="{" data-end="}">
-<div class="line"><a id="l01281" name="l01281"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#afaebe0af9df66f45214457611a71dbb4"> 1281</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#afaebe0af9df66f45214457611a71dbb4">RackSlot::itemDropped</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp;details)</div>
-<div class="line"><a id="l01282" name="l01282"></a><span class="lineno"> 1282</span>{</div>
-<div class="line"><a id="l01283" name="l01283"></a><span class="lineno"> 1283</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">setHighlighted</a>(<span class="keyword">false</span>);</div>
-<div class="line"><a id="l01284" name="l01284"></a><span class="lineno"> 1284</span> </div>
-<div class="line"><a id="l01285" name="l01285"></a><span class="lineno"> 1285</span>    <span class="comment">// Only handle drops from GearLibrary - delegate to parent Rack</span></div>
-<div class="line"><a id="l01286" name="l01286"></a><span class="lineno"> 1286</span>    juce::Component *parentComponent = <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28">findParentRackComponent</a>();</div>
-<div class="line"><a id="l01287" name="l01287"></a><span class="lineno"> 1287</span> </div>
-<div class="line"><a id="l01288" name="l01288"></a><span class="lineno"> 1288</span>    <span class="keywordflow">if</span> (parentComponent != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l01289" name="l01289"></a><span class="lineno"> 1289</span>    {</div>
-<div class="line"><a id="l01290" name="l01290"></a><span class="lineno"> 1290</span>        <span class="comment">// Convert source details to parent&#39;s coordinate system</span></div>
-<div class="line"><a id="l01291" name="l01291"></a><span class="lineno"> 1291</span>        juce::Point&lt;int&gt; positionInParent;</div>
-<div class="line"><a id="l01292" name="l01292"></a><span class="lineno"> 1292</span> </div>
-<div class="line"><a id="l01293" name="l01293"></a><span class="lineno"> 1293</span>        <span class="comment">// Handle case where direct parent is RackContainer or Rack</span></div>
-<div class="line"><a id="l01294" name="l01294"></a><span class="lineno"> 1294</span>        <span class="keywordflow">if</span> (parentComponent-&gt;getComponentID() == <span class="stringliteral">&quot;Rack&quot;</span>)</div>
-<div class="line"><a id="l01295" name="l01295"></a><span class="lineno"> 1295</span>        {</div>
-<div class="line"><a id="l01296" name="l01296"></a><span class="lineno"> 1296</span>            <span class="comment">// Direct parent is the Rack</span></div>
-<div class="line"><a id="l01297" name="l01297"></a><span class="lineno"> 1297</span>            <a class="code hl_class" href="../../d0/dc7/class_rack.html">Rack</a> *parentRack = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="../../d0/dc7/class_rack.html">Rack</a> *<span class="keyword">&gt;</span>(parentComponent);</div>
-<div class="line"><a id="l01298" name="l01298"></a><span class="lineno"> 1298</span>            <span class="keywordflow">if</span> (parentRack != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l01299" name="l01299"></a><span class="lineno"> 1299</span>            {</div>
-<div class="line"><a id="l01300" name="l01300"></a><span class="lineno"> 1300</span>                positionInParent = parentRack-&gt;getLocalPoint(<span class="keyword">this</span>, details.localPosition);</div>
-<div class="line"><a id="l01301" name="l01301"></a><span class="lineno"> 1301</span> </div>
-<div class="line"><a id="l01302" name="l01302"></a><span class="lineno"> 1302</span>                <span class="comment">// Create simplified source details with only the required data</span></div>
-<div class="line"><a id="l01303" name="l01303"></a><span class="lineno"> 1303</span>                juce::DragAndDropTarget::SourceDetails parentDetails(</div>
-<div class="line"><a id="l01304" name="l01304"></a><span class="lineno"> 1304</span>                    details.description,</div>
-<div class="line"><a id="l01305" name="l01305"></a><span class="lineno"> 1305</span>                    details.sourceComponent.get(),</div>
-<div class="line"><a id="l01306" name="l01306"></a><span class="lineno"> 1306</span>                    positionInParent);</div>
-<div class="line"><a id="l01307" name="l01307"></a><span class="lineno"> 1307</span> </div>
-<div class="line"><a id="l01308" name="l01308"></a><span class="lineno"> 1308</span>                <span class="comment">// Call the parent&#39;s itemDropped directly</span></div>
-<div class="line"><a id="l01309" name="l01309"></a><span class="lineno"> 1309</span>                parentRack-&gt;<a class="code hl_function" href="../../d0/dc7/class_rack.html#a5be778ce22cc1060222410fa2250eb99">itemDropped</a>(parentDetails);</div>
-<div class="line"><a id="l01310" name="l01310"></a><span class="lineno"> 1310</span>            }</div>
-<div class="line"><a id="l01311" name="l01311"></a><span class="lineno"> 1311</span>        }</div>
-<div class="line"><a id="l01312" name="l01312"></a><span class="lineno"> 1312</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (parentComponent-&gt;getComponentID() == <span class="stringliteral">&quot;RackContainer&quot;</span>)</div>
-<div class="line"><a id="l01313" name="l01313"></a><span class="lineno"> 1313</span>        {</div>
-<div class="line"><a id="l01314" name="l01314"></a><span class="lineno"> 1314</span>            <span class="comment">// Parent is RackContainer, need to find its Rack parent</span></div>
-<div class="line"><a id="l01315" name="l01315"></a><span class="lineno"> 1315</span>            <span class="keyword">auto</span> *container = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="../../d1/d32/class_rack_1_1_rack_container.html">Rack::RackContainer</a> *<span class="keyword">&gt;</span>(parentComponent);</div>
-<div class="line"><a id="l01316" name="l01316"></a><span class="lineno"> 1316</span>            <span class="keywordflow">if</span> (container != <span class="keyword">nullptr</span> &amp;&amp; container-&gt;rack != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l01317" name="l01317"></a><span class="lineno"> 1317</span>            {</div>
-<div class="line"><a id="l01318" name="l01318"></a><span class="lineno"> 1318</span>                <span class="comment">// Convert twice - first to container, then to rack</span></div>
-<div class="line"><a id="l01319" name="l01319"></a><span class="lineno"> 1319</span>                <span class="keyword">auto</span> posInContainer = container-&gt;getLocalPoint(<span class="keyword">this</span>, details.localPosition);</div>
-<div class="line"><a id="l01320" name="l01320"></a><span class="lineno"> 1320</span>                positionInParent = container-&gt;rack-&gt;getLocalPoint(container, posInContainer);</div>
-<div class="line"><a id="l01321" name="l01321"></a><span class="lineno"> 1321</span> </div>
-<div class="line"><a id="l01322" name="l01322"></a><span class="lineno"> 1322</span>                <span class="comment">// Create simplified source details with only the required data</span></div>
-<div class="line"><a id="l01323" name="l01323"></a><span class="lineno"> 1323</span>                juce::DragAndDropTarget::SourceDetails parentDetails(</div>
-<div class="line"><a id="l01324" name="l01324"></a><span class="lineno"> 1324</span>                    details.description,</div>
-<div class="line"><a id="l01325" name="l01325"></a><span class="lineno"> 1325</span>                    details.sourceComponent.get(),</div>
-<div class="line"><a id="l01326" name="l01326"></a><span class="lineno"> 1326</span>                    positionInParent);</div>
-<div class="line"><a id="l01327" name="l01327"></a><span class="lineno"> 1327</span> </div>
-<div class="line"><a id="l01328" name="l01328"></a><span class="lineno"> 1328</span>                <span class="comment">// Call the Rack&#39;s itemDropped</span></div>
-<div class="line"><a id="l01329" name="l01329"></a><span class="lineno"> 1329</span>                container-&gt;rack-&gt;itemDropped(parentDetails);</div>
-<div class="line"><a id="l01330" name="l01330"></a><span class="lineno"> 1330</span>            }</div>
-<div class="line"><a id="l01331" name="l01331"></a><span class="lineno"> 1331</span>        }</div>
-<div class="line"><a id="l01332" name="l01332"></a><span class="lineno"> 1332</span>    }</div>
-<div class="line"><a id="l01333" name="l01333"></a><span class="lineno"> 1333</span>}</div>
+<div class="line"><a id="l01331" name="l01331"></a><span class="lineno"> 1331</span></div>
+<div class="foldopen" id="foldopen01340" data-start="{" data-end="}">
+<div class="line"><a id="l01340" name="l01340"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#afaebe0af9df66f45214457611a71dbb4"> 1340</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#afaebe0af9df66f45214457611a71dbb4">RackSlot::itemDropped</a>(<span class="keyword">const</span> juce::DragAndDropTarget::SourceDetails &amp;details)</div>
+<div class="line"><a id="l01341" name="l01341"></a><span class="lineno"> 1341</span>{</div>
+<div class="line"><a id="l01342" name="l01342"></a><span class="lineno"> 1342</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">setHighlighted</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l01343" name="l01343"></a><span class="lineno"> 1343</span> </div>
+<div class="line"><a id="l01344" name="l01344"></a><span class="lineno"> 1344</span>    <span class="comment">// Only handle drops from GearLibrary - delegate to parent Rack</span></div>
+<div class="line"><a id="l01345" name="l01345"></a><span class="lineno"> 1345</span>    juce::Component *parentComponent = <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28">findParentRackComponent</a>();</div>
+<div class="line"><a id="l01346" name="l01346"></a><span class="lineno"> 1346</span> </div>
+<div class="line"><a id="l01347" name="l01347"></a><span class="lineno"> 1347</span>    <span class="keywordflow">if</span> (parentComponent != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l01348" name="l01348"></a><span class="lineno"> 1348</span>    {</div>
+<div class="line"><a id="l01349" name="l01349"></a><span class="lineno"> 1349</span>        <span class="comment">// Convert source details to parent&#39;s coordinate system</span></div>
+<div class="line"><a id="l01350" name="l01350"></a><span class="lineno"> 1350</span>        juce::Point&lt;int&gt; positionInParent;</div>
+<div class="line"><a id="l01351" name="l01351"></a><span class="lineno"> 1351</span> </div>
+<div class="line"><a id="l01352" name="l01352"></a><span class="lineno"> 1352</span>        <span class="comment">// Handle case where direct parent is RackContainer or Rack</span></div>
+<div class="line"><a id="l01353" name="l01353"></a><span class="lineno"> 1353</span>        <span class="keywordflow">if</span> (parentComponent-&gt;getComponentID() == <span class="stringliteral">&quot;Rack&quot;</span>)</div>
+<div class="line"><a id="l01354" name="l01354"></a><span class="lineno"> 1354</span>        {</div>
+<div class="line"><a id="l01355" name="l01355"></a><span class="lineno"> 1355</span>            <span class="comment">// Direct parent is the Rack</span></div>
+<div class="line"><a id="l01356" name="l01356"></a><span class="lineno"> 1356</span>            <a class="code hl_class" href="../../d0/dc7/class_rack.html">Rack</a> *parentRack = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="../../d0/dc7/class_rack.html">Rack</a> *<span class="keyword">&gt;</span>(parentComponent);</div>
+<div class="line"><a id="l01357" name="l01357"></a><span class="lineno"> 1357</span>            <span class="keywordflow">if</span> (parentRack != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l01358" name="l01358"></a><span class="lineno"> 1358</span>            {</div>
+<div class="line"><a id="l01359" name="l01359"></a><span class="lineno"> 1359</span>                positionInParent = parentRack-&gt;getLocalPoint(<span class="keyword">this</span>, details.localPosition);</div>
+<div class="line"><a id="l01360" name="l01360"></a><span class="lineno"> 1360</span> </div>
+<div class="line"><a id="l01361" name="l01361"></a><span class="lineno"> 1361</span>                <span class="comment">// Create simplified source details with only the required data</span></div>
+<div class="line"><a id="l01362" name="l01362"></a><span class="lineno"> 1362</span>                juce::DragAndDropTarget::SourceDetails parentDetails(</div>
+<div class="line"><a id="l01363" name="l01363"></a><span class="lineno"> 1363</span>                    details.description,</div>
+<div class="line"><a id="l01364" name="l01364"></a><span class="lineno"> 1364</span>                    details.sourceComponent.get(),</div>
+<div class="line"><a id="l01365" name="l01365"></a><span class="lineno"> 1365</span>                    positionInParent);</div>
+<div class="line"><a id="l01366" name="l01366"></a><span class="lineno"> 1366</span> </div>
+<div class="line"><a id="l01367" name="l01367"></a><span class="lineno"> 1367</span>                <span class="comment">// Call the parent&#39;s itemDropped directly</span></div>
+<div class="line"><a id="l01368" name="l01368"></a><span class="lineno"> 1368</span>                parentRack-&gt;<a class="code hl_function" href="../../d0/dc7/class_rack.html#a5be778ce22cc1060222410fa2250eb99">itemDropped</a>(parentDetails);</div>
+<div class="line"><a id="l01369" name="l01369"></a><span class="lineno"> 1369</span>            }</div>
+<div class="line"><a id="l01370" name="l01370"></a><span class="lineno"> 1370</span>        }</div>
+<div class="line"><a id="l01371" name="l01371"></a><span class="lineno"> 1371</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (parentComponent-&gt;getComponentID() == <span class="stringliteral">&quot;RackContainer&quot;</span>)</div>
+<div class="line"><a id="l01372" name="l01372"></a><span class="lineno"> 1372</span>        {</div>
+<div class="line"><a id="l01373" name="l01373"></a><span class="lineno"> 1373</span>            <span class="comment">// Parent is RackContainer, need to find its Rack parent</span></div>
+<div class="line"><a id="l01374" name="l01374"></a><span class="lineno"> 1374</span>            <span class="keyword">auto</span> *container = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="../../d1/d32/class_rack_1_1_rack_container.html">Rack::RackContainer</a> *<span class="keyword">&gt;</span>(parentComponent);</div>
+<div class="line"><a id="l01375" name="l01375"></a><span class="lineno"> 1375</span>            <span class="keywordflow">if</span> (container != <span class="keyword">nullptr</span> &amp;&amp; container-&gt;rack != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l01376" name="l01376"></a><span class="lineno"> 1376</span>            {</div>
+<div class="line"><a id="l01377" name="l01377"></a><span class="lineno"> 1377</span>                <span class="comment">// Convert twice - first to container, then to rack</span></div>
+<div class="line"><a id="l01378" name="l01378"></a><span class="lineno"> 1378</span>                <span class="keyword">auto</span> posInContainer = container-&gt;getLocalPoint(<span class="keyword">this</span>, details.localPosition);</div>
+<div class="line"><a id="l01379" name="l01379"></a><span class="lineno"> 1379</span>                positionInParent = container-&gt;rack-&gt;getLocalPoint(container, posInContainer);</div>
+<div class="line"><a id="l01380" name="l01380"></a><span class="lineno"> 1380</span> </div>
+<div class="line"><a id="l01381" name="l01381"></a><span class="lineno"> 1381</span>                <span class="comment">// Create simplified source details with only the required data</span></div>
+<div class="line"><a id="l01382" name="l01382"></a><span class="lineno"> 1382</span>                juce::DragAndDropTarget::SourceDetails parentDetails(</div>
+<div class="line"><a id="l01383" name="l01383"></a><span class="lineno"> 1383</span>                    details.description,</div>
+<div class="line"><a id="l01384" name="l01384"></a><span class="lineno"> 1384</span>                    details.sourceComponent.get(),</div>
+<div class="line"><a id="l01385" name="l01385"></a><span class="lineno"> 1385</span>                    positionInParent);</div>
+<div class="line"><a id="l01386" name="l01386"></a><span class="lineno"> 1386</span> </div>
+<div class="line"><a id="l01387" name="l01387"></a><span class="lineno"> 1387</span>                <span class="comment">// Call the Rack&#39;s itemDropped</span></div>
+<div class="line"><a id="l01388" name="l01388"></a><span class="lineno"> 1388</span>                container-&gt;rack-&gt;itemDropped(parentDetails);</div>
+<div class="line"><a id="l01389" name="l01389"></a><span class="lineno"> 1389</span>            }</div>
+<div class="line"><a id="l01390" name="l01390"></a><span class="lineno"> 1390</span>        }</div>
+<div class="line"><a id="l01391" name="l01391"></a><span class="lineno"> 1391</span>    }</div>
+<div class="line"><a id="l01392" name="l01392"></a><span class="lineno"> 1392</span>}</div>
 </div>
-<div class="line"><a id="l01334" name="l01334"></a><span class="lineno"> 1334</span></div>
-<div class="foldopen" id="foldopen01343" data-start="{" data-end="}">
-<div class="line"><a id="l01343" name="l01343"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a1f441a7ac2af9a416ef33503c586fe01"> 1343</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a1f441a7ac2af9a416ef33503c586fe01">RackSlot::setGearItem</a>(<a class="code hl_class" href="../../dd/dee/class_gear_item.html">GearItem</a> *newGearItem)</div>
-<div class="line"><a id="l01344" name="l01344"></a><span class="lineno"> 1344</span>{</div>
-<div class="line"><a id="l01345" name="l01345"></a><span class="lineno"> 1345</span>    <span class="comment">// If we already have a gear item and it&#39;s an instance, preserve its state</span></div>
-<div class="line"><a id="l01346" name="l01346"></a><span class="lineno"> 1346</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> != <span class="keyword">nullptr</span> &amp;&amp; <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;isInstance)</div>
-<div class="line"><a id="l01347" name="l01347"></a><span class="lineno"> 1347</span>    {</div>
-<div class="line"><a id="l01348" name="l01348"></a><span class="lineno"> 1348</span>        <span class="comment">// Store the current state</span></div>
-<div class="line"><a id="l01349" name="l01349"></a><span class="lineno"> 1349</span>        juce::String instanceId = <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;instanceId;</div>
-<div class="line"><a id="l01350" name="l01350"></a><span class="lineno"> 1350</span>        juce::String sourceUnitId = <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;sourceUnitId;</div>
-<div class="line"><a id="l01351" name="l01351"></a><span class="lineno"> 1351</span>        juce::Array&lt;GearControl&gt; preservedControls;</div>
-<div class="line"><a id="l01352" name="l01352"></a><span class="lineno"> 1352</span> </div>
-<div class="line"><a id="l01353" name="l01353"></a><span class="lineno"> 1353</span>        <span class="comment">// Create new GearControl objects with preserved values</span></div>
-<div class="line"><a id="l01354" name="l01354"></a><span class="lineno"> 1354</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;control : <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;controls)</div>
-<div class="line"><a id="l01355" name="l01355"></a><span class="lineno"> 1355</span>        {</div>
-<div class="line"><a id="l01356" name="l01356"></a><span class="lineno"> 1356</span>            <a class="code hl_class" href="../../dc/d76/class_gear_control.html">GearControl</a> newControl = control; <span class="comment">// Use copy constructor</span></div>
-<div class="line"><a id="l01357" name="l01357"></a><span class="lineno"> 1357</span>            preservedControls.add(newControl);</div>
-<div class="line"><a id="l01358" name="l01358"></a><span class="lineno"> 1358</span>        }</div>
-<div class="line"><a id="l01359" name="l01359"></a><span class="lineno"> 1359</span> </div>
-<div class="line"><a id="l01360" name="l01360"></a><span class="lineno"> 1360</span>        <span class="comment">// Set the new gear item</span></div>
-<div class="line"><a id="l01361" name="l01361"></a><span class="lineno"> 1361</span>        <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> = newGearItem;</div>
-<div class="line"><a id="l01362" name="l01362"></a><span class="lineno"> 1362</span> </div>
-<div class="line"><a id="l01363" name="l01363"></a><span class="lineno"> 1363</span>        <span class="comment">// If the new item is the same type as the source, restore the instance state</span></div>
-<div class="line"><a id="l01364" name="l01364"></a><span class="lineno"> 1364</span>        <span class="keywordflow">if</span> (newGearItem != <span class="keyword">nullptr</span> &amp;&amp; newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a6528f70e61ded14655c873db9fa1fc79">unitId</a> == sourceUnitId)</div>
-<div class="line"><a id="l01365" name="l01365"></a><span class="lineno"> 1365</span>        {</div>
-<div class="line"><a id="l01366" name="l01366"></a><span class="lineno"> 1366</span>            <span class="comment">// Create a new instance of the source item</span></div>
-<div class="line"><a id="l01367" name="l01367"></a><span class="lineno"> 1367</span>            newGearItem-&gt;<a class="code hl_function" href="../../dd/dee/class_gear_item.html#a2f69a11aa4bf61bcb84b1b7113651e20">createInstance</a>(sourceUnitId);</div>
-<div class="line"><a id="l01368" name="l01368"></a><span class="lineno"> 1368</span> </div>
-<div class="line"><a id="l01369" name="l01369"></a><span class="lineno"> 1369</span>            <span class="comment">// Restore the preserved controls</span></div>
-<div class="line"><a id="l01370" name="l01370"></a><span class="lineno"> 1370</span>            newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a759e1cc39e1f052b44f3f08341ec1204">controls</a> = preservedControls;</div>
-<div class="line"><a id="l01371" name="l01371"></a><span class="lineno"> 1371</span> </div>
-<div class="line"><a id="l01372" name="l01372"></a><span class="lineno"> 1372</span>            <span class="comment">// Update initial values to match current values</span></div>
-<div class="line"><a id="l01373" name="l01373"></a><span class="lineno"> 1373</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;control : newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a759e1cc39e1f052b44f3f08341ec1204">controls</a>)</div>
-<div class="line"><a id="l01374" name="l01374"></a><span class="lineno"> 1374</span>            {</div>
-<div class="line"><a id="l01375" name="l01375"></a><span class="lineno"> 1375</span>                control.initialValue = control.value;</div>
-<div class="line"><a id="l01376" name="l01376"></a><span class="lineno"> 1376</span>            }</div>
-<div class="line"><a id="l01377" name="l01377"></a><span class="lineno"> 1377</span>        }</div>
-<div class="line"><a id="l01378" name="l01378"></a><span class="lineno"> 1378</span>    }</div>
-<div class="line"><a id="l01379" name="l01379"></a><span class="lineno"> 1379</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (newGearItem != <span class="keyword">nullptr</span> &amp;&amp; !newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a0706374bfd5e371a57679ccefc294070">isInstance</a>)</div>
-<div class="line"><a id="l01380" name="l01380"></a><span class="lineno"> 1380</span>    {</div>
-<div class="line"><a id="l01381" name="l01381"></a><span class="lineno"> 1381</span>        <span class="comment">// For new non-instance items, ensure they&#39;re not marked as instances</span></div>
-<div class="line"><a id="l01382" name="l01382"></a><span class="lineno"> 1382</span>        newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a0706374bfd5e371a57679ccefc294070">isInstance</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01383" name="l01383"></a><span class="lineno"> 1383</span>        newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a8448b2de58f92bdb33f6be6fae160291">instanceId</a> = juce::String();</div>
-<div class="line"><a id="l01384" name="l01384"></a><span class="lineno"> 1384</span>        newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a2c5336f0e8d1dcd39dcdc6d5f847f46b">sourceUnitId</a> = juce::String();</div>
-<div class="line"><a id="l01385" name="l01385"></a><span class="lineno"> 1385</span>        <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> = newGearItem;</div>
-<div class="line"><a id="l01386" name="l01386"></a><span class="lineno"> 1386</span>    }</div>
-<div class="line"><a id="l01387" name="l01387"></a><span class="lineno"> 1387</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01388" name="l01388"></a><span class="lineno"> 1388</span>    {</div>
-<div class="line"><a id="l01389" name="l01389"></a><span class="lineno"> 1389</span>        <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> = newGearItem;</div>
-<div class="line"><a id="l01390" name="l01390"></a><span class="lineno"> 1390</span>    }</div>
-<div class="line"><a id="l01391" name="l01391"></a><span class="lineno"> 1391</span> </div>
-<div class="line"><a id="l01392" name="l01392"></a><span class="lineno"> 1392</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a4e11cf0282f711f39fb75925526decb6">updateButtonStates</a>(); <span class="comment">// Update button states when gear changes</span></div>
-<div class="line"><a id="l01393" name="l01393"></a><span class="lineno"> 1393</span>    repaint();            <span class="comment">// Trigger repaint to show the gear item</span></div>
-<div class="line"><a id="l01394" name="l01394"></a><span class="lineno"> 1394</span>}</div>
+<div class="line"><a id="l01393" name="l01393"></a><span class="lineno"> 1393</span></div>
+<div class="foldopen" id="foldopen01402" data-start="{" data-end="}">
+<div class="line"><a id="l01402" name="l01402"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a1f441a7ac2af9a416ef33503c586fe01"> 1402</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a1f441a7ac2af9a416ef33503c586fe01">RackSlot::setGearItem</a>(<a class="code hl_class" href="../../dd/dee/class_gear_item.html">GearItem</a> *newGearItem)</div>
+<div class="line"><a id="l01403" name="l01403"></a><span class="lineno"> 1403</span>{</div>
+<div class="line"><a id="l01404" name="l01404"></a><span class="lineno"> 1404</span>    <span class="comment">// If we already have a gear item and it&#39;s an instance, preserve its state</span></div>
+<div class="line"><a id="l01405" name="l01405"></a><span class="lineno"> 1405</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> != <span class="keyword">nullptr</span> &amp;&amp; <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;isInstance)</div>
+<div class="line"><a id="l01406" name="l01406"></a><span class="lineno"> 1406</span>    {</div>
+<div class="line"><a id="l01407" name="l01407"></a><span class="lineno"> 1407</span>        <span class="comment">// Store the current state</span></div>
+<div class="line"><a id="l01408" name="l01408"></a><span class="lineno"> 1408</span>        juce::String instanceId = <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;instanceId;</div>
+<div class="line"><a id="l01409" name="l01409"></a><span class="lineno"> 1409</span>        juce::String sourceUnitId = <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;sourceUnitId;</div>
+<div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>        juce::Array&lt;GearControl&gt; preservedControls;</div>
+<div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span> </div>
+<div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span>        <span class="comment">// Create new GearControl objects with preserved values</span></div>
+<div class="line"><a id="l01413" name="l01413"></a><span class="lineno"> 1413</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;control : <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;controls)</div>
+<div class="line"><a id="l01414" name="l01414"></a><span class="lineno"> 1414</span>        {</div>
+<div class="line"><a id="l01415" name="l01415"></a><span class="lineno"> 1415</span>            <a class="code hl_class" href="../../dc/d76/class_gear_control.html">GearControl</a> newControl = control; <span class="comment">// Use copy constructor</span></div>
+<div class="line"><a id="l01416" name="l01416"></a><span class="lineno"> 1416</span>            preservedControls.add(newControl);</div>
+<div class="line"><a id="l01417" name="l01417"></a><span class="lineno"> 1417</span>        }</div>
+<div class="line"><a id="l01418" name="l01418"></a><span class="lineno"> 1418</span> </div>
+<div class="line"><a id="l01419" name="l01419"></a><span class="lineno"> 1419</span>        <span class="comment">// Set the new gear item</span></div>
+<div class="line"><a id="l01420" name="l01420"></a><span class="lineno"> 1420</span>        <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> = newGearItem;</div>
+<div class="line"><a id="l01421" name="l01421"></a><span class="lineno"> 1421</span> </div>
+<div class="line"><a id="l01422" name="l01422"></a><span class="lineno"> 1422</span>        <span class="comment">// If the new item is the same type as the source, restore the instance state</span></div>
+<div class="line"><a id="l01423" name="l01423"></a><span class="lineno"> 1423</span>        <span class="keywordflow">if</span> (newGearItem != <span class="keyword">nullptr</span> &amp;&amp; newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a6528f70e61ded14655c873db9fa1fc79">unitId</a> == sourceUnitId)</div>
+<div class="line"><a id="l01424" name="l01424"></a><span class="lineno"> 1424</span>        {</div>
+<div class="line"><a id="l01425" name="l01425"></a><span class="lineno"> 1425</span>            <span class="comment">// Create a new instance of the source item</span></div>
+<div class="line"><a id="l01426" name="l01426"></a><span class="lineno"> 1426</span>            newGearItem-&gt;<a class="code hl_function" href="../../dd/dee/class_gear_item.html#a2f69a11aa4bf61bcb84b1b7113651e20">createInstance</a>(sourceUnitId);</div>
+<div class="line"><a id="l01427" name="l01427"></a><span class="lineno"> 1427</span> </div>
+<div class="line"><a id="l01428" name="l01428"></a><span class="lineno"> 1428</span>            <span class="comment">// Restore the preserved controls</span></div>
+<div class="line"><a id="l01429" name="l01429"></a><span class="lineno"> 1429</span>            newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a759e1cc39e1f052b44f3f08341ec1204">controls</a> = preservedControls;</div>
+<div class="line"><a id="l01430" name="l01430"></a><span class="lineno"> 1430</span> </div>
+<div class="line"><a id="l01431" name="l01431"></a><span class="lineno"> 1431</span>            <span class="comment">// Update initial values to match current values</span></div>
+<div class="line"><a id="l01432" name="l01432"></a><span class="lineno"> 1432</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;control : newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a759e1cc39e1f052b44f3f08341ec1204">controls</a>)</div>
+<div class="line"><a id="l01433" name="l01433"></a><span class="lineno"> 1433</span>            {</div>
+<div class="line"><a id="l01434" name="l01434"></a><span class="lineno"> 1434</span>                control.initialValue = control.value;</div>
+<div class="line"><a id="l01435" name="l01435"></a><span class="lineno"> 1435</span>            }</div>
+<div class="line"><a id="l01436" name="l01436"></a><span class="lineno"> 1436</span>        }</div>
+<div class="line"><a id="l01437" name="l01437"></a><span class="lineno"> 1437</span>    }</div>
+<div class="line"><a id="l01438" name="l01438"></a><span class="lineno"> 1438</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (newGearItem != <span class="keyword">nullptr</span> &amp;&amp; !newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a0706374bfd5e371a57679ccefc294070">isInstance</a>)</div>
+<div class="line"><a id="l01439" name="l01439"></a><span class="lineno"> 1439</span>    {</div>
+<div class="line"><a id="l01440" name="l01440"></a><span class="lineno"> 1440</span>        <span class="comment">// For new non-instance items, ensure they&#39;re not marked as instances</span></div>
+<div class="line"><a id="l01441" name="l01441"></a><span class="lineno"> 1441</span>        newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a0706374bfd5e371a57679ccefc294070">isInstance</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01442" name="l01442"></a><span class="lineno"> 1442</span>        newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a8448b2de58f92bdb33f6be6fae160291">instanceId</a> = juce::String();</div>
+<div class="line"><a id="l01443" name="l01443"></a><span class="lineno"> 1443</span>        newGearItem-&gt;<a class="code hl_variable" href="../../dd/dee/class_gear_item.html#a2c5336f0e8d1dcd39dcdc6d5f847f46b">sourceUnitId</a> = juce::String();</div>
+<div class="line"><a id="l01444" name="l01444"></a><span class="lineno"> 1444</span>        <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> = newGearItem;</div>
+<div class="line"><a id="l01445" name="l01445"></a><span class="lineno"> 1445</span>    }</div>
+<div class="line"><a id="l01446" name="l01446"></a><span class="lineno"> 1446</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01447" name="l01447"></a><span class="lineno"> 1447</span>    {</div>
+<div class="line"><a id="l01448" name="l01448"></a><span class="lineno"> 1448</span>        <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> = newGearItem;</div>
+<div class="line"><a id="l01449" name="l01449"></a><span class="lineno"> 1449</span>    }</div>
+<div class="line"><a id="l01450" name="l01450"></a><span class="lineno"> 1450</span> </div>
+<div class="line"><a id="l01451" name="l01451"></a><span class="lineno"> 1451</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a4e11cf0282f711f39fb75925526decb6">updateButtonStates</a>(); <span class="comment">// Update button states when gear changes</span></div>
+<div class="line"><a id="l01452" name="l01452"></a><span class="lineno"> 1452</span>    repaint();            <span class="comment">// Trigger repaint to show the gear item</span></div>
+<div class="line"><a id="l01453" name="l01453"></a><span class="lineno"> 1453</span>}</div>
 </div>
-<div class="line"><a id="l01395" name="l01395"></a><span class="lineno"> 1395</span></div>
-<div class="foldopen" id="foldopen01401" data-start="{" data-end="}">
-<div class="line"><a id="l01401" name="l01401"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#ac86e2c0b7ccc78375316a5fa726793b9"> 1401</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ac86e2c0b7ccc78375316a5fa726793b9">RackSlot::clearGearItem</a>()</div>
-<div class="line"><a id="l01402" name="l01402"></a><span class="lineno"> 1402</span>{</div>
-<div class="line"><a id="l01403" name="l01403"></a><span class="lineno"> 1403</span>    <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l01404" name="l01404"></a><span class="lineno"> 1404</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a4e11cf0282f711f39fb75925526decb6">updateButtonStates</a>(); <span class="comment">// Update button states when gear is removed</span></div>
-<div class="line"><a id="l01405" name="l01405"></a><span class="lineno"> 1405</span>    repaint();            <span class="comment">// Trigger repaint to update</span></div>
-<div class="line"><a id="l01406" name="l01406"></a><span class="lineno"> 1406</span> </div>
-<div class="line"><a id="l01407" name="l01407"></a><span class="lineno"> 1407</span>    <span class="comment">// Trigger re-layout of parent rack to resize slot back to default height</span></div>
-<div class="line"><a id="l01408" name="l01408"></a><span class="lineno"> 1408</span>    juce::Component *parentComponent = <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28">findParentRackComponent</a>();</div>
-<div class="line"><a id="l01409" name="l01409"></a><span class="lineno"> 1409</span>    <span class="keywordflow">if</span> (parentComponent != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>    {</div>
-<div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span>        <span class="keywordflow">if</span> (parentComponent-&gt;getComponentID() == <span class="stringliteral">&quot;Rack&quot;</span>)</div>
-<div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span>        {</div>
-<div class="line"><a id="l01413" name="l01413"></a><span class="lineno"> 1413</span>            <a class="code hl_class" href="../../d0/dc7/class_rack.html">Rack</a> *parentRack = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="../../d0/dc7/class_rack.html">Rack</a> *<span class="keyword">&gt;</span>(parentComponent);</div>
-<div class="line"><a id="l01414" name="l01414"></a><span class="lineno"> 1414</span>            <span class="keywordflow">if</span> (parentRack != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l01415" name="l01415"></a><span class="lineno"> 1415</span>            {</div>
-<div class="line"><a id="l01416" name="l01416"></a><span class="lineno"> 1416</span>                parentRack-&gt;<a class="code hl_function" href="../../d0/dc7/class_rack.html#a242706184ce1acc0a2feed4fb88ede12">resized</a>();</div>
-<div class="line"><a id="l01417" name="l01417"></a><span class="lineno"> 1417</span>            }</div>
-<div class="line"><a id="l01418" name="l01418"></a><span class="lineno"> 1418</span>        }</div>
-<div class="line"><a id="l01419" name="l01419"></a><span class="lineno"> 1419</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (parentComponent-&gt;getComponentID() == <span class="stringliteral">&quot;RackContainer&quot;</span>)</div>
-<div class="line"><a id="l01420" name="l01420"></a><span class="lineno"> 1420</span>        {</div>
-<div class="line"><a id="l01421" name="l01421"></a><span class="lineno"> 1421</span>            <span class="keyword">auto</span> *container = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="../../d1/d32/class_rack_1_1_rack_container.html">Rack::RackContainer</a> *<span class="keyword">&gt;</span>(parentComponent);</div>
-<div class="line"><a id="l01422" name="l01422"></a><span class="lineno"> 1422</span>            <span class="keywordflow">if</span> (container != <span class="keyword">nullptr</span> &amp;&amp; container-&gt;rack != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l01423" name="l01423"></a><span class="lineno"> 1423</span>            {</div>
-<div class="line"><a id="l01424" name="l01424"></a><span class="lineno"> 1424</span>                container-&gt;rack-&gt;resized();</div>
-<div class="line"><a id="l01425" name="l01425"></a><span class="lineno"> 1425</span>            }</div>
-<div class="line"><a id="l01426" name="l01426"></a><span class="lineno"> 1426</span>        }</div>
-<div class="line"><a id="l01427" name="l01427"></a><span class="lineno"> 1427</span>    }</div>
-<div class="line"><a id="l01428" name="l01428"></a><span class="lineno"> 1428</span>}</div>
+<div class="line"><a id="l01454" name="l01454"></a><span class="lineno"> 1454</span></div>
+<div class="foldopen" id="foldopen01460" data-start="{" data-end="}">
+<div class="line"><a id="l01460" name="l01460"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#ac86e2c0b7ccc78375316a5fa726793b9"> 1460</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ac86e2c0b7ccc78375316a5fa726793b9">RackSlot::clearGearItem</a>()</div>
+<div class="line"><a id="l01461" name="l01461"></a><span class="lineno"> 1461</span>{</div>
+<div class="line"><a id="l01462" name="l01462"></a><span class="lineno"> 1462</span>    <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l01463" name="l01463"></a><span class="lineno"> 1463</span>    <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a4e11cf0282f711f39fb75925526decb6">updateButtonStates</a>(); <span class="comment">// Update button states when gear is removed</span></div>
+<div class="line"><a id="l01464" name="l01464"></a><span class="lineno"> 1464</span>    repaint();            <span class="comment">// Trigger repaint to update</span></div>
+<div class="line"><a id="l01465" name="l01465"></a><span class="lineno"> 1465</span> </div>
+<div class="line"><a id="l01466" name="l01466"></a><span class="lineno"> 1466</span>    <span class="comment">// Trigger re-layout of parent rack to resize slot back to default height</span></div>
+<div class="line"><a id="l01467" name="l01467"></a><span class="lineno"> 1467</span>    juce::Component *parentComponent = <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28">findParentRackComponent</a>();</div>
+<div class="line"><a id="l01468" name="l01468"></a><span class="lineno"> 1468</span>    <span class="keywordflow">if</span> (parentComponent != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l01469" name="l01469"></a><span class="lineno"> 1469</span>    {</div>
+<div class="line"><a id="l01470" name="l01470"></a><span class="lineno"> 1470</span>        <span class="keywordflow">if</span> (parentComponent-&gt;getComponentID() == <span class="stringliteral">&quot;Rack&quot;</span>)</div>
+<div class="line"><a id="l01471" name="l01471"></a><span class="lineno"> 1471</span>        {</div>
+<div class="line"><a id="l01472" name="l01472"></a><span class="lineno"> 1472</span>            <a class="code hl_class" href="../../d0/dc7/class_rack.html">Rack</a> *parentRack = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="../../d0/dc7/class_rack.html">Rack</a> *<span class="keyword">&gt;</span>(parentComponent);</div>
+<div class="line"><a id="l01473" name="l01473"></a><span class="lineno"> 1473</span>            <span class="keywordflow">if</span> (parentRack != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l01474" name="l01474"></a><span class="lineno"> 1474</span>            {</div>
+<div class="line"><a id="l01475" name="l01475"></a><span class="lineno"> 1475</span>                parentRack-&gt;<a class="code hl_function" href="../../d0/dc7/class_rack.html#a242706184ce1acc0a2feed4fb88ede12">resized</a>();</div>
+<div class="line"><a id="l01476" name="l01476"></a><span class="lineno"> 1476</span>            }</div>
+<div class="line"><a id="l01477" name="l01477"></a><span class="lineno"> 1477</span>        }</div>
+<div class="line"><a id="l01478" name="l01478"></a><span class="lineno"> 1478</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (parentComponent-&gt;getComponentID() == <span class="stringliteral">&quot;RackContainer&quot;</span>)</div>
+<div class="line"><a id="l01479" name="l01479"></a><span class="lineno"> 1479</span>        {</div>
+<div class="line"><a id="l01480" name="l01480"></a><span class="lineno"> 1480</span>            <span class="keyword">auto</span> *container = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="../../d1/d32/class_rack_1_1_rack_container.html">Rack::RackContainer</a> *<span class="keyword">&gt;</span>(parentComponent);</div>
+<div class="line"><a id="l01481" name="l01481"></a><span class="lineno"> 1481</span>            <span class="keywordflow">if</span> (container != <span class="keyword">nullptr</span> &amp;&amp; container-&gt;rack != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l01482" name="l01482"></a><span class="lineno"> 1482</span>            {</div>
+<div class="line"><a id="l01483" name="l01483"></a><span class="lineno"> 1483</span>                container-&gt;rack-&gt;resized();</div>
+<div class="line"><a id="l01484" name="l01484"></a><span class="lineno"> 1484</span>            }</div>
+<div class="line"><a id="l01485" name="l01485"></a><span class="lineno"> 1485</span>        }</div>
+<div class="line"><a id="l01486" name="l01486"></a><span class="lineno"> 1486</span>    }</div>
+<div class="line"><a id="l01487" name="l01487"></a><span class="lineno"> 1487</span>}</div>
 </div>
-<div class="line"><a id="l01429" name="l01429"></a><span class="lineno"> 1429</span></div>
-<div class="foldopen" id="foldopen01437" data-start="{" data-end="}">
-<div class="line"><a id="l01437" name="l01437"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e"> 1437</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">RackSlot::setHighlighted</a>(<span class="keywordtype">bool</span> shouldHighlight)</div>
-<div class="line"><a id="l01438" name="l01438"></a><span class="lineno"> 1438</span>{</div>
-<div class="line"><a id="l01439" name="l01439"></a><span class="lineno"> 1439</span>    <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a6e43b262f31a63a1878ad8ca9aaf3d1e">highlighted</a> = shouldHighlight;</div>
-<div class="line"><a id="l01440" name="l01440"></a><span class="lineno"> 1440</span>    repaint();</div>
-<div class="line"><a id="l01441" name="l01441"></a><span class="lineno"> 1441</span>}</div>
+<div class="line"><a id="l01488" name="l01488"></a><span class="lineno"> 1488</span></div>
+<div class="foldopen" id="foldopen01496" data-start="{" data-end="}">
+<div class="line"><a id="l01496" name="l01496"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e"> 1496</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">RackSlot::setHighlighted</a>(<span class="keywordtype">bool</span> shouldHighlight)</div>
+<div class="line"><a id="l01497" name="l01497"></a><span class="lineno"> 1497</span>{</div>
+<div class="line"><a id="l01498" name="l01498"></a><span class="lineno"> 1498</span>    <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a6e43b262f31a63a1878ad8ca9aaf3d1e">highlighted</a> = shouldHighlight;</div>
+<div class="line"><a id="l01499" name="l01499"></a><span class="lineno"> 1499</span>    repaint();</div>
+<div class="line"><a id="l01500" name="l01500"></a><span class="lineno"> 1500</span>}</div>
 </div>
-<div class="line"><a id="l01442" name="l01442"></a><span class="lineno"> 1442</span> </div>
-<div class="line"><a id="l01443" name="l01443"></a><span class="lineno"> 1443</span><span class="comment">// Helper method to find parent Rack</span></div>
-<div class="foldopen" id="foldopen01444" data-start="{" data-end="}">
-<div class="line"><a id="l01444" name="l01444"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28"> 1444</a></span>juce::Component *<a class="code hl_function" href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28">RackSlot::findParentRackComponent</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l01445" name="l01445"></a><span class="lineno"> 1445</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l01446" name="l01446"></a><span class="lineno"> 1446</span>    juce::Component *parent = getParentComponent();</div>
-<div class="line"><a id="l01447" name="l01447"></a><span class="lineno"> 1447</span>    <span class="keywordflow">while</span> (parent != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l01448" name="l01448"></a><span class="lineno"> 1448</span>    {</div>
-<div class="line"><a id="l01449" name="l01449"></a><span class="lineno"> 1449</span>        <span class="keywordflow">if</span> (parent-&gt;getComponentID() == <span class="stringliteral">&quot;Rack&quot;</span> || parent-&gt;getComponentID() == <span class="stringliteral">&quot;RackContainer&quot;</span>)</div>
-<div class="line"><a id="l01450" name="l01450"></a><span class="lineno"> 1450</span>        {</div>
-<div class="line"><a id="l01451" name="l01451"></a><span class="lineno"> 1451</span>            <span class="keywordflow">return</span> parent;</div>
-<div class="line"><a id="l01452" name="l01452"></a><span class="lineno"> 1452</span>        }</div>
-<div class="line"><a id="l01453" name="l01453"></a><span class="lineno"> 1453</span>        parent = parent-&gt;getParentComponent();</div>
-<div class="line"><a id="l01454" name="l01454"></a><span class="lineno"> 1454</span>    }</div>
-<div class="line"><a id="l01455" name="l01455"></a><span class="lineno"> 1455</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l01456" name="l01456"></a><span class="lineno"> 1456</span>}</div>
+<div class="line"><a id="l01501" name="l01501"></a><span class="lineno"> 1501</span> </div>
+<div class="line"><a id="l01502" name="l01502"></a><span class="lineno"> 1502</span><span class="comment">// Helper method to find parent Rack</span></div>
+<div class="foldopen" id="foldopen01503" data-start="{" data-end="}">
+<div class="line"><a id="l01503" name="l01503"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28"> 1503</a></span>juce::Component *<a class="code hl_function" href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28">RackSlot::findParentRackComponent</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l01504" name="l01504"></a><span class="lineno"> 1504</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l01505" name="l01505"></a><span class="lineno"> 1505</span>    juce::Component *parent = getParentComponent();</div>
+<div class="line"><a id="l01506" name="l01506"></a><span class="lineno"> 1506</span>    <span class="keywordflow">while</span> (parent != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l01507" name="l01507"></a><span class="lineno"> 1507</span>    {</div>
+<div class="line"><a id="l01508" name="l01508"></a><span class="lineno"> 1508</span>        <span class="keywordflow">if</span> (parent-&gt;getComponentID() == <span class="stringliteral">&quot;Rack&quot;</span> || parent-&gt;getComponentID() == <span class="stringliteral">&quot;RackContainer&quot;</span>)</div>
+<div class="line"><a id="l01509" name="l01509"></a><span class="lineno"> 1509</span>        {</div>
+<div class="line"><a id="l01510" name="l01510"></a><span class="lineno"> 1510</span>            <span class="keywordflow">return</span> parent;</div>
+<div class="line"><a id="l01511" name="l01511"></a><span class="lineno"> 1511</span>        }</div>
+<div class="line"><a id="l01512" name="l01512"></a><span class="lineno"> 1512</span>        parent = parent-&gt;getParentComponent();</div>
+<div class="line"><a id="l01513" name="l01513"></a><span class="lineno"> 1513</span>    }</div>
+<div class="line"><a id="l01514" name="l01514"></a><span class="lineno"> 1514</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l01515" name="l01515"></a><span class="lineno"> 1515</span>}</div>
 </div>
-<div class="line"><a id="l01457" name="l01457"></a><span class="lineno"> 1457</span></div>
-<div class="foldopen" id="foldopen01463" data-start="{" data-end="}">
-<div class="line"><a id="l01463" name="l01463"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a6ba3749f33862eabcfa2b1baf07026b0"> 1463</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a6ba3749f33862eabcfa2b1baf07026b0">RackSlot::createInstance</a>()</div>
-<div class="line"><a id="l01464" name="l01464"></a><span class="lineno"> 1464</span>{</div>
-<div class="line"><a id="l01465" name="l01465"></a><span class="lineno"> 1465</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> == <span class="keyword">nullptr</span> || <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;isInstance)</div>
-<div class="line"><a id="l01466" name="l01466"></a><span class="lineno"> 1466</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01467" name="l01467"></a><span class="lineno"> 1467</span> </div>
-<div class="line"><a id="l01468" name="l01468"></a><span class="lineno"> 1468</span>    <span class="comment">// Create a new instance of the current gear item</span></div>
-<div class="line"><a id="l01469" name="l01469"></a><span class="lineno"> 1469</span>    <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;createInstance(<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;unitId);</div>
-<div class="line"><a id="l01470" name="l01470"></a><span class="lineno"> 1470</span> </div>
-<div class="line"><a id="l01471" name="l01471"></a><span class="lineno"> 1471</span>    <span class="comment">// Repaint to show the instance state</span></div>
-<div class="line"><a id="l01472" name="l01472"></a><span class="lineno"> 1472</span>    repaint();</div>
-<div class="line"><a id="l01473" name="l01473"></a><span class="lineno"> 1473</span>}</div>
+<div class="line"><a id="l01516" name="l01516"></a><span class="lineno"> 1516</span></div>
+<div class="foldopen" id="foldopen01522" data-start="{" data-end="}">
+<div class="line"><a id="l01522" name="l01522"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#a6ba3749f33862eabcfa2b1baf07026b0"> 1522</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#a6ba3749f33862eabcfa2b1baf07026b0">RackSlot::createInstance</a>()</div>
+<div class="line"><a id="l01523" name="l01523"></a><span class="lineno"> 1523</span>{</div>
+<div class="line"><a id="l01524" name="l01524"></a><span class="lineno"> 1524</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> == <span class="keyword">nullptr</span> || <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;isInstance)</div>
+<div class="line"><a id="l01525" name="l01525"></a><span class="lineno"> 1525</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01526" name="l01526"></a><span class="lineno"> 1526</span> </div>
+<div class="line"><a id="l01527" name="l01527"></a><span class="lineno"> 1527</span>    <span class="comment">// Create a new instance of the current gear item</span></div>
+<div class="line"><a id="l01528" name="l01528"></a><span class="lineno"> 1528</span>    <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;createInstance(<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;unitId);</div>
+<div class="line"><a id="l01529" name="l01529"></a><span class="lineno"> 1529</span> </div>
+<div class="line"><a id="l01530" name="l01530"></a><span class="lineno"> 1530</span>    <span class="comment">// Repaint to show the instance state</span></div>
+<div class="line"><a id="l01531" name="l01531"></a><span class="lineno"> 1531</span>    repaint();</div>
+<div class="line"><a id="l01532" name="l01532"></a><span class="lineno"> 1532</span>}</div>
 </div>
-<div class="line"><a id="l01474" name="l01474"></a><span class="lineno"> 1474</span></div>
-<div class="foldopen" id="foldopen01480" data-start="{" data-end="}">
-<div class="line"><a id="l01480" name="l01480"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#affffca65bd1cefc894c8bf71dbd53dcb"> 1480</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#affffca65bd1cefc894c8bf71dbd53dcb">RackSlot::resetToSource</a>()</div>
-<div class="line"><a id="l01481" name="l01481"></a><span class="lineno"> 1481</span>{</div>
-<div class="line"><a id="l01482" name="l01482"></a><span class="lineno"> 1482</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> == <span class="keyword">nullptr</span> || !<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;isInstance)</div>
-<div class="line"><a id="l01483" name="l01483"></a><span class="lineno"> 1483</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01484" name="l01484"></a><span class="lineno"> 1484</span> </div>
-<div class="line"><a id="l01485" name="l01485"></a><span class="lineno"> 1485</span>    <span class="comment">// Reset the instance to match its source</span></div>
-<div class="line"><a id="l01486" name="l01486"></a><span class="lineno"> 1486</span>    <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;resetToSource();</div>
-<div class="line"><a id="l01487" name="l01487"></a><span class="lineno"> 1487</span> </div>
-<div class="line"><a id="l01488" name="l01488"></a><span class="lineno"> 1488</span>    <span class="comment">// Repaint to show the updated state</span></div>
-<div class="line"><a id="l01489" name="l01489"></a><span class="lineno"> 1489</span>    repaint();</div>
-<div class="line"><a id="l01490" name="l01490"></a><span class="lineno"> 1490</span>}</div>
+<div class="line"><a id="l01533" name="l01533"></a><span class="lineno"> 1533</span></div>
+<div class="foldopen" id="foldopen01539" data-start="{" data-end="}">
+<div class="line"><a id="l01539" name="l01539"></a><span class="lineno"><a class="line" href="../../dc/dde/class_rack_slot.html#affffca65bd1cefc894c8bf71dbd53dcb"> 1539</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../dc/dde/class_rack_slot.html#affffca65bd1cefc894c8bf71dbd53dcb">RackSlot::resetToSource</a>()</div>
+<div class="line"><a id="l01540" name="l01540"></a><span class="lineno"> 1540</span>{</div>
+<div class="line"><a id="l01541" name="l01541"></a><span class="lineno"> 1541</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a> == <span class="keyword">nullptr</span> || !<a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;isInstance)</div>
+<div class="line"><a id="l01542" name="l01542"></a><span class="lineno"> 1542</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01543" name="l01543"></a><span class="lineno"> 1543</span> </div>
+<div class="line"><a id="l01544" name="l01544"></a><span class="lineno"> 1544</span>    <span class="comment">// Reset the instance to match its source</span></div>
+<div class="line"><a id="l01545" name="l01545"></a><span class="lineno"> 1545</span>    <a class="code hl_variable" href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">gearItem</a>-&gt;resetToSource();</div>
+<div class="line"><a id="l01546" name="l01546"></a><span class="lineno"> 1546</span> </div>
+<div class="line"><a id="l01547" name="l01547"></a><span class="lineno"> 1547</span>    <span class="comment">// Repaint to show the updated state</span></div>
+<div class="line"><a id="l01548" name="l01548"></a><span class="lineno"> 1548</span>    repaint();</div>
+<div class="line"><a id="l01549" name="l01549"></a><span class="lineno"> 1549</span>}</div>
 </div>
 <div class="ttc" id="a_gear_library_8h_html"><div class="ttname"><a href="../../de/da8/_gear_library_8h.html">GearLibrary.h</a></div><div class="ttdoc">Header file for the GearLibrary class and related components.</div></div>
 <div class="ttc" id="a_rack_8h_html"><div class="ttname"><a href="../../d7/d44/_rack_8h.html">Rack.h</a></div><div class="ttdoc">Header file for the Rack class which manages a virtual rack of audio gear.</div></div>
@@ -1449,48 +1508,48 @@ $(function(){initNavTree('d5/d8d/_rack_slot_8cpp_source.html','../../',''); });
 <div class="ttc" id="aclass_rack_html_a5be778ce22cc1060222410fa2250eb99"><div class="ttname"><a href="../../d0/dc7/class_rack.html#a5be778ce22cc1060222410fa2250eb99">Rack::itemDropped</a></div><div class="ttdeci">void itemDropped(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Handles when a dragged item is dropped onto the rack.</div><div class="ttdef"><b>Definition</b> <a href="../../d0/d7a/_rack_8cpp_source.html#l00258">Rack.cpp:258</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a08c14088fafde054b7350926d59561ed"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a08c14088fafde054b7350926d59561ed">RackSlot::resized</a></div><div class="ttdeci">void resized() override</div><div class="ttdoc">Handles resizing of the rack slot component.</div><div class="ttdef"><b>Definition</b> <a href="#l00649">RackSlot.cpp:649</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a15035758be3c77f7eee2250ba0f40fa3"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a15035758be3c77f7eee2250ba0f40fa3">RackSlot::mouseDrag</a></div><div class="ttdeci">void mouseDrag(const juce::MouseEvent &amp;e) override</div><div class="ttdoc">Handles mouse drag events on the rack slot.</div><div class="ttdef"><b>Definition</b> <a href="#l00878">RackSlot.cpp:878</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_a1f441a7ac2af9a416ef33503c586fe01"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a1f441a7ac2af9a416ef33503c586fe01">RackSlot::setGearItem</a></div><div class="ttdeci">void setGearItem(GearItem *newGearItem)</div><div class="ttdoc">Sets a new gear item in the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01343">RackSlot.cpp:1343</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_a26ea927ff55b10dbea7edcc699fb29ee"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a26ea927ff55b10dbea7edcc699fb29ee">RackSlot::handleSwitchInteraction</a></div><div class="ttdeci">void handleSwitchInteraction(GearControl &amp;control)</div><div class="ttdoc">Handles interaction with a switch control.</div><div class="ttdef"><b>Definition</b> <a href="#l01151">RackSlot.cpp:1151</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_a1f441a7ac2af9a416ef33503c586fe01"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a1f441a7ac2af9a416ef33503c586fe01">RackSlot::setGearItem</a></div><div class="ttdeci">void setGearItem(GearItem *newGearItem)</div><div class="ttdoc">Sets a new gear item in the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01402">RackSlot.cpp:1402</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_a26ea927ff55b10dbea7edcc699fb29ee"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a26ea927ff55b10dbea7edcc699fb29ee">RackSlot::handleSwitchInteraction</a></div><div class="ttdeci">void handleSwitchInteraction(GearControl &amp;control)</div><div class="ttdoc">Handles interaction with a switch control.</div><div class="ttdef"><b>Definition</b> <a href="#l01210">RackSlot.cpp:1210</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a28bb949daa1d36f7cb0e7b080eb09926"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a28bb949daa1d36f7cb0e7b080eb09926">RackSlot::buttonClicked</a></div><div class="ttdeci">void buttonClicked(juce::Button *button) override</div><div class="ttdoc">Handles button click events for the navigation buttons.</div><div class="ttdef"><b>Definition</b> <a href="#l00669">RackSlot.cpp:669</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a29ca13f47e724bf2de5c68b44ab875ad"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a29ca13f47e724bf2de5c68b44ab875ad">RackSlot::upButton</a></div><div class="ttdeci">std::unique_ptr&lt; juce::DrawableButton &gt; upButton</div><div class="ttdoc">Button for moving item up.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00317">RackSlot.h:317</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a29d1436ce2e6bad5b9c9950d29832f9b"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a29d1436ce2e6bad5b9c9950d29832f9b">RackSlot::paint</a></div><div class="ttdeci">void paint(juce::Graphics &amp;g) override</div><div class="ttdoc">Paints the rack slot and its contents.</div><div class="ttdef"><b>Definition</b> <a href="#l00144">RackSlot.cpp:144</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a2a79353c722bbe2567e74285969a7a8f"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a2a79353c722bbe2567e74285969a7a8f">RackSlot::gearItem</a></div><div class="ttdeci">GearItem * gearItem</div><div class="ttdoc">The gear item in this slot, if any.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00308">RackSlot.h:308</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a2c7591f31d819e1b325f9b6d52840d2a"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a2c7591f31d819e1b325f9b6d52840d2a">RackSlot::isAvailable</a></div><div class="ttdeci">bool isAvailable() const</div><div class="ttdoc">Checks if the slot is available (empty).</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00173">RackSlot.h:173</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_a381738319731279c753d21860dcb8406"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a381738319731279c753d21860dcb8406">RackSlot::itemDragMove</a></div><div class="ttdeci">void itemDragMove(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Handles when a dragged item moves over the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01256">RackSlot.cpp:1256</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_a381738319731279c753d21860dcb8406"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a381738319731279c753d21860dcb8406">RackSlot::itemDragMove</a></div><div class="ttdeci">void itemDragMove(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Handles when a dragged item moves over the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01315">RackSlot.cpp:1315</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a3b2a89c0277486c353b481c97755b445"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a3b2a89c0277486c353b481c97755b445">RackSlot::dragStartValue</a></div><div class="ttdeci">float dragStartValue</div><div class="ttdoc">Control value at drag start.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00311">RackSlot.h:311</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a44a0aa7d313d4512a8dd6e8efdda81a4"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a44a0aa7d313d4512a8dd6e8efdda81a4">RackSlot::moveDown</a></div><div class="ttdeci">void moveDown()</div><div class="ttdoc">Moves the gear item down one slot in the rack.</div><div class="ttdef"><b>Definition</b> <a href="#l00771">RackSlot.cpp:771</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a4e11cf0282f711f39fb75925526decb6"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a4e11cf0282f711f39fb75925526decb6">RackSlot::updateButtonStates</a></div><div class="ttdeci">void updateButtonStates()</div><div class="ttdoc">Updates the enabled state of the navigation buttons.</div><div class="ttdef"><b>Definition</b> <a href="#l00691">RackSlot.cpp:691</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a4f12cff5412344d413c2693f5841fcc8"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a4f12cff5412344d413c2693f5841fcc8">RackSlot::drawFader</a></div><div class="ttdeci">void drawFader(juce::Graphics &amp;g, const GearControl &amp;control, int x, int y)</div><div class="ttdoc">Draws a fader control.</div><div class="ttdef"><b>Definition</b> <a href="#l00471">RackSlot.cpp:471</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a540d2bd9e43f5ff42eddf29a38ff5644"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a540d2bd9e43f5ff42eddf29a38ff5644">RackSlot::activeControl</a></div><div class="ttdeci">GearControl * activeControl</div><div class="ttdoc">Currently active control being manipulated.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00313">RackSlot.h:313</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a611c6ed8302791c1114ff6c7e9ddeb52"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a611c6ed8302791c1114ff6c7e9ddeb52">RackSlot::RackSlot</a></div><div class="ttdeci">RackSlot(int slotIndex)</div><div class="ttdoc">Constructs a new RackSlot instance.</div><div class="ttdef"><b>Definition</b> <a href="#l00024">RackSlot.cpp:24</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_a6ba3749f33862eabcfa2b1baf07026b0"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a6ba3749f33862eabcfa2b1baf07026b0">RackSlot::createInstance</a></div><div class="ttdeci">void createInstance()</div><div class="ttdoc">Creates a new instance of the current gear item.</div><div class="ttdef"><b>Definition</b> <a href="#l01463">RackSlot.cpp:1463</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_a6ba3749f33862eabcfa2b1baf07026b0"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a6ba3749f33862eabcfa2b1baf07026b0">RackSlot::createInstance</a></div><div class="ttdeci">void createInstance()</div><div class="ttdoc">Creates a new instance of the current gear item.</div><div class="ttdef"><b>Definition</b> <a href="#l01522">RackSlot.cpp:1522</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a6e43b262f31a63a1878ad8ca9aaf3d1e"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a6e43b262f31a63a1878ad8ca9aaf3d1e">RackSlot::highlighted</a></div><div class="ttdeci">bool highlighted</div><div class="ttdoc">Whether this slot is highlighted.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00309">RackSlot.h:309</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a6f3ffcc48e78ce4104f57cee319734aa"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a6f3ffcc48e78ce4104f57cee319734aa">RackSlot::drawControls</a></div><div class="ttdeci">void drawControls(juce::Graphics &amp;g, const juce::Rectangle&lt; int &gt; &amp;faceplateArea)</div><div class="ttdoc">Draws all controls for the gear item.</div><div class="ttdef"><b>Definition</b> <a href="#l00251">RackSlot.cpp:251</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a730a143f64066454cf30319663f75c6c"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a730a143f64066454cf30319663f75c6c">RackSlot::currentFaceplateScale</a></div><div class="ttdeci">float currentFaceplateScale</div><div class="ttdoc">Current scale factor for faceplate rendering.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00314">RackSlot.h:314</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_a7ff9f66884af0462e35571ef471f0ebc"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a7ff9f66884af0462e35571ef471f0ebc">RackSlot::itemDragExit</a></div><div class="ttdeci">void itemDragExit(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Handles when a dragged item exits the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01268">RackSlot.cpp:1268</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_a7ff9f66884af0462e35571ef471f0ebc"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a7ff9f66884af0462e35571ef471f0ebc">RackSlot::itemDragExit</a></div><div class="ttdeci">void itemDragExit(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Handles when a dragged item exits the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01327">RackSlot.cpp:1327</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a8212fb1e4f1f37bc3adc0cf6138468d2"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a8212fb1e4f1f37bc3adc0cf6138468d2">RackSlot::drawSwitch</a></div><div class="ttdeci">void drawSwitch(juce::Graphics &amp;g, const GearControl &amp;control, int x, int y)</div><div class="ttdoc">Draws a switch control.</div><div class="ttdef"><b>Definition</b> <a href="#l00289">RackSlot.cpp:289</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a8dbb0abd68bb21bdd2cf94e7bf9d7a91"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a8dbb0abd68bb21bdd2cf94e7bf9d7a91">RackSlot::~RackSlot</a></div><div class="ttdeci">~RackSlot() override</div><div class="ttdoc">Destructor for the RackSlot class.</div><div class="ttdef"><b>Definition</b> <a href="#l00109">RackSlot.cpp:109</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a8f41021888b4377fa04cb7e64d4aac5a"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a8f41021888b4377fa04cb7e64d4aac5a">RackSlot::mouseUp</a></div><div class="ttdeci">void mouseUp(const juce::MouseEvent &amp;e) override</div><div class="ttdoc">Handles mouse up events on the rack slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01017">RackSlot.cpp:1017</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_a9153d9aaaf656c2b03c98502aa0e2f37"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a9153d9aaaf656c2b03c98502aa0e2f37">RackSlot::removeButton</a></div><div class="ttdeci">std::unique_ptr&lt; juce::DrawableButton &gt; removeButton</div><div class="ttdoc">Button for removing item.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00319">RackSlot.h:319</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_a9b6ba072f14ec7fa8ad45a6063291d4a"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a9b6ba072f14ec7fa8ad45a6063291d4a">RackSlot::isInterestedInDragSource</a></div><div class="ttdeci">bool isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Checks if the slot is interested in a drag source.</div><div class="ttdef"><b>Definition</b> <a href="#l01207">RackSlot.cpp:1207</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_aab809ff30b8c5e5c35c59169fb66ae28"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28">RackSlot::findParentRackComponent</a></div><div class="ttdeci">juce::Component * findParentRackComponent() const</div><div class="ttdoc">Finds the parent Rack component.</div><div class="ttdef"><b>Definition</b> <a href="#l01444">RackSlot.cpp:1444</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_ab115bb3cd0b8f21461d5fdaa7e87af96"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ab115bb3cd0b8f21461d5fdaa7e87af96">RackSlot::handleButtonInteraction</a></div><div class="ttdeci">void handleButtonInteraction(GearControl &amp;control)</div><div class="ttdoc">Handles interaction with a button control.</div><div class="ttdef"><b>Definition</b> <a href="#l01166">RackSlot.cpp:1166</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_a9b6ba072f14ec7fa8ad45a6063291d4a"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#a9b6ba072f14ec7fa8ad45a6063291d4a">RackSlot::isInterestedInDragSource</a></div><div class="ttdeci">bool isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Checks if the slot is interested in a drag source.</div><div class="ttdef"><b>Definition</b> <a href="#l01266">RackSlot.cpp:1266</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_aab809ff30b8c5e5c35c59169fb66ae28"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28">RackSlot::findParentRackComponent</a></div><div class="ttdeci">juce::Component * findParentRackComponent() const</div><div class="ttdoc">Finds the parent Rack component.</div><div class="ttdef"><b>Definition</b> <a href="#l01503">RackSlot.cpp:1503</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_ab115bb3cd0b8f21461d5fdaa7e87af96"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ab115bb3cd0b8f21461d5fdaa7e87af96">RackSlot::handleButtonInteraction</a></div><div class="ttdeci">void handleButtonInteraction(GearControl &amp;control)</div><div class="ttdoc">Handles interaction with a button control.</div><div class="ttdef"><b>Definition</b> <a href="#l01225">RackSlot.cpp:1225</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_ab15709c651bdd8a93eb9a32896227fd8"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ab15709c651bdd8a93eb9a32896227fd8">RackSlot::findControlAtPosition</a></div><div class="ttdeci">GearControl * findControlAtPosition(const juce::Point&lt; float &gt; &amp;position, const juce::Rectangle&lt; int &gt; &amp;faceplateArea)</div><div class="ttdoc">Finds a control at the specified position.</div><div class="ttdef"><b>Definition</b> <a href="#l01075">RackSlot.cpp:1075</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_ab8c60dfc32aa701374b14767fa8beb4a"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ab8c60dfc32aa701374b14767fa8beb4a">RackSlot::drawButton</a></div><div class="ttdeci">void drawButton(juce::Graphics &amp;g, const GearControl &amp;control, int x, int y)</div><div class="ttdoc">Draws a button control.</div><div class="ttdef"><b>Definition</b> <a href="#l00377">RackSlot.cpp:377</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_ac133a767b3cb082a415beb85b93053ef"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ac133a767b3cb082a415beb85b93053ef">RackSlot::index</a></div><div class="ttdeci">int index</div><div class="ttdoc">The slot&#39;s position in the rack.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00307">RackSlot.h:307</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_ac4cc3b7f2f024bef16497c0bcf1351a9"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ac4cc3b7f2f024bef16497c0bcf1351a9">RackSlot::downButton</a></div><div class="ttdeci">std::unique_ptr&lt; juce::DrawableButton &gt; downButton</div><div class="ttdoc">Button for moving item down.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00318">RackSlot.h:318</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_ac50f4566f1710a7a4f4f4bead2800691"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ac50f4566f1710a7a4f4f4bead2800691">RackSlot::dragStartPos</a></div><div class="ttdeci">juce::Point&lt; float &gt; dragStartPos</div><div class="ttdoc">Mouse position at drag start.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00312">RackSlot.h:312</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_ac86e2c0b7ccc78375316a5fa726793b9"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ac86e2c0b7ccc78375316a5fa726793b9">RackSlot::clearGearItem</a></div><div class="ttdeci">void clearGearItem()</div><div class="ttdoc">Removes the current gear item from the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01401">RackSlot.cpp:1401</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_ac86e2c0b7ccc78375316a5fa726793b9"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ac86e2c0b7ccc78375316a5fa726793b9">RackSlot::clearGearItem</a></div><div class="ttdeci">void clearGearItem()</div><div class="ttdoc">Removes the current gear item from the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01460">RackSlot.cpp:1460</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_acd7ebcf88e91f43a1718df1321799a03"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#acd7ebcf88e91f43a1718df1321799a03">RackSlot::drawKnob</a></div><div class="ttdeci">void drawKnob(juce::Graphics &amp;g, const GearControl &amp;control, int x, int y)</div><div class="ttdoc">Draws a knob control.</div><div class="ttdef"><b>Definition</b> <a href="#l00569">RackSlot.cpp:569</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_ad20a009fccb07bd8aabad9194d84054e"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">RackSlot::setHighlighted</a></div><div class="ttdeci">void setHighlighted(bool shouldHighlight)</div><div class="ttdoc">Sets whether the slot should be highlighted.</div><div class="ttdef"><b>Definition</b> <a href="#l01437">RackSlot.cpp:1437</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_ad20a009fccb07bd8aabad9194d84054e"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e">RackSlot::setHighlighted</a></div><div class="ttdeci">void setHighlighted(bool shouldHighlight)</div><div class="ttdoc">Sets whether the slot should be highlighted.</div><div class="ttdef"><b>Definition</b> <a href="#l01496">RackSlot.cpp:1496</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_ad5f2f1b609dd822816afe6a29a15bdf9"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#ad5f2f1b609dd822816afe6a29a15bdf9">RackSlot::isDragging</a></div><div class="ttdeci">bool isDragging</div><div class="ttdoc">Whether a drag operation is in progress.</div><div class="ttdef"><b>Definition</b> <a href="../../d4/db5/_rack_slot_8h_source.html#l00310">RackSlot.h:310</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_adcc30fa4839236aeb2018f2c44a4850c"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#adcc30fa4839236aeb2018f2c44a4850c">RackSlot::handleFaderInteraction</a></div><div class="ttdeci">void handleFaderInteraction(GearControl &amp;control, const juce::Point&lt; float &gt; &amp;mousePos, const juce::Rectangle&lt; int &gt; &amp;controlBounds)</div><div class="ttdoc">Handles interaction with a fader control.</div><div class="ttdef"><b>Definition</b> <a href="#l01191">RackSlot.cpp:1191</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_adcc30fa4839236aeb2018f2c44a4850c"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#adcc30fa4839236aeb2018f2c44a4850c">RackSlot::handleFaderInteraction</a></div><div class="ttdeci">void handleFaderInteraction(GearControl &amp;control, const juce::Point&lt; float &gt; &amp;mousePos, const juce::Rectangle&lt; int &gt; &amp;controlBounds)</div><div class="ttdoc">Handles interaction with a fader control.</div><div class="ttdef"><b>Definition</b> <a href="#l01250">RackSlot.cpp:1250</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_aef6997010c3d9c8158edad4c21fca2d1"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#aef6997010c3d9c8158edad4c21fca2d1">RackSlot::mouseDown</a></div><div class="ttdeci">void mouseDown(const juce::MouseEvent &amp;e) override</div><div class="ttdoc">Handles mouse down events on the rack slot.</div><div class="ttdef"><b>Definition</b> <a href="#l00822">RackSlot.cpp:822</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_af283ef7ac9dcfd53bb86f076dfdbf57e"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#af283ef7ac9dcfd53bb86f076dfdbf57e">RackSlot::mouseDoubleClick</a></div><div class="ttdeci">void mouseDoubleClick(const juce::MouseEvent &amp;e) override</div><div class="ttdoc">Handles mouse double-click events on the rack slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01033">RackSlot.cpp:1033</a></div></div>
 <div class="ttc" id="aclass_rack_slot_html_afa296f9ba6af3ba35625e506fb1cbbc1"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#afa296f9ba6af3ba35625e506fb1cbbc1">RackSlot::moveUp</a></div><div class="ttdeci">void moveUp()</div><div class="ttdoc">Moves the gear item up one slot in the rack.</div><div class="ttdef"><b>Definition</b> <a href="#l00726">RackSlot.cpp:726</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_afaebe0af9df66f45214457611a71dbb4"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#afaebe0af9df66f45214457611a71dbb4">RackSlot::itemDropped</a></div><div class="ttdeci">void itemDropped(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Handles when a dragged item is dropped onto the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01281">RackSlot.cpp:1281</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_afecc9a1f02b652873899ad1048e10a08"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#afecc9a1f02b652873899ad1048e10a08">RackSlot::itemDragEnter</a></div><div class="ttdeci">void itemDragEnter(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Handles when a dragged item enters the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01246">RackSlot.cpp:1246</a></div></div>
-<div class="ttc" id="aclass_rack_slot_html_affffca65bd1cefc894c8bf71dbd53dcb"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#affffca65bd1cefc894c8bf71dbd53dcb">RackSlot::resetToSource</a></div><div class="ttdeci">void resetToSource()</div><div class="ttdoc">Resets an instance to its source gear item.</div><div class="ttdef"><b>Definition</b> <a href="#l01480">RackSlot.cpp:1480</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_afaebe0af9df66f45214457611a71dbb4"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#afaebe0af9df66f45214457611a71dbb4">RackSlot::itemDropped</a></div><div class="ttdeci">void itemDropped(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Handles when a dragged item is dropped onto the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01340">RackSlot.cpp:1340</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_afecc9a1f02b652873899ad1048e10a08"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#afecc9a1f02b652873899ad1048e10a08">RackSlot::itemDragEnter</a></div><div class="ttdeci">void itemDragEnter(const juce::DragAndDropTarget::SourceDetails &amp;dragSourceDetails) override</div><div class="ttdoc">Handles when a dragged item enters the slot.</div><div class="ttdef"><b>Definition</b> <a href="#l01305">RackSlot.cpp:1305</a></div></div>
+<div class="ttc" id="aclass_rack_slot_html_affffca65bd1cefc894c8bf71dbd53dcb"><div class="ttname"><a href="../../dc/dde/class_rack_slot.html#affffca65bd1cefc894c8bf71dbd53dcb">RackSlot::resetToSource</a></div><div class="ttdeci">void resetToSource()</div><div class="ttdoc">Resets an instance to its source gear item.</div><div class="ttdef"><b>Definition</b> <a href="#l01539">RackSlot.cpp:1539</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
