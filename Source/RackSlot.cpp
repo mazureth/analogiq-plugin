@@ -1083,25 +1083,68 @@ GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position,
         int x = faceplateArea.getX() + (int)(control.position.getX() * faceplateArea.getWidth());
         int y = faceplateArea.getY() + (int)(control.position.getY() * faceplateArea.getHeight());
 
-        // Adjust size based on control type
-        int width, height;
+        // Calculate actual rendered bounds based on control type
+        juce::Rectangle<float> controlBounds;
+
         switch (control.type)
         {
         case GearControl::Type::Switch:
-            width = 30;
-            height = 60;
+        {
+            if (control.switchSpriteSheet.isValid() && control.switchFrames.size() > 0)
+            {
+                // Use sprite frame dimensions (same as drawing)
+                int currentIndex = control.currentIndex;
+                if (currentIndex >= control.switchFrames.size())
+                    currentIndex = 0;
+
+                const auto &frame = control.switchFrames[currentIndex];
+                float scaledFrameWidth = frame.width * currentFaceplateScale;
+                float scaledFrameHeight = frame.height * currentFaceplateScale;
+                controlBounds = juce::Rectangle<float>(x, y, scaledFrameWidth, scaledFrameHeight);
+            }
+            else
+            {
+                // Fallback to basic dimensions (same as drawing)
+                const int switchWidth = 30;
+                const int switchHeight = 60;
+                controlBounds = juce::Rectangle<float>(x, y, switchWidth, switchHeight);
+            }
             break;
+        }
+
         case GearControl::Type::Button:
-            width = height = 30;
+        {
+            if (control.buttonSpriteSheet.isValid() && control.buttonFrames.size() > 0)
+            {
+                // Use sprite frame dimensions (same as drawing)
+                int frameIndex = control.currentIndex;
+                if (frameIndex >= control.buttonFrames.size())
+                    frameIndex = 0;
+
+                const auto &frame = control.buttonFrames[frameIndex];
+                float scaledFrameWidth = frame.width * currentFaceplateScale;
+                float scaledFrameHeight = frame.height * currentFaceplateScale;
+                controlBounds = juce::Rectangle<float>(x, y, scaledFrameWidth, scaledFrameHeight);
+            }
+            else
+            {
+                // Fallback to basic dimensions (same as drawing)
+                const float buttonWidth = 30.0f * currentFaceplateScale;
+                const float buttonHeight = 30.0f * currentFaceplateScale;
+                controlBounds = juce::Rectangle<float>(x, y, buttonWidth, buttonHeight);
+            }
             break;
+        }
+
         case GearControl::Type::Fader:
         {
+            // Use the same handle calculation logic as drawing
             const bool isVertical = control.orientation == "vertical";
             const float faderLength = control.length * currentFaceplateScale;
             const float faderWidth = 20.0f * currentFaceplateScale;
             const float handleSize = 10.0f * currentFaceplateScale;
 
-            // Calculate handle position based on current value
+            // Calculate handle position (same as drawing)
             float handleX, handleY;
             if (isVertical)
             {
@@ -1114,27 +1157,43 @@ GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position,
                 handleY = y;
             }
 
-            // Create handle bounds
-            juce::Rectangle<float> handleBounds(
+            // Create handle bounds (same as drawing)
+            controlBounds = juce::Rectangle<float>(
                 handleX - handleSize / 2,
                 handleY - handleSize / 2,
                 isVertical ? faderWidth + handleSize : handleSize,
                 isVertical ? handleSize : faderWidth + handleSize);
-
-            // Check if click is within handle bounds
-            if (handleBounds.contains(position))
-                return &control;
-            continue; // Skip to next control if not clicking handle
-        }
-        case GearControl::Type::Knob:
-            width = height = 40;
             break;
-        default:
-            width = height = 40;
         }
 
-        juce::Rectangle<int> controlBounds(x, y, width, height);
-        if (controlBounds.contains(position.toInt()))
+        case GearControl::Type::Knob:
+        {
+            // Use the same logic as drawKnob() to calculate knob size
+            float knobSize;
+            if (control.loadedImage.isValid())
+            {
+                // Use the original image dimensions as the base size (same as drawing)
+                float originalWidth = (float)control.loadedImage.getWidth();
+                float originalHeight = (float)control.loadedImage.getHeight();
+                // Use the larger dimension to ensure the knob is properly sized
+                knobSize = std::max(originalWidth, originalHeight) * currentFaceplateScale;
+            }
+            else
+            {
+                // Fallback to standard size if no image (same as drawing)
+                const float baseKnobSize = 40.0f;
+                knobSize = baseKnobSize * currentFaceplateScale;
+            }
+            controlBounds = juce::Rectangle<float>(x, y, knobSize, knobSize);
+            break;
+        }
+
+        default:
+            controlBounds = juce::Rectangle<float>(x, y, 40, 40);
+        }
+
+        // Check if position is within the actual rendered bounds
+        if (controlBounds.contains(position))
             return &control;
     }
 
