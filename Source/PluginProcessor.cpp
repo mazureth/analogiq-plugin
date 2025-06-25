@@ -10,6 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "CacheManager.h"
 
 /**
  * @brief Constructs a new AnalogIQProcessor.
@@ -26,6 +27,8 @@ AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &networkFetcher)
       state(*this, &undoManager, "Parameters", {}),
       networkFetcher(networkFetcher)
 {
+    // Initialize the cache manager
+    CacheManager::getInstance();
 }
 
 /**

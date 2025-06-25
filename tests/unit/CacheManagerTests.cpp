@@ -46,20 +46,34 @@ public:
             CacheManager &cache = CacheManager::getInstance();
 
             juce::String testUnitId = "test-unit-1.0.0";
-            juce::String testJsonData = R"({"name": "Test Unit", "version": "1.0.0"})";
+            juce::String testJsonData = R"({
+                "unitId": "test-unit-1.0.0",
+                "name": "Test Unit",
+                "manufacturer": "Test Manufacturer",
+                "category": "compressor",
+                "version": "1.0.0",
+                "controls": [
+                    {
+                        "id": "test-control",
+                        "label": "Test Control",
+                        "type": "knob"
+                    }
+                ]
+            })";
 
-            // Test that unit is not cached initially
+            // Test unit JSON caching
             expect(!cache.isUnitCached(testUnitId), "Unit should not be cached initially");
-
-            // Save unit to cache
             expect(cache.saveUnitToCache(testUnitId, testJsonData), "Saving unit should succeed");
-
-            // Test that unit is now cached
             expect(cache.isUnitCached(testUnitId), "Unit should be cached after saving");
 
-            // Load unit from cache
-            juce::String loadedData = cache.loadUnitFromCache(testUnitId);
-            expect(loadedData == testJsonData, "Loaded data should match saved data");
+            // Test loading cached unit JSON
+            juce::String loadedJson = cache.loadUnitFromCache(testUnitId);
+            expect(loadedJson.isNotEmpty(), "Loaded JSON should not be empty");
+            expect(loadedJson == testJsonData, "Loaded JSON should match original data");
+
+            // Test unit path
+            juce::File unitPath = cache.getCachedUnitPath(testUnitId);
+            expect(unitPath.getFileName() == testUnitId + ".json", "Unit path should have correct filename");
         }
 
         beginTest("Image Caching");

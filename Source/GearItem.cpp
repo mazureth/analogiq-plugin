@@ -8,6 +8,7 @@
 
 #include "GearItem.h"
 #include "GearLibrary.h" // Include for RemoteResources
+#include "CacheManager.h"
 
 /**
  * @brief Loads the thumbnail image for the gear item.
@@ -22,6 +23,21 @@ bool GearItem::loadImage()
     // If no thumbnail specified, use placeholder
     if (thumbnailImage.isEmpty())
         return createPlaceholderImage();
+
+    // Extract filename from thumbnail path
+    juce::String filename = juce::File(thumbnailImage).getFileName();
+
+    // Check cache first
+    CacheManager &cache = CacheManager::getInstance();
+    if (cache.isThumbnailCached(unitId, filename))
+    {
+        juce::Image cachedImage = cache.loadThumbnailFromCache(unitId, filename);
+        if (cachedImage.isValid())
+        {
+            image = cachedImage;
+            return true;
+        }
+    }
 
     // Check if the thumbnail is a remote path
     if (thumbnailImage.startsWith("assets/") || thumbnailImage.startsWith("http"))
@@ -59,9 +75,10 @@ bool GearItem::loadImage()
                 }
             }
 
-            // If successfully loaded image, return true
+            // If successfully loaded image, cache it and return true
             if (image.isValid())
             {
+                cache.saveThumbnailToCache(unitId, filename, image);
                 return true;
             }
         }
