@@ -15,6 +15,7 @@ add_executable(analogiq_tests
     unit/NotesPanelTests.cpp
     unit/PluginProcessorTests.cpp
     unit/PluginEditorTests.cpp
+    unit/CacheManagerTests.cpp
 )
 
 # Set C++ standard
