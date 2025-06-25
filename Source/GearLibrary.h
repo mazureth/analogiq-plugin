@@ -13,6 +13,7 @@
 #include "DraggableListBox.h"
 #include "GearItem.h"
 #include "INetworkFetcher.h"
+#include "CacheManager.h"
 
 /**
  * @brief Namespace containing remote resource URLs and paths.
@@ -216,6 +217,37 @@ public:
         return result;
     }
 
+    /**
+     * @brief Updates the filtered items in both list and tree views.
+     *
+     * Refreshes the display of items based on current search criteria.
+     */
+    void updateFilteredItems();
+
+    /**
+     * @brief Refreshes the tree view to update recently used items.
+     *
+     * This method should be called when recently used items change
+     * to update the tree view display.
+     */
+    void refreshTreeView();
+
+    /**
+     * @brief Refreshes only the recently used section of the tree.
+     *
+     * This method updates only the recently used items without
+     * affecting the expansion state of other tree nodes.
+     */
+    void refreshRecentlyUsedSection();
+
+    /**
+     * @brief Clears the recently used items and refreshes the tree view.
+     *
+     * This method clears all recently used items from the cache
+     * and updates the tree view display.
+     */
+    void clearRecentlyUsed();
+
 private:
     /**
      * @brief Parses the gear library data from JSON format.
@@ -231,11 +263,6 @@ private:
      * @return true if the item should be shown
      */
     bool shouldShowItem(const GearItem &item) const;
-
-    /**
-     * @brief Updates the filtered items in both list and tree views.
-     */
-    void updateFilteredItems();
 
     // UI components
     juce::Label titleLabel{"titleLabel", "Gear Library"};                                                            ///< Title label for the library
@@ -290,10 +317,11 @@ public:
      */
     enum class ItemType
     {
-        Root,     ///< Root node
-        Category, ///< Category node
-        Type,     ///< Type node
-        Gear      ///< Individual gear item
+        Root,        ///< Root node
+        Category,    ///< Category node
+        Type,        ///< Type node
+        Gear,        ///< Individual gear item
+        RecentlyUsed ///< Recently used items group
     };
 
     /**
@@ -405,8 +433,39 @@ public:
 
         if (itemType == ItemType::Root)
         {
+            // Add Recently Used group
+            addSubItem(new GearTreeItem(ItemType::RecentlyUsed, "Recently Used", owner));
+
             // Add Categories group
             addSubItem(new GearTreeItem(ItemType::Category, "Categories", owner));
+        }
+        else if (itemType == ItemType::RecentlyUsed)
+        {
+            // Get recently used items from cache
+            CacheManager &cache = CacheManager::getInstance();
+            juce::StringArray recentlyUsed = cache.getRecentlyUsed(CacheManager::MAX_RECENTLY_USED); // Show up to MAX_RECENTLY_USED items
+
+            if (!recentlyUsed.isEmpty())
+            {
+                // Get all items from the library
+                const auto &items = owner->getItems();
+
+                // Add each recently used item
+                for (const auto &unitId : recentlyUsed)
+                {
+                    // Find the gear item in the library
+                    for (int i = 0; i < items.size(); ++i)
+                    {
+                        const auto &item = items.getReference(i);
+                        if (item.unitId == unitId)
+                        {
+                            addSubItem(new GearTreeItem(ItemType::Gear, item.name, owner,
+                                                        const_cast<GearItem *>(&item), i));
+                            break;
+                        }
+                    }
+                }
+            }
         }
         else if (itemType == ItemType::Category && name == "Categories")
         {
@@ -548,6 +607,23 @@ public:
      */
     void itemClicked(const juce::MouseEvent &e) override
     {
+        // Handle right-click on Recently Used item
+        if (itemType == ItemType::RecentlyUsed && e.mods.isRightButtonDown())
+        {
+            juce::PopupMenu menu;
+            menu.addItem(1, "Clear Recently Used");
+
+            menu.showMenuAsync(juce::PopupMenu::Options(),
+                               [this](int result)
+                               {
+                                   if (result == 1 && owner != nullptr)
+                                   {
+                                       owner->clearRecentlyUsed();
+                                   }
+                               });
+            return;
+        }
+
         // First handle the default behavior
         TreeViewItem::itemClicked(e);
 

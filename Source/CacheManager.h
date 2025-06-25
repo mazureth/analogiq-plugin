@@ -16,6 +16,11 @@ class CacheManager
 {
 public:
     /**
+     * @brief Maximum number of recently used items that can be stored and displayed.
+     */
+    static constexpr int MAX_RECENTLY_USED = 20;
+
+    /**
      * @brief Gets the singleton instance of CacheManager.
      *
      * @return Reference to the CacheManager instance
@@ -203,6 +208,53 @@ public:
      * @return The total cache size in bytes
      */
     juce::int64 getCacheSize() const;
+
+    // Recently Used functionality
+    /**
+     * @brief Adds a gear item to the recently used list.
+     *
+     * @param unitId The unit identifier to add to recently used
+     * @return true if the operation was successful, false otherwise
+     */
+    bool addToRecentlyUsed(const juce::String &unitId);
+
+    /**
+     * @brief Gets the list of recently used unit IDs.
+     *
+     * @param maxCount Maximum number of items to return (default: MAX_RECENTLY_USED)
+     * @return Array of recently used unit IDs, most recent first
+     */
+    juce::StringArray getRecentlyUsed(int maxCount = MAX_RECENTLY_USED) const;
+
+    /**
+     * @brief Removes a unit from the recently used list.
+     *
+     * @param unitId The unit identifier to remove
+     * @return true if the operation was successful, false otherwise
+     */
+    bool removeFromRecentlyUsed(const juce::String &unitId);
+
+    /**
+     * @brief Clears the recently used list.
+     *
+     * @return true if the operation was successful, false otherwise
+     */
+    bool clearRecentlyUsed();
+
+    /**
+     * @brief Gets the number of items in the recently used list.
+     *
+     * @return The number of recently used items
+     */
+    int getRecentlyUsedCount() const;
+
+    /**
+     * @brief Checks if a unit is in the recently used list.
+     *
+     * @param unitId The unit identifier to check
+     * @return true if the unit is in the recently used list, false otherwise
+     */
+    bool isRecentlyUsed(const juce::String &unitId) const;
 
 private:
     /**

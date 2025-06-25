@@ -388,3 +388,211 @@ juce::File CacheManager::getControlsDirectory() const
 {
     return getAssetsDirectory().getChildFile("controls");
 }
+
+// Recently Used functionality
+bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
+{
+    try
+    {
+        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+
+        // Load existing recently used list
+        juce::StringArray recentlyUsed;
+        if (recentlyUsedFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(recentlyUsedFile);
+            if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
+            {
+                auto array = json["recentlyUsed"].getArray();
+                for (const auto &item : *array)
+                {
+                    recentlyUsed.add(item.toString());
+                }
+            }
+        }
+
+        // Remove the unit if it already exists (to move it to the front)
+        recentlyUsed.removeString(unitId);
+
+        // Add the unit to the front of the list
+        recentlyUsed.insert(0, unitId);
+
+        // Limit the list to MAX_RECENTLY_USED items
+        while (recentlyUsed.size() > MAX_RECENTLY_USED)
+        {
+            recentlyUsed.remove(recentlyUsed.size() - 1);
+        }
+
+        // Save the updated list
+        juce::DynamicObject::Ptr jsonObj = new juce::DynamicObject();
+        juce::Array<juce::var> array;
+        for (const auto &item : recentlyUsed)
+        {
+            array.add(item);
+        }
+        jsonObj->setProperty("recentlyUsed", array);
+
+        return recentlyUsedFile.replaceWithText(juce::JSON::toString(juce::var(jsonObj)));
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+juce::StringArray CacheManager::getRecentlyUsed(int maxCount) const
+{
+    try
+    {
+        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+        juce::StringArray recentlyUsed;
+
+        if (recentlyUsedFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(recentlyUsedFile);
+            if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
+            {
+                auto array = json["recentlyUsed"].getArray();
+                for (const auto &item : *array)
+                {
+                    recentlyUsed.add(item.toString());
+                }
+            }
+        }
+
+        // Limit the returned list to maxCount
+        if (recentlyUsed.size() > maxCount)
+        {
+            recentlyUsed.removeRange(maxCount, recentlyUsed.size() - maxCount);
+        }
+
+        return recentlyUsed;
+    }
+    catch (...)
+    {
+        return juce::StringArray();
+    }
+}
+
+bool CacheManager::removeFromRecentlyUsed(const juce::String &unitId)
+{
+    try
+    {
+        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+
+        // Load existing recently used list
+        juce::StringArray recentlyUsed;
+        if (recentlyUsedFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(recentlyUsedFile);
+            if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
+            {
+                auto array = json["recentlyUsed"].getArray();
+                for (const auto &item : *array)
+                {
+                    recentlyUsed.add(item.toString());
+                }
+            }
+        }
+
+        // Remove the unit
+        bool wasRemoved = recentlyUsed.contains(unitId);
+        if (wasRemoved)
+        {
+            recentlyUsed.removeString(unitId);
+        }
+
+        if (wasRemoved)
+        {
+            // Save the updated list
+            juce::DynamicObject::Ptr jsonObj = new juce::DynamicObject();
+            juce::Array<juce::var> array;
+            for (const auto &item : recentlyUsed)
+            {
+                array.add(item);
+            }
+            jsonObj->setProperty("recentlyUsed", array);
+
+            return recentlyUsedFile.replaceWithText(juce::JSON::toString(juce::var(jsonObj)));
+        }
+
+        return true; // Unit wasn't in the list, so "successfully" removed
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+bool CacheManager::clearRecentlyUsed()
+{
+    try
+    {
+        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+
+        if (recentlyUsedFile.existsAsFile())
+        {
+            return recentlyUsedFile.deleteFile();
+        }
+
+        return true; // File doesn't exist, so "successfully" cleared
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+int CacheManager::getRecentlyUsedCount() const
+{
+    try
+    {
+        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+
+        if (recentlyUsedFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(recentlyUsedFile);
+            if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
+            {
+                auto array = json["recentlyUsed"].getArray();
+                return array->size();
+            }
+        }
+
+        return 0;
+    }
+    catch (...)
+    {
+        return 0;
+    }
+}
+
+bool CacheManager::isRecentlyUsed(const juce::String &unitId) const
+{
+    try
+    {
+        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+
+        if (recentlyUsedFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(recentlyUsedFile);
+            if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
+            {
+                auto array = json["recentlyUsed"].getArray();
+                for (const auto &item : *array)
+                {
+                    if (item.toString() == unitId)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+    catch (...)
+    {
+        return false;
+    }
+}

@@ -283,6 +283,16 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
             GearItem *newItem = new GearItem(*item, networkFetcher); // Use copy constructor
             targetSlot->setGearItem(newItem);
 
+            // Track this item as recently used
+            CacheManager &cache = CacheManager::getInstance();
+            cache.addToRecentlyUsed(item->unitId);
+
+            // Refresh the gear library tree view to update recently used items
+            if (gearLibrary != nullptr)
+            {
+                gearLibrary->refreshRecentlyUsedSection();
+            }
+
             // Fetch schema for this item
             fetchSchemaForGearItem(newItem);
         }
@@ -307,6 +317,16 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
                     // Create a new instance of the item
                     GearItem *newItem = new GearItem(*item, networkFetcher); // Use copy constructor
                     targetSlot->setGearItem(newItem);
+
+                    // Track this item as recently used
+                    CacheManager &cache = CacheManager::getInstance();
+                    cache.addToRecentlyUsed(item->unitId);
+
+                    // Refresh the gear library tree view to update recently used items
+                    if (gearLibrary != nullptr)
+                    {
+                        gearLibrary->refreshRecentlyUsedSection();
+                    }
 
                     // Fetch schema for this item
                     fetchSchemaForGearItem(newItem);

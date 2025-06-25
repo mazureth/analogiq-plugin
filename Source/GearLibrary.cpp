@@ -449,6 +449,62 @@ void GearLibrary::updateFilteredItems()
 }
 
 /**
+ * @brief Refreshes the tree view to update recently used items.
+ *
+ * This method should be called when recently used items change
+ * to update the tree view display.
+ */
+void GearLibrary::refreshTreeView()
+{
+    if (rootItem && gearTreeView)
+    {
+        // Refresh the entire tree structure
+        rootItem->refreshSubItems();
+        gearTreeView->repaint();
+    }
+}
+
+/**
+ * @brief Refreshes only the recently used section of the tree.
+ *
+ * This method updates only the recently used items without
+ * affecting the expansion state of other tree nodes.
+ */
+void GearLibrary::refreshRecentlyUsedSection()
+{
+    if (rootItem && gearTreeView)
+    {
+        // Find the Recently Used item in the tree
+        for (int i = 0; i < rootItem->getNumSubItems(); ++i)
+        {
+            if (auto recentlyUsedItem = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
+            {
+                if (recentlyUsedItem->getItemText() == "Recently Used")
+                {
+                    // Refresh only the recently used section
+                    recentlyUsedItem->refreshSubItems();
+                    gearTreeView->repaint();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/**
+ * @brief Clears the recently used items and refreshes the tree view.
+ *
+ * This method clears all recently used items from the cache
+ * and updates the tree view display.
+ */
+void GearLibrary::clearRecentlyUsed()
+{
+    CacheManager &cache = CacheManager::getInstance();
+    cache.clearRecentlyUsed();
+    refreshTreeView();
+}
+
+/**
  * @brief Gets the number of rows in the gear list.
  *
  * @return The total number of gear items in the library

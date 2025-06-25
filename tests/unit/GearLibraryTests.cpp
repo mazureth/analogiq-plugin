@@ -14,7 +14,7 @@ public:
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
         mockFetcher.reset();
 
-        beginTest("Construction");
+        beginTest("Constructor");
         {
             // Set up mock response for the units index
             mockFetcher.setResponse(
@@ -214,6 +214,42 @@ public:
 
         // Clean up mock responses
         mockFetcher.reset();
+
+        beginTest("Recently Used Functionality");
+        {
+            // Create a gear library
+            auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+            GearLibrary library(mockFetcher, false);
+
+            // Add some test items
+            library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
+            library.addItem("Test Compressor", "compressor", "Test description", "Test Manufacturer");
+
+            // Get the items to access their unit IDs
+            const auto &items = library.getItems();
+            expectEquals(items.size(), 2, "Should have 2 items");
+
+            // Add items to recently used
+            CacheManager &cache = CacheManager::getInstance();
+            cache.addToRecentlyUsed(items[0].unitId);
+            cache.addToRecentlyUsed(items[1].unitId);
+
+            // Refresh the tree view to show recently used items
+            library.refreshTreeView();
+
+            // Verify that recently used items are in the cache
+            auto recentlyUsed = cache.getRecentlyUsed(10);
+            expectEquals(recentlyUsed.size(), 2, "Should have 2 recently used items");
+            expect(recentlyUsed.contains(items[0].unitId), "Should contain first item");
+            expect(recentlyUsed.contains(items[1].unitId), "Should contain second item");
+
+            // Clear recently used items
+            library.clearRecentlyUsed();
+
+            // Verify that recently used items are cleared
+            recentlyUsed = cache.getRecentlyUsed(10);
+            expectEquals(recentlyUsed.size(), 0, "Should have 0 recently used items after clearing");
+        }
     }
 };
 
