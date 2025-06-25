@@ -256,6 +256,52 @@ public:
      */
     bool isRecentlyUsed(const juce::String &unitId) const;
 
+    // Favorites functionality
+    /**
+     * @brief Adds a gear item to the favorites list.
+     *
+     * @param unitId The unit identifier to add to favorites
+     * @return true if the operation was successful, false otherwise
+     */
+    bool addToFavorites(const juce::String &unitId);
+
+    /**
+     * @brief Gets the list of favorite unit IDs.
+     *
+     * @return Array of favorite unit IDs
+     */
+    juce::StringArray getFavorites() const;
+
+    /**
+     * @brief Removes a unit from the favorites list.
+     *
+     * @param unitId The unit identifier to remove
+     * @return true if the operation was successful, false otherwise
+     */
+    bool removeFromFavorites(const juce::String &unitId);
+
+    /**
+     * @brief Clears the favorites list.
+     *
+     * @return true if the operation was successful, false otherwise
+     */
+    bool clearFavorites();
+
+    /**
+     * @brief Gets the number of items in the favorites list.
+     *
+     * @return The number of favorite items
+     */
+    int getFavoritesCount() const;
+
+    /**
+     * @brief Checks if a unit is in the favorites list.
+     *
+     * @param unitId The unit identifier to check
+     * @return true if the unit is in the favorites list, false otherwise
+     */
+    bool isFavorite(const juce::String &unitId) const;
+
 private:
     /**
      * @brief Private constructor for singleton pattern.

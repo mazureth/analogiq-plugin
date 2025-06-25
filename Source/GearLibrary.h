@@ -248,6 +248,22 @@ public:
      */
     void clearRecentlyUsed();
 
+    /**
+     * @brief Refreshes only the favorites section of the tree.
+     *
+     * This method updates only the favorite items without
+     * affecting the expansion state of other tree nodes.
+     */
+    void refreshFavoritesSection();
+
+    /**
+     * @brief Clears the favorites items and refreshes the tree view.
+     *
+     * This method clears all favorite items from the cache
+     * and updates the tree view display.
+     */
+    void clearFavorites();
+
 private:
     /**
      * @brief Parses the gear library data from JSON format.
@@ -317,11 +333,12 @@ public:
      */
     enum class ItemType
     {
-        Root,        ///< Root node
-        Category,    ///< Category node
-        Type,        ///< Type node
-        Gear,        ///< Individual gear item
-        RecentlyUsed ///< Recently used items group
+        Root,         ///< Root node
+        Category,     ///< Category node
+        Type,         ///< Type node
+        Gear,         ///< Individual gear item
+        RecentlyUsed, ///< Recently used items group
+        Favorites     ///< Favorites items group
     };
 
     /**
@@ -384,6 +401,35 @@ public:
         // Only draw icons for actual gear items (leaf nodes)
         if (itemType == ItemType::Gear)
         {
+            // Draw star icon for favorites first (far left)
+            if (gearItem != nullptr)
+            {
+                CacheManager &cache = CacheManager::getInstance();
+                bool isFavorite = cache.isFavorite(gearItem->unitId);
+
+                const int starSize = 16;
+                const int starX = 4; // Far left position
+                const int starY = (height - starSize) / 2;
+
+                g.setColour(isFavorite ? juce::Colours::yellow : juce::Colours::lightgrey);
+
+                // Draw a simple star shape rotated 180 degrees
+                juce::Path starPath;
+                starPath.addStar(juce::Point<float>(starX + starSize / 2, starY + starSize / 2),
+                                 5, starSize / 2, starSize / 4);
+
+                // Apply 180 degree rotation around the star center
+                juce::AffineTransform rotation = juce::AffineTransform::rotation(juce::MathConstants<float>::pi,
+                                                                                 starX + starSize / 2,
+                                                                                 starY + starSize / 2);
+                starPath.applyTransform(rotation);
+
+                g.fillPath(starPath);
+            }
+
+            // Move text position to account for star
+            textX += 24; // Space for star + padding
+
             const int iconSize = 24;
             const int iconY = (height - iconSize) / 2;
 
@@ -435,6 +481,9 @@ public:
         {
             // Add Recently Used group
             addSubItem(new GearTreeItem(ItemType::RecentlyUsed, "Recently Used", owner));
+
+            // Add Favorites group
+            addSubItem(new GearTreeItem(ItemType::Favorites, "Favorites", owner));
 
             // Add Categories group
             addSubItem(new GearTreeItem(ItemType::Category, "Categories", owner));
@@ -575,6 +624,34 @@ public:
             if (!hasItems)
                 setOpen(false);
         }
+        else if (itemType == ItemType::Favorites)
+        {
+            // Get favorite items from cache
+            CacheManager &cache = CacheManager::getInstance();
+            juce::StringArray favorites = cache.getFavorites();
+
+            if (!favorites.isEmpty())
+            {
+                // Get all items from the library
+                const auto &items = owner->getItems();
+
+                // Add each favorite item
+                for (const auto &unitId : favorites)
+                {
+                    // Find the gear item in the library
+                    for (int i = 0; i < items.size(); ++i)
+                    {
+                        const auto &item = items.getReference(i);
+                        if (item.unitId == unitId)
+                        {
+                            addSubItem(new GearTreeItem(ItemType::Gear, item.name, owner,
+                                                        const_cast<GearItem *>(&item), i));
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -622,6 +699,55 @@ public:
                                    }
                                });
             return;
+        }
+
+        // Handle right-click on Favorites item
+        if (itemType == ItemType::Favorites && e.mods.isRightButtonDown())
+        {
+            juce::PopupMenu menu;
+            menu.addItem(1, "Clear Favorites");
+
+            menu.showMenuAsync(juce::PopupMenu::Options(),
+                               [this](int result)
+                               {
+                                   if (result == 1 && owner != nullptr)
+                                   {
+                                       owner->clearFavorites();
+                                   }
+                               });
+            return;
+        }
+
+        // Handle star icon clicks for gear items
+        if (itemType == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
+        {
+            // Check if click is in the left portion of the item where the star would be
+            // The star is drawn at the left edge, so check if click is in the left 20 pixels
+            const int starAreaWidth = 20;
+
+            if (e.x <= starAreaWidth)
+            {
+                // Toggle favorite status
+                CacheManager &cache = CacheManager::getInstance();
+                bool isFavorite = cache.isFavorite(gearItem->unitId);
+
+                if (isFavorite)
+                {
+                    cache.removeFromFavorites(gearItem->unitId);
+                }
+                else
+                {
+                    cache.addToFavorites(gearItem->unitId);
+                }
+
+                // Refresh only the favorites section to preserve tree expansion state
+                if (owner != nullptr)
+                {
+                    owner->refreshFavoritesSection();
+                }
+
+                return; // Don't proceed with drag operation
+            }
         }
 
         // First handle the default behavior

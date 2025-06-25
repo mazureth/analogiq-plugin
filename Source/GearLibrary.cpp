@@ -505,6 +505,46 @@ void GearLibrary::clearRecentlyUsed()
 }
 
 /**
+ * @brief Refreshes only the favorites section of the tree.
+ *
+ * This method updates only the favorite items without
+ * affecting the expansion state of other tree nodes.
+ */
+void GearLibrary::refreshFavoritesSection()
+{
+    if (rootItem && gearTreeView)
+    {
+        // Find the Favorites item in the tree
+        for (int i = 0; i < rootItem->getNumSubItems(); ++i)
+        {
+            if (auto favoritesItem = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
+            {
+                if (favoritesItem->getItemText() == "Favorites")
+                {
+                    // Refresh only the favorites section
+                    favoritesItem->refreshSubItems();
+                    gearTreeView->repaint();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/**
+ * @brief Clears the favorites items and refreshes the tree view.
+ *
+ * This method clears all favorite items from the cache
+ * and updates the tree view display.
+ */
+void GearLibrary::clearFavorites()
+{
+    CacheManager &cache = CacheManager::getInstance();
+    cache.clearFavorites();
+    refreshTreeView();
+}
+
+/**
  * @brief Gets the number of rows in the gear list.
  *
  * @return The total number of gear items in the library

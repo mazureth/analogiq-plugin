@@ -596,3 +596,199 @@ bool CacheManager::isRecentlyUsed(const juce::String &unitId) const
         return false;
     }
 }
+
+// Favorites functionality
+bool CacheManager::addToFavorites(const juce::String &unitId)
+{
+    try
+    {
+        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+
+        // Load existing favorites list
+        juce::StringArray favorites;
+        if (favoritesFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(favoritesFile);
+            if (json.hasProperty("favorites") && json["favorites"].isArray())
+            {
+                auto array = json["favorites"].getArray();
+                for (const auto &item : *array)
+                {
+                    favorites.add(item.toString());
+                }
+            }
+        }
+
+        // Add the unit if it doesn't already exist
+        if (!favorites.contains(unitId))
+        {
+            favorites.add(unitId);
+        }
+
+        // Save the updated list
+        juce::DynamicObject::Ptr jsonObj = new juce::DynamicObject();
+        juce::Array<juce::var> array;
+        for (const auto &item : favorites)
+        {
+            array.add(item);
+        }
+        jsonObj->setProperty("favorites", array);
+
+        return favoritesFile.replaceWithText(juce::JSON::toString(juce::var(jsonObj)));
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+juce::StringArray CacheManager::getFavorites() const
+{
+    try
+    {
+        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+        juce::StringArray favorites;
+
+        if (favoritesFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(favoritesFile);
+            if (json.hasProperty("favorites") && json["favorites"].isArray())
+            {
+                auto array = json["favorites"].getArray();
+                for (const auto &item : *array)
+                {
+                    favorites.add(item.toString());
+                }
+            }
+        }
+
+        return favorites;
+    }
+    catch (...)
+    {
+        return juce::StringArray();
+    }
+}
+
+bool CacheManager::removeFromFavorites(const juce::String &unitId)
+{
+    try
+    {
+        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+
+        // Load existing favorites list
+        juce::StringArray favorites;
+        if (favoritesFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(favoritesFile);
+            if (json.hasProperty("favorites") && json["favorites"].isArray())
+            {
+                auto array = json["favorites"].getArray();
+                for (const auto &item : *array)
+                {
+                    favorites.add(item.toString());
+                }
+            }
+        }
+
+        // Remove the unit
+        bool wasRemoved = favorites.contains(unitId);
+        if (wasRemoved)
+        {
+            favorites.removeString(unitId);
+        }
+
+        if (wasRemoved)
+        {
+            // Save the updated list
+            juce::DynamicObject::Ptr jsonObj = new juce::DynamicObject();
+            juce::Array<juce::var> array;
+            for (const auto &item : favorites)
+            {
+                array.add(item);
+            }
+            jsonObj->setProperty("favorites", array);
+
+            return favoritesFile.replaceWithText(juce::JSON::toString(juce::var(jsonObj)));
+        }
+
+        return true; // Unit wasn't in the list, so "successfully" removed
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+bool CacheManager::clearFavorites()
+{
+    try
+    {
+        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+
+        if (favoritesFile.existsAsFile())
+        {
+            return favoritesFile.deleteFile();
+        }
+
+        return true; // File doesn't exist, so "successfully" cleared
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+int CacheManager::getFavoritesCount() const
+{
+    try
+    {
+        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+
+        if (favoritesFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(favoritesFile);
+            if (json.hasProperty("favorites") && json["favorites"].isArray())
+            {
+                auto array = json["favorites"].getArray();
+                return array->size();
+            }
+        }
+
+        return 0;
+    }
+    catch (...)
+    {
+        return 0;
+    }
+}
+
+bool CacheManager::isFavorite(const juce::String &unitId) const
+{
+    try
+    {
+        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+
+        if (favoritesFile.existsAsFile())
+        {
+            auto json = juce::JSON::parse(favoritesFile);
+            if (json.hasProperty("favorites") && json["favorites"].isArray())
+            {
+                auto array = json["favorites"].getArray();
+                for (const auto &item : *array)
+                {
+                    if (item.toString() == unitId)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+    catch (...)
+    {
+        return false;
+    }
+}

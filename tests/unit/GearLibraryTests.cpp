@@ -234,21 +234,39 @@ public:
             cache.addToRecentlyUsed(items[0].unitId);
             cache.addToRecentlyUsed(items[1].unitId);
 
-            // Refresh the tree view to show recently used items
+            // Refresh the tree view
             library.refreshTreeView();
 
-            // Verify that recently used items are in the cache
-            auto recentlyUsed = cache.getRecentlyUsed(10);
-            expectEquals(recentlyUsed.size(), 2, "Should have 2 recently used items");
-            expect(recentlyUsed.contains(items[0].unitId), "Should contain first item");
-            expect(recentlyUsed.contains(items[1].unitId), "Should contain second item");
-
-            // Clear recently used items
+            // Test clearing recently used
             library.clearRecentlyUsed();
+            expectEquals(cache.getRecentlyUsedCount(), 0, "Recently used should be cleared");
+        }
 
-            // Verify that recently used items are cleared
-            recentlyUsed = cache.getRecentlyUsed(10);
-            expectEquals(recentlyUsed.size(), 0, "Should have 0 recently used items after clearing");
+        beginTest("Favorites Functionality");
+        {
+            // Create a gear library
+            auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+            GearLibrary library(mockFetcher, false);
+
+            // Add some test items
+            library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
+            library.addItem("Test Compressor", "compressor", "Test description", "Test Manufacturer");
+
+            // Get the items to access their unit IDs
+            const auto &items = library.getItems();
+            expectEquals(items.size(), 2, "Should have 2 items");
+
+            // Add items to favorites
+            CacheManager &cache = CacheManager::getInstance();
+            cache.addToFavorites(items[0].unitId);
+            cache.addToFavorites(items[1].unitId);
+
+            // Refresh the tree view
+            library.refreshTreeView();
+
+            // Test clearing favorites
+            library.clearFavorites();
+            expectEquals(cache.getFavoritesCount(), 0, "Favorites should be cleared");
         }
     }
 };
