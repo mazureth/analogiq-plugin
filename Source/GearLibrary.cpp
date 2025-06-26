@@ -358,11 +358,31 @@ void GearLibrary::updateFilteredItems()
 
             if (matchingItems.size() > 0)
             {
+                // Get favorites and recently used items
+                CacheManager &cache = CacheManager::getInstance();
+                juce::StringArray favorites = cache.getFavorites();
+                juce::StringArray recentlyUsed = cache.getRecentlyUsed();
+
                 // Group matching items by category
                 juce::HashMap<juce::String, juce::Array<GearItem *>> categoryGroups;
+                juce::Array<GearItem *> matchingFavorites;
+                juce::Array<GearItem *> matchingRecentlyUsed;
 
                 for (auto *item : matchingItems)
                 {
+                    // Check if item is in favorites
+                    if (favorites.contains(item->unitId))
+                    {
+                        matchingFavorites.add(item);
+                    }
+
+                    // Check if item is in recently used
+                    if (recentlyUsed.contains(item->unitId))
+                    {
+                        matchingRecentlyUsed.add(item);
+                    }
+
+                    // Group by category for the main categories section
                     juce::String category = item->categoryString;
                     if (category.isEmpty())
                     {
@@ -388,6 +408,60 @@ void GearLibrary::updateFilteredItems()
                         categoryGroups.set(category, juce::Array<GearItem *>());
 
                     categoryGroups.getReference(category).add(item);
+                }
+
+                // Add My Gear section if there are matching favorites
+                if (matchingFavorites.size() > 0)
+                {
+                    auto myGearNode = new GearTreeItem(GearTreeItem::ItemType::Favorites, "My Gear", this);
+                    rootItem->addSubItem(myGearNode);
+
+                    for (auto *item : matchingFavorites)
+                    {
+                        // Find the index of this item in the original array
+                        int itemIndex = -1;
+                        for (int i = 0; i < gearItems.size(); ++i)
+                        {
+                            if (&gearItems.getReference(i) == item)
+                            {
+                                itemIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (itemIndex >= 0)
+                        {
+                            myGearNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, item, itemIndex));
+                        }
+                    }
+                    myGearNode->setOpen(true);
+                }
+
+                // Add Recently Used section if there are matching recently used items
+                if (matchingRecentlyUsed.size() > 0)
+                {
+                    auto recentlyUsedNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", this);
+                    rootItem->addSubItem(recentlyUsedNode);
+
+                    for (auto *item : matchingRecentlyUsed)
+                    {
+                        // Find the index of this item in the original array
+                        int itemIndex = -1;
+                        for (int i = 0; i < gearItems.size(); ++i)
+                        {
+                            if (&gearItems.getReference(i) == item)
+                            {
+                                itemIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (itemIndex >= 0)
+                        {
+                            recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, item, itemIndex));
+                        }
+                    }
+                    recentlyUsedNode->setOpen(true);
                 }
 
                 // Create the "Categories" node
@@ -436,6 +510,15 @@ void GearLibrary::updateFilteredItems()
                         categoryNode->setOpen(true);
                     }
                 }
+            }
+            else
+            {
+                // No matching items found - create a simple message
+                auto messageNode = new GearTreeItem(GearTreeItem::ItemType::Message, "No units match your search", this);
+                rootItem->addSubItem(messageNode);
+
+                // Expand the root to show the message
+                rootItem->setOpen(true);
             }
         }
         else
@@ -519,7 +602,7 @@ void GearLibrary::refreshFavoritesSection()
         {
             if (auto favoritesItem = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
             {
-                if (favoritesItem->getItemText() == "Favorites")
+                if (favoritesItem->getItemText() == "My Gear")
                 {
                     // Refresh only the favorites section
                     favoritesItem->refreshSubItems();

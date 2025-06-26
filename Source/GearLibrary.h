@@ -333,12 +333,12 @@ public:
      */
     enum class ItemType
     {
-        Root,         ///< Root node
-        Category,     ///< Category node
-        Type,         ///< Type node
-        Gear,         ///< Individual gear item
+        Root,         ///< Root item
+        Category,     ///< Category items group
+        Gear,         ///< Individual gear items
         RecentlyUsed, ///< Recently used items group
-        Favorites     ///< Favorites items group
+        Favorites,    ///< Favorites items group
+        Message       ///< Simple text message (for no results, etc.)
     };
 
     /**
@@ -367,20 +367,7 @@ public:
     }
 
     /**
-     * @brief Gets a unique name for the item.
-     *
-     * @return A unique string identifier for the item
-     */
-    juce::String getUniqueName() const override
-    {
-        if (itemType == ItemType::Gear && gearItem != nullptr)
-            return "gear_" + gearItem->unitId + "_" + juce::String(gearIndex);
-
-        return "category_" + name + "_" + juce::String((int)itemType);
-    }
-
-    /**
-     * @brief Paints the item in the tree view.
+     * @brief Paints the item.
      *
      * @param g The graphics context to paint with
      * @param width The width of the item
@@ -388,11 +375,21 @@ public:
      */
     void paintItem(juce::Graphics &g, int width, int height) override
     {
-        if (isSelected())
-            g.fillAll(juce::Colours::lightblue.darker(0.2f));
+        // Suppress selection highlighting for all items for cleaner UI
+        // if (isSelected() && itemType != ItemType::Gear)
+        //     g.fillAll(juce::Colours::lightblue.darker(0.2f));
 
         g.setColour(juce::Colours::white);
         g.setFont(itemType == ItemType::Gear ? 14.0f : 16.0f);
+
+        // Handle message items (simple text without tree styling)
+        if (itemType == ItemType::Message)
+        {
+            g.setColour(juce::Colours::lightgrey);
+            g.setFont(14.0f);
+            g.drawText(name, 4, 0, width - 8, height, juce::Justification::centredLeft);
+            return;
+        }
 
         // Draw icon based on type
         int textX = 4;
@@ -483,7 +480,7 @@ public:
             addSubItem(new GearTreeItem(ItemType::RecentlyUsed, "Recently Used", owner));
 
             // Add Favorites group
-            addSubItem(new GearTreeItem(ItemType::Favorites, "Favorites", owner));
+            addSubItem(new GearTreeItem(ItemType::Favorites, "My Gear", owner));
 
             // Add Categories group
             addSubItem(new GearTreeItem(ItemType::Category, "Categories", owner));
@@ -705,7 +702,7 @@ public:
         if (itemType == ItemType::Favorites && e.mods.isRightButtonDown())
         {
             juce::PopupMenu menu;
-            menu.addItem(1, "Clear Favorites");
+            menu.addItem(1, "Clear My Gear");
 
             menu.showMenuAsync(juce::PopupMenu::Options(),
                                [this](int result)
@@ -746,11 +743,11 @@ public:
                     owner->refreshFavoritesSection();
                 }
 
-                return; // Don't proceed with drag operation
+                return; // Don't proceed with other operations
             }
         }
 
-        // First handle the default behavior
+        // Handle default behavior (expand/collapse) for all other clicks
         TreeViewItem::itemClicked(e);
 
         // If this is a gear item, make it draggable
