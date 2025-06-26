@@ -1,16 +1,20 @@
 var searchData=
 [
-  ['saveinstancestate_0',['saveInstanceState',['../d5/d18/class_analog_i_q_processor.html#a09a64297585fb8e649484ec6ebf2a41f',1,'AnalogIQProcessor']]],
-  ['saveinstancestatefromrack_1',['saveInstanceStateFromRack',['../d5/d18/class_analog_i_q_processor.html#a2b1f3b3f177a805f809a7badebc3642f',1,'AnalogIQProcessor']]],
-  ['savelibraryasync_2',['saveLibraryAsync',['../d5/d8c/class_gear_library.html#a3d6d583b29b7daa9e159834bfeb18086',1,'GearLibrary']]],
-  ['savetojson_3',['saveToJSON',['../dd/dee/class_gear_item.html#a782af7906444183debb5cb4f296b38ce',1,'GearItem']]],
-  ['setcurrentprogram_4',['setCurrentProgram',['../d5/d18/class_analog_i_q_processor.html#a8bfaf8110e387b9b2b63bd30495c4aa3',1,'AnalogIQProcessor']]],
-  ['setgearitem_5',['setGearItem',['../dc/dde/class_rack_slot.html#a1f441a7ac2af9a416ef33503c586fe01',1,'RackSlot']]],
-  ['setgearlibrary_6',['setGearLibrary',['../d0/dc7/class_rack.html#af0ddba251de6d89d76ad32db6bef03cf',1,'Rack']]],
-  ['sethighlighted_7',['setHighlighted',['../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e',1,'RackSlot']]],
-  ['setopenness_8',['setOpenness',['../d6/dc0/class_gear_tree_item.html#a5b89d654a3c02210458a214ee86c0933',1,'GearTreeItem']]],
-  ['setstateinformation_9',['setStateInformation',['../d5/d18/class_analog_i_q_processor.html#ae6a26bb6d89e85ae70dda21ff075704e',1,'AnalogIQProcessor']]],
-  ['settext_10',['setText',['../d9/dc5/class_notes_panel.html#a04fdc2b575f441b6a3763f8fe163c03c',1,'NotesPanel']]],
-  ['setvisible_11',['setVisible',['../d6/dc0/class_gear_tree_item.html#aba16a7ef419890bf9c4faca9d2e4e4cc',1,'GearTreeItem']]],
-  ['shouldshowitem_12',['shouldShowItem',['../d5/d8c/class_gear_library.html#a38f9c79cba66e4559ea5545fc9843922',1,'GearLibrary']]]
+  ['savecontrolassettocache_0',['saveControlAssetToCache',['../d4/d9f/class_cache_manager.html#a52a543d5875ae048c9aeb1eeb4c9f4bd',1,'CacheManager']]],
+  ['savefaceplatetocache_1',['saveFaceplateToCache',['../d4/d9f/class_cache_manager.html#a7dd47d9177cc5cc3d0c4c83559d93ebf',1,'CacheManager']]],
+  ['saveinstancestate_2',['saveInstanceState',['../d5/d18/class_analog_i_q_processor.html#a09a64297585fb8e649484ec6ebf2a41f',1,'AnalogIQProcessor']]],
+  ['saveinstancestatefromrack_3',['saveInstanceStateFromRack',['../d5/d18/class_analog_i_q_processor.html#a2b1f3b3f177a805f809a7badebc3642f',1,'AnalogIQProcessor']]],
+  ['savelibraryasync_4',['saveLibraryAsync',['../d5/d8c/class_gear_library.html#a3d6d583b29b7daa9e159834bfeb18086',1,'GearLibrary']]],
+  ['savethumbnailtocache_5',['saveThumbnailToCache',['../d4/d9f/class_cache_manager.html#aaf622e48bfdd09265e8c73744e2ed083',1,'CacheManager']]],
+  ['savetojson_6',['saveToJSON',['../dd/dee/class_gear_item.html#a782af7906444183debb5cb4f296b38ce',1,'GearItem']]],
+  ['saveunittocache_7',['saveUnitToCache',['../d4/d9f/class_cache_manager.html#a9d2a18f0d0a6f71a6bc3e78eb180299f',1,'CacheManager']]],
+  ['setcurrentprogram_8',['setCurrentProgram',['../d5/d18/class_analog_i_q_processor.html#a8bfaf8110e387b9b2b63bd30495c4aa3',1,'AnalogIQProcessor']]],
+  ['setgearitem_9',['setGearItem',['../dc/dde/class_rack_slot.html#a1f441a7ac2af9a416ef33503c586fe01',1,'RackSlot']]],
+  ['setgearlibrary_10',['setGearLibrary',['../d0/dc7/class_rack.html#af0ddba251de6d89d76ad32db6bef03cf',1,'Rack']]],
+  ['sethighlighted_11',['setHighlighted',['../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e',1,'RackSlot']]],
+  ['setopenness_12',['setOpenness',['../d6/dc0/class_gear_tree_item.html#a5b89d654a3c02210458a214ee86c0933',1,'GearTreeItem']]],
+  ['setstateinformation_13',['setStateInformation',['../d5/d18/class_analog_i_q_processor.html#ae6a26bb6d89e85ae70dda21ff075704e',1,'AnalogIQProcessor']]],
+  ['settext_14',['setText',['../d9/dc5/class_notes_panel.html#a04fdc2b575f441b6a3763f8fe163c03c',1,'NotesPanel']]],
+  ['setvisible_15',['setVisible',['../d6/dc0/class_gear_tree_item.html#aba16a7ef419890bf9c4faca9d2e4e4cc',1,'GearTreeItem']]],
+  ['shouldshowitem_16',['shouldShowItem',['../d5/d8c/class_gear_library.html#a38f9c79cba66e4559ea5545fc9843922',1,'GearLibrary']]]
 ];

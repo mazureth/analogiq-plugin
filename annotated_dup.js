@@ -2,6 +2,7 @@ var annotated_dup =
 [
     [ "AnalogIQEditor", "df/d1c/class_analog_i_q_editor.html", "df/d1c/class_analog_i_q_editor" ],
     [ "AnalogIQProcessor", "d5/d18/class_analog_i_q_processor.html", "d5/d18/class_analog_i_q_processor" ],
+    [ "CacheManager", "d4/d9f/class_cache_manager.html", "d4/d9f/class_cache_manager" ],
     [ "DraggableListBox", "d6/d30/class_draggable_list_box.html", "d6/d30/class_draggable_list_box" ],
     [ "DummyNetworkFetcher", "d6/dad/class_dummy_network_fetcher.html", "d6/dad/class_dummy_network_fetcher" ],
     [ "GearControl", "dc/d76/class_gear_control.html", "dc/d76/class_gear_control" ],

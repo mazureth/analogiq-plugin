@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['plugineditor_2ecpp_0',['PluginEditor.cpp',['../d4/d4b/_plugin_editor_8cpp.html',1,'']]],
-  ['plugineditor_2eh_1',['PluginEditor.h',['../d0/d8e/_plugin_editor_8h.html',1,'']]],
-  ['pluginprocessor_2ecpp_2',['PluginProcessor.cpp',['../df/dd5/_plugin_processor_8cpp.html',1,'']]],
-  ['pluginprocessor_2eh_3',['PluginProcessor.h',['../de/d7b/_plugin_processor_8h.html',1,'']]]
+  ['networkfetcher_2ecpp_0',['NetworkFetcher.cpp',['../d4/d91/_network_fetcher_8cpp.html',1,'']]],
+  ['networkfetcher_2eh_1',['NetworkFetcher.h',['../db/da0/_network_fetcher_8h.html',1,'']]],
+  ['notespanel_2ecpp_2',['NotesPanel.cpp',['../d9/d92/_notes_panel_8cpp.html',1,'']]],
+  ['notespanel_2eh_3',['NotesPanel.h',['../d0/d86/_notes_panel_8h.html',1,'']]]
 ];

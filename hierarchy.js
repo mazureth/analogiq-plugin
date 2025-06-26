@@ -6,6 +6,7 @@ var hierarchy =
     [ "juce::AudioProcessorEditor", null, [
       [ "AnalogIQEditor", "df/d1c/class_analog_i_q_editor.html", null ]
     ] ],
+    [ "CacheManager", "d4/d9f/class_cache_manager.html", null ],
     [ "juce::Component", null, [
       [ "GearLibrary", "d5/d8c/class_gear_library.html", null ],
       [ "NotesPanel", "d9/dc5/class_notes_panel.html", null ],
