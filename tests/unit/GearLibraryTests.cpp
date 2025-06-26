@@ -14,7 +14,7 @@ public:
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
         mockFetcher.reset();
 
-        beginTest("Construction");
+        beginTest("Constructor");
         {
             // Set up mock response for the units index
             mockFetcher.setResponse(
@@ -214,6 +214,60 @@ public:
 
         // Clean up mock responses
         mockFetcher.reset();
+
+        beginTest("Recently Used Functionality");
+        {
+            // Create a gear library
+            auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+            GearLibrary library(mockFetcher, false);
+
+            // Add some test items
+            library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
+            library.addItem("Test Compressor", "compressor", "Test description", "Test Manufacturer");
+
+            // Get the items to access their unit IDs
+            const auto &items = library.getItems();
+            expectEquals(items.size(), 2, "Should have 2 items");
+
+            // Add items to recently used
+            CacheManager &cache = CacheManager::getInstance();
+            cache.addToRecentlyUsed(items[0].unitId);
+            cache.addToRecentlyUsed(items[1].unitId);
+
+            // Refresh the tree view
+            library.refreshTreeView();
+
+            // Test clearing recently used
+            library.clearRecentlyUsed();
+            expectEquals(cache.getRecentlyUsedCount(), 0, "Recently used should be cleared");
+        }
+
+        beginTest("Favorites Functionality");
+        {
+            // Create a gear library
+            auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+            GearLibrary library(mockFetcher, false);
+
+            // Add some test items
+            library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
+            library.addItem("Test Compressor", "compressor", "Test description", "Test Manufacturer");
+
+            // Get the items to access their unit IDs
+            const auto &items = library.getItems();
+            expectEquals(items.size(), 2, "Should have 2 items");
+
+            // Add items to favorites
+            CacheManager &cache = CacheManager::getInstance();
+            cache.addToFavorites(items[0].unitId);
+            cache.addToFavorites(items[1].unitId);
+
+            // Refresh the tree view
+            library.refreshTreeView();
+
+            // Test clearing favorites
+            library.clearFavorites();
+            expectEquals(cache.getFavoritesCount(), 0, "Favorites should be cleared");
+        }
     }
 };
 

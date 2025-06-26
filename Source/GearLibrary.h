@@ -13,15 +13,16 @@
 #include "DraggableListBox.h"
 #include "GearItem.h"
 #include "INetworkFetcher.h"
+#include "CacheManager.h"
 
 /**
  * @brief Namespace containing remote resource URLs and paths.
  */
 namespace RemoteResources
 {
-    // const juce::String BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/";
+    const juce::String BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/";
     // for use when making changes to the schemas locally
-    const juce::String BASE_URL = "http://localhost:8000/";
+    // const juce::String BASE_URL = "http://localhost:8000/";
     const juce::String LIBRARY_PATH = "units/index.json";
     const juce::String ASSETS_PATH = "assets/";
     const juce::String SCHEMAS_PATH = "units/";
@@ -216,6 +217,53 @@ public:
         return result;
     }
 
+    /**
+     * @brief Updates the filtered items in both list and tree views.
+     *
+     * Refreshes the display of items based on current search criteria.
+     */
+    void updateFilteredItems();
+
+    /**
+     * @brief Refreshes the tree view to update recently used items.
+     *
+     * This method should be called when recently used items change
+     * to update the tree view display.
+     */
+    void refreshTreeView();
+
+    /**
+     * @brief Refreshes only the recently used section of the tree.
+     *
+     * This method updates only the recently used items without
+     * affecting the expansion state of other tree nodes.
+     */
+    void refreshRecentlyUsedSection();
+
+    /**
+     * @brief Clears the recently used items and refreshes the tree view.
+     *
+     * This method clears all recently used items from the cache
+     * and updates the tree view display.
+     */
+    void clearRecentlyUsed();
+
+    /**
+     * @brief Refreshes only the favorites section of the tree.
+     *
+     * This method updates only the favorite items without
+     * affecting the expansion state of other tree nodes.
+     */
+    void refreshFavoritesSection();
+
+    /**
+     * @brief Clears the favorites items and refreshes the tree view.
+     *
+     * This method clears all favorite items from the cache
+     * and updates the tree view display.
+     */
+    void clearFavorites();
+
 private:
     /**
      * @brief Parses the gear library data from JSON format.
@@ -231,11 +279,6 @@ private:
      * @return true if the item should be shown
      */
     bool shouldShowItem(const GearItem &item) const;
-
-    /**
-     * @brief Updates the filtered items in both list and tree views.
-     */
-    void updateFilteredItems();
 
     // UI components
     juce::Label titleLabel{"titleLabel", "Gear Library"};                                                            ///< Title label for the library
@@ -290,10 +333,12 @@ public:
      */
     enum class ItemType
     {
-        Root,     ///< Root node
-        Category, ///< Category node
-        Type,     ///< Type node
-        Gear      ///< Individual gear item
+        Root,         ///< Root item
+        Category,     ///< Category items group
+        Gear,         ///< Individual gear items
+        RecentlyUsed, ///< Recently used items group
+        Favorites,    ///< Favorites items group
+        Message       ///< Simple text message (for no results, etc.)
     };
 
     /**
@@ -322,20 +367,7 @@ public:
     }
 
     /**
-     * @brief Gets a unique name for the item.
-     *
-     * @return A unique string identifier for the item
-     */
-    juce::String getUniqueName() const override
-    {
-        if (itemType == ItemType::Gear && gearItem != nullptr)
-            return "gear_" + gearItem->unitId + "_" + juce::String(gearIndex);
-
-        return "category_" + name + "_" + juce::String((int)itemType);
-    }
-
-    /**
-     * @brief Paints the item in the tree view.
+     * @brief Paints the item.
      *
      * @param g The graphics context to paint with
      * @param width The width of the item
@@ -343,11 +375,21 @@ public:
      */
     void paintItem(juce::Graphics &g, int width, int height) override
     {
-        if (isSelected())
-            g.fillAll(juce::Colours::lightblue.darker(0.2f));
+        // Suppress selection highlighting for all items for cleaner UI
+        // if (isSelected() && itemType != ItemType::Gear)
+        //     g.fillAll(juce::Colours::lightblue.darker(0.2f));
 
         g.setColour(juce::Colours::white);
         g.setFont(itemType == ItemType::Gear ? 14.0f : 16.0f);
+
+        // Handle message items (simple text without tree styling)
+        if (itemType == ItemType::Message)
+        {
+            g.setColour(juce::Colours::lightgrey);
+            g.setFont(14.0f);
+            g.drawText(name, 4, 0, width - 8, height, juce::Justification::centredLeft);
+            return;
+        }
 
         // Draw icon based on type
         int textX = 4;
@@ -356,6 +398,35 @@ public:
         // Only draw icons for actual gear items (leaf nodes)
         if (itemType == ItemType::Gear)
         {
+            // Draw star icon for favorites first (far left)
+            if (gearItem != nullptr)
+            {
+                CacheManager &cache = CacheManager::getInstance();
+                bool isFavorite = cache.isFavorite(gearItem->unitId);
+
+                const int starSize = 16;
+                const int starX = 4; // Far left position
+                const int starY = (height - starSize) / 2;
+
+                g.setColour(isFavorite ? juce::Colours::yellow : juce::Colours::lightgrey);
+
+                // Draw a simple star shape rotated 180 degrees
+                juce::Path starPath;
+                starPath.addStar(juce::Point<float>(starX + starSize / 2, starY + starSize / 2),
+                                 5, starSize / 2, starSize / 4);
+
+                // Apply 180 degree rotation around the star center
+                juce::AffineTransform rotation = juce::AffineTransform::rotation(juce::MathConstants<float>::pi,
+                                                                                 starX + starSize / 2,
+                                                                                 starY + starSize / 2);
+                starPath.applyTransform(rotation);
+
+                g.fillPath(starPath);
+            }
+
+            // Move text position to account for star
+            textX += 24; // Space for star + padding
+
             const int iconSize = 24;
             const int iconY = (height - iconSize) / 2;
 
@@ -405,8 +476,42 @@ public:
 
         if (itemType == ItemType::Root)
         {
+            // Add Recently Used group
+            addSubItem(new GearTreeItem(ItemType::RecentlyUsed, "Recently Used", owner));
+
+            // Add Favorites group
+            addSubItem(new GearTreeItem(ItemType::Favorites, "My Gear", owner));
+
             // Add Categories group
             addSubItem(new GearTreeItem(ItemType::Category, "Categories", owner));
+        }
+        else if (itemType == ItemType::RecentlyUsed)
+        {
+            // Get recently used items from cache
+            CacheManager &cache = CacheManager::getInstance();
+            juce::StringArray recentlyUsed = cache.getRecentlyUsed(CacheManager::MAX_RECENTLY_USED); // Show up to MAX_RECENTLY_USED items
+
+            if (!recentlyUsed.isEmpty())
+            {
+                // Get all items from the library
+                const auto &items = owner->getItems();
+
+                // Add each recently used item
+                for (const auto &unitId : recentlyUsed)
+                {
+                    // Find the gear item in the library
+                    for (int i = 0; i < items.size(); ++i)
+                    {
+                        const auto &item = items.getReference(i);
+                        if (item.unitId == unitId)
+                        {
+                            addSubItem(new GearTreeItem(ItemType::Gear, item.name, owner,
+                                                        const_cast<GearItem *>(&item), i));
+                            break;
+                        }
+                    }
+                }
+            }
         }
         else if (itemType == ItemType::Category && name == "Categories")
         {
@@ -516,6 +621,34 @@ public:
             if (!hasItems)
                 setOpen(false);
         }
+        else if (itemType == ItemType::Favorites)
+        {
+            // Get favorite items from cache
+            CacheManager &cache = CacheManager::getInstance();
+            juce::StringArray favorites = cache.getFavorites();
+
+            if (!favorites.isEmpty())
+            {
+                // Get all items from the library
+                const auto &items = owner->getItems();
+
+                // Add each favorite item
+                for (const auto &unitId : favorites)
+                {
+                    // Find the gear item in the library
+                    for (int i = 0; i < items.size(); ++i)
+                    {
+                        const auto &item = items.getReference(i);
+                        if (item.unitId == unitId)
+                        {
+                            addSubItem(new GearTreeItem(ItemType::Gear, item.name, owner,
+                                                        const_cast<GearItem *>(&item), i));
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -548,7 +681,73 @@ public:
      */
     void itemClicked(const juce::MouseEvent &e) override
     {
-        // First handle the default behavior
+        // Handle right-click on Recently Used item
+        if (itemType == ItemType::RecentlyUsed && e.mods.isRightButtonDown())
+        {
+            juce::PopupMenu menu;
+            menu.addItem(1, "Clear Recently Used");
+
+            menu.showMenuAsync(juce::PopupMenu::Options(),
+                               [this](int result)
+                               {
+                                   if (result == 1 && owner != nullptr)
+                                   {
+                                       owner->clearRecentlyUsed();
+                                   }
+                               });
+            return;
+        }
+
+        // Handle right-click on Favorites item
+        if (itemType == ItemType::Favorites && e.mods.isRightButtonDown())
+        {
+            juce::PopupMenu menu;
+            menu.addItem(1, "Clear My Gear");
+
+            menu.showMenuAsync(juce::PopupMenu::Options(),
+                               [this](int result)
+                               {
+                                   if (result == 1 && owner != nullptr)
+                                   {
+                                       owner->clearFavorites();
+                                   }
+                               });
+            return;
+        }
+
+        // Handle star icon clicks for gear items
+        if (itemType == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
+        {
+            // Check if click is in the left portion of the item where the star would be
+            // The star is drawn at the left edge, so check if click is in the left 20 pixels
+            const int starAreaWidth = 20;
+
+            if (e.x <= starAreaWidth)
+            {
+                // Toggle favorite status
+                CacheManager &cache = CacheManager::getInstance();
+                bool isFavorite = cache.isFavorite(gearItem->unitId);
+
+                if (isFavorite)
+                {
+                    cache.removeFromFavorites(gearItem->unitId);
+                }
+                else
+                {
+                    cache.addToFavorites(gearItem->unitId);
+                }
+
+                // Refresh only the favorites section to preserve tree expansion state
+                if (owner != nullptr)
+                {
+                    owner->refreshFavoritesSection();
+                }
+
+                return; // Don't proceed with other operations
+            }
+        }
+
+        // Handle default behavior (expand/collapse) for all other clicks
         TreeViewItem::itemClicked(e);
 
         // If this is a gear item, make it draggable

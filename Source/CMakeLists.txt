@@ -16,4 +16,6 @@ target_sources(AnalogIQ
         NotesPanel.cpp
         NotesPanel.h
         DraggableListBox.h
+        CacheManager.cpp
+        CacheManager.h
 ) 
