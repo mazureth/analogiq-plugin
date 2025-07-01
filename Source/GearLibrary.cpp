@@ -416,22 +416,70 @@ void GearLibrary::updateFilteredItems()
                     auto myGearNode = new GearTreeItem(GearTreeItem::ItemType::Favorites, "My Gear", this);
                     rootItem->addSubItem(myGearNode);
 
+                    // Group matching favorites by category (same approach as Categories tree)
+                    juce::HashMap<juce::String, juce::Array<GearItem *>> favoriteCategoryGroups;
+
                     for (auto *item : matchingFavorites)
                     {
-                        // Find the index of this item in the original array
-                        int itemIndex = -1;
-                        for (int i = 0; i < gearItems.size(); ++i)
+                        // Get the category string or derive it from the enum
+                        juce::String category;
+                        if (!item->categoryString.isEmpty())
                         {
-                            if (&gearItems.getReference(i) == item)
+                            category = item->categoryString.toLowerCase();
+                        }
+                        else
+                        {
+                            // Fallback to enum if string is empty
+                            switch (item->category)
                             {
-                                itemIndex = i;
+                            case GearCategory::EQ:
+                                category = "equalizer";
+                                break;
+                            case GearCategory::Compressor:
+                                category = "compressor";
+                                break;
+                            case GearCategory::Preamp:
+                                category = "preamp";
+                                break;
+                            case GearCategory::Other:
+                                category = "other";
                                 break;
                             }
                         }
 
-                        if (itemIndex >= 0)
+                        if (!favoriteCategoryGroups.contains(category))
+                            favoriteCategoryGroups.set(category, juce::Array<GearItem *>());
+
+                        favoriteCategoryGroups.getReference(category).add(item);
+                    }
+
+                    // Add category groups as sub-items
+                    for (auto it = favoriteCategoryGroups.begin(); it != favoriteCategoryGroups.end(); ++it)
+                    {
+                        juce::String categoryName = it.getKey();
+                        juce::String displayName = categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1);
+
+                        auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this);
+                        myGearNode->addSubItem(categoryNode);
+
+                        // Add gear items to this category group
+                        for (auto *item : it.getValue())
                         {
-                            myGearNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, item, itemIndex));
+                            // Find the index of this item in the original array
+                            int itemIndex = -1;
+                            for (int i = 0; i < gearItems.size(); ++i)
+                            {
+                                if (&gearItems.getReference(i) == item)
+                                {
+                                    itemIndex = i;
+                                    break;
+                                }
+                            }
+
+                            if (itemIndex >= 0)
+                            {
+                                categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, item, itemIndex));
+                            }
                         }
                     }
                     myGearNode->setOpen(true);
