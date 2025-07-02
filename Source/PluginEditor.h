@@ -25,8 +25,7 @@
  * operations for gear items and organizes the interface using a tabbed layout.
  */
 class AnalogIQEditor : public juce::AudioProcessorEditor,
-                       public juce::DragAndDropContainer,
-                       public juce::Button::Listener
+                       public juce::DragAndDropContainer
 {
 public:
     /**
@@ -60,19 +59,11 @@ public:
      */
     Rack *getRack() const { return rack.get(); }
 
-    // Button::Listener implementation
-    void buttonClicked(juce::Button *button) override;
-
 private:
     /**
      * @brief Shows the presets popup menu.
      */
-    void showPresetsMenu();
-
-    /**
-     * @brief Handles the result of a preset menu selection.
-     */
-    void handlePresetMenuResult(int result);
+    void showPresetMenu();
 
     /**
      * @brief Shows a dialog to save a new preset.
@@ -123,6 +114,21 @@ private:
     };
 
     MenuBarContainer menuBarContainer; ///< Container for the menu bar
+
+    /**
+     * @brief Custom LookAndFeel for menu buttons with no background or border.
+     */
+    class FlatMenuButtonLookAndFeel : public juce::LookAndFeel_V4
+    {
+    public:
+        void drawButtonBackground(juce::Graphics &g, juce::Button &b,
+                                  const juce::Colour &, bool, bool) override
+        {
+            // Do nothing: no background or border
+        }
+    };
+
+    FlatMenuButtonLookAndFeel flatMenuLookAndFeel; ///< Custom look and feel for menu buttons
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQEditor)
 };

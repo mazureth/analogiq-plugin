@@ -65,18 +65,17 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
     menuBarContainer.setComponentID("MenuBarContainer");
     presetsMenuButton.setComponentID("PresetsMenuButton");
 
-    // Configure preset menu button
+    // Configure preset menu button with onClick lambda
     presetsMenuButton.setButtonText("Presets");
-    presetsMenuButton.addListener(this);
+    presetsMenuButton.onClick = [this]()
+    { showPresetMenu(); };
 
-    // Style the menu button to look like a traditional menu item (border matches background)
+    // Apply custom look and feel for no background/border
+    presetsMenuButton.setLookAndFeel(&flatMenuLookAndFeel);
+
+    // Style the text color
     presetsMenuButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
     presetsMenuButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
-
-    // Set border color to match menu bar background (effectively invisible)
-    auto menuBarBgColor = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1f);
-    presetsMenuButton.setColour(juce::TextButton::buttonColourId, menuBarBgColor);
-    presetsMenuButton.setColour(juce::TextButton::buttonOnColourId, menuBarBgColor);
 
     // Add menu bar components to the editor
     addAndMakeVisible(menuBarContainer);
@@ -137,71 +136,20 @@ void AnalogIQEditor::resized()
     mainTabs.setBounds(area);
 }
 
-void AnalogIQEditor::handlePresetMenuResult(int result)
-{
-    auto &presetManager = PresetManager::getInstance();
-    auto presetNames = presetManager.getPresetNames();
-
-    switch (result)
-    {
-    case 1: // Save Preset...
-        showSavePresetDialog();
-        break;
-
-    case 2: // Load Preset...
-        showLoadPresetDialog();
-        break;
-
-    case 3: // Delete Preset...
-        showDeletePresetDialog();
-        break;
-
-    default:
-        // Check if it's a direct preset selection (100+)
-        if (result >= 100 && result < 100 + presetNames.size())
-        {
-            int presetIndex = result - 100;
-            juce::String presetName = presetNames[presetIndex];
-
-            if (presetManager.loadPreset(presetName, rack.get(), gearLibrary.get()))
-            {
-                juce::Logger::writeToLog("Preset loaded: " + presetName);
-            }
-            else
-            {
-                juce::Logger::writeToLog("Failed to load preset: " + presetName);
-                juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
-                                                       "Preset Load Error",
-                                                       "Failed to load preset: " + presetName);
-            }
-        }
-        break;
-    }
-}
-
-void AnalogIQEditor::buttonClicked(juce::Button *button)
-{
-    if (button == &presetsMenuButton)
-    {
-        showPresetsMenu();
-    }
-}
-
-void AnalogIQEditor::showPresetsMenu()
+void AnalogIQEditor::showPresetMenu()
 {
     juce::PopupMenu menu;
 
-    // Add "Save Preset..." option
-    menu.addItem(1, "Save Preset...");
+    // Add "Save Preset..." option with direct callback
+    menu.addItem("Save Preset...", [this]()
+                 { showSavePresetDialog(); });
 
     // Add separator
     menu.addSeparator();
 
-    // Add "Load Preset..." option
-    menu.addItem(2, "Load Preset...");
-
-    // Add separator
-    menu.addSeparator();
+    // Add "Load Preset..." option with direct callback
+    menu.addItem("Load Preset...", [this]()
+                 { showLoadPresetDialog(); });
 
     // Add preset list if any exist
     auto &presetManager = PresetManager::getInstance();
@@ -209,26 +157,45 @@ void AnalogIQEditor::showPresetsMenu()
 
     if (presetNames.size() > 0)
     {
-        // Add "Delete Preset..." option
-        menu.addItem(3, "Delete Preset...");
+        // Add separator
         menu.addSeparator();
 
-        // Add individual presets for quick loading
+        // Add "Delete Preset..." option with direct callback
+        menu.addItem("Delete Preset...", [this]()
+                     { showDeletePresetDialog(); });
+
+        // Add separator
+        menu.addSeparator();
+
+        // Add individual presets for quick loading with direct callbacks
         for (int i = 0; i < presetNames.size(); ++i)
         {
             juce::String displayName = presetManager.getPresetDisplayName(presetNames[i]);
-            menu.addItem(100 + i, displayName);
+            menu.addItem(displayName, [this, i, presetNames]()
+                         { 
+                juce::String presetName = presetNames[i];
+                auto &presetManager = PresetManager::getInstance();
+                if (presetManager.loadPreset(presetName, rack.get(), gearLibrary.get()))
+                {
+                    juce::Logger::writeToLog("Preset loaded: " + presetName);
+                }
+                else
+                {
+                    juce::Logger::writeToLog("Failed to load preset: " + presetName);
+                    juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                                          "Preset Load Error",
+                                                          "Failed to load preset: " + presetName);
+                } });
         }
     }
     else
     {
-        menu.addItem(4, "No presets available", false, false);
+        menu.addSeparator();
+        menu.addItem(999, "No presets available", false, false);
     }
 
-    // Show the menu
-    menu.showMenuAsync(juce::PopupMenu::Options(),
-                       juce::ModalCallbackFunction::create([this](int result)
-                                                           { handlePresetMenuResult(result); }));
+    // Show the menu with proper positioning
+    menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&presetsMenuButton));
 }
 
 void AnalogIQEditor::showSavePresetDialog()
