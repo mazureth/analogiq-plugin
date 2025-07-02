@@ -493,3 +493,17 @@ juce::String PresetManager::getPresetDisplayName(const juce::String &name) const
 
     return name + " (" + dateStr + ")";
 }
+
+/**
+ * @brief Gets the display name for a preset (without timestamp).
+ *
+ * @param name The name of the preset
+ * @return The display name without timestamp
+ */
+juce::String PresetManager::getPresetDisplayNameNoTimestamp(const juce::String &name) const
+{
+    if (name.isEmpty())
+        return "";
+
+    return name;
+}

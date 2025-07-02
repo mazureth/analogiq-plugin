@@ -170,7 +170,7 @@ void AnalogIQEditor::showPresetMenu()
         // Add individual presets for quick loading with direct callbacks
         for (int i = 0; i < presetNames.size(); ++i)
         {
-            juce::String displayName = presetManager.getPresetDisplayName(presetNames[i]);
+            juce::String displayName = presetManager.getPresetDisplayNameNoTimestamp(presetNames[i]);
             menu.addItem(displayName, [this, i, presetNames]()
                          { 
                 juce::String presetName = presetNames[i];
@@ -229,18 +229,21 @@ void AnalogIQEditor::showLoadPresetDialog()
                                          "Select a preset to load:",
                                          juce::AlertWindow::QuestionIcon);
 
-    // Add dropdown for preset selection
-    dialog->addComboBox("presetSelect", juce::String("Preset:"));
+    // Create StringArray with preset display names
+    juce::StringArray presetDisplayNames;
+    for (int i = 0; i < presetNames.size(); ++i)
+    {
+        juce::String displayName = presetManager.getPresetDisplayName(presetNames[i]);
+        presetDisplayNames.add(displayName);
+    }
+
+    // Add dropdown for preset selection with pre-populated list
+    dialog->addComboBox("presetSelect", presetDisplayNames);
     juce::ComboBox *presetCombo = dialog->getComboBoxComponent("presetSelect");
 
     if (presetCombo != nullptr)
     {
-        for (int i = 0; i < presetNames.size(); ++i)
-        {
-            juce::String displayName = presetManager.getPresetDisplayName(presetNames[i]);
-            presetCombo->addItem(displayName, i + 1);
-        }
-        presetCombo->setSelectedId(1, juce::dontSendNotification);
+        presetCombo->setSelectedItemIndex(0, juce::dontSendNotification);
     }
 
     dialog->addButton("Load", 1, juce::KeyPress(juce::KeyPress::returnKey));
@@ -253,12 +256,12 @@ void AnalogIQEditor::showLoadPresetDialog()
             juce::ComboBox *presetCombo = dialog->getComboBoxComponent("presetSelect");
             if (presetCombo != nullptr)
             {
-                int selectedId = presetCombo->getSelectedId();
-                if (selectedId > 0)
+                int selectedIndex = presetCombo->getSelectedItemIndex();
+                if (selectedIndex >= 0)
                 {
                     auto &presetManager = PresetManager::getInstance();
                     auto presetNames = presetManager.getPresetNames();
-                    juce::String presetName = presetNames[selectedId - 1];
+                    juce::String presetName = presetNames[selectedIndex];
                     
                     handleLoadPreset(presetName);
                 }
@@ -285,18 +288,21 @@ void AnalogIQEditor::showDeletePresetDialog()
                                          "Select a preset to delete:",
                                          juce::AlertWindow::WarningIcon);
 
-    // Add dropdown for preset selection
-    dialog->addComboBox("presetSelect", juce::String("Preset:"));
+    // Create StringArray with preset display names
+    juce::StringArray presetDisplayNames;
+    for (int i = 0; i < presetNames.size(); ++i)
+    {
+        juce::String displayName = presetManager.getPresetDisplayName(presetNames[i]);
+        presetDisplayNames.add(displayName);
+    }
+
+    // Add dropdown for preset selection with pre-populated list
+    dialog->addComboBox("presetSelect", presetDisplayNames);
     juce::ComboBox *presetCombo = dialog->getComboBoxComponent("presetSelect");
 
     if (presetCombo != nullptr)
     {
-        for (int i = 0; i < presetNames.size(); ++i)
-        {
-            juce::String displayName = presetManager.getPresetDisplayName(presetNames[i]);
-            presetCombo->addItem(displayName, i + 1);
-        }
-        presetCombo->setSelectedId(1, juce::dontSendNotification);
+        presetCombo->setSelectedItemIndex(0, juce::dontSendNotification);
     }
 
     dialog->addButton("Delete", 1, juce::KeyPress(juce::KeyPress::returnKey));
@@ -309,12 +315,12 @@ void AnalogIQEditor::showDeletePresetDialog()
             juce::ComboBox *presetCombo = dialog->getComboBoxComponent("presetSelect");
             if (presetCombo != nullptr)
             {
-                int selectedId = presetCombo->getSelectedId();
-                if (selectedId > 0)
+                int selectedIndex = presetCombo->getSelectedItemIndex();
+                if (selectedIndex >= 0)
                 {
                     auto &presetManager = PresetManager::getInstance();
                     auto presetNames = presetManager.getPresetNames();
-                    juce::String presetName = presetNames[selectedId - 1];
+                    juce::String presetName = presetNames[selectedIndex];
                     
                     // Show confirmation dialog
                     auto* confirmDialog = new juce::AlertWindow("Confirm Delete",

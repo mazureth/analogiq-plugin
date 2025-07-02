@@ -111,6 +111,14 @@ public:
     juce::String getPresetDisplayName(const juce::String &name) const;
 
     /**
+     * @brief Gets the display name for a preset (without timestamp).
+     *
+     * @param name The name of the preset
+     * @return The display name without timestamp
+     */
+    juce::String getPresetDisplayNameNoTimestamp(const juce::String &name) const;
+
+    /**
      * @brief Initializes the presets directory structure.
      *
      * Creates the presets directory if it doesn't exist.
