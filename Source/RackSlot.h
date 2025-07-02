@@ -199,19 +199,26 @@ public:
      */
     void resetToSource();
 
-    /**
-     * @brief Checks if the current gear item is an instance.
-     *
-     * @return true if the current gear item is an instance
-     */
     bool isInstance() const { return gearItem != nullptr && gearItem->isInstance; }
+    juce::String getInstanceId() const { return gearItem != nullptr ? gearItem->instanceId : juce::String(); }
+
+private:
+    /**
+     * @brief Notifies the rack that a gear item was added to this slot.
+     */
+    void notifyRackOfGearItemAdded();
 
     /**
-     * @brief Gets the instance ID of the current gear item.
-     *
-     * @return The instance ID, or empty string if no gear item or not an instance
+     * @brief Notifies the rack that a gear item was removed from this slot.
      */
-    juce::String getInstanceId() const { return gearItem != nullptr ? gearItem->instanceId : juce::String(); }
+    void notifyRackOfGearItemRemoved();
+
+    /**
+     * @brief Notifies the rack that a control was changed in this slot.
+     *
+     * @param controlIndex The index of the control that was changed
+     */
+    void notifyRackOfControlChanged(int controlIndex);
 
 private:
     // Helper methods for control rendering

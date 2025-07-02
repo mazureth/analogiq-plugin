@@ -245,39 +245,64 @@ bool PresetManager::deserializeJSONToRack(const juce::String &jsonData, Rack *ra
                             // Create a new instance of the gear item
                             GearItem *newItem = new GearItem(*sourceItem, INetworkFetcher::getDummy());
 
+                            // Store saved control values for later application
+                            struct SavedControlValues
+                            {
+                                int index;
+                                float value;
+                                float initialValue;
+                                int currentIndex;
+                            };
+                            juce::Array<SavedControlValues> savedControls;
+
+                            // Extract control values from preset
+                            auto controlsVar = slotObj->getProperty("controls");
+                            if (controlsVar.isArray())
+                            {
+                                auto controlsArray = controlsVar.getArray();
+                                for (auto controlVar : *controlsArray)
+                                {
+                                    if (controlVar.isObject())
+                                    {
+                                        auto controlObj = controlVar.getDynamicObject();
+                                        if (controlObj != nullptr)
+                                        {
+                                            SavedControlValues saved;
+                                            saved.index = controlObj->getProperty("index");
+                                            saved.value = controlObj->getProperty("value");
+                                            saved.initialValue = controlObj->getProperty("initialValue");
+                                            saved.currentIndex = controlObj->getProperty("currentIndex");
+                                            savedControls.add(saved);
+                                        }
+                                    }
+                                }
+                            }
+
                             // Set it in the slot
                             if (auto *slot = rack->getSlot(slotIndex))
                             {
                                 slot->setGearItem(newItem);
 
-                                // Load control values
-                                auto controlsVar = slotObj->getProperty("controls");
-                                if (controlsVar.isArray())
-                                {
-                                    auto controlsArray = controlsVar.getArray();
-                                    for (auto controlVar : *controlsArray)
+                                // Trigger the same loading sequence as normal gear item addition
+                                // This will fetch schema, faceplate, and control images
+                                // After schema parsing, apply the saved control values
+                                rack->fetchSchemaForGearItem(newItem, [newItem, savedControls]()
+                                                             {
+                                    // Apply saved control values after schema parsing
+                                    for (const auto& saved : savedControls)
                                     {
-                                        if (controlVar.isObject())
+                                        if (saved.index >= 0 && saved.index < newItem->controls.size())
                                         {
-                                            auto controlObj = controlVar.getDynamicObject();
-                                            if (controlObj != nullptr)
-                                            {
-                                                int controlIndex = controlObj->getProperty("index");
-                                                if (controlIndex >= 0 && controlIndex < newItem->controls.size())
-                                                {
-                                                    auto &control = newItem->controls.getReference(controlIndex);
-                                                    control.value = controlObj->getProperty("value");
-                                                    control.initialValue = controlObj->getProperty("initialValue");
+                                            auto &control = newItem->controls.getReference(saved.index);
+                                            control.value = saved.value;
+                                            control.initialValue = saved.initialValue;
 
-                                                    if (control.type == GearControl::Type::Switch)
-                                                    {
-                                                        control.currentIndex = controlObj->getProperty("currentIndex");
-                                                    }
-                                                }
+                                            if (control.type == GearControl::Type::Switch)
+                                            {
+                                                control.currentIndex = saved.currentIndex;
                                             }
                                         }
-                                    }
-                                }
+                                    } });
                             }
                         }
                     }

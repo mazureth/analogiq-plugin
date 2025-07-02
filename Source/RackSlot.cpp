@@ -859,6 +859,18 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
         case GearControl::Type::Button:
             handleButtonInteraction(*activeControl);
             repaint();
+            // Find the control index and notify
+            if (gearItem != nullptr)
+            {
+                for (int i = 0; i < gearItem->controls.size(); ++i)
+                {
+                    if (&gearItem->controls.getReference(i) == activeControl)
+                    {
+                        notifyRackOfControlChanged(i);
+                        break;
+                    }
+                }
+            }
             break;
         case GearControl::Type::Knob:
             // Don't update value on click, wait for drag
@@ -928,6 +940,18 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
             activeControl->currentIndex = newIndexInt;
             activeControl->value = (float)newIndexInt;
             repaint();
+            // Find the control index and notify
+            if (gearItem != nullptr)
+            {
+                for (int i = 0; i < gearItem->controls.size(); ++i)
+                {
+                    if (&gearItem->controls.getReference(i) == activeControl)
+                    {
+                        notifyRackOfControlChanged(i);
+                        break;
+                    }
+                }
+            }
         }
         break;
     }
@@ -956,6 +980,18 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
 
         activeControl->value = newValue;
         repaint();
+        // Find the control index and notify
+        if (gearItem != nullptr)
+        {
+            for (int i = 0; i < gearItem->controls.size(); ++i)
+            {
+                if (&gearItem->controls.getReference(i) == activeControl)
+                {
+                    notifyRackOfControlChanged(i);
+                    break;
+                }
+            }
+        }
         break;
     }
     case GearControl::Type::Knob:
@@ -996,11 +1032,35 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
         activeControl->value = newValue;
 
         repaint();
+        // Find the control index and notify
+        if (gearItem != nullptr)
+        {
+            for (int i = 0; i < gearItem->controls.size(); ++i)
+            {
+                if (&gearItem->controls.getReference(i) == activeControl)
+                {
+                    notifyRackOfControlChanged(i);
+                    break;
+                }
+            }
+        }
         break;
     }
     case GearControl::Type::Button:
         handleButtonInteraction(*activeControl);
         repaint();
+        // Find the control index and notify
+        if (gearItem != nullptr)
+        {
+            for (int i = 0; i < gearItem->controls.size(); ++i)
+            {
+                if (&gearItem->controls.getReference(i) == activeControl)
+                {
+                    notifyRackOfControlChanged(i);
+                    break;
+                }
+            }
+        }
         break;
     default:
         break; // Other controls don't need drag handling
@@ -1401,6 +1461,9 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &details
  */
 void RackSlot::setGearItem(GearItem *newGearItem)
 {
+    // Store the old gear item for notification
+    GearItem *oldGearItem = gearItem;
+
     // If we already have a gear item and it's an instance, preserve its state
     if (gearItem != nullptr && gearItem->isInstance)
     {
@@ -1450,6 +1513,18 @@ void RackSlot::setGearItem(GearItem *newGearItem)
 
     updateButtonStates(); // Update button states when gear changes
     repaint();            // Trigger repaint to show the gear item
+
+    // Notify the rack of the state change
+    if (oldGearItem == nullptr && newGearItem != nullptr)
+    {
+        // Gear item was added
+        notifyRackOfGearItemAdded();
+    }
+    else if (oldGearItem != nullptr && newGearItem == nullptr)
+    {
+        // Gear item was removed
+        notifyRackOfGearItemRemoved();
+    }
 }
 
 /**
@@ -1459,6 +1534,9 @@ void RackSlot::setGearItem(GearItem *newGearItem)
  */
 void RackSlot::clearGearItem()
 {
+    // Store the old gear item for notification
+    GearItem *oldGearItem = gearItem;
+
     gearItem = nullptr;
     updateButtonStates(); // Update button states when gear is removed
     repaint();            // Trigger repaint to update
@@ -1483,6 +1561,12 @@ void RackSlot::clearGearItem()
                 container->rack->resized();
             }
         }
+    }
+
+    // Notify the rack of the state change
+    if (oldGearItem != nullptr)
+    {
+        notifyRackOfGearItemRemoved();
     }
 }
 
@@ -1546,4 +1630,79 @@ void RackSlot::resetToSource()
 
     // Repaint to show the updated state
     repaint();
+}
+
+void RackSlot::notifyRackOfGearItemAdded()
+{
+    juce::Component *parentComponent = findParentRackComponent();
+    if (parentComponent != nullptr)
+    {
+        if (parentComponent->getComponentID() == "Rack")
+        {
+            Rack *parentRack = dynamic_cast<Rack *>(parentComponent);
+            if (parentRack != nullptr)
+            {
+                parentRack->notifyGearItemAdded(index, gearItem);
+            }
+        }
+        else if (parentComponent->getComponentID() == "RackContainer")
+        {
+            auto *container = dynamic_cast<Rack::RackContainer *>(parentComponent);
+            if (container != nullptr && container->rack != nullptr)
+            {
+                container->rack->notifyGearItemAdded(index, gearItem);
+            }
+        }
+    }
+}
+
+void RackSlot::notifyRackOfGearItemRemoved()
+{
+    juce::Component *parentComponent = findParentRackComponent();
+    if (parentComponent != nullptr)
+    {
+        if (parentComponent->getComponentID() == "Rack")
+        {
+            Rack *parentRack = dynamic_cast<Rack *>(parentComponent);
+            if (parentRack != nullptr)
+            {
+                parentRack->notifyGearItemRemoved(index);
+            }
+        }
+        else if (parentComponent->getComponentID() == "RackContainer")
+        {
+            auto *container = dynamic_cast<Rack::RackContainer *>(parentComponent);
+            if (container != nullptr && container->rack != nullptr)
+            {
+                container->rack->notifyGearItemRemoved(index);
+            }
+        }
+    }
+}
+
+void RackSlot::notifyRackOfControlChanged(int controlIndex)
+{
+    if (gearItem == nullptr)
+        return;
+
+    juce::Component *parentComponent = findParentRackComponent();
+    if (parentComponent != nullptr)
+    {
+        if (parentComponent->getComponentID() == "Rack")
+        {
+            Rack *parentRack = dynamic_cast<Rack *>(parentComponent);
+            if (parentRack != nullptr)
+            {
+                parentRack->notifyGearControlChanged(index, gearItem, controlIndex);
+            }
+        }
+        else if (parentComponent->getComponentID() == "RackContainer")
+        {
+            auto *container = dynamic_cast<Rack::RackContainer *>(parentComponent);
+            if (container != nullptr && container->rack != nullptr)
+            {
+                container->rack->notifyGearControlChanged(index, gearItem, controlIndex);
+            }
+        }
+    }
 }

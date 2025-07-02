@@ -175,17 +175,7 @@ void AnalogIQEditor::showPresetMenu()
                          { 
                 juce::String presetName = presetNames[i];
                 auto &presetManager = PresetManager::getInstance();
-                if (presetManager.loadPreset(presetName, rack.get(), gearLibrary.get()))
-                {
-                    juce::Logger::writeToLog("Preset loaded: " + presetName);
-                }
-                else
-                {
-                    juce::Logger::writeToLog("Failed to load preset: " + presetName);
-                    juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
-                                                          "Preset Load Error",
-                                                          "Failed to load preset: " + presetName);
-                } });
+                handleLoadPreset(presetName); });
         }
     }
     else
@@ -200,36 +190,26 @@ void AnalogIQEditor::showPresetMenu()
 
 void AnalogIQEditor::showSavePresetDialog()
 {
-    juce::AlertWindow dialog("Save Preset",
-                             "Enter a name for the new preset:",
-                             juce::AlertWindow::QuestionIcon);
+    auto *dialog = new juce::AlertWindow("Save Preset",
+                                         "Enter a name for the new preset:",
+                                         juce::AlertWindow::QuestionIcon);
 
-    dialog.addTextEditor("presetName", "", "Preset Name:");
-    dialog.addButton("Save", 1, juce::KeyPress(juce::KeyPress::returnKey));
-    dialog.addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
+    dialog->addTextEditor("presetName", "", "Preset Name:");
+    dialog->addButton("Save", 1, juce::KeyPress(juce::KeyPress::returnKey));
+    dialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
 
-    dialog.enterModalState(true, juce::ModalCallbackFunction::create([this, &dialog](int result)
-                                                                     {
+    dialog->enterModalState(true, juce::ModalCallbackFunction::create([this, dialog](int result)
+                                                                      {
         if (result == 1)
         {
-            juce::String presetName = dialog.getTextEditorContents("presetName").trim();
+            juce::String presetName = dialog->getTextEditorContents("presetName").trim();
             if (presetName.isNotEmpty())
             {
-                auto &presetManager = PresetManager::getInstance();
-                if (presetManager.savePreset(presetName, rack.get()))
-                {
-                    juce::Logger::writeToLog("Preset saved: " + presetName);
-                }
-                else
-                {
-                    juce::Logger::writeToLog("Failed to save preset: " + presetName);
-                    juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
-                                                          "Preset Save Error",
-                                                          "Failed to save preset: " + presetName);
-                }
+                handleSavePreset(presetName);
             }
-        } }),
-                           true);
+        }
+        delete dialog; }),
+                            true);
 }
 
 void AnalogIQEditor::showLoadPresetDialog()
@@ -245,13 +225,13 @@ void AnalogIQEditor::showLoadPresetDialog()
         return;
     }
 
-    juce::AlertWindow dialog("Load Preset",
-                             "Select a preset to load:",
-                             juce::AlertWindow::QuestionIcon);
+    auto *dialog = new juce::AlertWindow("Load Preset",
+                                         "Select a preset to load:",
+                                         juce::AlertWindow::QuestionIcon);
 
     // Add dropdown for preset selection
-    dialog.addComboBox("presetSelect", juce::String("Preset:"));
-    juce::ComboBox *presetCombo = dialog.getComboBoxComponent("presetSelect");
+    dialog->addComboBox("presetSelect", juce::String("Preset:"));
+    juce::ComboBox *presetCombo = dialog->getComboBoxComponent("presetSelect");
 
     if (presetCombo != nullptr)
     {
@@ -263,14 +243,14 @@ void AnalogIQEditor::showLoadPresetDialog()
         presetCombo->setSelectedId(1, juce::dontSendNotification);
     }
 
-    dialog.addButton("Load", 1, juce::KeyPress(juce::KeyPress::returnKey));
-    dialog.addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
+    dialog->addButton("Load", 1, juce::KeyPress(juce::KeyPress::returnKey));
+    dialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
 
-    dialog.enterModalState(true, juce::ModalCallbackFunction::create([this, &dialog](int result)
-                                                                     {
+    dialog->enterModalState(true, juce::ModalCallbackFunction::create([this, dialog](int result)
+                                                                      {
         if (result == 1)
         {
-            juce::ComboBox *presetCombo = dialog.getComboBoxComponent("presetSelect");
+            juce::ComboBox *presetCombo = dialog->getComboBoxComponent("presetSelect");
             if (presetCombo != nullptr)
             {
                 int selectedId = presetCombo->getSelectedId();
@@ -280,21 +260,12 @@ void AnalogIQEditor::showLoadPresetDialog()
                     auto presetNames = presetManager.getPresetNames();
                     juce::String presetName = presetNames[selectedId - 1];
                     
-                    if (presetManager.loadPreset(presetName, rack.get(), gearLibrary.get()))
-                    {
-                        juce::Logger::writeToLog("Preset loaded: " + presetName);
-                    }
-                    else
-                    {
-                        juce::Logger::writeToLog("Failed to load preset: " + presetName);
-                        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
-                                                              "Preset Load Error",
-                                                              "Failed to load preset: " + presetName);
-                    }
+                    handleLoadPreset(presetName);
                 }
             }
-        } }),
-                           true);
+        }
+        delete dialog; }),
+                            true);
 }
 
 void AnalogIQEditor::showDeletePresetDialog()
@@ -310,13 +281,13 @@ void AnalogIQEditor::showDeletePresetDialog()
         return;
     }
 
-    juce::AlertWindow dialog("Delete Preset",
-                             "Select a preset to delete:",
-                             juce::AlertWindow::WarningIcon);
+    auto *dialog = new juce::AlertWindow("Delete Preset",
+                                         "Select a preset to delete:",
+                                         juce::AlertWindow::WarningIcon);
 
     // Add dropdown for preset selection
-    dialog.addComboBox("presetSelect", juce::String("Preset:"));
-    juce::ComboBox *presetCombo = dialog.getComboBoxComponent("presetSelect");
+    dialog->addComboBox("presetSelect", juce::String("Preset:"));
+    juce::ComboBox *presetCombo = dialog->getComboBoxComponent("presetSelect");
 
     if (presetCombo != nullptr)
     {
@@ -328,14 +299,14 @@ void AnalogIQEditor::showDeletePresetDialog()
         presetCombo->setSelectedId(1, juce::dontSendNotification);
     }
 
-    dialog.addButton("Delete", 1, juce::KeyPress(juce::KeyPress::returnKey));
-    dialog.addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
+    dialog->addButton("Delete", 1, juce::KeyPress(juce::KeyPress::returnKey));
+    dialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
 
-    dialog.enterModalState(true, juce::ModalCallbackFunction::create([this, &dialog](int result)
-                                                                     {
+    dialog->enterModalState(true, juce::ModalCallbackFunction::create([this, dialog](int result)
+                                                                      {
         if (result == 1)
         {
-            juce::ComboBox *presetCombo = dialog.getComboBoxComponent("presetSelect");
+            juce::ComboBox *presetCombo = dialog->getComboBoxComponent("presetSelect");
             if (presetCombo != nullptr)
             {
                 int selectedId = presetCombo->getSelectedId();
@@ -346,33 +317,128 @@ void AnalogIQEditor::showDeletePresetDialog()
                     juce::String presetName = presetNames[selectedId - 1];
                     
                     // Show confirmation dialog
-                    juce::AlertWindow confirmDialog("Confirm Delete",
-                                                   "Are you sure you want to delete the preset:\n\"" + presetName + "\"?",
-                                                   juce::AlertWindow::WarningIcon);
+                    auto* confirmDialog = new juce::AlertWindow("Confirm Delete",
+                                                               "Are you sure you want to delete the preset:\n\"" + presetName + "\"?",
+                                                               juce::AlertWindow::WarningIcon);
                     
-                    confirmDialog.addButton("Delete", 1, juce::KeyPress(juce::KeyPress::returnKey));
-                    confirmDialog.addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
+                    confirmDialog->addButton("Delete", 1, juce::KeyPress(juce::KeyPress::returnKey));
+                    confirmDialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
                     
-                    confirmDialog.enterModalState(true, juce::ModalCallbackFunction::create([presetName](int confirmResult)
-                                                                                            {
+                    confirmDialog->enterModalState(true, juce::ModalCallbackFunction::create([this, presetName, confirmDialog](int confirmResult)
+                                                                                                {
                         if (confirmResult == 1)
                         {
-                            auto &presetManager = PresetManager::getInstance();
-                            if (presetManager.deletePreset(presetName))
-                            {
-                                juce::Logger::writeToLog("Preset deleted: " + presetName);
-                            }
-                            else
-                            {
-                                juce::Logger::writeToLog("Failed to delete preset: " + presetName);
-                                juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
-                                                                      "Preset Delete Error",
-                                                                      "Failed to delete preset: " + presetName);
-                            }
-                        } }),
-                                                true);
+                            handleDeletePreset(presetName);
+                        }
+                        delete confirmDialog;
+                    }), true);
                 }
             }
-        } }),
-                           true);
+        }
+        delete dialog; }),
+                            true);
+}
+
+void AnalogIQEditor::handleSavePreset(const juce::String &presetName)
+{
+    auto &presetManager = PresetManager::getInstance();
+    if (presetManager.savePreset(presetName, rack.get()))
+    {
+        juce::Logger::writeToLog("Preset saved: " + presetName);
+        currentPresetName = presetName;
+        clearModifiedState();
+
+        // Show success message
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                               "Preset Saved",
+                                               "Preset '" + presetName + "' saved successfully.");
+    }
+    else
+    {
+        juce::Logger::writeToLog("Failed to save preset: " + presetName);
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                               "Preset Save Error",
+                                               "Failed to save preset: " + presetName);
+    }
+}
+
+void AnalogIQEditor::handleLoadPreset(const juce::String &presetName)
+{
+    auto &presetManager = PresetManager::getInstance();
+    if (presetManager.loadPreset(presetName, rack.get(), gearLibrary.get()))
+    {
+        juce::Logger::writeToLog("Preset loaded: " + presetName);
+        currentPresetName = presetName;
+        clearModifiedState();
+
+        // Show success message
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                               "Preset Loaded",
+                                               "Preset '" + presetName + "' loaded successfully.");
+    }
+    else
+    {
+        juce::Logger::writeToLog("Failed to load preset: " + presetName);
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                               "Preset Load Error",
+                                               "Failed to load preset: " + presetName);
+    }
+}
+
+void AnalogIQEditor::handleDeletePreset(const juce::String &presetName)
+{
+    auto &presetManager = PresetManager::getInstance();
+    if (presetManager.deletePreset(presetName))
+    {
+        juce::Logger::writeToLog("Preset deleted: " + presetName);
+
+        // If this was the currently loaded preset, clear the current preset name
+        if (currentPresetName == presetName)
+        {
+            currentPresetName = "";
+        }
+
+        // Show success message
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                               "Preset Deleted",
+                                               "Preset '" + presetName + "' deleted successfully.");
+    }
+    else
+    {
+        juce::Logger::writeToLog("Failed to delete preset: " + presetName);
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                               "Preset Delete Error",
+                                               "Failed to delete preset: " + presetName);
+    }
+}
+
+void AnalogIQEditor::refreshPresetMenu()
+{
+    // The menu is rebuilt each time showPresetMenu() is called,
+    // so this method can be used to trigger a menu refresh if needed
+    // For now, we'll just log that it was called
+    juce::Logger::writeToLog("Preset menu refresh requested");
+}
+
+bool AnalogIQEditor::hasUnsavedChanges() const
+{
+    return isModified;
+}
+
+void AnalogIQEditor::markAsModified()
+{
+    if (!isModified)
+    {
+        isModified = true;
+        juce::Logger::writeToLog("Rack state marked as modified");
+    }
+}
+
+void AnalogIQEditor::clearModifiedState()
+{
+    if (isModified)
+    {
+        isModified = false;
+        juce::Logger::writeToLog("Rack state marked as saved");
+    }
 }

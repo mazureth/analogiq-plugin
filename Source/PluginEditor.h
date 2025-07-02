@@ -59,6 +59,20 @@ public:
      */
     Rack *getRack() const { return rack.get(); }
 
+    /**
+     * @brief Gets a pointer to the gear library component.
+     *
+     * @return Pointer to the GearLibrary component
+     */
+    GearLibrary *getGearLibrary() const { return gearLibrary.get(); }
+
+    /**
+     * @brief Gets a reference to the preset manager.
+     *
+     * @return Reference to the PresetManager instance
+     */
+    PresetManager &getPresetManager() const { return PresetManager::getInstance(); }
+
 private:
     /**
      * @brief Shows the presets popup menu.
@@ -80,6 +94,49 @@ private:
      */
     void showDeletePresetDialog();
 
+    /**
+     * @brief Handles saving a preset with the given name.
+     *
+     * @param presetName The name of the preset to save
+     */
+    void handleSavePreset(const juce::String &presetName);
+
+    /**
+     * @brief Handles loading a preset with the given name.
+     *
+     * @param presetName The name of the preset to load
+     */
+    void handleLoadPreset(const juce::String &presetName);
+
+    /**
+     * @brief Handles deleting a preset with the given name.
+     *
+     * @param presetName The name of the preset to delete
+     */
+    void handleDeletePreset(const juce::String &presetName);
+
+    /**
+     * @brief Refreshes the preset menu with current preset list.
+     */
+    void refreshPresetMenu();
+
+    /**
+     * @brief Checks if the current rack state has unsaved changes.
+     *
+     * @return true if there are unsaved changes, false otherwise
+     */
+    bool hasUnsavedChanges() const;
+
+    /**
+     * @brief Marks the current state as having unsaved changes.
+     */
+    void markAsModified();
+
+    /**
+     * @brief Clears the modified state.
+     */
+    void clearModifiedState();
+
 private:
     AnalogIQProcessor &audioProcessor; ///< Reference to the associated AudioProcessor
 
@@ -91,6 +148,10 @@ private:
 
     // Menu Bar Components
     juce::TextButton presetsMenuButton{"PresetsMenuButton"}; ///< Menu button for preset operations
+
+    // State tracking
+    bool isModified{false};         ///< Tracks if the current state has unsaved changes
+    juce::String currentPresetName; ///< Name of the currently loaded preset, if any
 
     /**
      * @brief Custom component for the menu bar container with styling.

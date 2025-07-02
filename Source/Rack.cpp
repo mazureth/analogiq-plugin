@@ -449,10 +449,12 @@ RackSlot *Rack::findNearestSlot(const juce::Point<int> &position)
  *
  * @param item The gear item to fetch the schema for
  */
-void Rack::fetchSchemaForGearItem(GearItem *item)
+void Rack::fetchSchemaForGearItem(GearItem *item, std::function<void()> onComplete)
 {
     if (item == nullptr || item->schemaPath.isEmpty())
     {
+        if (onComplete)
+            onComplete();
         return;
     }
 
@@ -466,7 +468,7 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
         juce::String cachedSchema = cache.loadUnitFromCache(unitId);
         if (cachedSchema.isNotEmpty())
         {
-            parseSchema(cachedSchema, item);
+            parseSchema(cachedSchema, item, onComplete);
             return;
         }
     }
@@ -496,10 +498,11 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
          * @param itemToUpdate The gear item to update with the schema
          * @param rackToNotify The rack to notify when the schema is loaded
          * @param unitIdToCache The unit ID to use for caching
+         * @param onComplete Optional callback to execute when parsing is complete
          */
-        SchemaDownloader(juce::URL urlToUse, GearItem *itemToUpdate, Rack *rackToNotify, const juce::String &unitIdToCache)
+        SchemaDownloader(juce::URL urlToUse, GearItem *itemToUpdate, Rack *rackToNotify, const juce::String &unitIdToCache, std::function<void()> onComplete = nullptr)
             : juce::Thread("Schema Downloader"),
-              url(urlToUse), item(itemToUpdate), rack(rackToNotify), unitId(unitIdToCache)
+              url(urlToUse), item(itemToUpdate), rack(rackToNotify), unitId(unitIdToCache), completionCallback(onComplete)
         {
             startThread();
         }
@@ -538,24 +541,27 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
                     CacheManager& cache = CacheManager::getInstance();
                     cache.saveUnitToCache(unitId, schemaData);
                     
-                    rack->parseSchema(schemaData, item);
+                    rack->parseSchema(schemaData, item, completionCallback);
                 }
                 else
                 {
+                    // Call completion callback even on failure
+                    if (completionCallback) completionCallback();
                 }
                 delete this; });
         }
 
-        juce::URL url;           ///< The URL to download from
-        GearItem *item;          ///< The gear item to update
-        Rack *rack;              ///< The rack to notify
-        juce::String schemaData; ///< The downloaded schema data
-        bool success = false;    ///< Whether the download was successful
-        juce::String unitId;     ///< The unit ID to use for caching
+        juce::URL url;                            ///< The URL to download from
+        GearItem *item;                           ///< The gear item to update
+        Rack *rack;                               ///< The rack to notify
+        juce::String schemaData;                  ///< The downloaded schema data
+        bool success = false;                     ///< Whether the download was successful
+        juce::String unitId;                      ///< The unit ID to use for caching
+        std::function<void()> completionCallback; ///< Optional completion callback
     };
 
     // Create and start the download thread (it will delete itself when done)
-    new SchemaDownloader(schemaUrl, item, this, unitId);
+    new SchemaDownloader(schemaUrl, item, this, unitId, onComplete);
 }
 
 /**
@@ -563,13 +569,16 @@ void Rack::fetchSchemaForGearItem(GearItem *item)
  *
  * @param schemaData The JSON schema data to parse
  * @param item The gear item to update with the parsed schema
+ * @param onComplete Optional callback to execute when parsing is complete
  */
-void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
+void Rack::parseSchema(const juce::String &schemaData, GearItem *item, std::function<void()> onComplete)
 {
     // Parse the JSON schema
     auto schemaJson = juce::JSON::parse(schemaData);
     if (!schemaJson.isObject())
     {
+        if (onComplete)
+            onComplete();
         return;
     }
 
@@ -843,7 +852,9 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item)
         }
     }
 
-    // Notify that the schema has been loaded
+    // Call the completion callback if provided
+    if (onComplete)
+        onComplete();
 }
 
 /**
@@ -2074,6 +2085,96 @@ void Rack::resetAllInstances()
             {
                 slot->resetToSource();
             }
+        }
+    }
+}
+
+void Rack::addRackStateListener(RackStateListener *listener)
+{
+    if (listener != nullptr && !rackStateListeners.contains(listener))
+    {
+        rackStateListeners.add(listener);
+    }
+}
+
+void Rack::removeRackStateListener(RackStateListener *listener)
+{
+    rackStateListeners.removeFirstMatchingValue(listener);
+}
+
+void Rack::notifyGearItemAdded(int slotIndex, GearItem *gearItem)
+{
+    for (auto *listener : rackStateListeners)
+    {
+        if (listener != nullptr)
+        {
+            listener->onGearItemAdded(this, slotIndex, gearItem);
+        }
+    }
+}
+
+void Rack::notifyGearItemRemoved(int slotIndex)
+{
+    for (auto *listener : rackStateListeners)
+    {
+        if (listener != nullptr)
+        {
+            listener->onGearItemRemoved(this, slotIndex);
+        }
+    }
+}
+
+void Rack::notifyGearControlChanged(int slotIndex, GearItem *gearItem, int controlIndex)
+{
+    for (auto *listener : rackStateListeners)
+    {
+        if (listener != nullptr)
+        {
+            listener->onGearControlChanged(this, slotIndex, gearItem, controlIndex);
+        }
+    }
+}
+
+void Rack::notifyGearItemsRearranged(int sourceSlotIndex, int targetSlotIndex)
+{
+    for (auto *listener : rackStateListeners)
+    {
+        if (listener != nullptr)
+        {
+            listener->onGearItemsRearranged(this, sourceSlotIndex, targetSlotIndex);
+        }
+    }
+}
+
+void Rack::notifyRackStateReset()
+{
+    for (auto *listener : rackStateListeners)
+    {
+        if (listener != nullptr)
+        {
+            listener->onRackStateReset(this);
+        }
+    }
+}
+
+void Rack::notifyPresetLoaded(const juce::String &presetName)
+{
+    for (auto *listener : rackStateListeners)
+    {
+        if (listener != nullptr)
+        {
+            listener->onPresetLoaded(this, presetName);
+        }
+    }
+}
+
+void Rack::notifyPresetSaved(const juce::String &presetName)
+{
+    for (auto *listener : rackStateListeners)
+    {
+        if (listener != nullptr)
+        {
+            listener->onPresetSaved(this, presetName);
         }
     }
 }
