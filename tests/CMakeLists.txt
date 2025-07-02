@@ -7,6 +7,7 @@ add_executable(analogiq_tests
     unit/TestHelpers.h
     unit/TestFixture.h
     unit/MockNetworkFetcher.h
+    unit/MockRackStateListener.h
     unit/GearLibraryTests.cpp
     unit/GearItemTests.cpp
     unit/RackTests.cpp
@@ -17,6 +18,7 @@ add_executable(analogiq_tests
     unit/PluginEditorTests.cpp
     unit/CacheManagerTests.cpp
     unit/PresetManagerTests.cpp
+    unit/PresetIntegrationTests.cpp
 )
 
 # Set C++ standard

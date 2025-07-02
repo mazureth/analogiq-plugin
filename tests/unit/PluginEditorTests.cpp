@@ -164,6 +164,46 @@ public:
 
             // TODO: Check for RackTab and NotesTab
         }
+
+        beginTest("Preset Integration");
+        {
+            AnalogIQProcessor processor(mockFetcher);
+            AnalogIQEditor editor(processor);
+
+            // Test that the editor has access to preset manager
+            auto &presetManager = editor.getPresetManager();
+            expect(&presetManager != nullptr, "Preset manager should be accessible");
+
+            // Test that the editor has access to rack and gear library for preset operations
+            auto *rack = editor.getRack();
+            auto *gearLibrary = editor.getGearLibrary();
+            expect(rack != nullptr, "Rack should be accessible for preset operations");
+            expect(gearLibrary != nullptr, "Gear library should be accessible for preset operations");
+
+            // Test that the rack is empty initially (for confirmation dialog testing)
+            bool hasGearItems = false;
+            for (int i = 0; i < rack->getNumSlots(); ++i)
+            {
+                if (auto *slot = rack->getSlot(i))
+                {
+                    if (slot->getGearItem() != nullptr)
+                    {
+                        hasGearItems = true;
+                        break;
+                    }
+                }
+            }
+            expect(!hasGearItems, "Rack should be empty initially for preset confirmation testing");
+
+            // Test that the editor can be resized without errors (menu positioning)
+            editor.setSize(800, 600);
+            editor.resized();
+            expect(true, "Editor should resize without errors");
+
+            // Test that the editor components are properly initialized
+            expect(rack->getNumSlots() > 0, "Rack should have slots available");
+            expect(gearLibrary != nullptr, "Gear library should be initialized");
+        }
     }
 };
 

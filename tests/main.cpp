@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
     testsToRun.add("NotesPanelTests");
     testsToRun.add("PluginEditorTests");
     testsToRun.add("PluginProcessorTests");
+    testsToRun.add("PresetManagerTests");
+    testsToRun.add("PresetIntegrationTests");
     testsToRun.add("RackSlotTests");
     testsToRun.add("RackTests");
 

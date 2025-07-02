@@ -245,6 +245,17 @@ bool PresetManager::deserializeJSONToRack(const juce::String &jsonData, Rack *ra
                             // Create a new instance of the gear item
                             GearItem *newItem = new GearItem(*sourceItem, INetworkFetcher::getDummy());
 
+                            // Check if this was an instance and restore instance properties
+                            auto instanceIdVar = slotObj->getProperty("instanceId");
+                            auto sourceUnitIdVar = slotObj->getProperty("sourceUnitId");
+
+                            if (instanceIdVar.isString() && sourceUnitIdVar.isString())
+                            {
+                                newItem->isInstance = true;
+                                newItem->instanceId = instanceIdVar.toString();
+                                newItem->sourceUnitId = sourceUnitIdVar.toString();
+                            }
+
                             // Store saved control values for later application
                             struct SavedControlValues
                             {

@@ -91,6 +91,10 @@ public:
                 1,
                 controls);
 
+            // Add gear items to the library so they can be found during loading
+            gearLibrary.addItem("Test EQ", "EQ", "Test Equalizer", "Test Manufacturer");
+            gearLibrary.addItem("Test Compressor", "Compressor", "Test Compressor", "Test Manufacturer");
+
             // Add gear items to rack slots
             if (auto *slot0 = rack.getSlot(0))
             {
@@ -182,7 +186,7 @@ public:
             expect(!presetManager.isPresetValid("Delete Test"), "Preset should not exist after deletion");
 
             // Test deleting non-existent preset
-            expect(presetManager.deletePreset("NonExistent"), "Should handle deleting non-existent preset gracefully");
+            expect(!presetManager.deletePreset("NonExistent"), "Should fail to delete non-existent preset");
         }
 
         beginTest("Control Values Preservation");
@@ -220,6 +224,9 @@ public:
                 GearCategory::EQ,
                 1,
                 controls);
+
+            // Add gear item to the library so it can be found during loading
+            gearLibrary.addItem("Test Unit", "EQ", "Test Unit", "Test Manufacturer");
 
             if (auto *slot = rack.getSlot(0))
             {
@@ -397,6 +404,71 @@ public:
 
             // Clean up
             presetManager.deletePreset("Validation Test");
+        }
+
+        beginTest("Error Handling and Validation");
+        {
+            auto &presetManager = PresetManager::getInstance();
+
+            // Test preset name validation
+            juce::String errorMessage;
+            expect(presetManager.validatePresetName("Valid Preset", errorMessage), "Valid preset name should pass validation");
+            expect(presetManager.validatePresetName("Preset_123", errorMessage), "Preset name with underscores should pass validation");
+            expect(presetManager.validatePresetName("A", errorMessage), "Single character preset name should pass validation");
+
+            expect(!presetManager.validatePresetName("", errorMessage), "Empty preset name should fail validation");
+            expect(!presetManager.validatePresetName("   ", errorMessage), "Whitespace-only preset name should fail validation");
+            expect(!presetManager.validatePresetName("Preset/with/slashes", errorMessage), "Preset name with slashes should fail validation");
+            expect(!presetManager.validatePresetName("Preset\\with\\backslashes", errorMessage), "Preset name with backslashes should fail validation");
+            expect(!presetManager.validatePresetName("Preset:with:colons", errorMessage), "Preset name with colons should fail validation");
+            expect(!presetManager.validatePresetName("Preset*with*asterisks", errorMessage), "Preset name with asterisks should fail validation");
+            expect(!presetManager.validatePresetName("Preset?with?question", errorMessage), "Preset name with question marks should fail validation");
+            expect(!presetManager.validatePresetName("Preset\"with\"quotes", errorMessage), "Preset name with quotes should fail validation");
+            expect(!presetManager.validatePresetName("Preset<with>brackets", errorMessage), "Preset name with angle brackets should fail validation");
+            expect(!presetManager.validatePresetName("Preset|with|pipes", errorMessage), "Preset name with pipes should fail validation");
+
+            // Test preset name length validation
+            juce::String longName;
+            for (int i = 0; i < 256; ++i)
+                longName += "a";
+            expect(!presetManager.validatePresetName(longName, errorMessage), "Preset name that's too long should fail validation");
+
+            // Test preset file validation
+            Rack rack(mockFetcher);
+            GearLibrary gearLibrary(mockFetcher, false);
+            expect(presetManager.savePreset("ValidationTest", &rack), "Should save preset for validation test");
+            expect(presetManager.validatePresetFile("ValidationTest", errorMessage), "Valid preset file should pass validation");
+            expect(!presetManager.validatePresetFile("NonExistentPreset", errorMessage), "Non-existent preset file should fail validation");
+
+            // Test preset conflict detection
+            expect(presetManager.checkPresetNameConflict("ValidationTest", errorMessage), "Existing preset should be detected as conflict");
+            expect(!presetManager.checkPresetNameConflict("DifferentPreset", errorMessage), "Different preset name should not be detected as conflict");
+
+            // Test error message handling
+            expect(!presetManager.savePreset("", &rack), "Saving with invalid name should fail");
+            expect(!presetManager.getLastErrorMessage().isEmpty(), "Error message should be set after failed operation");
+
+            expect(!presetManager.loadPreset("NonExistentPreset", &rack, &gearLibrary), "Loading non-existent preset should fail");
+            expect(!presetManager.getLastErrorMessage().isEmpty(), "Error message should be set after failed load");
+
+            expect(!presetManager.deletePreset("NonExistentPreset"), "Deleting non-existent preset should fail");
+            expect(!presetManager.getLastErrorMessage().isEmpty(), "Error message should be set after failed delete");
+
+            // Test display name functions
+            auto displayName = presetManager.getPresetDisplayName("ValidationTest");
+            expect(displayName.contains("ValidationTest"), "Display name should contain preset name");
+            expect(displayName.contains("("), "Display name should contain opening parenthesis");
+            expect(displayName.contains(")"), "Display name should contain closing parenthesis");
+
+            auto displayNameNoTimestamp = presetManager.getPresetDisplayNameNoTimestamp("ValidationTest");
+            expect(displayNameNoTimestamp == "ValidationTest", "Display name without timestamp should be just the preset name");
+
+            // Test preset list functions
+            auto presetNames = presetManager.getPresetNames();
+            expect(presetNames.size() > 0, "Preset list should contain saved presets");
+
+            // Clean up test preset
+            presetManager.deletePreset("ValidationTest");
         }
     }
 };

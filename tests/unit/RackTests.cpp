@@ -328,6 +328,105 @@ public:
                 expect(slot2->getGearItem()->name == "LA-2A Tube Compressor 2", "Slot 2 name should remain unchanged after reset");
             }
         }
+
+        beginTest("Preset Integration");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher);
+
+            // Test that the rack can load preset state
+            auto *slot = rack.getSlot(0);
+            expect(slot != nullptr, "Slot should exist");
+
+            // Create a gear item for testing using the constructor
+            juce::StringArray tags = {"test"};
+            juce::Array<GearControl> controls;
+
+            auto gearItem = std::make_unique<GearItem>(
+                "test-gear",
+                "Test Gear",
+                "Test Manufacturer",
+                "test-type",
+                "1.0.0",
+                "units/test-gear-1.0.0.json",
+                "assets/thumbnails/test-gear-1.0.0.jpg",
+                tags,
+                mockFetcher,
+                GearType::Rack19Inch,
+                GearCategory::Other,
+                1,
+                controls);
+
+            // Set the gear item in the slot
+            slot->setGearItem(gearItem.get());
+            expect(slot->getGearItem() == gearItem.get(), "Gear item should be set");
+
+            // Test that the rack state can be saved for presets
+            auto *slot2 = rack.getSlot(0);
+            expect(slot2 != nullptr, "Slot should exist");
+            expect(slot2->getGearItem() == gearItem.get(), "Gear item should be persisted");
+
+            // Test that all slots can be cleared for preset loading
+            auto *slot3 = rack.getSlot(0);
+            expect(slot3 != nullptr, "Slot should exist");
+            slot3->setGearItem(nullptr);
+            expect(slot3->getGearItem() == nullptr, "Gear item should be cleared");
+
+            // Test that the rack provides the correct slot count for preset operations
+            int slotCount = rack.getNumSlots();
+            expect(slotCount > 0, "Slot count should be greater than 0");
+
+            // Verify we can access all slots
+            for (int i = 0; i < slotCount; ++i)
+            {
+                auto *slot = rack.getSlot(i);
+                expect(slot != nullptr, "Slot should exist");
+            }
+
+            // Test that multiple gear items can be set and cleared for preset operations
+            auto gearItem1 = std::make_unique<GearItem>(
+                "test-gear-1",
+                "Test Gear 1",
+                "Test Manufacturer",
+                "test-type-1",
+                "1.0.0",
+                "units/test-gear-1-1.0.0.json",
+                "assets/thumbnails/test-gear-1-1.0.0.jpg",
+                tags,
+                mockFetcher,
+                GearType::Rack19Inch,
+                GearCategory::Other,
+                1,
+                controls);
+
+            auto gearItem2 = std::make_unique<GearItem>(
+                "test-gear-2",
+                "Test Gear 2",
+                "Test Manufacturer",
+                "test-type-2",
+                "1.0.0",
+                "units/test-gear-2-1.0.0.json",
+                "assets/thumbnails/test-gear-2-1.0.0.jpg",
+                tags,
+                mockFetcher,
+                GearType::Rack19Inch,
+                GearCategory::Other,
+                1,
+                controls);
+
+            // Set first gear item
+            auto *slot4 = rack.getSlot(0);
+            slot4->setGearItem(gearItem1.get());
+            expect(slot4->getGearItem() == gearItem1.get(), "First gear item should be set");
+
+            // Replace with second gear item
+            slot4->setGearItem(gearItem2.get());
+            expect(slot4->getGearItem() == gearItem2.get(), "Second gear item should be set");
+
+            // Clear gear item
+            slot4->setGearItem(nullptr);
+            expect(slot4->getGearItem() == nullptr, "Gear item should be cleared");
+        }
     }
 };
 
