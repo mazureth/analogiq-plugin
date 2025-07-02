@@ -792,3 +792,14 @@ bool CacheManager::isFavorite(const juce::String &unitId) const
         return false;
     }
 }
+
+// Presets directory management
+juce::File CacheManager::getPresetsDirectory() const
+{
+    return cacheRoot.getChildFile("presets");
+}
+
+bool CacheManager::initializePresetsDirectory() const
+{
+    return createDirectoryIfNeeded(getPresetsDirectory());
+}

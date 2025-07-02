@@ -18,4 +18,6 @@ target_sources(AnalogIQ
         DraggableListBox.h
         CacheManager.cpp
         CacheManager.h
+        PresetManager.cpp
+        PresetManager.h
 ) 

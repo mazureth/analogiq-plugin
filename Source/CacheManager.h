@@ -302,6 +302,23 @@ public:
      */
     bool isFavorite(const juce::String &unitId) const;
 
+    // Presets directory management
+    /**
+     * @brief Gets the presets directory.
+     *
+     * @return The presets directory as a JUCE File object
+     */
+    juce::File getPresetsDirectory() const;
+
+    /**
+     * @brief Initializes the presets directory structure.
+     *
+     * Creates the presets directory if it doesn't exist.
+     *
+     * @return true if initialization was successful, false otherwise
+     */
+    bool initializePresetsDirectory() const;
+
 private:
     /**
      * @brief Private constructor for singleton pattern.
