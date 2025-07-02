@@ -109,6 +109,13 @@ private:
     void handleLoadPreset(const juce::String &presetName);
 
     /**
+     * @brief Performs the actual loading of a preset (called after confirmation if needed).
+     *
+     * @param presetName The name of the preset to load
+     */
+    void performLoadPreset(const juce::String &presetName);
+
+    /**
      * @brief Handles deleting a preset with the given name.
      *
      * @param presetName The name of the preset to delete

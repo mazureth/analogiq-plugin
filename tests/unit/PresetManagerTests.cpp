@@ -278,6 +278,126 @@ public:
             GearLibrary gearLibrary(mockFetcher, false);
             expect(!presetManager.loadPreset("NonExistent", &rack, &gearLibrary), "Should fail to load non-existent preset");
         }
+
+        beginTest("Enhanced Error Handling and Validation");
+        {
+            auto &presetManager = PresetManager::getInstance();
+
+            // Test getLastErrorMessage
+            presetManager.clearLastError();
+            expect(presetManager.getLastErrorMessage().isEmpty(), "Last error message should be empty after clear");
+
+            // Test validatePresetName with various invalid names
+            juce::String errorMessage;
+
+            // Empty name
+            expect(!presetManager.validatePresetName("", errorMessage), "Empty name should be invalid");
+            expect(errorMessage.isNotEmpty(), "Should provide error message for empty name");
+
+            // Whitespace only
+            expect(!presetManager.validatePresetName("   ", errorMessage), "Whitespace-only name should be invalid");
+            expect(errorMessage.isNotEmpty(), "Should provide error message for whitespace-only name");
+
+            // Invalid characters
+            expect(!presetManager.validatePresetName("test<name", errorMessage), "Name with < should be invalid");
+            expect(errorMessage.contains("invalid characters"), "Should mention invalid characters");
+
+            expect(!presetManager.validatePresetName("test:name", errorMessage), "Name with : should be invalid");
+            expect(!presetManager.validatePresetName("test/name", errorMessage), "Name with / should be invalid");
+            expect(!presetManager.validatePresetName("test\\name", errorMessage), "Name with \\ should be invalid");
+
+            // Reserved names
+            expect(!presetManager.validatePresetName("CON", errorMessage), "Reserved name CON should be invalid");
+            expect(errorMessage.contains("reserved system name"), "Should mention reserved system name");
+
+            expect(!presetManager.validatePresetName("prn", errorMessage), "Reserved name prn should be invalid");
+            expect(!presetManager.validatePresetName("AUX", errorMessage), "Reserved name AUX should be invalid");
+            expect(!presetManager.validatePresetName("nul", errorMessage), "Reserved name nul should be invalid");
+
+            // Names starting/ending with dots or spaces
+            expect(!presetManager.validatePresetName(".test", errorMessage), "Name starting with dot should be invalid");
+            expect(!presetManager.validatePresetName("test.", errorMessage), "Name ending with dot should be invalid");
+            expect(!presetManager.validatePresetName(" test", errorMessage), "Name starting with space should be invalid");
+            expect(!presetManager.validatePresetName("test ", errorMessage), "Name ending with space should be invalid");
+
+            // Valid names
+            expect(presetManager.validatePresetName("Valid Name", errorMessage), "Valid name should pass validation");
+            expect(errorMessage.isEmpty(), "Should not provide error message for valid name");
+
+            expect(presetManager.validatePresetName("Test-Preset_123", errorMessage), "Name with hyphens and underscores should be valid");
+            expect(presetManager.validatePresetName("My Preset", errorMessage), "Name with spaces should be valid");
+        }
+
+        beginTest("Preset Name Conflict Detection");
+        {
+            auto &presetManager = PresetManager::getInstance();
+
+            // Create a test preset
+            Rack rack(mockFetcher);
+            presetManager.savePreset("Conflict Test", &rack);
+
+            juce::String errorMessage;
+
+            // Test case-insensitive conflict detection
+            expect(presetManager.checkPresetNameConflict("CONFLICT TEST", errorMessage), "Should detect case-insensitive conflict");
+            expect(errorMessage.contains("already exists"), "Should mention existing preset");
+
+            expect(presetManager.checkPresetNameConflict("conflict test", errorMessage), "Should detect lowercase conflict");
+            expect(presetManager.checkPresetNameConflict("Conflict Test", errorMessage), "Should detect exact match conflict");
+
+            // Test non-conflicting names
+            expect(!presetManager.checkPresetNameConflict("Different Name", errorMessage), "Different name should not conflict");
+            expect(errorMessage.isEmpty(), "Should not provide error message for non-conflicting name");
+
+            // Clean up
+            presetManager.deletePreset("Conflict Test");
+        }
+
+        beginTest("Preset File Validation");
+        {
+            auto &presetManager = PresetManager::getInstance();
+
+            juce::String errorMessage;
+
+            // Test validation of non-existent preset
+            expect(!presetManager.validatePresetFile("NonExistent", errorMessage), "Non-existent preset should fail validation");
+            expect(errorMessage.contains("does not exist"), "Should mention file doesn't exist");
+
+            // Create a valid preset for testing
+            Rack rack(mockFetcher);
+            presetManager.savePreset("Validation Test", &rack);
+
+            // Test validation of valid preset
+            expect(presetManager.validatePresetFile("Validation Test", errorMessage), "Valid preset should pass validation");
+            expect(errorMessage.isEmpty(), "Should not provide error message for valid preset");
+
+            // Test getPresetInfo
+            auto presetInfo = presetManager.getPresetInfo("Validation Test", errorMessage);
+            expect(presetInfo.isObject(), "Should return object for valid preset");
+            expect(errorMessage.isEmpty(), "Should not provide error message for valid preset");
+
+            if (presetInfo.isObject())
+            {
+                auto infoObj = presetInfo.getDynamicObject();
+                expect(infoObj != nullptr, "Info object should not be null");
+                if (infoObj != nullptr)
+                {
+                    expect(infoObj->hasProperty("name"), "Should have name property");
+                    expect(infoObj->hasProperty("filename"), "Should have filename property");
+                    expect(infoObj->hasProperty("fileSize"), "Should have fileSize property");
+                    expect(infoObj->hasProperty("slotCount"), "Should have slotCount property");
+                    expect(infoObj->hasProperty("gearItemCount"), "Should have gearItemCount property");
+                }
+            }
+
+            // Test getPresetInfo for non-existent preset
+            auto nonExistentInfo = presetManager.getPresetInfo("NonExistent", errorMessage);
+            expect(!nonExistentInfo.isObject(), "Should not return object for non-existent preset");
+            expect(errorMessage.isNotEmpty(), "Should provide error message for non-existent preset");
+
+            // Clean up
+            presetManager.deletePreset("Validation Test");
+        }
     }
 };
 

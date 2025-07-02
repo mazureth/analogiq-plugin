@@ -127,11 +127,62 @@ public:
      */
     bool initializePresetsDirectory() const;
 
+    // Error handling and validation methods
+    /**
+     * @brief Gets the last error message.
+     *
+     * @return The last error message, or empty string if no error
+     */
+    juce::String getLastErrorMessage() const;
+
+    /**
+     * @brief Clears the last error message.
+     */
+    void clearLastError();
+
+    /**
+     * @brief Validates a preset name with detailed error reporting.
+     *
+     * @param name The preset name to validate
+     * @param errorMessage Output parameter for detailed error message
+     * @return true if the name is valid, false otherwise
+     */
+    bool validatePresetName(const juce::String &name, juce::String &errorMessage) const;
+
+    /**
+     * @brief Validates a preset file for corruption or format issues.
+     *
+     * @param name The preset name to validate
+     * @param errorMessage Output parameter for detailed error message
+     * @return true if the preset is valid, false otherwise
+     */
+    bool validatePresetFile(const juce::String &name, juce::String &errorMessage) const;
+
+    /**
+     * @brief Checks if a preset name conflicts with existing presets.
+     *
+     * @param name The preset name to check
+     * @param errorMessage Output parameter for detailed error message
+     * @return true if the name conflicts, false otherwise
+     */
+    bool checkPresetNameConflict(const juce::String &name, juce::String &errorMessage) const;
+
+    /**
+     * @brief Gets detailed information about a preset.
+     *
+     * @param name The preset name
+     * @param errorMessage Output parameter for error message if preset doesn't exist
+     * @return A JSON object with preset details, or empty var if preset doesn't exist
+     */
+    juce::var getPresetInfo(const juce::String &name, juce::String &errorMessage) const;
+
 private:
     /**
      * @brief Private constructor for singleton pattern.
      */
     PresetManager() = default;
+
+    mutable juce::String lastErrorMessage; ///< Stores the last error message
 
     /**
      * @brief Converts a preset name to a safe filename.
