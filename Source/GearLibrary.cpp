@@ -93,8 +93,8 @@ private:
  * Initializes the UI components including the title label, search box,
  * refresh button, add user gear button, and both list and tree views.
  */
-GearLibrary::GearLibrary(INetworkFetcher &networkFetcher, bool autoLoad)
-    : fetcher(networkFetcher)
+GearLibrary::GearLibrary(INetworkFetcher &networkFetcher, CacheManager &cacheManager, IFileSystem &fileSystem, bool autoLoad)
+    : fetcher(networkFetcher), cacheManager(cacheManager), fileSystem(fileSystem)
 {
     // Set up title label
     titleLabel.setFont(juce::Font(18.0f, juce::Font::bold));
@@ -359,9 +359,8 @@ void GearLibrary::updateFilteredItems()
             if (matchingItems.size() > 0)
             {
                 // Get favorites and recently used items
-                CacheManager &cache = CacheManager::getInstance();
-                juce::StringArray favorites = cache.getFavorites();
-                juce::StringArray recentlyUsed = cache.getRecentlyUsed();
+                juce::StringArray favorites = cacheManager.getFavorites();
+                juce::StringArray recentlyUsed = cacheManager.getRecentlyUsed();
 
                 // Group matching items by category
                 juce::HashMap<juce::String, juce::Array<GearItem *>> categoryGroups;
@@ -413,7 +412,7 @@ void GearLibrary::updateFilteredItems()
                 // Add My Gear section if there are matching favorites
                 if (matchingFavorites.size() > 0)
                 {
-                    auto myGearNode = new GearTreeItem(GearTreeItem::ItemType::Favorites, "My Gear", this);
+                    auto myGearNode = new GearTreeItem(GearTreeItem::ItemType::Favorites, "My Gear", this, &cacheManager);
                     rootItem->addSubItem(myGearNode);
 
                     // Group matching favorites by category (same approach as Categories tree)
@@ -459,7 +458,7 @@ void GearLibrary::updateFilteredItems()
                         juce::String categoryName = it.getKey();
                         juce::String displayName = categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1);
 
-                        auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this);
+                        auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this, &cacheManager);
                         myGearNode->addSubItem(categoryNode);
 
                         // Add gear items to this category group
@@ -478,7 +477,7 @@ void GearLibrary::updateFilteredItems()
 
                             if (itemIndex >= 0)
                             {
-                                categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, item, itemIndex));
+                                categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
                             }
                         }
                     }
@@ -488,7 +487,7 @@ void GearLibrary::updateFilteredItems()
                 // Add Recently Used section if there are matching recently used items
                 if (matchingRecentlyUsed.size() > 0)
                 {
-                    auto recentlyUsedNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", this);
+                    auto recentlyUsedNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", this, &cacheManager);
                     rootItem->addSubItem(recentlyUsedNode);
 
                     for (auto *item : matchingRecentlyUsed)
@@ -506,14 +505,14 @@ void GearLibrary::updateFilteredItems()
 
                         if (itemIndex >= 0)
                         {
-                            recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, item, itemIndex));
+                            recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
                         }
                     }
                     recentlyUsedNode->setOpen(true);
                 }
 
                 // Create the "Categories" node
-                auto categoriesNode = new GearTreeItem(GearTreeItem::ItemType::Category, "Categories", this);
+                auto categoriesNode = new GearTreeItem(GearTreeItem::ItemType::Category, "Categories", this, &cacheManager);
                 rootItem->addSubItem(categoriesNode);
 
                 // Add each category that has matching items
@@ -522,7 +521,7 @@ void GearLibrary::updateFilteredItems()
                     juce::String categoryName = it.getKey();
                     juce::String displayName = categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1);
 
-                    auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this);
+                    auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this, &cacheManager);
                     categoriesNode->addSubItem(categoryNode);
 
                     // Add matching items to this category
@@ -541,7 +540,7 @@ void GearLibrary::updateFilteredItems()
 
                         if (itemIndex >= 0)
                         {
-                            categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, item, itemIndex));
+                            categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
                         }
                     }
                 }
@@ -562,7 +561,7 @@ void GearLibrary::updateFilteredItems()
             else
             {
                 // No matching items found - create a simple message
-                auto messageNode = new GearTreeItem(GearTreeItem::ItemType::Message, "No units match your search", this);
+                auto messageNode = new GearTreeItem(GearTreeItem::ItemType::Message, "No units match your search", this, &cacheManager);
                 rootItem->addSubItem(messageNode);
 
                 // Expand the root to show the message
@@ -630,8 +629,7 @@ void GearLibrary::refreshRecentlyUsedSection()
  */
 void GearLibrary::clearRecentlyUsed()
 {
-    CacheManager &cache = CacheManager::getInstance();
-    cache.clearRecentlyUsed();
+    cacheManager.clearRecentlyUsed();
     refreshTreeView();
 }
 
@@ -670,8 +668,7 @@ void GearLibrary::refreshFavoritesSection()
  */
 void GearLibrary::clearFavorites()
 {
-    CacheManager &cache = CacheManager::getInstance();
-    cache.clearFavorites();
+    cacheManager.clearFavorites();
     refreshTreeView();
 }
 
@@ -867,7 +864,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 }
 
                 GearItem item(unitId, name, manufacturer, category, version, schemaPath,
-                              thumbnailImage, tags, fetcher, GearType::Other, GearCategory::Other,
+                              thumbnailImage, tags, fetcher, fileSystem, cacheManager, GearType::Other, GearCategory::Other,
                               slotSize, controls);
 
                 // If thumbnailImage is provided, try to load the image
@@ -927,7 +924,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 juce::Array<GearControl> controls;
 
                 // Create gear item using the legacy constructor
-                GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls, fetcher);
+                GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls, fetcher, fileSystem, cacheManager);
 
                 // If thumbnailUrl is provided, try to load the image
                 if (thumbnailUrl.isNotEmpty())
@@ -1016,7 +1013,7 @@ void GearLibrary::addItem(const juce::String &name, const juce::String &category
     juce::Array<GearControl> controls;
 
     // Add the new item to the list
-    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls, fetcher));
+    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls, fetcher, fileSystem, cacheManager));
 
     // Update the UI
     if (rootItem != nullptr)

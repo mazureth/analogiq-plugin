@@ -20,4 +20,7 @@ target_sources(AnalogIQ
         CacheManager.h
         PresetManager.cpp
         PresetManager.h
+        IFileSystem.h
+        FileSystem.h
+        FileSystem.cpp
 ) 

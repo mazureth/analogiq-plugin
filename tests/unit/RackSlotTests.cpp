@@ -3,6 +3,8 @@
 #include "GearItem.h"
 #include "TestFixture.h"
 #include "MockNetworkFetcher.h"
+#include "MockFileSystem.h"
+#include "PresetManager.h"
 
 class RackSlotTests : public juce::UnitTest
 {
@@ -97,7 +99,14 @@ public:
     {
         TestFixture fixture;
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
         mockFetcher.reset();
+        mockFileSystem.reset();
+
+        // Reset singletons to use mock file system
+        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
+        CacheManager &cacheManager = CacheManager::getInstance();
+        PresetManager::resetInstance(mockFileSystem, cacheManager);
 
         beginTest("Initial State");
         {
@@ -138,6 +147,7 @@ public:
             gain.image = "assets/controls/knobs/bakelite-lg-black.png";
             controls.add(gain);
 
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
             auto item = std::make_unique<GearItem>(
                 "la2a-compressor",
                 "LA-2A Tube Compressor",
@@ -148,6 +158,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -193,22 +205,25 @@ public:
             gain.image = "assets/controls/knobs/bakelite-lg-black.png";
             controls.add(gain);
 
-            auto item = std::make_unique<GearItem>(
-                "la2a-compressor",
-                "LA-2A Tube Compressor",
-                "Universal Audio",
-                "compressor",
-                "1.0.0",
-                "units/la2a-compressor-1.0.0.json",
-                "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+            auto gearItem = std::make_unique<GearItem>(
+                "test-equalizer",
+                "Test Equalizer",
+                "Test Co",
+                "equalizer",
+                "1.0",
+                "units/test-equalizer-1.0.json",
+                "assets/thumbnails/test-equalizer-1.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
-                GearCategory::Compressor,
+                GearCategory::EQ,
                 1,
                 controls);
 
-            slot.setGearItem(item.get());
+            slot.setGearItem(gearItem.get());
             slot.clearGearItem();
             expect(slot.isAvailable(), "Slot should be available");
         }
@@ -245,6 +260,7 @@ public:
             gain.image = "assets/controls/knobs/bakelite-lg-black.png";
             controls.add(gain);
 
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
             auto gearItem = std::make_unique<GearItem>(
                 "la2a-compressor",
                 "LA-2A Tube Compressor",
@@ -255,6 +271,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -288,6 +306,7 @@ public:
             juce::StringArray tags = {"test"};
             juce::Array<GearControl> controls;
 
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
             auto gearItem = std::make_unique<GearItem>(
                 "test-gear",
                 "Test Gear",
@@ -298,6 +317,8 @@ public:
                 "assets/thumbnails/test-gear-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Other,
                 1,
@@ -338,6 +359,8 @@ public:
                 "assets/thumbnails/test-gear-1-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Other,
                 1,
@@ -353,6 +376,8 @@ public:
                 "assets/thumbnails/test-gear-2-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Other,
                 1,

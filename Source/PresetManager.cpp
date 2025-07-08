@@ -10,16 +10,70 @@
 #include "PresetManager.h"
 #include "CacheManager.h"
 #include "GearItem.h"
+#include "FileSystem.h"
+#include "Rack.h"
+#include "GearLibrary.h"
+#include "IFileSystem.h"
+#include <juce_core/juce_core.h>
+#include <juce_data_structures/juce_data_structures.h>
 
 /**
  * @brief Gets the singleton instance of PresetManager.
  *
  * @return Reference to the PresetManager instance
  */
+static PresetManager *testInstance = nullptr;
+static bool isTestMode = false;
+
 PresetManager &PresetManager::getInstance()
 {
-    static PresetManager instance;
-    return instance;
+    // If we have a test instance, use it
+    if (testInstance != nullptr)
+    {
+        return *testInstance;
+    }
+
+    // In test mode, this should not be called directly
+    // Tests should use resetInstance() to set up the instance
+    if (isTestMode)
+    {
+        // Return a dummy instance for test mode that doesn't use real file system
+        static CacheManager dummyCacheManager(IFileSystem::getDummy(), "");
+        static PresetManager dummyInstance(IFileSystem::getDummy(), dummyCacheManager);
+        return dummyInstance;
+    }
+
+    // Otherwise use the production instance
+    static PresetManager *instance = nullptr;
+    if (instance == nullptr)
+    {
+        static FileSystem realFileSystem;
+        static CacheManager realCacheManager(realFileSystem);
+        instance = new PresetManager(realFileSystem, realCacheManager);
+    }
+    return *instance;
+}
+
+void PresetManager::resetInstance(IFileSystem &fileSystem, CacheManager &cacheManager)
+{
+    // This is a simplified implementation for testing
+    // In a production environment, you might want to use a more sophisticated approach
+    if (testInstance != nullptr)
+    {
+        delete testInstance;
+    }
+    testInstance = new PresetManager(fileSystem, cacheManager);
+    isTestMode = true;
+}
+
+/**
+ * @brief Constructor for PresetManager.
+ *
+ * @param fileSystem Reference to the file system implementation
+ */
+PresetManager::PresetManager(IFileSystem &fileSystem, CacheManager &cacheManager)
+    : fileSystem(fileSystem), cacheManager(cacheManager)
+{
 }
 
 /**
@@ -27,11 +81,10 @@ PresetManager &PresetManager::getInstance()
  *
  * @return The presets directory as a JUCE File object
  */
-juce::File PresetManager::getPresetsDirectory() const
+juce::String PresetManager::getPresetsDirectory() const
 {
-    return juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
-        .getChildFile("AnalogiqCache")
-        .getChildFile("presets");
+    juce::String userDataDir = fileSystem.normalizePath("~/Library/Application Support");
+    return fileSystem.joinPath(fileSystem.joinPath(userDataDir, "AnalogiqCache"), "presets");
 }
 
 /**
@@ -44,7 +97,7 @@ juce::File PresetManager::getPresetsDirectory() const
 bool PresetManager::initializePresetsDirectory() const
 {
     auto presetsDir = getPresetsDirectory();
-    return presetsDir.createDirectory();
+    return fileSystem.createDirectory(presetsDir);
 }
 
 /**
@@ -106,9 +159,9 @@ bool PresetManager::isValidPresetName(const juce::String &name) const
  * @param name The preset name
  * @return The preset file
  */
-juce::File PresetManager::getPresetFile(const juce::String &name) const
+juce::String PresetManager::getPresetFile(const juce::String &name) const
 {
-    return getPresetsDirectory().getChildFile(nameToFilename(name));
+    return fileSystem.joinPath(getPresetsDirectory(), nameToFilename(name));
 }
 
 /**
@@ -243,7 +296,7 @@ bool PresetManager::deserializeJSONToRack(const juce::String &jsonData, Rack *ra
                         if (sourceItem != nullptr)
                         {
                             // Create a new instance of the gear item
-                            GearItem *newItem = new GearItem(*sourceItem, INetworkFetcher::getDummy());
+                            GearItem *newItem = new GearItem(*sourceItem, INetworkFetcher::getDummy(), fileSystem, cacheManager);
 
                             // Check if this was an instance and restore instance properties
                             auto instanceIdVar = slotObj->getProperty("instanceId");
@@ -376,7 +429,7 @@ bool PresetManager::savePreset(const juce::String &name, Rack *rack)
 
     // Save to file
     auto presetFile = getPresetFile(name);
-    if (!presetFile.replaceWithText(jsonData))
+    if (!fileSystem.writeFile(presetFile, jsonData))
     {
         lastErrorMessage = "Failed to write preset file to disk.";
         return false;
@@ -428,7 +481,7 @@ bool PresetManager::loadPreset(const juce::String &name, Rack *rack, GearLibrary
 
     // Load JSON data
     auto presetFile = getPresetFile(name);
-    juce::String jsonData = presetFile.loadFileAsString();
+    juce::String jsonData = fileSystem.readFile(presetFile);
     if (jsonData.isEmpty())
     {
         lastErrorMessage = "Failed to read preset file.";
@@ -463,13 +516,13 @@ bool PresetManager::deletePreset(const juce::String &name)
     }
 
     auto presetFile = getPresetFile(name);
-    if (!presetFile.existsAsFile())
+    if (!fileSystem.fileExists(presetFile))
     {
         lastErrorMessage = "Preset file does not exist.";
         return false;
     }
 
-    if (!presetFile.deleteFile())
+    if (!fileSystem.deleteFile(presetFile))
     {
         lastErrorMessage = "Failed to delete preset file.";
         return false;
@@ -488,12 +541,15 @@ juce::StringArray PresetManager::getPresetNames() const
     juce::StringArray names;
     auto presetsDir = getPresetsDirectory();
 
-    if (presetsDir.exists())
+    if (fileSystem.directoryExists(presetsDir))
     {
-        auto files = presetsDir.findChildFiles(juce::File::findFiles, false, "*.json");
-        for (auto &file : files)
+        auto files = fileSystem.getFiles(presetsDir);
+        for (auto &filename : files)
         {
-            names.add(filenameToName(file.getFileName()));
+            if (filename.endsWith(".json"))
+            {
+                names.add(filenameToName(filename));
+            }
         }
 
         // Sort alphabetically
@@ -515,11 +571,11 @@ bool PresetManager::isPresetValid(const juce::String &name) const
         return false;
 
     auto presetFile = getPresetFile(name);
-    if (!presetFile.existsAsFile())
+    if (!fileSystem.fileExists(presetFile))
         return false;
 
     // Try to parse the JSON to validate it
-    juce::String jsonData = presetFile.loadFileAsString();
+    juce::String jsonData = fileSystem.readFile(presetFile);
     if (jsonData.isEmpty())
         return false;
 
@@ -539,14 +595,14 @@ juce::int64 PresetManager::getPresetTimestamp(const juce::String &name) const
         return 0;
 
     auto presetFile = getPresetFile(name);
-    if (!presetFile.existsAsFile())
+    if (!fileSystem.fileExists(presetFile))
         return 0;
 
     // Try to get timestamp from file modification time
-    juce::int64 fileTime = presetFile.getLastModificationTime().toMilliseconds();
+    juce::int64 fileTime = fileSystem.getFileTime(presetFile).toMilliseconds();
 
     // If that fails, try to get it from the JSON
-    juce::String jsonData = presetFile.loadFileAsString();
+    juce::String jsonData = fileSystem.readFile(presetFile);
     if (!jsonData.isEmpty())
     {
         auto jsonVar = juce::JSON::parse(jsonData);
@@ -697,20 +753,20 @@ bool PresetManager::validatePresetFile(const juce::String &name, juce::String &e
 
     auto presetFile = getPresetFile(name);
 
-    if (!presetFile.existsAsFile())
+    if (!fileSystem.fileExists(presetFile))
     {
         errorMessage = "Preset file does not exist.";
         return false;
     }
 
-    if (presetFile.getSize() == 0)
+    if (fileSystem.getFileSize(presetFile) == 0)
     {
         errorMessage = "Preset file is empty.";
         return false;
     }
 
     // Try to read and parse the JSON
-    juce::String jsonData = presetFile.loadFileAsString();
+    juce::String jsonData = fileSystem.readFile(presetFile);
     if (jsonData.isEmpty())
     {
         errorMessage = "Failed to read preset file.";
@@ -804,13 +860,13 @@ juce::var PresetManager::getPresetInfo(const juce::String &name, juce::String &e
 
     auto presetFile = getPresetFile(name);
 
-    if (!presetFile.existsAsFile())
+    if (!fileSystem.fileExists(presetFile))
     {
         errorMessage = "Preset file does not exist.";
         return juce::var();
     }
 
-    juce::String jsonData = presetFile.loadFileAsString();
+    juce::String jsonData = fileSystem.readFile(presetFile);
     if (jsonData.isEmpty())
     {
         errorMessage = "Failed to read preset file.";
@@ -836,9 +892,9 @@ juce::var PresetManager::getPresetInfo(const juce::String &name, juce::String &e
 
     // Add basic info
     info->setProperty("name", name);
-    info->setProperty("filename", presetFile.getFileName());
-    info->setProperty("fileSize", (juce::int64)presetFile.getSize());
-    info->setProperty("lastModified", presetFile.getLastModificationTime().toMilliseconds());
+    info->setProperty("filename", fileSystem.getFileName(presetFile));
+    info->setProperty("fileSize", fileSystem.getFileSize(presetFile));
+    info->setProperty("lastModified", fileSystem.getFileTime(presetFile).toMilliseconds());
 
     // Add timestamp if available
     if (jsonObj->hasProperty("timestamp"))

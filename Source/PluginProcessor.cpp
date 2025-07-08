@@ -25,10 +25,10 @@ AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &networkFetcher)
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       state(*this, &undoManager, "Parameters", {}),
-      networkFetcher(networkFetcher)
+      networkFetcher(networkFetcher),
+      cacheManager(CacheManager::getInstance()),
+      presetManager(PresetManager::getInstance())
 {
-    // Initialize the cache manager
-    CacheManager::getInstance();
 }
 
 /**
@@ -210,7 +210,7 @@ bool AnalogIQProcessor::hasEditor() const
  */
 juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
-    auto *editor = new AnalogIQEditor(*this);
+    auto *editor = new AnalogIQEditor(*this, cacheManager, presetManager);
     lastCreatedEditor = editor;
     if (auto *rackEditor = dynamic_cast<AnalogIQEditor *>(editor))
     {
@@ -351,20 +351,23 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                     // Create a new gear item from the source
                     // TODO: why is this using inline test data instead of whatever is
                     // stored in the instanceTree?
+                    // Use the file system from the cache manager instead of creating a new one
                     GearItem *item = new GearItem(
-                        sourceUnitId,              // unitId
-                        "Test EQ",                 // name
-                        "Test Co",                 // manufacturer
-                        "equalizer",               // categoryString
-                        "1.0",                     // version
-                        "",                        // schemaPath
-                        "",                        // thumbnailImage
-                        juce::StringArray(),       // tags
-                        networkFetcher,            // networkFetcher (required)
-                        GearType::Series500,       // type
-                        GearCategory::EQ,          // category
-                        1,                         // slotSize
-                        juce::Array<GearControl>() // controls
+                        sourceUnitId,                 // unitId
+                        "Test EQ",                    // name
+                        "Test Co",                    // manufacturer
+                        "equalizer",                  // categoryString
+                        "1.0",                        // version
+                        "",                           // schemaPath
+                        "",                           // thumbnailImage
+                        juce::StringArray(),          // tags
+                        networkFetcher,               // networkFetcher (required)
+                        cacheManager.getFileSystem(), // fileSystem (required) - use cache manager's file system
+                        cacheManager,                 // cacheManager (required)
+                        GearType::Series500,          // type
+                        GearCategory::EQ,             // category
+                        1,                            // slotSize
+                        juce::Array<GearControl>()    // controls
                     );
 
                     // Add controls to match the saved state

@@ -3,6 +3,8 @@
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <juce_data_structures/juce_data_structures.h>
+#include "IFileSystem.h"
+#include "FileSystem.h"
 
 /**
  * @brief Manages local caching of unit data and assets for the Analogiq plugin.
@@ -28,6 +30,21 @@ public:
     static CacheManager &getInstance();
 
     /**
+     * @brief Gets a dummy instance for testing and default initialization.
+     *
+     * @return Reference to a dummy CacheManager instance
+     */
+    static CacheManager &getDummy();
+
+    /**
+     * @brief Resets the singleton instance with a new file system (for testing).
+     *
+     * @param fileSystem The file system implementation to use
+     * @param cacheRootPath Optional custom cache root path (for testing)
+     */
+    static void resetInstance(IFileSystem &fileSystem, const juce::String &cacheRootPath = "");
+
+    /**
      * @brief Destructor.
      */
     ~CacheManager() = default;
@@ -47,11 +64,18 @@ public:
     bool initializeCache();
 
     /**
-     * @brief Gets the cache root directory.
+     * @brief Gets the cache root directory path.
      *
-     * @return The cache root directory as a JUCE File object
+     * @return The cache root directory path as a string
      */
-    juce::File getCacheRoot() const;
+    juce::String getCacheRoot() const;
+
+    /**
+     * @brief Gets the file system used by this cache manager.
+     *
+     * @return Reference to the file system implementation
+     */
+    IFileSystem &getFileSystem() const { return fileSystem; }
 
     /**
      * @brief Checks if a unit JSON file is cached locally.
@@ -91,35 +115,35 @@ public:
      * @brief Gets the cached file path for a unit JSON.
      *
      * @param unitId The unit identifier
-     * @return The cached file path, or empty string if not cached
+     * @return The cached file path as a string
      */
-    juce::File getCachedUnitPath(const juce::String &unitId) const;
+    juce::String getCachedUnitPath(const juce::String &unitId) const;
 
     /**
      * @brief Gets the cached file path for a faceplate image.
      *
      * @param unitId The unit identifier
      * @param filename The faceplate filename (e.g., "la2a-compressor-1.0.0.jpg")
-     * @return The cached file path, or empty string if not cached
+     * @return The cached file path as a string
      */
-    juce::File getCachedFaceplatePath(const juce::String &unitId, const juce::String &filename) const;
+    juce::String getCachedFaceplatePath(const juce::String &unitId, const juce::String &filename) const;
 
     /**
      * @brief Gets the cached file path for a thumbnail image.
      *
      * @param unitId The unit identifier
      * @param filename The thumbnail filename (e.g., "la2a-compressor-1.0.0.jpg")
-     * @return The cached file path, or empty string if not cached
+     * @return The cached file path as a string
      */
-    juce::File getCachedThumbnailPath(const juce::String &unitId, const juce::String &filename) const;
+    juce::String getCachedThumbnailPath(const juce::String &unitId, const juce::String &filename) const;
 
     /**
      * @brief Gets the cached file path for a control asset.
      *
      * @param assetPath The relative path to the control asset
-     * @return The cached file path, or empty string if not cached
+     * @return The cached file path as a string
      */
-    juce::File getCachedControlAssetPath(const juce::String &assetPath) const;
+    juce::String getCachedControlAssetPath(const juce::String &assetPath) const;
 
     /**
      * @brief Saves unit JSON data to the cache.
@@ -196,7 +220,7 @@ public:
     /**
      * @brief Clears all cached data.
      *
-     * Removes all files from the cache directory.
+     * Removes all files and directories in the cache.
      *
      * @return true if clearing was successful, false otherwise
      */
@@ -205,24 +229,23 @@ public:
     /**
      * @brief Gets the total size of the cache in bytes.
      *
-     * @return The total cache size in bytes
+     * @return The cache size in bytes
      */
     juce::int64 getCacheSize() const;
 
-    // Recently Used functionality
     /**
-     * @brief Adds a gear item to the recently used list.
+     * @brief Adds a unit to the recently used list.
      *
-     * @param unitId The unit identifier to add to recently used
-     * @return true if the operation was successful, false otherwise
+     * @param unitId The unit identifier to add
+     * @return true if the unit was added successfully, false otherwise
      */
     bool addToRecentlyUsed(const juce::String &unitId);
 
     /**
-     * @brief Gets the list of recently used unit IDs.
+     * @brief Gets the list of recently used units.
      *
-     * @param maxCount Maximum number of items to return (default: MAX_RECENTLY_USED)
-     * @return Array of recently used unit IDs, most recent first
+     * @param maxCount The maximum number of items to return (default: MAX_RECENTLY_USED)
+     * @return Array of recently used unit identifiers
      */
     juce::StringArray getRecentlyUsed(int maxCount = MAX_RECENTLY_USED) const;
 
@@ -230,151 +253,96 @@ public:
      * @brief Removes a unit from the recently used list.
      *
      * @param unitId The unit identifier to remove
-     * @return true if the operation was successful, false otherwise
+     * @return true if the unit was removed successfully, false otherwise
      */
     bool removeFromRecentlyUsed(const juce::String &unitId);
 
     /**
      * @brief Clears the recently used list.
      *
-     * @return true if the operation was successful, false otherwise
+     * @return true if clearing was successful, false otherwise
      */
     bool clearRecentlyUsed();
-
-    /**
-     * @brief Gets the number of items in the recently used list.
-     *
-     * @return The number of recently used items
-     */
-    int getRecentlyUsedCount() const;
 
     /**
      * @brief Checks if a unit is in the recently used list.
      *
      * @param unitId The unit identifier to check
-     * @return true if the unit is in the recently used list, false otherwise
+     * @return true if the unit is recently used, false otherwise
      */
     bool isRecentlyUsed(const juce::String &unitId) const;
 
-    // Favorites functionality
     /**
-     * @brief Adds a gear item to the favorites list.
+     * @brief Adds a unit to the favorites list.
      *
-     * @param unitId The unit identifier to add to favorites
-     * @return true if the operation was successful, false otherwise
+     * @param unitId The unit identifier to add
+     * @return true if the unit was added successfully, false otherwise
      */
     bool addToFavorites(const juce::String &unitId);
-
-    /**
-     * @brief Gets the list of favorite unit IDs.
-     *
-     * @return Array of favorite unit IDs
-     */
-    juce::StringArray getFavorites() const;
 
     /**
      * @brief Removes a unit from the favorites list.
      *
      * @param unitId The unit identifier to remove
-     * @return true if the operation was successful, false otherwise
+     * @return true if the unit was removed successfully, false otherwise
      */
     bool removeFromFavorites(const juce::String &unitId);
 
     /**
      * @brief Clears the favorites list.
      *
-     * @return true if the operation was successful, false otherwise
+     * @return true if clearing was successful, false otherwise
      */
     bool clearFavorites();
-
-    /**
-     * @brief Gets the number of items in the favorites list.
-     *
-     * @return The number of favorite items
-     */
-    int getFavoritesCount() const;
 
     /**
      * @brief Checks if a unit is in the favorites list.
      *
      * @param unitId The unit identifier to check
-     * @return true if the unit is in the favorites list, false otherwise
+     * @return true if the unit is favorited, false otherwise
      */
     bool isFavorite(const juce::String &unitId) const;
 
-    // Presets directory management
     /**
-     * @brief Gets the presets directory.
+     * @brief Gets the list of favorite units.
      *
-     * @return The presets directory as a JUCE File object
+     * @return Array of favorite unit identifiers
      */
-    juce::File getPresetsDirectory() const;
+    juce::StringArray getFavorites() const;
 
+public:
     /**
-     * @brief Initializes the presets directory structure.
+     * @brief Constructor for CacheManager.
      *
-     * Creates the presets directory if it doesn't exist.
-     *
-     * @return true if initialization was successful, false otherwise
+     * @param fileSystem Reference to the file system implementation
+     * @param cacheRootPath Optional custom cache root path (for testing)
      */
-    bool initializePresetsDirectory() const;
+    CacheManager(IFileSystem &fileSystem, const juce::String &cacheRootPath = "");
 
 private:
-    /**
-     * @brief Private constructor for singleton pattern.
-     */
-    CacheManager();
+    IFileSystem &fileSystem;
+    juce::String cacheRoot;
+
+    // Directory path getters
+    juce::String getUnitsDirectory() const;
+    juce::String getAssetsDirectory() const;
+    juce::String getFaceplatesDirectory() const;
+    juce::String getThumbnailsDirectory() const;
+    juce::String getControlsDirectory() const;
 
     /**
      * @brief Creates a directory if it doesn't exist.
      *
-     * @param directory The directory to create
-     * @return true if creation was successful or directory already exists, false otherwise
+     * @param directoryPath The directory path to create
+     * @return true if the directory was created or already exists, false otherwise
      */
-    bool createDirectoryIfNeeded(const juce::File &directory) const;
+    bool createDirectoryIfNeeded(const juce::String &directoryPath) const;
 
     /**
-     * @brief Gets the units directory.
+     * @brief Calculates the size of a directory recursively.
      *
-     * @return The units directory
-     */
-    juce::File getUnitsDirectory() const;
-
-    /**
-     * @brief Gets the assets directory.
-     *
-     * @return The assets directory
-     */
-    juce::File getAssetsDirectory() const;
-
-    /**
-     * @brief Gets the faceplates directory.
-     *
-     * @return The faceplates directory
-     */
-    juce::File getFaceplatesDirectory() const;
-
-    /**
-     * @brief Gets the thumbnails directory.
-     *
-     * @return The thumbnails directory
-     */
-    juce::File getThumbnailsDirectory() const;
-
-    /**
-     * @brief Gets the controls directory.
-     *
-     * @return The controls directory
-     */
-    juce::File getControlsDirectory() const;
-
-    /**
-     * @brief Calculates the total size of a directory recursively.
-     *
-     * @param directory The directory to calculate size for
+     * @param directoryPath The directory path to calculate size for
      * @return The total size in bytes
      */
-    juce::int64 calculateDirectorySize(const juce::File &directory) const;
-
-    juce::File cacheRoot; ///< The cache root directory
+    juce::int64 calculateDirectorySize(const juce::String &directoryPath) const;
 };

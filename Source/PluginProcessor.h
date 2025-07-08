@@ -13,6 +13,8 @@
 #include <JuceHeader.h>
 #include "Rack.h"
 #include "NetworkFetcher.h"
+#include "CacheManager.h"
+#include "PresetManager.h"
 
 // Forward declare the test class
 class PluginProcessorTests;
@@ -196,6 +198,20 @@ public:
     INetworkFetcher &getNetworkFetcher() { return networkFetcher; }
 
     /**
+     * @brief Gets the processor's cache manager.
+     *
+     * @return Reference to the cache manager
+     */
+    CacheManager &getCacheManager() { return cacheManager; }
+
+    /**
+     * @brief Gets the processor's preset manager.
+     *
+     * @return Reference to the preset manager
+     */
+    PresetManager &getPresetManager() { return presetManager; }
+
+    /**
      * @brief Saves the current state of all gear instances.
      */
     void saveInstanceState();
@@ -231,6 +247,8 @@ private:
     juce::AudioProcessorEditor *lastCreatedEditor = nullptr; ///< Pointer to the last created editor (for testing)
     Rack *rack = nullptr;                                    ///< Pointer to the rack (for testing)
     INetworkFetcher &networkFetcher;                         ///< Reference to the network fetcher for making HTTP requests
+    CacheManager &cacheManager;                              ///< Reference to the cache manager for gear data
+    PresetManager &presetManager;                            ///< Reference to the preset manager for saving/loading presets
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };

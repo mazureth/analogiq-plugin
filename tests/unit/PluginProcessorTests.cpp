@@ -4,6 +4,8 @@
 #include "PluginEditor.h"
 #include "TestFixture.h"
 #include "MockNetworkFetcher.h"
+#include "MockFileSystem.h"
+#include "PresetManager.h"
 
 class PluginProcessorTests : public juce::UnitTest
 {
@@ -147,6 +149,12 @@ public:
     {
         TestFixture fixture;
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+
+        // Reset singletons to use mock file system
+        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
+        CacheManager &cacheManager = CacheManager::getInstance();
+        PresetManager::resetInstance(mockFileSystem, cacheManager);
 
         beginTest("Construction");
         {
@@ -204,6 +212,8 @@ public:
                         "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                         juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
                         mockFetcher,
+                        mockFileSystem,
+                        cacheManager,
                         GearType::Rack19Inch,
                         GearCategory::Compressor);
                     testGear.createInstance(testGear.unitId);
@@ -296,6 +306,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor);
             testGear.createInstance(testGear.unitId);
@@ -372,6 +384,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor);
 
@@ -393,6 +407,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor);
 

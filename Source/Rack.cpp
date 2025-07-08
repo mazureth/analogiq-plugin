@@ -18,8 +18,8 @@
  * Initializes the rack with a viewport and container, creates the specified number
  * of rack slots, and sets up drag-and-drop functionality.
  */
-Rack::Rack(INetworkFetcher &networkFetcher)
-    : networkFetcher(networkFetcher)
+Rack::Rack(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManager &cacheManager)
+    : networkFetcher(networkFetcher), fileSystem(fileSystem), cacheManager(cacheManager)
 {
     setComponentID("Rack");
 
@@ -280,12 +280,11 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
         if (item != nullptr)
         {
             // Create a new instance of the item
-            GearItem *newItem = new GearItem(*item, networkFetcher); // Use copy constructor
+            GearItem *newItem = new GearItem(*item, networkFetcher, fileSystem, cacheManager); // Use copy constructor
             targetSlot->setGearItem(newItem);
 
             // Track this item as recently used
-            CacheManager &cache = CacheManager::getInstance();
-            cache.addToRecentlyUsed(item->unitId);
+            cacheManager.addToRecentlyUsed(item->unitId);
 
             // Refresh the gear library tree view to update recently used items
             if (gearLibrary != nullptr)
@@ -315,12 +314,11 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &details)
                 if (item != nullptr)
                 {
                     // Create a new instance of the item
-                    GearItem *newItem = new GearItem(*item, networkFetcher); // Use copy constructor
+                    GearItem *newItem = new GearItem(*item, networkFetcher, fileSystem, cacheManager); // Use copy constructor
                     targetSlot->setGearItem(newItem);
 
                     // Track this item as recently used
-                    CacheManager &cache = CacheManager::getInstance();
-                    cache.addToRecentlyUsed(item->unitId);
+                    cacheManager.addToRecentlyUsed(item->unitId);
 
                     // Refresh the gear library tree view to update recently used items
                     if (gearLibrary != nullptr)
@@ -500,9 +498,9 @@ void Rack::fetchSchemaForGearItem(GearItem *item, std::function<void()> onComple
          * @param unitIdToCache The unit ID to use for caching
          * @param onComplete Optional callback to execute when parsing is complete
          */
-        SchemaDownloader(juce::URL urlToUse, GearItem *itemToUpdate, Rack *rackToNotify, const juce::String &unitIdToCache, std::function<void()> onComplete = nullptr)
+        SchemaDownloader(juce::URL urlToUse, GearItem *itemToUpdate, Rack *rackToNotify, const juce::String &unitIdToCache, CacheManager &cacheManagerRef, std::function<void()> onComplete = nullptr)
             : juce::Thread("Schema Downloader"),
-              url(urlToUse), item(itemToUpdate), rack(rackToNotify), unitId(unitIdToCache), completionCallback(onComplete)
+              url(urlToUse), item(itemToUpdate), rack(rackToNotify), unitId(unitIdToCache), cacheManager(cacheManagerRef), completionCallback(onComplete)
         {
             startThread();
         }
@@ -537,9 +535,8 @@ void Rack::fetchSchemaForGearItem(GearItem *item, std::function<void()> onComple
                                             {
                 if (success)
                 {
-                    // Cache the downloaded schema
-                    CacheManager& cache = CacheManager::getInstance();
-                    cache.saveUnitToCache(unitId, schemaData);
+                                // Cache the downloaded schema
+            cacheManager.saveUnitToCache(unitId, schemaData);
                     
                     rack->parseSchema(schemaData, item, completionCallback);
                 }
@@ -557,11 +554,12 @@ void Rack::fetchSchemaForGearItem(GearItem *item, std::function<void()> onComple
         juce::String schemaData;                  ///< The downloaded schema data
         bool success = false;                     ///< Whether the download was successful
         juce::String unitId;                      ///< The unit ID to use for caching
+        CacheManager &cacheManager;               ///< Reference to cache manager
         std::function<void()> completionCallback; ///< Optional completion callback
     };
 
     // Create and start the download thread (it will delete itself when done)
-    new SchemaDownloader(schemaUrl, item, this, unitId, onComplete);
+    new SchemaDownloader(schemaUrl, item, this, unitId, cacheManager, onComplete);
 }
 
 /**
@@ -870,7 +868,7 @@ void Rack::fetchFaceplateImage(GearItem *item)
     }
 
     // Extract filename from faceplate path
-    juce::String filename = juce::File(item->faceplateImagePath).getFileName();
+    juce::String filename = fileSystem.getFileName(item->faceplateImagePath);
 
     // Check cache first
     CacheManager &cache = CacheManager::getInstance();
@@ -929,9 +927,9 @@ void Rack::fetchFaceplateImage(GearItem *item)
          * @param parentRack The rack to notify when the image is loaded
          * @param filenameToCache The filename to use for caching
          */
-        FaceplateImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, Rack *parentRack, const juce::String &filenameToCache)
+        FaceplateImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, Rack *parentRack, const juce::String &filenameToCache, CacheManager &cacheManagerRef)
             : juce::Thread("Faceplate Image Downloader"),
-              url(urlToUse), item(itemToUpdate), rack(parentRack), filename(filenameToCache)
+              url(urlToUse), item(itemToUpdate), rack(parentRack), filename(filenameToCache), cacheManager(cacheManagerRef)
         {
             startThread();
         }
@@ -1013,8 +1011,7 @@ void Rack::fetchFaceplateImage(GearItem *item)
                         item->faceplateImage = downloadedImage;
                         
                         // Cache the downloaded image
-                        CacheManager& cache = CacheManager::getInstance();
-                        cache.saveFaceplateToCache(item->unitId, filename, downloadedImage);
+                        cacheManager.saveFaceplateToCache(item->unitId, filename, downloadedImage);
                     }
                     
                     // Notify any slots that have this item to repaint
@@ -1079,14 +1076,15 @@ void Rack::fetchFaceplateImage(GearItem *item)
             }
         }
 
-        juce::URL url;         ///< The URL to download from
-        GearItem *item;        ///< The gear item to update
-        Rack *rack;            ///< The rack to notify
-        juce::String filename; ///< The filename to use for caching
+        juce::URL url;              ///< The URL to download from
+        GearItem *item;             ///< The gear item to update
+        Rack *rack;                 ///< The rack to notify
+        juce::String filename;      ///< The filename to use for caching
+        CacheManager &cacheManager; ///< Reference to cache manager
     };
 
     // Create and start the download thread (it will delete itself when done)
-    new FaceplateImageDownloader(imageUrl, item, this, filename);
+    new FaceplateImageDownloader(imageUrl, item, this, filename, cacheManager);
 }
 
 /**
@@ -1163,7 +1161,7 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
          * @param parentRack The rack to notify when the image is loaded
          * @param assetPathToCache The asset path to use for caching
          */
-        KnobImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack, const juce::String &assetPathToCache)
+        KnobImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack, const juce::String &assetPathToCache, CacheManager &cacheManagerRef)
             : juce::Thread("Knob Image Downloader"),
               url(urlToUse),
               item(itemToUpdate),
@@ -1171,7 +1169,8 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
               rack(parentRack),
               controlId(itemToUpdate->controls[controlIndexToUpdate].id),
               controlName(itemToUpdate->controls[controlIndexToUpdate].name),
-              assetPath(assetPathToCache)
+              assetPath(assetPathToCache),
+              cacheManager(cacheManagerRef)
         {
             startThread();
         }
@@ -1259,7 +1258,6 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
                     control.loadedImage = downloadedImage;
                     
                     // Cache the downloaded image
-                    CacheManager& cache = CacheManager::getInstance();
                     juce::MemoryBlock imageData;
                     juce::MemoryOutputStream stream(imageData, false);
                     
@@ -1276,7 +1274,7 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
                         jpegFormat.writeImageToStream(downloadedImage, stream);
                     }
                     
-                    cache.saveControlAssetToCache(assetPath, imageData);
+                    cacheManager.saveControlAssetToCache(assetPath, imageData);
                     
                     // Notify any slots that have this item to repaint
                     if (rack != nullptr)
@@ -1307,17 +1305,18 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
             }
         }
 
-        juce::URL url;            ///< The URL to download from
-        GearItem *item;           ///< The gear item containing the control
-        int controlIndex;         ///< The index of the control to update
-        Rack *rack;               ///< The rack to notify
-        juce::String controlId;   ///< The ID of the control being updated
-        juce::String controlName; ///< The name of the control being updated
-        juce::String assetPath;   ///< The asset path to use for caching
+        juce::URL url;              ///< The URL to download from
+        GearItem *item;             ///< The gear item containing the control
+        int controlIndex;           ///< The index of the control to update
+        Rack *rack;                 ///< The rack to notify
+        juce::String controlId;     ///< The ID of the control being updated
+        juce::String controlName;   ///< The name of the control being updated
+        juce::String assetPath;     ///< The asset path to use for caching
+        CacheManager &cacheManager; ///< Reference to cache manager
     };
 
     // Create and start the download thread (it will delete itself when done)
-    new KnobImageDownloader(imageUrl, item, controlIndex, this, control.image);
+    new KnobImageDownloader(imageUrl, item, controlIndex, this, control.image, cacheManager);
 }
 
 /**
@@ -1394,7 +1393,7 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
          * @param parentRack The rack to notify when the image is loaded
          * @param assetPathToCache The asset path to use for caching
          */
-        FaderImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack, const juce::String &assetPathToCache)
+        FaderImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack, const juce::String &assetPathToCache, CacheManager &cacheManagerRef)
             : juce::Thread("Fader Image Downloader"),
               url(urlToUse),
               item(itemToUpdate),
@@ -1402,7 +1401,8 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
               rack(parentRack),
               controlId(itemToUpdate->controls[controlIndexToUpdate].id),
               controlName(itemToUpdate->controls[controlIndexToUpdate].name),
-              assetPath(assetPathToCache)
+              assetPath(assetPathToCache),
+              cacheManager(cacheManagerRef)
         {
             startThread();
         }
@@ -1491,7 +1491,6 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
                     control.faderImage = downloadedImage;
                     
                     // Cache the downloaded image
-                    CacheManager& cache = CacheManager::getInstance();
                     juce::MemoryBlock imageData;
                     juce::MemoryOutputStream stream(imageData, false);
                     
@@ -1508,7 +1507,7 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
                         jpegFormat.writeImageToStream(downloadedImage, stream);
                     }
                     
-                    cache.saveControlAssetToCache(assetPath, imageData);
+                    cacheManager.saveControlAssetToCache(assetPath, imageData);
                     
                     // Notify any slots that have this item to repaint
                     if (rack != nullptr)
@@ -1539,17 +1538,18 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
             }
         }
 
-        juce::URL url;            ///< The URL to download from
-        GearItem *item;           ///< The gear item containing the control
-        int controlIndex;         ///< The index of the control to update
-        Rack *rack;               ///< The rack to notify
-        juce::String controlId;   ///< The ID of the control being updated
-        juce::String controlName; ///< The name of the control being updated
-        juce::String assetPath;   ///< The asset path to use for caching
+        juce::URL url;              ///< The URL to download from
+        GearItem *item;             ///< The gear item containing the control
+        int controlIndex;           ///< The index of the control to update
+        Rack *rack;                 ///< The rack to notify
+        juce::String controlId;     ///< The ID of the control being updated
+        juce::String controlName;   ///< The name of the control being updated
+        juce::String assetPath;     ///< The asset path to use for caching
+        CacheManager &cacheManager; ///< Reference to cache manager
     };
 
     // Create and start the download thread (it will delete itself when done)
-    new FaderImageDownloader(imageUrl, item, controlIndex, this, control.image);
+    new FaderImageDownloader(imageUrl, item, controlIndex, this, control.image, cacheManager);
 }
 
 /**
@@ -1626,7 +1626,7 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
          * @param parentRack The rack to notify when the sprite sheet is loaded
          * @param assetPathToCache The asset path to use for caching
          */
-        SwitchSpriteSheetDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack, const juce::String &assetPathToCache)
+        SwitchSpriteSheetDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack, const juce::String &assetPathToCache, CacheManager &cacheManagerRef)
             : juce::Thread("Switch Sprite Sheet Downloader"),
               url(urlToUse),
               item(itemToUpdate),
@@ -1634,7 +1634,8 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
               rack(parentRack),
               controlId(itemToUpdate->controls[controlIndexToUpdate].id),
               controlName(itemToUpdate->controls[controlIndexToUpdate].name),
-              assetPath(assetPathToCache)
+              assetPath(assetPathToCache),
+              cacheManager(cacheManagerRef)
         {
             startThread();
         }
@@ -1723,7 +1724,6 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
                     control.switchSpriteSheet = downloadedImage;
                     
                     // Cache the downloaded image
-                    CacheManager& cache = CacheManager::getInstance();
                     juce::MemoryBlock imageData;
                     juce::MemoryOutputStream stream(imageData, false);
                     
@@ -1740,7 +1740,7 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
                         jpegFormat.writeImageToStream(downloadedImage, stream);
                     }
                     
-                    cache.saveControlAssetToCache(assetPath, imageData);
+                    cacheManager.saveControlAssetToCache(assetPath, imageData);
                     
                     // Notify any slots that have this item to repaint
                     if (rack != nullptr)
@@ -1771,17 +1771,18 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
             }
         }
 
-        juce::URL url;            ///< The URL to download from
-        GearItem *item;           ///< The gear item containing the control
-        int controlIndex;         ///< The index of the control to update
-        Rack *rack;               ///< The rack to notify
-        juce::String controlId;   ///< The ID of the control being updated
-        juce::String controlName; ///< The name of the control being updated
-        juce::String assetPath;   ///< The asset path to use for caching
+        juce::URL url;              ///< The URL to download from
+        GearItem *item;             ///< The gear item containing the control
+        int controlIndex;           ///< The index of the control to update
+        Rack *rack;                 ///< The rack to notify
+        juce::String controlId;     ///< The ID of the control being updated
+        juce::String controlName;   ///< The name of the control being updated
+        juce::String assetPath;     ///< The asset path to use for caching
+        CacheManager &cacheManager; ///< Reference to cache manager
     };
 
     // Create and start the download thread (it will delete itself when done)
-    new SwitchSpriteSheetDownloader(imageUrl, item, controlIndex, this, control.image);
+    new SwitchSpriteSheetDownloader(imageUrl, item, controlIndex, this, control.image, cacheManager);
 }
 
 /**
@@ -1858,7 +1859,7 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
          * @param parentRack The rack to notify when the sprite sheet is loaded
          * @param assetPathToCache The asset path to use for caching
          */
-        ButtonSpriteSheetDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack, const juce::String &assetPathToCache)
+        ButtonSpriteSheetDownloader(juce::URL urlToUse, GearItem *itemToUpdate, int controlIndexToUpdate, Rack *parentRack, const juce::String &assetPathToCache, CacheManager &cacheManagerRef)
             : juce::Thread("Button Sprite Sheet Downloader"),
               url(urlToUse),
               item(itemToUpdate),
@@ -1866,7 +1867,8 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
               rack(parentRack),
               controlId(itemToUpdate->controls[controlIndexToUpdate].id),
               controlName(itemToUpdate->controls[controlIndexToUpdate].name),
-              assetPath(assetPathToCache)
+              assetPath(assetPathToCache),
+              cacheManager(cacheManagerRef)
         {
             startThread();
         }
@@ -1955,7 +1957,6 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
                     control.buttonSpriteSheet = downloadedImage;
                     
                     // Cache the downloaded image
-                    CacheManager& cache = CacheManager::getInstance();
                     juce::MemoryBlock imageData;
                     juce::MemoryOutputStream stream(imageData, false);
                     
@@ -1972,7 +1973,7 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
                         jpegFormat.writeImageToStream(downloadedImage, stream);
                     }
                     
-                    cache.saveControlAssetToCache(assetPath, imageData);
+                    cacheManager.saveControlAssetToCache(assetPath, imageData);
                     
                     // Notify any slots that have this item to repaint
                     if (rack != nullptr)
@@ -2003,17 +2004,18 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
             }
         }
 
-        juce::URL url;            ///< The URL to download from
-        GearItem *item;           ///< The gear item containing the control
-        int controlIndex;         ///< The index of the control to update
-        Rack *rack;               ///< The rack to notify
-        juce::String controlId;   ///< The ID of the control being updated
-        juce::String controlName; ///< The name of the control being updated
-        juce::String assetPath;   ///< The asset path to use for caching
+        juce::URL url;              ///< The URL to download from
+        GearItem *item;             ///< The gear item containing the control
+        int controlIndex;           ///< The index of the control to update
+        Rack *rack;                 ///< The rack to notify
+        juce::String controlId;     ///< The ID of the control being updated
+        juce::String controlName;   ///< The name of the control being updated
+        juce::String assetPath;     ///< The asset path to use for caching
+        CacheManager &cacheManager; ///< Reference to cache manager
     };
 
     // Create and start the download thread (it will delete itself when done)
-    new ButtonSpriteSheetDownloader(imageUrl, item, controlIndex, this, control.image);
+    new ButtonSpriteSheetDownloader(imageUrl, item, controlIndex, this, control.image, cacheManager);
 }
 
 /**

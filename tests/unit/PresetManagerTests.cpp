@@ -13,6 +13,8 @@
 #include "GearLibrary.h"
 #include "GearItem.h"
 #include "MockNetworkFetcher.h"
+#include "MockFileSystem.h"
+#include "CacheManager.h"
 
 using namespace juce;
 
@@ -30,6 +32,16 @@ public:
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
         mockFetcher.reset();
 
+        // Create a mock file system for testing
+        auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+        mockFileSystem.reset();
+        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
+        CacheManager &cacheManager = CacheManager::getInstance();
+        PresetManager::resetInstance(mockFileSystem, cacheManager);
+
+        // Create gear library with mock dependencies
+        GearLibrary gearLibrary(mockFetcher, cacheManager, mockFileSystem, false);
+
         beginTest("Singleton Pattern");
         {
             auto &instance1 = PresetManager::getInstance();
@@ -43,7 +55,7 @@ public:
 
             // Test presets directory path
             auto presetsDir = presetManager.getPresetsDirectory();
-            expect(presetsDir.exists() || presetsDir.createDirectory(), "Should be able to create presets directory");
+            expect(!presetsDir.isEmpty(), "Presets directory path should not be empty");
 
             // Test initialization
             expect(presetManager.initializePresetsDirectory(), "Should initialize presets directory");
@@ -54,8 +66,8 @@ public:
             auto &presetManager = PresetManager::getInstance();
 
             // Create a test rack with gear items
-            Rack rack(mockFetcher);
-            GearLibrary gearLibrary(mockFetcher, false);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            GearLibrary gearLibrary(mockFetcher, cacheManager, mockFileSystem, false);
 
             // Create test gear items
             juce::StringArray tags = {"test"};
@@ -71,6 +83,8 @@ public:
                 "assets/thumbnails/test-eq-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::EQ,
                 1,
@@ -86,6 +100,8 @@ public:
                 "assets/thumbnails/test-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -115,7 +131,7 @@ public:
             expect(presetManager.isPresetValid("Test Preset"), "Saved preset should be valid");
 
             // Test loading preset into a new rack
-            Rack newRack(mockFetcher);
+            Rack newRack(mockFetcher, mockFileSystem, cacheManager);
             expect(presetManager.loadPreset("Test Preset", &newRack, &gearLibrary), "Should load preset successfully");
 
             // Verify loaded preset
@@ -145,8 +161,8 @@ public:
             auto &presetManager = PresetManager::getInstance();
 
             // Create some test presets
-            Rack rack(mockFetcher);
-            GearLibrary gearLibrary(mockFetcher, false);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            GearLibrary gearLibrary(mockFetcher, cacheManager, mockFileSystem, false);
 
             presetManager.savePreset("Preset A", &rack);
             presetManager.savePreset("Preset B", &rack);
@@ -173,7 +189,7 @@ public:
             auto &presetManager = PresetManager::getInstance();
 
             // Create a test preset
-            Rack rack(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
             presetManager.savePreset("Delete Test", &rack);
 
             // Verify it exists
@@ -193,8 +209,8 @@ public:
         {
             auto &presetManager = PresetManager::getInstance();
 
-            Rack rack(mockFetcher);
-            GearLibrary gearLibrary(mockFetcher, false);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            GearLibrary gearLibrary(mockFetcher, cacheManager, mockFileSystem, false);
 
             // Create a test gear item with controls
             juce::StringArray tags = {"test"};
@@ -214,14 +230,16 @@ public:
                 "test-unit",
                 "Test Unit",
                 "Test Manufacturer",
-                "equalizer",
+                "utility",
                 "1.0.0",
                 "units/test-unit-1.0.0.json",
                 "assets/thumbnails/test-unit-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
-                GearCategory::EQ,
+                GearCategory::Other,
                 1,
                 controls);
 
@@ -249,7 +267,7 @@ public:
             expect(presetManager.savePreset("Control Test", &rack), "Should save preset with control values");
 
             // Load into new rack
-            Rack newRack(mockFetcher);
+            Rack newRack(mockFetcher, mockFileSystem, cacheManager);
             expect(presetManager.loadPreset("Control Test", &newRack, &gearLibrary), "Should load preset with control values");
 
             // Verify control values were preserved
@@ -281,8 +299,8 @@ public:
             expect(!presetManager.loadPreset("Valid Name", nullptr, nullptr), "Should fail to load with null rack");
 
             // Test loading non-existent preset
-            Rack rack(mockFetcher);
-            GearLibrary gearLibrary(mockFetcher, false);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            GearLibrary gearLibrary(mockFetcher, cacheManager, mockFileSystem, false);
             expect(!presetManager.loadPreset("NonExistent", &rack, &gearLibrary), "Should fail to load non-existent preset");
         }
 
@@ -340,7 +358,7 @@ public:
             auto &presetManager = PresetManager::getInstance();
 
             // Create a test preset
-            Rack rack(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
             presetManager.savePreset("Conflict Test", &rack);
 
             juce::String errorMessage;
@@ -371,7 +389,7 @@ public:
             expect(errorMessage.contains("does not exist"), "Should mention file doesn't exist");
 
             // Create a valid preset for testing
-            Rack rack(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
             presetManager.savePreset("Validation Test", &rack);
 
             // Test validation of valid preset
@@ -434,8 +452,8 @@ public:
             expect(!presetManager.validatePresetName(longName, errorMessage), "Preset name that's too long should fail validation");
 
             // Test preset file validation
-            Rack rack(mockFetcher);
-            GearLibrary gearLibrary(mockFetcher, false);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            GearLibrary gearLibrary(mockFetcher, cacheManager, mockFileSystem, false);
             expect(presetManager.savePreset("ValidationTest", &rack), "Should save preset for validation test");
             expect(presetManager.validatePresetFile("ValidationTest", errorMessage), "Valid preset file should pass validation");
             expect(!presetManager.validatePresetFile("NonExistentPreset", errorMessage), "Non-existent preset file should fail validation");

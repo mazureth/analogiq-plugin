@@ -20,17 +20,36 @@
  *
  * @param p Reference to the associated AudioProcessor
  */
-AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
+AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p, CacheManager &cm, PresetManager &pm)
+    : AnalogIQEditor(p, cm, pm, false) // Call the test constructor with auto-load enabled
+{
+}
+
+/**
+ * @brief Constructs a new AnalogIQEditor for testing.
+ *
+ * Initializes the editor with a gear library, rack, and notes panel.
+ * Sets up the tabbed interface and configures drag and drop functionality.
+ *
+ * @param p Reference to the associated AudioProcessor
+ * @param disableAutoLoad Whether to disable auto-loading of the gear library (for testing)
+ */
+AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p, CacheManager &cm, PresetManager &pm, bool disableAutoLoad)
     : AudioProcessorEditor(&p),
       audioProcessor(p),
+      cacheManager(cm),
+      presetManager(pm),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
     // Set component IDs for debugging
     setComponentID("AnalogIQEditor");
 
     // Create our components
-    gearLibrary = std::make_unique<GearLibrary>(audioProcessor.getNetworkFetcher());
-    rack = std::make_unique<Rack>(audioProcessor.getNetworkFetcher());
+    // Note: Using negative logic (!disableAutoLoad) to maintain backward compatibility.
+    // The original constructor calls this with disableAutoLoad=false, so !false=true enables auto-load.
+    // Tests call this with disableAutoLoad=true, so !true=false disables auto-load.
+    gearLibrary = std::make_unique<GearLibrary>(audioProcessor.getNetworkFetcher(), cacheManager, fileSystem, !disableAutoLoad);
+    rack = std::make_unique<Rack>(audioProcessor.getNetworkFetcher(), fileSystem, cacheManager);
     notesPanel = std::make_unique<NotesPanel>();
 
     // Set component IDs
@@ -58,8 +77,12 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p)
     // Add gear library to left side
     addAndMakeVisible(*gearLibrary);
 
-    // Start loading the gear library
-    gearLibrary->loadLibraryAsync();
+    // Start loading the gear library only if auto-load is enabled
+    // Note: Using negative logic (!disableAutoLoad) - see comment above for explanation
+    if (!disableAutoLoad)
+    {
+        gearLibrary->loadLibraryAsync();
+    }
 
     // Set up menu bar components
     menuBarContainer.setComponentID("MenuBarContainer");

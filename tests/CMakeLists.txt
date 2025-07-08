@@ -8,6 +8,7 @@ add_executable(analogiq_tests
     unit/TestFixture.h
     unit/MockNetworkFetcher.h
     unit/MockRackStateListener.h
+    unit/MockFileSystem.h
     unit/GearLibraryTests.cpp
     unit/GearItemTests.cpp
     unit/RackTests.cpp

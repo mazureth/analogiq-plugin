@@ -5,6 +5,8 @@
 #include "GearLibrary.h"
 #include "TestFixture.h"
 #include "MockNetworkFetcher.h"
+#include "MockFileSystem.h"
+#include "PresetManager.h"
 
 class RackTests : public juce::UnitTest
 {
@@ -99,19 +101,28 @@ public:
     {
         TestFixture fixture;
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
         mockFetcher.reset();
+        mockFileSystem.reset();
+
+        // Reset singletons to use mock file system
+        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
+        CacheManager &cacheManager = CacheManager::getInstance();
+        PresetManager::resetInstance(mockFileSystem, cacheManager);
 
         beginTest("Initial State");
         {
             setUpMocks(mockFetcher);
-            Rack rack(mockFetcher);
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
             expectEquals(rack.getNumSlots(), 16, "Rack should have 16 slots");
         }
 
         beginTest("Slot Management");
         {
             setUpMocks(mockFetcher);
-            Rack rack(mockFetcher);
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -150,6 +161,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -170,7 +183,8 @@ public:
         beginTest("Instance Management");
         {
             setUpMocks(mockFetcher);
-            Rack rack(mockFetcher);
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -209,6 +223,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -240,7 +256,8 @@ public:
         beginTest("Multiple Slots");
         {
             setUpMocks(mockFetcher);
-            Rack rack(mockFetcher);
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -279,6 +296,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -294,6 +313,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -332,7 +353,8 @@ public:
         beginTest("Preset Integration");
         {
             setUpMocks(mockFetcher);
-            Rack rack(mockFetcher);
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+            Rack rack(mockFetcher, mockFileSystem, cacheManager);
 
             // Test that the rack can load preset state
             auto *slot = rack.getSlot(0);
@@ -352,6 +374,8 @@ public:
                 "assets/thumbnails/test-gear-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Other,
                 1,
@@ -394,6 +418,8 @@ public:
                 "assets/thumbnails/test-gear-1-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Other,
                 1,
@@ -409,6 +435,8 @@ public:
                 "assets/thumbnails/test-gear-2-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Other,
                 1,

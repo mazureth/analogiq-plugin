@@ -11,6 +11,8 @@
 #include <JuceHeader.h>
 #include "Rack.h"
 #include "GearLibrary.h"
+#include "IFileSystem.h"
+#include "FileSystem.h"
 
 // Forward declarations
 class Rack;
@@ -33,6 +35,14 @@ public:
      * @return Reference to the PresetManager instance
      */
     static PresetManager &getInstance();
+
+    /**
+     * @brief Resets the singleton instance with a new file system (for testing).
+     *
+     * @param fileSystem The file system implementation to use
+     * @param cacheManager The cache manager implementation to use
+     */
+    static void resetInstance(IFileSystem &fileSystem, CacheManager &cacheManager);
 
     /**
      * @brief Destructor.
@@ -82,9 +92,9 @@ public:
     /**
      * @brief Gets the presets directory.
      *
-     * @return The presets directory as a JUCE File object
+     * @return The presets directory path as a string
      */
-    juce::File getPresetsDirectory() const;
+    juce::String getPresetsDirectory() const;
 
     /**
      * @brief Checks if a preset exists and is valid.
@@ -176,13 +186,16 @@ public:
      */
     juce::var getPresetInfo(const juce::String &name, juce::String &errorMessage) const;
 
-private:
+public:
     /**
-     * @brief Private constructor for singleton pattern.
+     * @brief Constructor for PresetManager.
      */
-    PresetManager() = default;
+    PresetManager(IFileSystem &fileSystem = FileSystem::getDummy(), CacheManager &cacheManager = CacheManager::getInstance());
 
+private:
     mutable juce::String lastErrorMessage; ///< Stores the last error message
+    IFileSystem &fileSystem;               ///< Reference to the file system implementation
+    CacheManager &cacheManager;            ///< Reference to the cache manager
 
     /**
      * @brief Converts a preset name to a safe filename.
@@ -227,10 +240,10 @@ private:
     bool deserializeJSONToRack(const juce::String &jsonData, Rack *rack, GearLibrary *gearLibrary) const;
 
     /**
-     * @brief Gets the preset file for a given name.
+     * @brief Gets the preset file path for a given name.
      *
      * @param name The preset name
-     * @return The preset file
+     * @return The preset file path as a string
      */
-    juce::File getPresetFile(const juce::String &name) const;
+    juce::String getPresetFile(const juce::String &name) const;
 };

@@ -11,6 +11,9 @@
 
 #include <JuceHeader.h>
 #include "INetworkFetcher.h"
+#include "IFileSystem.h"
+#include "FileSystem.h"
+#include "CacheManager.h"
 
 /**
  * @brief Enumeration of possible gear types.
@@ -257,7 +260,9 @@ public:
           controls(),
           isInstance(false),
           sourceUnitId(""),
-          networkFetcher(INetworkFetcher::getDummy())
+          networkFetcher(INetworkFetcher::getDummy()),
+          fileSystem(FileSystem::getDummy()),
+          cacheManager(CacheManager::getDummy())
     {
     }
 
@@ -294,6 +299,8 @@ public:
      * @param thumbnailImageParam The path to the thumbnail image
      * @param tagsParam The tags associated with the gear item
      * @param networkFetcherParam The network fetcher to use for loading resources
+     * @param fileSystemParam The file system to use for file operations
+     * @param cacheManagerParam The cache manager to use for caching operations
      * @param typeParam The type of gear
      * @param gearCategoryParam The category of gear
      * @param slotSizeParam The size of the slot required
@@ -308,6 +315,8 @@ public:
              const juce::String &thumbnailImageParam,
              const juce::StringArray &tagsParam,
              INetworkFetcher &networkFetcherParam,
+             IFileSystem &fileSystemParam,
+             CacheManager &cacheManagerParam,
              GearType typeParam = GearType::Other,
              GearCategory gearCategoryParam = GearCategory::Other,
              int slotSizeParam = 1,
@@ -324,7 +333,9 @@ public:
           categoryString(categoryParam),
           tags(tagsParam),
           controls(controlsParam),
-          networkFetcher(networkFetcherParam)
+          networkFetcher(networkFetcherParam),
+          fileSystem(fileSystemParam),
+          cacheManager(cacheManagerParam)
     {
         // Map category string to enum (for backward compatibility)
         if (categoryString == "equalizer" || categoryString == "eq")
@@ -354,6 +365,8 @@ public:
      * @param imageUrlParam Path to image
      * @param controlsParam Array of controls
      * @param networkFetcherParam Reference to network fetcher
+     * @param fileSystemParam Reference to file system
+     * @param cacheManagerParam Reference to cache manager
      */
     GearItem(const juce::String &nameParam,
              const juce::String &manufacturerParam,
@@ -362,7 +375,9 @@ public:
              int slotSizeParam,
              const juce::String &imageUrlParam,
              const juce::Array<GearControl> &controlsParam,
-             INetworkFetcher &networkFetcherParam)
+             INetworkFetcher &networkFetcherParam,
+             IFileSystem &fileSystemParam,
+             CacheManager &cacheManagerParam)
         : unitId(nameParam.toLowerCase().replaceCharacter(' ', '-')),
           name(nameParam),
           manufacturer(manufacturerParam),
@@ -375,7 +390,9 @@ public:
           categoryString(""),
           tags(),
           controls(controlsParam),
-          networkFetcher(networkFetcherParam)
+          networkFetcher(networkFetcherParam),
+          fileSystem(fileSystemParam),
+          cacheManager(cacheManagerParam)
     {
         // Map category enum to string
         switch (category)
@@ -423,8 +440,8 @@ public:
     juce::Array<GearControl> controls;
 
     bool loadImage();
-    void saveToJSON(juce::File destinationFile);
-    static GearItem loadFromJSON(juce::File sourceFile, INetworkFetcher &networkFetcher);
+    void saveToJSON(const juce::String &filePath);
+    static GearItem loadFromJSON(const juce::String &filePath, INetworkFetcher &networkFetcher, IFileSystem &fileSystem);
 
     /**
      * @brief Copy constructor.
@@ -434,8 +451,10 @@ public:
      *
      * @param other The GearItem to copy from
      * @param networkFetcherParam Reference to network fetcher
+     * @param fileSystemParam Reference to file system
+     * @param cacheManagerParam Reference to cache manager
      */
-    GearItem(const GearItem &other, INetworkFetcher &networkFetcherParam)
+    GearItem(const GearItem &other, INetworkFetcher &networkFetcherParam, IFileSystem &fileSystemParam, CacheManager &cacheManagerParam)
         : unitId(other.unitId),
           name(other.name),
           manufacturer(other.manufacturer),
@@ -453,7 +472,9 @@ public:
           isInstance(false),            // New instances start as non-instances
           instanceId(juce::String()),   // New instances get a new ID
           sourceUnitId(juce::String()), // New instances start with no source
-          networkFetcher(networkFetcherParam)
+          networkFetcher(networkFetcherParam),
+          fileSystem(fileSystemParam),
+          cacheManager(cacheManagerParam)
     {
         // Load the image
         loadImage();
@@ -461,6 +482,8 @@ public:
 
 private:
     INetworkFetcher &networkFetcher;
+    IFileSystem &fileSystem;
+    CacheManager &cacheManager;
 
     /**
      * @brief Creates a placeholder image for the gear item.

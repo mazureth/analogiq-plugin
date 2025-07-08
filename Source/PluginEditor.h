@@ -16,6 +16,7 @@
 #include "Rack.h"
 #include "NotesPanel.h"
 #include "PresetManager.h"
+#include "FileSystem.h"
 
 /**
  * @brief Main editor interface for the AnalogIQ plugin.
@@ -32,8 +33,20 @@ public:
      * @brief Constructs a new AnalogIQEditor.
      *
      * @param processor Reference to the associated AudioProcessor
+     * @param cacheManager Reference to the cache manager
+     * @param presetManager Reference to the preset manager
      */
-    AnalogIQEditor(AnalogIQProcessor &);
+    AnalogIQEditor(AnalogIQProcessor &, CacheManager &, PresetManager &);
+
+    /**
+     * @brief Constructs a new AnalogIQEditor for testing.
+     *
+     * @param processor Reference to the associated AudioProcessor
+     * @param cacheManager Reference to the cache manager
+     * @param presetManager Reference to the preset manager
+     * @param disableAutoLoad Whether to disable auto-loading of the gear library (for testing)
+     */
+    AnalogIQEditor(AnalogIQProcessor &, CacheManager &, PresetManager &, bool disableAutoLoad);
 
     /**
      * @brief Destructor for AnalogIQEditor.
@@ -71,7 +84,7 @@ public:
      *
      * @return Reference to the PresetManager instance
      */
-    PresetManager &getPresetManager() const { return PresetManager::getInstance(); }
+    PresetManager &getPresetManager() const { return presetManager; }
 
 private:
     /**
@@ -146,6 +159,9 @@ private:
 
 private:
     AnalogIQProcessor &audioProcessor; ///< Reference to the associated AudioProcessor
+    CacheManager &cacheManager;        ///< Reference to the cache manager
+    PresetManager &presetManager;      ///< Reference to the preset manager
+    FileSystem fileSystem;             ///< File system for file operations
 
     // UI Components
     juce::TabbedComponent mainTabs{juce::TabbedButtonBar::TabsAtTop}; ///< Main tabbed interface

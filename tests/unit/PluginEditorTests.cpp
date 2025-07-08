@@ -3,6 +3,8 @@
 #include "PluginProcessor.h"
 #include "TestFixture.h"
 #include "MockNetworkFetcher.h"
+#include "MockFileSystem.h"
+#include "PresetManager.h"
 
 class PluginEditorTests : public juce::UnitTest
 {
@@ -13,7 +15,14 @@ public:
     {
         TestFixture fixture;
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
         mockFetcher.reset();
+        mockFileSystem.reset();
+
+        // Reset singletons to use mock file system
+        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
+        CacheManager &cacheManager = CacheManager::getInstance();
+        PresetManager::resetInstance(mockFileSystem, cacheManager);
 
         // Set up mock response for the units index
         mockFetcher.setResponse(
@@ -108,14 +117,14 @@ public:
         beginTest("Construction");
         {
             AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQEditor editor(processor, cacheManager, PresetManager::getInstance());
             expect(editor.getAudioProcessor() == &processor);
         }
 
         beginTest("Component Hierarchy");
         {
             AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQEditor editor(processor, cacheManager, PresetManager::getInstance());
 
             // Check for GearLibrary as direct child
             auto *gearLibrary = editor.findChildWithID("GearLibrary");
@@ -131,7 +140,7 @@ public:
         beginTest("Resize Handling");
         {
             AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQEditor editor(processor, cacheManager, PresetManager::getInstance());
             editor.setSize(800, 600);
             expect(editor.getWidth() >= 800);
             expect(editor.getHeight() >= 600);
@@ -140,7 +149,7 @@ public:
         beginTest("Parameter Updates");
         {
             AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQEditor editor(processor, cacheManager, PresetManager::getInstance());
             bool parameterChanged = false;
             if (auto *param = processor.getParameters().getFirst())
             {
@@ -152,7 +161,7 @@ public:
         beginTest("Component Visibility");
         {
             AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQEditor editor(processor, cacheManager, PresetManager::getInstance());
 
             // Check GearLibrary visibility
             auto *library = editor.findChildWithID("GearLibrary");
@@ -168,7 +177,7 @@ public:
         beginTest("Preset Integration");
         {
             AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQEditor editor(processor, cacheManager, PresetManager::getInstance());
 
             // Test that the editor has access to preset manager
             auto &presetManager = editor.getPresetManager();
