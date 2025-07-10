@@ -406,6 +406,33 @@ void GearLibrary::updateFilteredItems()
                     categoryGroups.getReference(category).add(item);
                 }
 
+                // Add Recently Used section if there are matching recently used items
+                if (matchingRecentlyUsed.size() > 0)
+                {
+                    auto recentlyUsedNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", this, &cacheManager);
+                    rootItem->addSubItem(recentlyUsedNode);
+
+                    for (auto *item : matchingRecentlyUsed)
+                    {
+                        // Find the index of this item in the original array
+                        int itemIndex = -1;
+                        for (int i = 0; i < gearItems.size(); ++i)
+                        {
+                            if (&gearItems.getReference(i) == item)
+                            {
+                                itemIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (itemIndex >= 0)
+                        {
+                            recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
+                        }
+                    }
+                    recentlyUsedNode->setOpen(true);
+                }
+
                 // Add My Gear section if there are matching favorites
                 if (matchingFavorites.size() > 0)
                 {
@@ -479,33 +506,15 @@ void GearLibrary::updateFilteredItems()
                         }
                     }
                     myGearNode->setOpen(true);
-                }
 
-                // Add Recently Used section if there are matching recently used items
-                if (matchingRecentlyUsed.size() > 0)
-                {
-                    auto recentlyUsedNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", this, &cacheManager);
-                    rootItem->addSubItem(recentlyUsedNode);
-
-                    for (auto *item : matchingRecentlyUsed)
+                    // Expand all category nodes that contain matching items (same as Categories tree)
+                    for (int i = 0; i < myGearNode->getNumSubItems(); ++i)
                     {
-                        // Find the index of this item in the original array
-                        int itemIndex = -1;
-                        for (int i = 0; i < gearItems.size(); ++i)
+                        if (auto categoryNode = dynamic_cast<GearTreeItem *>(myGearNode->getSubItem(i)))
                         {
-                            if (&gearItems.getReference(i) == item)
-                            {
-                                itemIndex = i;
-                                break;
-                            }
-                        }
-
-                        if (itemIndex >= 0)
-                        {
-                            recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
+                            categoryNode->setOpen(true);
                         }
                     }
-                    recentlyUsedNode->setOpen(true);
                 }
 
                 // Create the "Categories" node
@@ -569,6 +578,10 @@ void GearLibrary::updateFilteredItems()
         {
             // When not searching, restore the normal hierarchical structure
             rootItem->refreshSubItems();
+
+            // Explicitly refresh the Recently Used and Favorites sections to ensure they're populated
+            refreshRecentlyUsedSection();
+            refreshFavoritesSection();
         }
 
         gearTreeView->repaint();
@@ -810,17 +823,33 @@ void GearLibrary::refreshFavoritesSection()
                     favoriteCategoryGroups.getReference(category).add(item);
                 }
 
-                // Add category groups as sub-items
+                // Sort categories alphabetically
+                juce::StringArray sortedCategoryNames;
                 for (auto it = favoriteCategoryGroups.begin(); it != favoriteCategoryGroups.end(); ++it)
                 {
-                    juce::String categoryName = it.getKey();
+                    sortedCategoryNames.add(it.getKey());
+                }
+                sortedCategoryNames.sort(true); // true = ignore case
+
+                // Add category groups as sub-items
+                for (const auto &categoryName : sortedCategoryNames)
+                {
                     juce::String displayName = categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1);
 
                     auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this, &cacheManager);
                     favoritesItem->addSubItem(categoryNode);
 
+                    // Sort items within this category alphabetically
+                    auto &categoryItems = favoriteCategoryGroups.getReference(categoryName);
+                    std::vector<GearItem *> sortedItems(categoryItems.begin(), categoryItems.end());
+                    std::sort(sortedItems.begin(), sortedItems.end(),
+                              [](const GearItem *a, const GearItem *b)
+                              {
+                                  return a->name.compareIgnoreCase(b->name) < 0;
+                              });
+
                     // Add gear items to this category group
-                    for (auto *item : it.getValue())
+                    for (auto *item : sortedItems)
                     {
                         // Find the index of this item in the original array
                         int itemIndex = -1;
@@ -914,17 +943,33 @@ void GearLibrary::refreshFavoritesSection()
                 }
             }
 
-            // Add category groups as sub-items and restore their expansion state
+            // Sort categories alphabetically
+            juce::StringArray sortedCategoryNames;
             for (auto it = favoriteCategoryGroups.begin(); it != favoriteCategoryGroups.end(); ++it)
             {
-                juce::String categoryName = it.getKey();
+                sortedCategoryNames.add(it.getKey());
+            }
+            sortedCategoryNames.sort(true); // true = ignore case
+
+            // Add category groups as sub-items and restore their expansion state
+            for (const auto &categoryName : sortedCategoryNames)
+            {
                 juce::String displayName = categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1);
 
                 auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this, &cacheManager);
                 favoritesItem->addSubItem(categoryNode);
 
+                // Sort items within this category alphabetically
+                auto &categoryItems = favoriteCategoryGroups.getReference(categoryName);
+                std::vector<GearItem *> sortedItems(categoryItems.begin(), categoryItems.end());
+                std::sort(sortedItems.begin(), sortedItems.end(),
+                          [](const GearItem *a, const GearItem *b)
+                          {
+                              return a->name.compareIgnoreCase(b->name) < 0;
+                          });
+
                 // Add gear items to this category group
-                for (auto *item : it.getValue())
+                for (auto *item : sortedItems)
                 {
                     // Find the index of this item in the original array
                     int itemIndex = -1;
