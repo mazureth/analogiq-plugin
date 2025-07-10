@@ -37,7 +37,18 @@ public:
      *
      * @param slotIndex The index of this slot in the rack
      */
-    RackSlot(IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary &gearLibrary);
+    RackSlot(IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary &gearLibrary, int slotIndex = 0);
+
+    /**
+     * @brief Sets the index of this slot in the rack.
+     *
+     * @param newIndex The new index for this slot
+     */
+    void setIndex(int newIndex)
+    {
+        index = newIndex;
+        updateButtonStates();
+    }
 
     /**
      * @brief Destructor for the RackSlot class.

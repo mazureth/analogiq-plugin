@@ -35,7 +35,7 @@ Rack::Rack(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManage
     // Create rack slots
     for (int i = 0; i < numSlots; ++i)
     {
-        RackSlot *newSlot = new RackSlot(fileSystem, cacheManager, presetManager, *gearLibrary);
+        RackSlot *newSlot = new RackSlot(fileSystem, cacheManager, presetManager, *gearLibrary, i);
         slots.add(newSlot);
         rackContainer->addAndMakeVisible(newSlot);
     }

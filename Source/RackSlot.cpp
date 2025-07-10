@@ -21,8 +21,8 @@
  *
  * @param slotIndex The index of this slot in the rack
  */
-RackSlot::RackSlot(IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary &gearLibrary)
-    : fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary)
+RackSlot::RackSlot(IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary &gearLibrary, int slotIndex)
+    : fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary), index(slotIndex)
 {
     setComponentID("RackSlot_" + juce::String(index));
     setInterceptsMouseClicks(true, true);
