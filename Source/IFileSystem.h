@@ -173,6 +173,13 @@ public:
     virtual juce::String normalizePath(const juce::String &path) = 0;
 
     /**
+     * @brief Gets the cache root directory using OS-agnostic JUCE approach.
+     *
+     * @return The cache root directory path
+     */
+    virtual juce::String getCacheRootDirectory() = 0;
+
+    /**
      * @brief Returns a reference to a dummy file system (Null Object Pattern).
      *
      * This can be used for default-constructed objects or in cases where a real file system is not available.

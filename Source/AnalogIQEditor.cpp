@@ -1,5 +1,5 @@
 /**
- * @file PluginEditor.cpp
+ * @file AnalogIQEditor.cpp
  * @brief Implementation of the AnalogIQEditor class.
  *
  * This file implements the main editor interface for the AnalogIQ plugin,
@@ -8,8 +8,8 @@
  * tabbed layout.
  */
 
-#include "PluginProcessor.h"
-#include "PluginEditor.h"
+#include "AnalogIQProcessor.h"
+#include "AnalogIQEditor.h"
 #include "PresetManager.h"
 
 /**
@@ -18,47 +18,36 @@
  * Initializes the editor with a gear library, rack, and notes panel.
  * Sets up the tabbed interface and configures drag and drop functionality.
  *
- * @param p Reference to the associated AudioProcessor
+ * @param processor Reference to the associated AudioProcessor
+ * @param fileSystem Reference to the file system
+ * @param cacheManager Reference to the cache manager
+ * @param presetManager Reference to the preset manager
+ * @param gearLibrary Reference to the gear library
  */
-AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p, CacheManager &cm, PresetManager &pm)
-    : AnalogIQEditor(p, cm, pm, false) // Call the test constructor with auto-load enabled
-{
-}
-
-/**
- * @brief Constructs a new AnalogIQEditor for testing.
- *
- * Initializes the editor with a gear library, rack, and notes panel.
- * Sets up the tabbed interface and configures drag and drop functionality.
- *
- * @param p Reference to the associated AudioProcessor
- * @param disableAutoLoad Whether to disable auto-loading of the gear library (for testing)
- */
-AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p, CacheManager &cm, PresetManager &pm, bool disableAutoLoad)
-    : AudioProcessorEditor(&p),
-      audioProcessor(p),
-      cacheManager(cm),
-      presetManager(pm),
+AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
+                               IFileSystem &fileSystem,
+                               CacheManager &cacheManager,
+                               PresetManager &presetManager,
+                               GearLibrary &gearLibrary)
+    : AudioProcessorEditor(&processor),
+      processor(processor),
+      fileSystem(fileSystem),
+      cacheManager(cacheManager),
+      presetManager(presetManager),
+      gearLibrary(gearLibrary),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
     // Set component IDs for debugging
     setComponentID("AnalogIQEditor");
 
     // Create our components
-    // Note: Using negative logic (!disableAutoLoad) to maintain backward compatibility.
-    // The original constructor calls this with disableAutoLoad=false, so !false=true enables auto-load.
-    // Tests call this with disableAutoLoad=true, so !true=false disables auto-load.
-    gearLibrary = std::make_unique<GearLibrary>(audioProcessor.getNetworkFetcher(), cacheManager, fileSystem, !disableAutoLoad);
-    rack = std::make_unique<Rack>(audioProcessor.getNetworkFetcher(), fileSystem, cacheManager);
+    rack = std::make_unique<Rack>(processor.getNetworkFetcher(), fileSystem, cacheManager, presetManager, &gearLibrary);
     notesPanel = std::make_unique<NotesPanel>();
 
     // Set component IDs
-    gearLibrary->setComponentID("GearLibrary");
+    gearLibrary.setComponentID("GearLibrary");
     rack->setComponentID("RackTab");
     notesPanel->setComponentID("NotesTab");
-
-    // Connect the Rack to the GearLibrary for drag and drop
-    rack->setGearLibrary(gearLibrary.get());
 
     // Set up main window size
     setSize(1200, 800);
@@ -75,14 +64,87 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &p, CacheManager &cm, PresetMan
     addAndMakeVisible(mainTabs);
 
     // Add gear library to left side
-    addAndMakeVisible(*gearLibrary);
+    addAndMakeVisible(&gearLibrary);
 
-    // Start loading the gear library only if auto-load is enabled
-    // Note: Using negative logic (!disableAutoLoad) - see comment above for explanation
-    if (!disableAutoLoad)
-    {
-        gearLibrary->loadLibraryAsync();
-    }
+    // Set up menu bar components
+    menuBarContainer.setComponentID("MenuBarContainer");
+    presetsMenuButton.setComponentID("PresetsMenuButton");
+
+    // Configure preset menu button with onClick lambda
+    presetsMenuButton.setButtonText("Presets");
+    presetsMenuButton.onClick = [this]()
+    { showPresetMenu(); };
+
+    // Apply custom look and feel for no background/border
+    presetsMenuButton.setLookAndFeel(&flatMenuLookAndFeel);
+
+    // Style the text color
+    presetsMenuButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    presetsMenuButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+
+    // Add menu bar components to the editor
+    addAndMakeVisible(menuBarContainer);
+    addAndMakeVisible(presetsMenuButton);
+
+    // Set up menu bar styling
+    menuBarContainer.setOpaque(true);
+
+    // Configure drag and drop
+    // This is critical - make sure this component is configured as the DragAndDropContainer
+    setInterceptsMouseClicks(false, true);
+
+    // Load the gear library data now that the plugin is ready
+    gearLibrary.loadLibraryAsync();
+}
+
+/**
+ * @brief Constructs a new AnalogIQEditor for testing.
+ *
+ * Initializes the editor with a gear library, rack, and notes panel.
+ * Sets up the tabbed interface and configures drag and drop functionality.
+ *
+ * @param processor Reference to the associated AudioProcessor
+ * @param cacheManager Reference to the cache manager
+ * @param presetManager Reference to the preset manager
+ * @param disableAutoLoad Whether to disable auto-loading of the gear library (for testing)
+ */
+AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, CacheManager &cacheManager, PresetManager &presetManager, bool disableAutoLoad)
+    : AudioProcessorEditor(&processor),
+      processor(processor),
+      fileSystem(processor.getFileSystem()),
+      cacheManager(cacheManager),
+      presetManager(presetManager),
+      gearLibrary(processor.getGearLibrary()),
+      mainTabs(juce::TabbedButtonBar::TabsAtTop)
+{
+    // Set component IDs for debugging
+    setComponentID("AnalogIQEditor");
+
+    // Create our components
+    rack = std::make_unique<Rack>(processor.getNetworkFetcher(), fileSystem, cacheManager, presetManager, &gearLibrary);
+    notesPanel = std::make_unique<NotesPanel>();
+
+    // Set component IDs
+    gearLibrary.setComponentID("GearLibrary");
+    rack->setComponentID("RackTab");
+    notesPanel->setComponentID("NotesTab");
+
+    // Set up main window size
+    setSize(1200, 800);
+
+    // Set up tabs
+    mainTabs.setComponentID("MainTabs");
+
+    // Add tabs with components
+    mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
+    mainTabs.addTab("Notes", juce::Colours::darkgrey, notesPanel.get(), false);
+
+    mainTabs.setTabBarDepth(30);
+    mainTabs.setInterceptsMouseClicks(false, true);
+    addAndMakeVisible(mainTabs);
+
+    // Add gear library to left side
+    addAndMakeVisible(&gearLibrary);
 
     // Set up menu bar components
     menuBarContainer.setComponentID("MenuBarContainer");
@@ -153,7 +215,7 @@ void AnalogIQEditor::resized()
 
     // Left side: Gear library (1/4 of the remaining width)
     auto libraryArea = area.removeFromLeft(area.getWidth() / 4);
-    gearLibrary->setBounds(libraryArea);
+    gearLibrary.setBounds(libraryArea);
 
     // Remaining area: Tabs containing Rack and Notes
     mainTabs.setBounds(area);
@@ -175,7 +237,6 @@ void AnalogIQEditor::showPresetMenu()
                  { showLoadPresetDialog(); });
 
     // Add preset list if any exist
-    auto &presetManager = PresetManager::getInstance();
     auto presetNames = presetManager.getPresetNames();
 
     if (presetNames.size() > 0)
@@ -197,7 +258,6 @@ void AnalogIQEditor::showPresetMenu()
             menu.addItem(displayName, [this, i, presetNames]()
                          { 
                 juce::String presetName = presetNames[i];
-                auto &presetManager = PresetManager::getInstance();
                 handleLoadPreset(presetName); });
         }
     }
@@ -226,10 +286,9 @@ void AnalogIQEditor::showSavePresetDialog()
     if (nameEditor != nullptr)
     {
         // Add validation on text change
-        nameEditor->onTextChange = [dialog, nameEditor]()
+        nameEditor->onTextChange = [this, dialog, nameEditor]()
         {
             juce::String presetName = nameEditor->getText().trim();
-            auto &presetManager = PresetManager::getInstance();
 
             // Validate the name
             juce::String validationError;
@@ -265,7 +324,6 @@ void AnalogIQEditor::showSavePresetDialog()
             if (presetName.isNotEmpty())
             {
                 // Final validation before saving
-                auto &presetManager = PresetManager::getInstance();
                 juce::String validationError;
                 if (!presetManager.validatePresetName(presetName, validationError))
                 {
@@ -295,7 +353,6 @@ void AnalogIQEditor::showSavePresetDialog()
 
 void AnalogIQEditor::showLoadPresetDialog()
 {
-    auto &presetManager = PresetManager::getInstance();
     auto presetNames = presetManager.getPresetNames();
 
     if (presetNames.size() == 0)
@@ -340,7 +397,6 @@ void AnalogIQEditor::showLoadPresetDialog()
                 int selectedIndex = presetCombo->getSelectedItemIndex();
                 if (selectedIndex >= 0)
                 {
-                    auto &presetManager = PresetManager::getInstance();
                     auto presetNames = presetManager.getPresetNames();
                     juce::String presetName = presetNames[selectedIndex];
                     
@@ -354,7 +410,6 @@ void AnalogIQEditor::showLoadPresetDialog()
 
 void AnalogIQEditor::showDeletePresetDialog()
 {
-    auto &presetManager = PresetManager::getInstance();
     auto presetNames = presetManager.getPresetNames();
 
     if (presetNames.size() == 0)
@@ -399,7 +454,6 @@ void AnalogIQEditor::showDeletePresetDialog()
                 int selectedIndex = presetCombo->getSelectedItemIndex();
                 if (selectedIndex >= 0)
                 {
-                    auto &presetManager = PresetManager::getInstance();
                     auto presetNames = presetManager.getPresetNames();
                     juce::String presetName = presetNames[selectedIndex];
                     
@@ -428,7 +482,6 @@ void AnalogIQEditor::showDeletePresetDialog()
 
 void AnalogIQEditor::handleSavePreset(const juce::String &presetName)
 {
-    auto &presetManager = PresetManager::getInstance();
     if (presetManager.savePreset(presetName, rack.get()))
     {
         juce::Logger::writeToLog("Preset saved: " + presetName);
@@ -497,7 +550,6 @@ void AnalogIQEditor::handleLoadPreset(const juce::String &presetName)
 
 void AnalogIQEditor::handleDeletePreset(const juce::String &presetName)
 {
-    auto &presetManager = PresetManager::getInstance();
     if (presetManager.deletePreset(presetName))
     {
         juce::Logger::writeToLog("Preset deleted: " + presetName);
@@ -558,8 +610,7 @@ void AnalogIQEditor::clearModifiedState()
 
 void AnalogIQEditor::performLoadPreset(const juce::String &presetName)
 {
-    auto &presetManager = PresetManager::getInstance();
-    if (presetManager.loadPreset(presetName, rack.get(), gearLibrary.get()))
+    if (presetManager.loadPreset(presetName, rack.get(), &gearLibrary))
     {
         juce::Logger::writeToLog("Preset loaded: " + presetName);
         currentPresetName = presetName;

@@ -1,5 +1,5 @@
 /**
- * @file PluginProcessor.cpp
+ * @file AnalogIQProcessor.cpp
  * @brief Implementation of the AnalogIQProcessor class.
  *
  * This file implements the audio processor for the AnalogIQ plugin,
@@ -8,8 +8,8 @@
  * the editor interface and the audio processing system.
  */
 
-#include "PluginProcessor.h"
-#include "PluginEditor.h"
+#include "AnalogIQProcessor.h"
+#include "AnalogIQEditor.h"
 #include "CacheManager.h"
 
 /**
@@ -19,15 +19,18 @@
  * and sets up the state management system.
  *
  * @param networkFetcher Reference to the network fetcher to use
+ * @param fileSystem Reference to the file system to use
  */
-AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &networkFetcher)
+AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &networkFetcher, IFileSystem &fileSystem)
     : AudioProcessor(BusesProperties()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       state(*this, &undoManager, "Parameters", {}),
       networkFetcher(networkFetcher),
-      cacheManager(CacheManager::getInstance()),
-      presetManager(PresetManager::getInstance())
+      fileSystem(std::make_unique<FileSystem>()),
+      cacheManager(std::make_unique<CacheManager>(*this->fileSystem)),
+      presetManager(std::make_unique<PresetManager>(*this->fileSystem, *cacheManager)),
+      gearLibrary(std::make_unique<GearLibrary>(networkFetcher, *this->fileSystem, *cacheManager, *presetManager))
 {
 }
 
@@ -210,7 +213,7 @@ bool AnalogIQProcessor::hasEditor() const
  */
 juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
-    auto *editor = new AnalogIQEditor(*this, cacheManager, presetManager);
+    auto *editor = new AnalogIQEditor(*this, *fileSystem, *cacheManager, *presetManager, *gearLibrary);
     lastCreatedEditor = editor;
     if (auto *rackEditor = dynamic_cast<AnalogIQEditor *>(editor))
     {
@@ -353,21 +356,21 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                     // stored in the instanceTree?
                     // Use the file system from the cache manager instead of creating a new one
                     GearItem *item = new GearItem(
-                        sourceUnitId,                 // unitId
-                        "Test EQ",                    // name
-                        "Test Co",                    // manufacturer
-                        "equalizer",                  // categoryString
-                        "1.0",                        // version
-                        "",                           // schemaPath
-                        "",                           // thumbnailImage
-                        juce::StringArray(),          // tags
-                        networkFetcher,               // networkFetcher (required)
-                        cacheManager.getFileSystem(), // fileSystem (required) - use cache manager's file system
-                        cacheManager,                 // cacheManager (required)
-                        GearType::Series500,          // type
-                        GearCategory::EQ,             // category
-                        1,                            // slotSize
-                        juce::Array<GearControl>()    // controls
+                        sourceUnitId,              // unitId
+                        "Test EQ",                 // name
+                        "Test Co",                 // manufacturer
+                        "equalizer",               // categoryString
+                        "1.0",                     // version
+                        "",                        // schemaPath
+                        "",                        // thumbnailImage
+                        juce::StringArray(),       // tags
+                        networkFetcher,            // networkFetcher (required)
+                        *fileSystem,               // fileSystem (required)
+                        *cacheManager,             // cacheManager (required)
+                        GearType::Series500,       // type
+                        GearCategory::EQ,          // category
+                        1,                         // slotSize
+                        juce::Array<GearControl>() // controls
                     );
 
                     // Add controls to match the saved state
@@ -484,5 +487,6 @@ void AnalogIQProcessor::resetAllInstances()
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
     static NetworkFetcher networkFetcher;
-    return new AnalogIQProcessor(networkFetcher);
+    static FileSystem fileSystem;
+    return new AnalogIQProcessor(networkFetcher, fileSystem);
 }

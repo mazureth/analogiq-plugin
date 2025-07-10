@@ -102,10 +102,9 @@ public:
         mockFetcher.reset();
         mockFileSystem.reset();
 
-        // Reset singletons to use mock file system
-        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
-        CacheManager &cacheManager = CacheManager::getInstance();
-        PresetManager::resetInstance(mockFileSystem, cacheManager);
+        // Create local instances with proper dependency injection
+        CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
+        PresetManager presetManager(mockFileSystem, cacheManager);
 
         beginTest("Construction");
         {
@@ -137,7 +136,6 @@ public:
             gain.image = "assets/controls/knobs/bakelite-lg-black.png";
             controls.add(gain);
 
-            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
             GearItem item("la2a-compressor",
                           "LA-2A Tube Compressor",
                           "Universal Audio",
@@ -174,7 +172,6 @@ public:
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
 
-            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
             GearItem item("la2a-compressor",
                           "LA-2A Tube Compressor",
                           "Universal Audio",
@@ -214,7 +211,6 @@ public:
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
 
-            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
             GearItem item("la2a-compressor",
                           "LA-2A Tube Compressor",
                           "Universal Audio",
@@ -245,7 +241,6 @@ public:
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
 
-            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
             GearItem item("la2a-compressor",
                           "LA-2A Tube Compressor",
                           "Universal Audio",

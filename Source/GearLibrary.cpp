@@ -93,8 +93,8 @@ private:
  * Initializes the UI components including the title label, search box,
  * refresh button, add user gear button, and both list and tree views.
  */
-GearLibrary::GearLibrary(INetworkFetcher &networkFetcher, CacheManager &cacheManager, IFileSystem &fileSystem, bool autoLoad)
-    : fetcher(networkFetcher), cacheManager(cacheManager), fileSystem(fileSystem)
+GearLibrary::GearLibrary(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager)
+    : networkFetcher(networkFetcher), fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager)
 {
     // Set up title label
     titleLabel.setFont(juce::Font(18.0f, juce::Font::bold));
@@ -155,11 +155,8 @@ GearLibrary::GearLibrary(INetworkFetcher &networkFetcher, CacheManager &cacheMan
 
     addAndMakeVisible(gearTreeView.get());
 
-    // Load initial data only if autoLoad is true
-    if (autoLoad)
-    {
-        loadLibraryAsync();
-    }
+    // Don't load initial data automatically - let the plugin load it when ready
+    // loadLibraryAsync();
 }
 
 /**
@@ -604,20 +601,106 @@ void GearLibrary::refreshRecentlyUsedSection()
 {
     if (rootItem && gearTreeView)
     {
+        // Debug: Check what's in the cache
+        juce::StringArray recentlyUsed = cacheManager.getRecentlyUsed();
+        juce::Logger::writeToLog("refreshRecentlyUsedSection: Found " + juce::String(recentlyUsed.size()) + " recently used items");
+        for (const auto &unitId : recentlyUsed)
+        {
+            juce::Logger::writeToLog("  - " + unitId);
+        }
+
         // Find the Recently Used item in the tree
+        GearTreeItem *recentlyUsedItem = nullptr;
         for (int i = 0; i < rootItem->getNumSubItems(); ++i)
         {
-            if (auto recentlyUsedItem = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
+            if (auto item = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
             {
-                if (recentlyUsedItem->getItemText() == "Recently Used")
+                if (item->getItemText() == "Recently Used")
                 {
-                    // Refresh only the recently used section
-                    recentlyUsedItem->refreshSubItems();
-                    gearTreeView->repaint();
+                    recentlyUsedItem = item;
+                    juce::Logger::writeToLog("Found existing Recently Used section");
                     break;
                 }
             }
         }
+
+        // If Recently Used section doesn't exist, create it
+        if (recentlyUsedItem == nullptr)
+        {
+            juce::Logger::writeToLog("Recently Used section doesn't exist, creating it");
+
+            // Get recently used items from cache
+            juce::Array<GearItem *> matchingRecentlyUsed;
+
+            // Find matching items in our gear library
+            for (auto &item : gearItems)
+            {
+                if (recentlyUsed.contains(item.unitId))
+                {
+                    matchingRecentlyUsed.add(&item);
+                    juce::Logger::writeToLog("  - Found matching item: " + item.name);
+                }
+            }
+
+            // Only create the section if there are recently used items
+            if (matchingRecentlyUsed.size() > 0)
+            {
+                recentlyUsedItem = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", this, &cacheManager);
+                rootItem->addSubItem(recentlyUsedItem);
+
+                // Add the recently used items to the section
+                for (auto *item : matchingRecentlyUsed)
+                {
+                    // Find the index of this item in the original array
+                    int itemIndex = -1;
+                    for (int i = 0; i < gearItems.size(); ++i)
+                    {
+                        if (&gearItems.getReference(i) == item)
+                        {
+                            itemIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (itemIndex >= 0)
+                    {
+                        recentlyUsedItem->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
+                        juce::Logger::writeToLog("  - Added item to tree: " + item->name);
+                    }
+                }
+                recentlyUsedItem->setOpen(true);
+            }
+            else
+            {
+                juce::Logger::writeToLog("No matching items found in gear library");
+            }
+        }
+        else
+        {
+            juce::Logger::writeToLog("Recently Used section exists, refreshing it");
+
+            // Clear existing sub-items and rebuild the Recently Used section
+            recentlyUsedItem->clearSubItems();
+
+            // Add each recently used item
+            for (const auto &unitId : recentlyUsed)
+            {
+                // Find the gear item in the library
+                for (int i = 0; i < gearItems.size(); ++i)
+                {
+                    const auto &item = gearItems.getReference(i);
+                    if (item.unitId == unitId)
+                    {
+                        recentlyUsedItem->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item.name, this, &cacheManager,
+                                                                      const_cast<GearItem *>(&item), i));
+                        juce::Logger::writeToLog("  - Added item to existing section: " + item.name);
+                        break;
+                    }
+                }
+            }
+        }
+
+        gearTreeView->repaint();
     }
 }
 
@@ -643,20 +726,233 @@ void GearLibrary::refreshFavoritesSection()
 {
     if (rootItem && gearTreeView)
     {
-        // Find the Favorites item in the tree
+        // Get favorites from cache
+        juce::StringArray favorites = cacheManager.getFavorites();
+        juce::Logger::writeToLog("refreshFavoritesSection: Found " + juce::String(favorites.size()) + " favorite items");
+        for (const auto &unitId : favorites)
+        {
+            juce::Logger::writeToLog("  - " + unitId);
+        }
+
+        // Find the My Gear item in the tree
+        GearTreeItem *favoritesItem = nullptr;
         for (int i = 0; i < rootItem->getNumSubItems(); ++i)
         {
-            if (auto favoritesItem = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
+            if (auto item = dynamic_cast<GearTreeItem *>(rootItem->getSubItem(i)))
             {
-                if (favoritesItem->getItemText() == "My Gear")
+                if (item->getItemText() == "My Gear")
                 {
-                    // Refresh only the favorites section
-                    favoritesItem->refreshSubItems();
-                    gearTreeView->repaint();
+                    favoritesItem = item;
+                    juce::Logger::writeToLog("Found existing My Gear section");
                     break;
                 }
             }
         }
+
+        // If My Gear section doesn't exist, create it
+        if (favoritesItem == nullptr)
+        {
+            juce::Logger::writeToLog("My Gear section doesn't exist, creating it");
+
+            // Find matching items in our gear library
+            juce::Array<GearItem *> matchingFavorites;
+
+            for (auto &item : gearItems)
+            {
+                if (favorites.contains(item.unitId))
+                {
+                    matchingFavorites.add(&item);
+                    juce::Logger::writeToLog("  - Found matching item: " + item.name);
+                }
+            }
+
+            // Create the section even if it's empty (like Recently Used)
+            favoritesItem = new GearTreeItem(GearTreeItem::ItemType::Favorites, "My Gear", this, &cacheManager);
+            rootItem->addSubItem(favoritesItem);
+
+            // Add items if we have any
+            if (matchingFavorites.size() > 0)
+            {
+                // Group matching favorites by category
+                juce::HashMap<juce::String, juce::Array<GearItem *>> favoriteCategoryGroups;
+
+                for (auto *item : matchingFavorites)
+                {
+                    // Get the category string or derive it from the enum
+                    juce::String category;
+                    if (!item->categoryString.isEmpty())
+                    {
+                        category = item->categoryString.toLowerCase();
+                    }
+                    else
+                    {
+                        // Fallback to enum if string is empty
+                        switch (item->category)
+                        {
+                        case GearCategory::EQ:
+                            category = "equalizer";
+                            break;
+                        case GearCategory::Compressor:
+                            category = "compressor";
+                            break;
+                        case GearCategory::Preamp:
+                            category = "preamp";
+                            break;
+                        case GearCategory::Other:
+                            category = "other";
+                            break;
+                        }
+                    }
+
+                    if (!favoriteCategoryGroups.contains(category))
+                        favoriteCategoryGroups.set(category, juce::Array<GearItem *>());
+
+                    favoriteCategoryGroups.getReference(category).add(item);
+                }
+
+                // Add category groups as sub-items
+                for (auto it = favoriteCategoryGroups.begin(); it != favoriteCategoryGroups.end(); ++it)
+                {
+                    juce::String categoryName = it.getKey();
+                    juce::String displayName = categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1);
+
+                    auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this, &cacheManager);
+                    favoritesItem->addSubItem(categoryNode);
+
+                    // Add gear items to this category group
+                    for (auto *item : it.getValue())
+                    {
+                        // Find the index of this item in the original array
+                        int itemIndex = -1;
+                        for (int i = 0; i < gearItems.size(); ++i)
+                        {
+                            if (&gearItems.getReference(i) == item)
+                            {
+                                itemIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (itemIndex >= 0)
+                        {
+                            categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
+                            juce::Logger::writeToLog("  - Added item to tree: " + item->name);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                juce::Logger::writeToLog("No matching items found in gear library");
+            }
+            favoritesItem->setOpen(true);
+        }
+        else
+        {
+            juce::Logger::writeToLog("My Gear section exists, refreshing it");
+
+            // Capture the current tree state before clearing
+            juce::HashMap<juce::String, bool> categoryExpansionState;
+
+            for (int i = 0; i < favoritesItem->getNumSubItems(); ++i)
+            {
+                if (auto categoryItem = dynamic_cast<GearTreeItem *>(favoritesItem->getSubItem(i)))
+                {
+                    juce::String categoryName = categoryItem->getItemText();
+                    categoryExpansionState.set(categoryName, categoryItem->getOpenness());
+                    juce::Logger::writeToLog("Captured expansion state for category: " + categoryName + " = " + (categoryItem->getOpenness() ? "open" : "closed"));
+                }
+            }
+
+            // Clear existing sub-items and rebuild the My Gear section
+            favoritesItem->clearSubItems();
+
+            // Group favorites by category
+            juce::HashMap<juce::String, juce::Array<GearItem *>> favoriteCategoryGroups;
+
+            for (const auto &unitId : favorites)
+            {
+                // Find the gear item in the library
+                for (int i = 0; i < gearItems.size(); ++i)
+                {
+                    const auto &item = gearItems.getReference(i);
+                    if (item.unitId == unitId)
+                    {
+                        // Get the category string or derive it from the enum
+                        juce::String category;
+                        if (!item.categoryString.isEmpty())
+                        {
+                            category = item.categoryString.toLowerCase();
+                        }
+                        else
+                        {
+                            // Fallback to enum if string is empty
+                            switch (item.category)
+                            {
+                            case GearCategory::EQ:
+                                category = "equalizer";
+                                break;
+                            case GearCategory::Compressor:
+                                category = "compressor";
+                                break;
+                            case GearCategory::Preamp:
+                                category = "preamp";
+                                break;
+                            case GearCategory::Other:
+                                category = "other";
+                                break;
+                            }
+                        }
+
+                        if (!favoriteCategoryGroups.contains(category))
+                            favoriteCategoryGroups.set(category, juce::Array<GearItem *>());
+
+                        favoriteCategoryGroups.getReference(category).add(const_cast<GearItem *>(&item));
+                        juce::Logger::writeToLog("  - Added item to existing section: " + item.name);
+                        break;
+                    }
+                }
+            }
+
+            // Add category groups as sub-items and restore their expansion state
+            for (auto it = favoriteCategoryGroups.begin(); it != favoriteCategoryGroups.end(); ++it)
+            {
+                juce::String categoryName = it.getKey();
+                juce::String displayName = categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1);
+
+                auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, displayName, this, &cacheManager);
+                favoritesItem->addSubItem(categoryNode);
+
+                // Add gear items to this category group
+                for (auto *item : it.getValue())
+                {
+                    // Find the index of this item in the original array
+                    int itemIndex = -1;
+                    for (int i = 0; i < gearItems.size(); ++i)
+                    {
+                        if (&gearItems.getReference(i) == item)
+                        {
+                            itemIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (itemIndex >= 0)
+                    {
+                        categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
+                    }
+                }
+
+                // Restore the expansion state for this category
+                if (categoryExpansionState.contains(displayName))
+                {
+                    juce::Logger::writeToLog("Restoring expansion state for category: " + displayName + " = " + (categoryExpansionState[displayName] ? "open" : "closed"));
+                    categoryNode->setOpenness(categoryExpansionState[displayName]);
+                }
+            }
+        }
+
+        gearTreeView->repaint();
     }
 }
 
@@ -777,7 +1073,7 @@ void GearLibrary::loadGearItemsAsync()
 
     // Use the injected network fetcher to get the data
     bool success = false;
-    juce::String jsonData = fetcher.fetchJsonBlocking(url, success);
+    juce::String jsonData = networkFetcher.fetchJsonBlocking(url, success);
 
     if (success && jsonData.isNotEmpty())
     {
@@ -864,7 +1160,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 }
 
                 GearItem item(unitId, name, manufacturer, category, version, schemaPath,
-                              thumbnailImage, tags, fetcher, fileSystem, cacheManager, GearType::Other, GearCategory::Other,
+                              thumbnailImage, tags, networkFetcher, fileSystem, cacheManager, GearType::Other, GearCategory::Other,
                               slotSize, controls);
 
                 // If thumbnailImage is provided, try to load the image
@@ -924,7 +1220,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 juce::Array<GearControl> controls;
 
                 // Create gear item using the legacy constructor
-                GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls, fetcher, fileSystem, cacheManager);
+                GearItem item(name, manufacturer, type, category, slotSize, thumbnailUrl, controls, networkFetcher, fileSystem, cacheManager);
 
                 // If thumbnailUrl is provided, try to load the image
                 if (thumbnailUrl.isNotEmpty())
@@ -940,7 +1236,15 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
 
     // Update the tree view if we have a root item
     if (rootItem != nullptr)
+    {
         rootItem->refreshSubItems();
+
+        // Refresh the recently used section to ensure it's populated on startup
+        refreshRecentlyUsedSection();
+
+        // Refresh the favorites section to ensure it's populated on startup
+        refreshFavoritesSection();
+    }
 }
 
 /**
@@ -1013,7 +1317,7 @@ void GearLibrary::addItem(const juce::String &name, const juce::String &category
     juce::Array<GearControl> controls;
 
     // Add the new item to the list
-    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls, fetcher, fileSystem, cacheManager));
+    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls, networkFetcher, fileSystem, cacheManager));
 
     // Update the UI
     if (rootItem != nullptr)

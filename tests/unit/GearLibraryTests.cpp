@@ -17,9 +17,8 @@ public:
         auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
         mockFetcher.reset();
         mockFileSystem.reset();
-        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
-        CacheManager &cacheManager = CacheManager::getInstance();
-        PresetManager::resetInstance(mockFileSystem, cacheManager);
+        CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
+        PresetManager presetManager(mockFileSystem, cacheManager);
 
         beginTest("Constructor");
         {
@@ -129,7 +128,7 @@ public:
                     ]
                 })");
 
-            GearLibrary library(mockFetcher, cacheManager, mockFileSystem);
+            GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             expectEquals(library.getItems().size(), 1, "Library should have one item after loading");
 
             // Verify image was loaded
@@ -144,7 +143,7 @@ public:
 
         beginTest("Adding Items");
         {
-            GearLibrary library(mockFetcher, cacheManager, mockFileSystem);
+            GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.addItem("Test Gear 2", "EQ", "A test gear item", "Test Co 2");
             expectEquals(library.getItems().size(), 2, "Library should have exactly one item after adding");
             expectEquals(library.getItems()[0].name, juce::String("LA-2A Tube Compressor"), "Default Item name should match");
@@ -157,7 +156,7 @@ public:
 
         beginTest("Item Retrieval");
         {
-            GearLibrary library(mockFetcher, cacheManager, mockFileSystem);
+            GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.addItem("Test Gear", "Preamp", "A test gear item", "Test Co");
             auto *item = library.getGearItem(1);
             expect(item != nullptr);
@@ -198,7 +197,7 @@ public:
                     ]
                 })");
 
-            GearLibrary library(mockFetcher, cacheManager, mockFileSystem);
+            GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.loadLibraryAsync();
 
             expectEquals(library.getItems().size(), 1, "Library should have one item after loading");
@@ -209,7 +208,7 @@ public:
         {
             mockFetcher.setError("https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json");
 
-            GearLibrary library(mockFetcher, cacheManager, mockFileSystem);
+            GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.loadLibraryAsync();
 
             // Wait for async operation to complete
@@ -226,7 +225,7 @@ public:
         {
             // Create a gear library
             auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
-            GearLibrary library(mockFetcher, cacheManager, mockFileSystem, false);
+            GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
 
             // Add some test items
             library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
@@ -237,23 +236,22 @@ public:
             expectEquals(items.size(), 2, "Should have 2 items");
 
             // Add items to recently used
-            CacheManager &cache = CacheManager::getInstance();
-            cache.addToRecentlyUsed(items[0].unitId);
-            cache.addToRecentlyUsed(items[1].unitId);
+            cacheManager.addToRecentlyUsed(items[0].unitId);
+            cacheManager.addToRecentlyUsed(items[1].unitId);
 
             // Refresh the tree view
             library.refreshTreeView();
 
             // Test clearing recently used
             library.clearRecentlyUsed();
-            expectEquals(cache.getRecentlyUsed().size(), 0, "Recently used should be cleared");
+            expectEquals(cacheManager.getRecentlyUsed().size(), 0, "Recently used should be cleared");
         }
 
         beginTest("Favorites Functionality");
         {
             // Create a gear library
             auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
-            GearLibrary library(mockFetcher, cacheManager, mockFileSystem, false);
+            GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
 
             // Add some test items
             library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
@@ -264,16 +262,15 @@ public:
             expectEquals(items.size(), 2, "Should have 2 items");
 
             // Add items to favorites
-            CacheManager &cache = CacheManager::getInstance();
-            cache.addToFavorites(items[0].unitId);
-            cache.addToFavorites(items[1].unitId);
+            cacheManager.addToFavorites(items[0].unitId);
+            cacheManager.addToFavorites(items[1].unitId);
 
             // Refresh the tree view
             library.refreshTreeView();
 
             // Test clearing favorites
             library.clearFavorites();
-            expectEquals(cache.getFavorites().size(), 0, "Favorites should be cleared");
+            expectEquals(cacheManager.getFavorites().size(), 0, "Favorites should be cleared");
         }
     }
 };

@@ -1,6 +1,9 @@
 #include "FileSystem.h"
 #include <JuceHeader.h>
 
+// Cache directory name constant
+static const juce::String ANALOGIQ_CACHE_DIR = "AnalogiqCache";
+
 bool FileSystem::createDirectory(const juce::String &path)
 {
     juce::File file(path);
@@ -141,6 +144,14 @@ juce::String FileSystem::normalizePath(const juce::String &path)
     return file.getFullPathName();
 }
 
+juce::String FileSystem::getCacheRootDirectory()
+{
+    // Use OS-agnostic JUCE approach for user application data directory
+    juce::File userDataDir = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory);
+    juce::File cacheRoot = userDataDir.getChildFile(ANALOGIQ_CACHE_DIR);
+    return cacheRoot.getFullPathName();
+}
+
 // Null Object Pattern: DummyFileSystem implementation
 class DummyFileSystem : public IFileSystem
 {
@@ -164,6 +175,7 @@ public:
     juce::String joinPath(const juce::String &, const juce::String &) override { return {}; }
     bool isAbsolutePath(const juce::String &) override { return false; }
     juce::String normalizePath(const juce::String &) override { return {}; }
+    juce::String getCacheRootDirectory() override { return {}; }
 };
 
 IFileSystem &IFileSystem::getDummy()

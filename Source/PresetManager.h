@@ -30,19 +30,12 @@ class PresetManager
 {
 public:
     /**
-     * @brief Gets the singleton instance of PresetManager.
+     * @brief Constructor for PresetManager.
      *
-     * @return Reference to the PresetManager instance
+     * @param fileSystem Reference to the file system implementation
+     * @param cacheManager Reference to the cache manager implementation
      */
-    static PresetManager &getInstance();
-
-    /**
-     * @brief Resets the singleton instance with a new file system (for testing).
-     *
-     * @param fileSystem The file system implementation to use
-     * @param cacheManager The cache manager implementation to use
-     */
-    static void resetInstance(IFileSystem &fileSystem, CacheManager &cacheManager);
+    PresetManager(IFileSystem &fileSystem, CacheManager &cacheManager);
 
     /**
      * @brief Destructor.
@@ -185,12 +178,6 @@ public:
      * @return A JSON object with preset details, or empty var if preset doesn't exist
      */
     juce::var getPresetInfo(const juce::String &name, juce::String &errorMessage) const;
-
-public:
-    /**
-     * @brief Constructor for PresetManager.
-     */
-    PresetManager(IFileSystem &fileSystem = FileSystem::getDummy(), CacheManager &cacheManager = CacheManager::getInstance());
 
 private:
     mutable juce::String lastErrorMessage; ///< Stores the last error message

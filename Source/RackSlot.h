@@ -15,6 +15,8 @@
 
 // Forward declaration
 class Rack;
+class PresetManager;
+class GearLibrary;
 
 /**
  * @class RackSlot
@@ -35,7 +37,7 @@ public:
      *
      * @param slotIndex The index of this slot in the rack
      */
-    RackSlot(int slotIndex);
+    RackSlot(IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary &gearLibrary);
 
     /**
      * @brief Destructor for the RackSlot class.
@@ -324,6 +326,11 @@ private:
     std::unique_ptr<juce::DrawableButton> upButton;     ///< Button for moving item up
     std::unique_ptr<juce::DrawableButton> downButton;   ///< Button for moving item down
     std::unique_ptr<juce::DrawableButton> removeButton; ///< Button for removing item
+
+    IFileSystem &fileSystem;
+    CacheManager &cacheManager;
+    PresetManager &presetManager;
+    GearLibrary &gearLibrary;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RackSlot)
 };

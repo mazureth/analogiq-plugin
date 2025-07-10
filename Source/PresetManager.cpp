@@ -18,58 +18,10 @@
 #include <juce_data_structures/juce_data_structures.h>
 
 /**
- * @brief Gets the singleton instance of PresetManager.
- *
- * @return Reference to the PresetManager instance
- */
-static PresetManager *testInstance = nullptr;
-static bool isTestMode = false;
-
-PresetManager &PresetManager::getInstance()
-{
-    // If we have a test instance, use it
-    if (testInstance != nullptr)
-    {
-        return *testInstance;
-    }
-
-    // In test mode, this should not be called directly
-    // Tests should use resetInstance() to set up the instance
-    if (isTestMode)
-    {
-        // Return a dummy instance for test mode that doesn't use real file system
-        static CacheManager dummyCacheManager(IFileSystem::getDummy(), "");
-        static PresetManager dummyInstance(IFileSystem::getDummy(), dummyCacheManager);
-        return dummyInstance;
-    }
-
-    // Otherwise use the production instance
-    static PresetManager *instance = nullptr;
-    if (instance == nullptr)
-    {
-        static FileSystem realFileSystem;
-        static CacheManager realCacheManager(realFileSystem);
-        instance = new PresetManager(realFileSystem, realCacheManager);
-    }
-    return *instance;
-}
-
-void PresetManager::resetInstance(IFileSystem &fileSystem, CacheManager &cacheManager)
-{
-    // This is a simplified implementation for testing
-    // In a production environment, you might want to use a more sophisticated approach
-    if (testInstance != nullptr)
-    {
-        delete testInstance;
-    }
-    testInstance = new PresetManager(fileSystem, cacheManager);
-    isTestMode = true;
-}
-
-/**
  * @brief Constructor for PresetManager.
  *
  * @param fileSystem Reference to the file system implementation
+ * @param cacheManager Reference to the cache manager implementation
  */
 PresetManager::PresetManager(IFileSystem &fileSystem, CacheManager &cacheManager)
     : fileSystem(fileSystem), cacheManager(cacheManager)
@@ -83,8 +35,9 @@ PresetManager::PresetManager(IFileSystem &fileSystem, CacheManager &cacheManager
  */
 juce::String PresetManager::getPresetsDirectory() const
 {
-    juce::String userDataDir = fileSystem.normalizePath("~/Library/Application Support");
-    return fileSystem.joinPath(fileSystem.joinPath(userDataDir, "AnalogiqCache"), "presets");
+    // Use OS-agnostic approach through the injected fileSystem
+    juce::String cacheRoot = fileSystem.getCacheRootDirectory();
+    return fileSystem.joinPath(cacheRoot, "presets");
 }
 
 /**
@@ -96,8 +49,18 @@ juce::String PresetManager::getPresetsDirectory() const
  */
 bool PresetManager::initializePresetsDirectory() const
 {
-    auto presetsDir = getPresetsDirectory();
-    return fileSystem.createDirectory(presetsDir);
+    // Use OS-agnostic approach through the injected fileSystem
+    juce::String cacheRoot = fileSystem.getCacheRootDirectory();
+    juce::String presetsDir = fileSystem.joinPath(cacheRoot, "presets");
+
+    // Create directories if they don't exist
+    if (!fileSystem.directoryExists(cacheRoot))
+        fileSystem.createDirectory(cacheRoot);
+
+    if (!fileSystem.directoryExists(presetsDir))
+        fileSystem.createDirectory(presetsDir);
+
+    return fileSystem.directoryExists(presetsDir);
 }
 
 /**
@@ -161,7 +124,10 @@ bool PresetManager::isValidPresetName(const juce::String &name) const
  */
 juce::String PresetManager::getPresetFile(const juce::String &name) const
 {
-    return fileSystem.joinPath(getPresetsDirectory(), nameToFilename(name));
+    // Use OS-agnostic approach through the injected fileSystem
+    juce::String cacheRoot = fileSystem.getCacheRootDirectory();
+    juce::String presetsDir = fileSystem.joinPath(cacheRoot, "presets");
+    return fileSystem.joinPath(presetsDir, nameToFilename(name));
 }
 
 /**
@@ -481,6 +447,12 @@ bool PresetManager::loadPreset(const juce::String &name, Rack *rack, GearLibrary
 
     // Load JSON data
     auto presetFile = getPresetFile(name);
+    if (!fileSystem.fileExists(presetFile))
+    {
+        lastErrorMessage = "Preset file does not exist.";
+        return false;
+    }
+
     juce::String jsonData = fileSystem.readFile(presetFile);
     if (jsonData.isEmpty())
     {
@@ -539,7 +511,10 @@ bool PresetManager::deletePreset(const juce::String &name)
 juce::StringArray PresetManager::getPresetNames() const
 {
     juce::StringArray names;
-    auto presetsDir = getPresetsDirectory();
+
+    // Use OS-agnostic approach through the injected fileSystem
+    juce::String cacheRoot = fileSystem.getCacheRootDirectory();
+    juce::String presetsDir = fileSystem.joinPath(cacheRoot, "presets");
 
     if (fileSystem.directoryExists(presetsDir))
     {

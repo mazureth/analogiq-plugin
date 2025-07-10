@@ -18,8 +18,8 @@
  * Initializes the rack with a viewport and container, creates the specified number
  * of rack slots, and sets up drag-and-drop functionality.
  */
-Rack::Rack(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManager &cacheManager)
-    : networkFetcher(networkFetcher), fileSystem(fileSystem), cacheManager(cacheManager)
+Rack::Rack(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary *gearLibrary)
+    : networkFetcher(networkFetcher), fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary)
 {
     setComponentID("Rack");
 
@@ -35,7 +35,7 @@ Rack::Rack(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManage
     // Create rack slots
     for (int i = 0; i < numSlots; ++i)
     {
-        RackSlot *newSlot = new RackSlot(i);
+        RackSlot *newSlot = new RackSlot(fileSystem, cacheManager, presetManager, *gearLibrary);
         slots.add(newSlot);
         rackContainer->addAndMakeVisible(newSlot);
     }
@@ -460,10 +460,9 @@ void Rack::fetchSchemaForGearItem(GearItem *item, std::function<void()> onComple
     juce::String unitId = item->unitId;
 
     // Check cache first
-    CacheManager &cache = CacheManager::getInstance();
-    if (cache.isUnitCached(unitId))
+    if (cacheManager.isUnitCached(unitId))
     {
-        juce::String cachedSchema = cache.loadUnitFromCache(unitId);
+        juce::String cachedSchema = cacheManager.loadUnitFromCache(unitId);
         if (cachedSchema.isNotEmpty())
         {
             parseSchema(cachedSchema, item, onComplete);
@@ -871,10 +870,9 @@ void Rack::fetchFaceplateImage(GearItem *item)
     juce::String filename = fileSystem.getFileName(item->faceplateImagePath);
 
     // Check cache first
-    CacheManager &cache = CacheManager::getInstance();
-    if (cache.isFaceplateCached(item->unitId, filename))
+    if (cacheManager.isFaceplateCached(item->unitId, filename))
     {
-        juce::Image cachedImage = cache.loadFaceplateFromCache(item->unitId, filename);
+        juce::Image cachedImage = cacheManager.loadFaceplateFromCache(item->unitId, filename);
         if (cachedImage.isValid())
         {
             item->faceplateImage = cachedImage;
@@ -1107,10 +1105,9 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
     }
 
     // Check cache first
-    CacheManager &cache = CacheManager::getInstance();
-    if (cache.isControlAssetCached(control.image))
+    if (cacheManager.isControlAssetCached(control.image))
     {
-        juce::Image cachedImage = cache.loadControlAssetFromCache(control.image);
+        juce::Image cachedImage = cacheManager.loadControlAssetFromCache(control.image);
         if (cachedImage.isValid())
         {
             control.loadedImage = cachedImage;
@@ -1339,10 +1336,9 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
     }
 
     // Check cache first
-    CacheManager &cache = CacheManager::getInstance();
-    if (cache.isControlAssetCached(control.image))
+    if (cacheManager.isControlAssetCached(control.image))
     {
-        juce::Image cachedImage = cache.loadControlAssetFromCache(control.image);
+        juce::Image cachedImage = cacheManager.loadControlAssetFromCache(control.image);
         if (cachedImage.isValid())
         {
             control.faderImage = cachedImage;
@@ -1572,10 +1568,9 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
     }
 
     // Check cache first
-    CacheManager &cache = CacheManager::getInstance();
-    if (cache.isControlAssetCached(control.image))
+    if (cacheManager.isControlAssetCached(control.image))
     {
-        juce::Image cachedImage = cache.loadControlAssetFromCache(control.image);
+        juce::Image cachedImage = cacheManager.loadControlAssetFromCache(control.image);
         if (cachedImage.isValid())
         {
             control.switchSpriteSheet = cachedImage;
@@ -1805,10 +1800,9 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
     }
 
     // Check cache first
-    CacheManager &cache = CacheManager::getInstance();
-    if (cache.isControlAssetCached(control.image))
+    if (cacheManager.isControlAssetCached(control.image))
     {
-        juce::Image cachedImage = cache.loadControlAssetFromCache(control.image);
+        juce::Image cachedImage = cacheManager.loadControlAssetFromCache(control.image);
         if (cachedImage.isValid())
         {
             control.buttonSpriteSheet = cachedImage;

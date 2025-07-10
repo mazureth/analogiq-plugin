@@ -8,8 +8,8 @@
 
 #include <JuceHeader.h>
 #include "TestFixture.h"
-#include "PluginProcessor.h"
-#include "PluginEditor.h"
+#include "AnalogIQProcessor.h"
+#include "AnalogIQEditor.h"
 #include "PresetManager.h"
 #include "Rack.h"
 #include "GearLibrary.h"
@@ -156,9 +156,8 @@ public:
         mockFileSystem.reset();
 
         // Reset singletons to use mock file system
-        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
-        CacheManager &cacheManager = CacheManager::getInstance();
-        PresetManager::resetInstance(mockFileSystem, cacheManager);
+        CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
+        PresetManager presetManager(mockFileSystem, cacheManager);
 
         beginTest("Preset Save Workflow");
         {
@@ -166,10 +165,11 @@ public:
 
             // Create processor and editor in a scope to ensure proper cleanup
             {
-                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher);
-                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, PresetManager::getInstance(), true);
+                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher, mockFileSystem);
+                PresetManager presetManager(mockFileSystem, cacheManager);
+                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, presetManager, true);
 
-                auto &presetManager = PresetManager::getInstance();
+                auto &presetManagerRef = editor->getPresetManager();
                 auto *rack = editor->getRack();
                 auto *gearLibrary = editor->getGearLibrary();
 
@@ -228,11 +228,11 @@ public:
                 }
 
                 // Test saving preset
-                expect(presetManager.savePreset("Integration Test Preset", rack),
+                expect(presetManagerRef.savePreset("Integration Test Preset", rack),
                        "Should save preset successfully");
 
                 // Verify preset was saved
-                expect(presetManager.isPresetValid("Integration Test Preset"),
+                expect(presetManagerRef.isPresetValid("Integration Test Preset"),
                        "Saved preset should be valid");
             } // Editor and processor go out of scope here
         }
@@ -246,19 +246,20 @@ public:
 
             // Create processor and editor for loading in a scope to ensure proper cleanup
             {
-                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher);
-                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, PresetManager::getInstance(), true);
+                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher, mockFileSystem);
+                PresetManager presetManager(mockFileSystem, cacheManager);
+                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, presetManager, true);
                 auto *rack = editor->getRack();
                 auto *gearLibrary = editor->getGearLibrary();
 
-                auto &presetManager = PresetManager::getInstance();
+                auto &presetManagerRef = editor->getPresetManager();
 
                 // Manually add gear items to the library so they can be found during loading
                 gearLibrary->addItem("Test EQ", "equalizer", "Test Equalizer", "Test Manufacturer");
                 gearLibrary->addItem("Test Compressor", "compressor", "Test Compressor", "Test Manufacturer");
 
                 // Test loading preset
-                expect(presetManager.loadPreset("Integration Test Preset", rack, gearLibrary),
+                expect(presetManagerRef.loadPreset("Integration Test Preset", rack, gearLibrary),
                        "Should load preset successfully");
 
                 // Verify loaded preset
@@ -283,9 +284,9 @@ public:
                 }
 
                 // Test deleting preset
-                expect(presetManager.deletePreset("Integration Test Preset"),
+                expect(presetManagerRef.deletePreset("Integration Test Preset"),
                        "Should delete preset successfully");
-                expect(!presetManager.isPresetValid("Integration Test Preset"),
+                expect(!presetManagerRef.isPresetValid("Integration Test Preset"),
                        "Preset should not exist after deletion");
             } // Editor and processor go out of scope here
         }
@@ -299,8 +300,9 @@ public:
 
             // Test that the editor can be created and resized without errors
             {
-                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher);
-                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, PresetManager::getInstance(), true);
+                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher, mockFileSystem);
+                PresetManager presetManager(mockFileSystem, cacheManager);
+                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, presetManager, true);
 
                 // Test editor initialization
                 expect(editor != nullptr, "Editor should be created successfully");
@@ -311,8 +313,8 @@ public:
                 expect(true, "Editor should resize without errors");
 
                 // Test that preset manager is accessible through editor
-                auto &presetManager = editor->getPresetManager();
-                expect(&presetManager != nullptr, "Preset manager should be accessible through editor");
+                auto &editorPresetManager = editor->getPresetManager();
+                expect(&editorPresetManager != nullptr, "Preset manager should be accessible through editor");
 
                 // Test that rack and gear library are accessible through editor
                 auto *rack = editor->getRack();
@@ -330,29 +332,30 @@ public:
             setUpMocks(mockFetcher);
 
             {
-                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher);
-                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, PresetManager::getInstance(), true);
+                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher, mockFileSystem);
+                PresetManager presetManager(mockFileSystem, cacheManager);
+                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, presetManager, true);
 
-                auto &presetManager = PresetManager::getInstance();
+                auto &presetManagerRef = editor->getPresetManager();
                 auto *rack = editor->getRack();
                 auto *gearLibrary = editor->getGearLibrary();
 
                 // Test saving with invalid name
-                expect(!presetManager.savePreset("", rack),
+                expect(!presetManagerRef.savePreset("", rack),
                        "Saving with empty name should fail");
-                expect(!presetManager.getLastErrorMessage().isEmpty(),
+                expect(!presetManagerRef.getLastErrorMessage().isEmpty(),
                        "Error message should be set after failed save");
 
                 // Test loading non-existent preset
-                expect(!presetManager.loadPreset("NonExistentPreset", rack, gearLibrary),
+                expect(!presetManagerRef.loadPreset("NonExistentPreset", rack, gearLibrary),
                        "Loading non-existent preset should fail");
-                expect(!presetManager.getLastErrorMessage().isEmpty(),
+                expect(!presetManagerRef.getLastErrorMessage().isEmpty(),
                        "Error message should be set after failed load");
 
                 // Test deleting non-existent preset
-                expect(!presetManager.deletePreset("NonExistentPreset"),
+                expect(!presetManagerRef.deletePreset("NonExistentPreset"),
                        "Deleting non-existent preset should fail");
-                expect(!presetManager.getLastErrorMessage().isEmpty(),
+                expect(!presetManagerRef.getLastErrorMessage().isEmpty(),
                        "Error message should be set after failed delete");
             } // Editor and processor go out of scope here
         }
@@ -365,10 +368,11 @@ public:
             setUpMocks(mockFetcher);
 
             {
-                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher);
-                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, PresetManager::getInstance(), true);
+                auto processor = std::make_unique<AnalogIQProcessor>(mockFetcher, mockFileSystem);
+                PresetManager presetManager(mockFileSystem, cacheManager);
+                auto editor = std::make_unique<AnalogIQEditor>(*processor, cacheManager, presetManager, true);
 
-                auto &presetManager = PresetManager::getInstance();
+                auto &presetManagerRef = editor->getPresetManager();
                 auto *rack = editor->getRack();
                 auto *gearLibrary = editor->getGearLibrary();
 
@@ -414,7 +418,7 @@ public:
                     rack->createInstance(0);
                 }
 
-                expect(presetManager.savePreset("State Test Preset", rack),
+                expect(presetManagerRef.savePreset("State Test Preset", rack),
                        "Should save preset successfully");
 
                 // Clear the rack
@@ -445,7 +449,7 @@ public:
                 gearLibrary->addItem("Test Gear", "misc", "Test Gear", "Test Manufacturer");
 
                 // Load the preset
-                expect(presetManager.loadPreset("State Test Preset", rack, gearLibrary),
+                expect(presetManagerRef.loadPreset("State Test Preset", rack, gearLibrary),
                        "Should load preset successfully");
 
                 // Verify gear item was restored
@@ -455,7 +459,7 @@ public:
                 }
 
                 // Clean up
-                presetManager.deletePreset("State Test Preset");
+                presetManagerRef.deletePreset("State Test Preset");
             } // Editor and processor go out of scope here
         }
 

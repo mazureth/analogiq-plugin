@@ -105,24 +105,21 @@ public:
         mockFetcher.reset();
         mockFileSystem.reset();
 
-        // Reset singletons to use mock file system
-        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
-        CacheManager &cacheManager = CacheManager::getInstance();
-        PresetManager::resetInstance(mockFileSystem, cacheManager);
+        // Create local instances with proper dependency injection
+        CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
+        PresetManager presetManager(mockFileSystem, cacheManager);
 
         beginTest("Initial State");
         {
             setUpMocks(mockFetcher);
-            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
-            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
             expectEquals(rack.getNumSlots(), 16, "Rack should have 16 slots");
         }
 
         beginTest("Slot Management");
         {
             setUpMocks(mockFetcher);
-            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
-            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -183,8 +180,7 @@ public:
         beginTest("Instance Management");
         {
             setUpMocks(mockFetcher);
-            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
-            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -256,8 +252,7 @@ public:
         beginTest("Multiple Slots");
         {
             setUpMocks(mockFetcher);
-            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
-            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -353,8 +348,7 @@ public:
         beginTest("Preset Integration");
         {
             setUpMocks(mockFetcher);
-            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
-            Rack rack(mockFetcher, mockFileSystem, cacheManager);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
             // Test that the rack can load preset state
             auto *slot = rack.getSlot(0);

@@ -153,21 +153,6 @@ The preset system allows you to save and load complete rack configurations:
 ## Project Structure
 
 - `Source/` - All source files
-  - `PluginProcessor.*` - Core plugin functionality
-  - `PluginEditor.*` - Main UI components
+  - `AnalogIQProcessor.*` - Core plugin functionality
+  - `AnalogIQEditor.*` - Main UI components
   - `GearLibrary.*` - Gear browser and library management
-  - `GearItem.*` - Individual gear item representation
-  - `Rack.*` - Virtual rack system
-  - `RackSlot.*` - Individual rack slot
-  - `NotesPanel.*` - Session notes functionality
-  - `PresetManager.*` - Preset save/load/delete functionality
-- `Assets/` - Images and other resources
-- `CMakeLists.txt` - CMake build configuration
-
-## Contributing
-
-Contributions to AnalogIQ are welcome! Please feel free to submit pull requests, create issues or contact the maintainers.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details. 

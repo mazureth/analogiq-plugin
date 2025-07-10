@@ -33,4 +33,5 @@ public:
     juce::String joinPath(const juce::String &path1, const juce::String &path2) override;
     bool isAbsolutePath(const juce::String &path) override;
     juce::String normalizePath(const juce::String &path) override;
+    juce::String getCacheRootDirectory() override;
 };

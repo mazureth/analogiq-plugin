@@ -474,6 +474,11 @@ public:
         return normalizePathHelper(path);
     }
 
+    // Mock cache root directory (configurable for tests)
+    juce::String mockCacheRoot = "/tmp/AnalogiqCacheMock";
+    juce::String getCacheRootDirectory() override { return mockCacheRoot; }
+    void setMockCacheRootDirectory(const juce::String &path) { mockCacheRoot = path; }
+
 private:
     ConcreteMockFileSystem() = default; // Private constructor for singleton
 

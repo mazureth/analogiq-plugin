@@ -103,22 +103,22 @@ public:
         mockFetcher.reset();
         mockFileSystem.reset();
 
-        // Reset singletons to use mock file system
-        CacheManager::resetInstance(mockFileSystem, "/mock/cache/root");
-        CacheManager &cacheManager = CacheManager::getInstance();
-        PresetManager::resetInstance(mockFileSystem, cacheManager);
+        // Create local instances with proper dependency injection
+        CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
+        PresetManager presetManager(mockFileSystem, cacheManager);
+        GearLibrary gearLibrary(mockFetcher, mockFileSystem, cacheManager, presetManager);
 
         beginTest("Initial State");
         {
             setUpMocks(mockFetcher);
-            RackSlot slot(0);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
             expect(slot.isAvailable(), "Slot should be available");
         }
 
         beginTest("Gear Item Management");
         {
             setUpMocks(mockFetcher);
-            RackSlot slot(0);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -176,7 +176,7 @@ public:
         beginTest("Clear Gear Item");
         {
             setUpMocks(mockFetcher);
-            RackSlot slot(0);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -231,7 +231,7 @@ public:
         beginTest("Instance Management");
         {
             setUpMocks(mockFetcher);
-            RackSlot slot(0);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -300,7 +300,7 @@ public:
         beginTest("Preset Integration");
         {
             setUpMocks(mockFetcher);
-            RackSlot slot(0);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
             // Test that gear items can be set for preset loading
             juce::StringArray tags = {"test"};

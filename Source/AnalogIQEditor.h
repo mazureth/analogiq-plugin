@@ -1,5 +1,5 @@
 /**
- * @file PluginEditor.h
+ * @file AnalogIQEditor.h
  * @brief Header file for the AnalogIQEditor class.
  *
  * This file defines the main editor interface for the AnalogIQ plugin,
@@ -11,12 +11,14 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "PluginProcessor.h"
 #include "GearLibrary.h"
 #include "Rack.h"
 #include "NotesPanel.h"
 #include "PresetManager.h"
 #include "FileSystem.h"
+
+// Forward declaration
+class AnalogIQProcessor;
 
 /**
  * @brief Main editor interface for the AnalogIQ plugin.
@@ -36,7 +38,11 @@ public:
      * @param cacheManager Reference to the cache manager
      * @param presetManager Reference to the preset manager
      */
-    AnalogIQEditor(AnalogIQProcessor &, CacheManager &, PresetManager &);
+    AnalogIQEditor(AnalogIQProcessor &processor,
+                   IFileSystem &fileSystem,
+                   CacheManager &cacheManager,
+                   PresetManager &presetManager,
+                   GearLibrary &gearLibrary);
 
     /**
      * @brief Constructs a new AnalogIQEditor for testing.
@@ -46,7 +52,7 @@ public:
      * @param presetManager Reference to the preset manager
      * @param disableAutoLoad Whether to disable auto-loading of the gear library (for testing)
      */
-    AnalogIQEditor(AnalogIQProcessor &, CacheManager &, PresetManager &, bool disableAutoLoad);
+    AnalogIQEditor(AnalogIQProcessor &processor, CacheManager &cacheManager, PresetManager &presetManager, bool disableAutoLoad);
 
     /**
      * @brief Destructor for AnalogIQEditor.
@@ -77,7 +83,7 @@ public:
      *
      * @return Pointer to the GearLibrary component
      */
-    GearLibrary *getGearLibrary() const { return gearLibrary.get(); }
+    GearLibrary *getGearLibrary() const { return &gearLibrary; }
 
     /**
      * @brief Gets a reference to the preset manager.
@@ -158,14 +164,14 @@ private:
     void clearModifiedState();
 
 private:
-    AnalogIQProcessor &audioProcessor; ///< Reference to the associated AudioProcessor
-    CacheManager &cacheManager;        ///< Reference to the cache manager
-    PresetManager &presetManager;      ///< Reference to the preset manager
-    FileSystem fileSystem;             ///< File system for file operations
+    AnalogIQProcessor &processor;
+    IFileSystem &fileSystem;
+    CacheManager &cacheManager;
+    PresetManager &presetManager;
+    GearLibrary &gearLibrary;
 
     // UI Components
     juce::TabbedComponent mainTabs{juce::TabbedButtonBar::TabsAtTop}; ///< Main tabbed interface
-    std::unique_ptr<GearLibrary> gearLibrary;                         ///< Gear library component
     std::unique_ptr<Rack> rack;                                       ///< Rack component
     std::unique_ptr<NotesPanel> notesPanel;                           ///< Notes panel component
 

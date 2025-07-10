@@ -17,7 +17,7 @@ JUCE Assertion failure in juce_LeakedObjectDetector.h:104
 
 ### Why These Occur
 These assertions are triggered by JUCE's internal validation system when:
-1. **Creating real JUCE components** in tests (PluginEditor, DraggableListBox, etc.)
+1. **Creating real JUCE components** in tests (AnalogIQEditor, DraggableListBox, etc.)
 2. **JUCE's file system** validating paths and operations
 3. **JUCE's LookAndFeel system** accessing system resources
 4. **JUCE's string handling** performing internal validation

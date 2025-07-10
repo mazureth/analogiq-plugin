@@ -5,6 +5,15 @@
 #include <juce_graphics/juce_graphics.h>
 #include <juce_data_structures/juce_data_structures.h>
 
+// Debug helper function
+void writeDebugLog(const juce::String &message)
+{
+    juce::File debugFile = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile("analogiq_debug.log");
+    juce::String timestamp = juce::Time::getCurrentTime().formatted("%H:%M:%S");
+    juce::String logMessage = timestamp + ": " + message + "\n";
+    debugFile.appendText(logMessage);
+}
+
 CacheManager::CacheManager(IFileSystem &fileSystem, const juce::String &cacheRootPath)
     : fileSystem(fileSystem)
 {
@@ -16,52 +25,9 @@ CacheManager::CacheManager(IFileSystem &fileSystem, const juce::String &cacheRoo
     }
     else
     {
-        // Use default cache root directory using JUCE's cross-platform path resolution
-        // For now, we'll use a simple approach - in production this would use JUCE's special locations
-        // Note: In tests, this will be overridden by the mock file system
-        juce::String userDataDir = fileSystem.normalizePath("~/Library/Application Support");
-        cacheRoot = fileSystem.joinPath(userDataDir, "AnalogiqCache");
+        // Use OS-agnostic approach through the injected fileSystem
+        cacheRoot = fileSystem.getCacheRootDirectory();
     }
-}
-
-static CacheManager *instance = nullptr;
-static bool isTestMode = false;
-
-CacheManager &CacheManager::getInstance()
-{
-    if (instance == nullptr)
-    {
-        // In test mode, this should not be called directly
-        // Tests should use resetInstance() to set up the instance
-        if (isTestMode)
-        {
-            // Return a dummy instance for test mode that doesn't use real file system
-            static CacheManager dummyInstance(IFileSystem::getDummy(), "");
-            return dummyInstance;
-        }
-
-        // Production mode - create with default file system
-        static FileSystem defaultFileSystem;
-        instance = new CacheManager(defaultFileSystem);
-    }
-    return *instance;
-}
-
-CacheManager &CacheManager::getDummy()
-{
-    // Return a dummy instance that doesn't use real file system
-    static CacheManager dummyInstance(IFileSystem::getDummy(), "");
-    return dummyInstance;
-}
-
-void CacheManager::resetInstance(IFileSystem &fileSystem, const juce::String &cacheRootPath)
-{
-    if (instance != nullptr)
-    {
-        delete instance;
-    }
-    instance = new CacheManager(fileSystem, cacheRootPath);
-    isTestMode = true;
 }
 
 bool CacheManager::initializeCache()
@@ -154,7 +120,18 @@ juce::String CacheManager::getCachedThumbnailPath(const juce::String &unitId, co
 
 juce::String CacheManager::getCachedControlAssetPath(const juce::String &assetPath) const
 {
-    return fileSystem.joinPath(getControlsDirectory(), assetPath);
+    // Strip "assets/controls/" prefix if present to prevent redundant nesting
+    juce::String cleanAssetPath = assetPath;
+    if (cleanAssetPath.startsWith("assets/controls/"))
+    {
+        cleanAssetPath = cleanAssetPath.substring(16); // Remove "assets/controls/" prefix
+    }
+    else if (cleanAssetPath.startsWith("controls/"))
+    {
+        cleanAssetPath = cleanAssetPath.substring(9); // Remove "controls/" prefix
+    }
+
+    return fileSystem.joinPath(getControlsDirectory(), cleanAssetPath);
 }
 
 bool CacheManager::saveUnitToCache(const juce::String &unitId, const juce::String &jsonData)
@@ -452,6 +429,10 @@ bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
     {
         juce::String recentlyUsedFilePath = fileSystem.joinPath(cacheRoot, "recently_used.json");
 
+        // Debug: Log the file path being written to
+        writeDebugLog("addToRecentlyUsed: Writing to file: " + recentlyUsedFilePath);
+        writeDebugLog("addToRecentlyUsed: Adding unitId: " + unitId);
+
         // Load existing recently used list
         juce::StringArray recentlyUsed;
         if (fileSystem.fileExists(recentlyUsedFilePath))
@@ -467,16 +448,17 @@ bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
             }
         }
 
-        // Remove the unit if it already exists (to move it to the front)
-        recentlyUsed.removeString(unitId);
-
-        // Add the unit to the front of the list
+        // Add the unit to the beginning of the list (most recent first)
+        if (recentlyUsed.contains(unitId))
+        {
+            recentlyUsed.removeString(unitId);
+        }
         recentlyUsed.insert(0, unitId);
 
-        // Limit the list to MAX_RECENTLY_USED items
-        while (recentlyUsed.size() > MAX_RECENTLY_USED)
+        // Limit the list size
+        if (recentlyUsed.size() > MAX_RECENTLY_USED)
         {
-            recentlyUsed.remove(recentlyUsed.size() - 1);
+            recentlyUsed.removeRange(MAX_RECENTLY_USED, recentlyUsed.size() - MAX_RECENTLY_USED);
         }
 
         // Save the updated list
@@ -488,10 +470,14 @@ bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
         }
         jsonObj->setProperty("recentlyUsed", array);
 
-        return fileSystem.writeFile(recentlyUsedFilePath, juce::JSON::toString(juce::var(jsonObj)));
+        bool success = fileSystem.writeFile(recentlyUsedFilePath, juce::JSON::toString(juce::var(jsonObj)));
+        writeDebugLog("addToRecentlyUsed: Write success: " + juce::String(success ? "true" : "false"));
+
+        return success;
     }
     catch (...)
     {
+        writeDebugLog("addToRecentlyUsed: Exception occurred");
         return false;
     }
 }
@@ -501,11 +487,19 @@ juce::StringArray CacheManager::getRecentlyUsed(int maxCount) const
     try
     {
         juce::String recentlyUsedFilePath = fileSystem.joinPath(cacheRoot, "recently_used.json");
+
+        // Debug: Log the file path and whether it exists
+        writeDebugLog("getRecentlyUsed: Checking file: " + recentlyUsedFilePath);
+        writeDebugLog("getRecentlyUsed: File exists: " + juce::String(fileSystem.fileExists(recentlyUsedFilePath) ? "true" : "false"));
+
         juce::StringArray recentlyUsed;
 
         if (fileSystem.fileExists(recentlyUsedFilePath))
         {
-            auto json = juce::JSON::parse(fileSystem.readFile(recentlyUsedFilePath));
+            juce::String fileContent = fileSystem.readFile(recentlyUsedFilePath);
+            writeDebugLog("getRecentlyUsed: File content: " + fileContent);
+
+            auto json = juce::JSON::parse(fileContent);
             if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
             {
                 auto array = json["recentlyUsed"].getArray();
@@ -515,6 +509,10 @@ juce::StringArray CacheManager::getRecentlyUsed(int maxCount) const
                 }
             }
         }
+        else
+        {
+            writeDebugLog("getRecentlyUsed: File does not exist");
+        }
 
         // Limit the returned list to maxCount
         if (recentlyUsed.size() > maxCount)
@@ -522,10 +520,12 @@ juce::StringArray CacheManager::getRecentlyUsed(int maxCount) const
             recentlyUsed.removeRange(maxCount, recentlyUsed.size() - maxCount);
         }
 
+        writeDebugLog("getRecentlyUsed: Returning " + juce::String(recentlyUsed.size()) + " items");
         return recentlyUsed;
     }
     catch (...)
     {
+        writeDebugLog("getRecentlyUsed: Exception occurred");
         return juce::StringArray();
     }
 }
@@ -799,4 +799,11 @@ bool CacheManager::isFavorite(const juce::String &unitId) const
     {
         return false;
     }
+}
+
+CacheManager &CacheManager::getDummy()
+{
+    static IFileSystem &dummyFileSystem = IFileSystem::getDummy();
+    static CacheManager dummyCacheManager(dummyFileSystem, "");
+    return dummyCacheManager;
 }

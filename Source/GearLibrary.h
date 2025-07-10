@@ -15,6 +15,7 @@
 #include "INetworkFetcher.h"
 #include "CacheManager.h"
 #include "IFileSystem.h"
+#include "PresetManager.h" // Added for PresetManager
 
 /**
  * @brief Namespace containing remote resource URLs and paths.
@@ -48,11 +49,11 @@ public:
      * @brief Constructor for GearLibrary.
      *
      * @param networkFetcher The network fetcher to use for loading resources
-     * @param cacheManager The cache manager to use for file operations
      * @param fileSystem The file system to use for file operations
-     * @param autoLoad Whether to automatically load the library data (default: true)
+     * @param cacheManager The cache manager to use for file operations
+     * @param presetManager The preset manager to use for preset operations
      */
-    explicit GearLibrary(INetworkFetcher &networkFetcher, CacheManager &cacheManager, IFileSystem &fileSystem, bool autoLoad = true);
+    GearLibrary(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager);
 
     /**
      * @brief Destructor for GearLibrary.
@@ -317,9 +318,10 @@ private:
      */
     static juce::Array<juce::juce_wchar> getIgnoredCharacters();
 
-    INetworkFetcher &fetcher;   ///< Reference to the network fetcher
-    CacheManager &cacheManager; ///< Reference to the cache manager
-    IFileSystem &fileSystem;    ///< Reference to the file system
+    INetworkFetcher &networkFetcher; ///< Reference to the network fetcher
+    IFileSystem &fileSystem;         ///< Reference to the file system
+    CacheManager &cacheManager;      ///< Reference to the cache manager
+    PresetManager &presetManager;    ///< Reference to the preset manager
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GearLibrary)
 };
@@ -904,6 +906,16 @@ public:
     void setOpenness(bool shouldBeOpen)
     {
         setOpen(shouldBeOpen);
+    }
+
+    /**
+     * @brief Gets the openness of the item.
+     *
+     * @return Whether the item is currently open
+     */
+    bool getOpenness() const
+    {
+        return isOpen;
     }
 
     juce::String getItemText() const

@@ -16,6 +16,7 @@
 #include "INetworkFetcher.h"
 #include "RackStateListener.h"
 #include "IFileSystem.h"
+#include "PresetManager.h"
 
 /**
  * @class Rack
@@ -32,10 +33,13 @@ public:
     /**
      * @brief Constructs a new Rack instance.
      *
-     * Initializes the rack with a viewport and container, creates the specified number
-     * of rack slots, and sets up drag-and-drop functionality.
+     * @param networkFetcher Reference to the network fetcher
+     * @param fileSystem Reference to the file system
+     * @param cacheManager Reference to the cache manager
+     * @param presetManager Reference to the preset manager
+     * @param gearLibrary Pointer to the gear library
      */
-    Rack(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManager &cacheManager);
+    Rack(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary *gearLibrary);
 
     /**
      * @brief Destructor for the Rack class.
@@ -331,7 +335,7 @@ private:
     juce::OwnedArray<RackSlot> slots;             ///< Array of rack slots
 
     // Reference to the gear library (for drag and drop)
-    GearLibrary *gearLibrary = nullptr; ///< Reference to the gear library
+    GearLibrary *gearLibrary; ///< Pointer to the gear library
 
     // Reference to the network fetcher
     INetworkFetcher &networkFetcher; ///< Reference to the network fetcher
@@ -341,6 +345,9 @@ private:
 
     // Reference to the cache manager
     CacheManager &cacheManager;
+
+    // Reference to the preset manager
+    PresetManager &presetManager;
 
     // Listener management
     juce::Array<RackStateListener *> rackStateListeners; ///< Array of rack state listeners

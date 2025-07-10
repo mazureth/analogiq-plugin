@@ -1,4 +1,6 @@
 #include <JuceHeader.h>
+#include "../Source/CacheManager.h"
+#include "../Source/PresetManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,8 +17,8 @@ int main(int argc, char *argv[])
     testsToRun.add("GearItemTests");
     testsToRun.add("GearLibraryTests");
     testsToRun.add("NotesPanelTests");
-    testsToRun.add("PluginEditorTests");
-    testsToRun.add("PluginProcessorTests");
+    testsToRun.add("AnalogIQEditorTests");
+    testsToRun.add("AnalogIQProcessorTests");
     testsToRun.add("PresetManagerTests");
     testsToRun.add("PresetIntegrationTests");
     testsToRun.add("RackSlotTests");

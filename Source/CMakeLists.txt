@@ -1,10 +1,10 @@
 # Add source files to the main target
 target_sources(AnalogIQ
     PRIVATE
-        PluginProcessor.cpp
-        PluginProcessor.h
-        PluginEditor.cpp
-        PluginEditor.h
+        AnalogIQProcessor.cpp
+        AnalogIQProcessor.h
+        AnalogIQEditor.cpp
+        AnalogIQEditor.h
         GearLibrary.cpp
         GearLibrary.h
         GearItem.cpp

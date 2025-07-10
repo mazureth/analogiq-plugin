@@ -9,7 +9,7 @@
 /**
  * @brief Manages local caching of unit data and assets for the Analogiq plugin.
  *
- * This singleton class handles caching of unit JSON definitions, faceplate images,
+ * This class handles caching of unit JSON definitions, faceplate images,
  * thumbnails, and control assets to improve performance and enable offline usage.
  * The cache is stored in the user's application data directory and mirrors the
  * remote structure for consistency.
@@ -23,26 +23,12 @@ public:
     static constexpr int MAX_RECENTLY_USED = 20;
 
     /**
-     * @brief Gets the singleton instance of CacheManager.
+     * @brief Constructor for CacheManager.
      *
-     * @return Reference to the CacheManager instance
-     */
-    static CacheManager &getInstance();
-
-    /**
-     * @brief Gets a dummy instance for testing and default initialization.
-     *
-     * @return Reference to a dummy CacheManager instance
-     */
-    static CacheManager &getDummy();
-
-    /**
-     * @brief Resets the singleton instance with a new file system (for testing).
-     *
-     * @param fileSystem The file system implementation to use
+     * @param fileSystem Reference to the file system implementation
      * @param cacheRootPath Optional custom cache root path (for testing)
      */
-    static void resetInstance(IFileSystem &fileSystem, const juce::String &cacheRootPath = "");
+    CacheManager(IFileSystem &fileSystem, const juce::String &cacheRootPath = "");
 
     /**
      * @brief Destructor.
@@ -310,14 +296,12 @@ public:
      */
     juce::StringArray getFavorites() const;
 
-public:
     /**
-     * @brief Constructor for CacheManager.
+     * @brief Returns a reference to a dummy cache manager (Null Object Pattern).
      *
-     * @param fileSystem Reference to the file system implementation
-     * @param cacheRootPath Optional custom cache root path (for testing)
+     * This can be used for default-constructed objects or in cases where a real cache manager is not available.
      */
-    CacheManager(IFileSystem &fileSystem, const juce::String &cacheRootPath = "");
+    static CacheManager &getDummy();
 
 private:
     IFileSystem &fileSystem;
