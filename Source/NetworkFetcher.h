@@ -1,3 +1,12 @@
+/**
+ * @file NetworkFetcher.h
+ * @brief Header file for the NetworkFetcher class.
+ *
+ * This file defines the NetworkFetcher class, which provides the concrete
+ * implementation of the INetworkFetcher interface for performing network
+ * operations using JUCE's URL and InputStream classes.
+ */
+
 // RealNetworkFetcher.h
 #pragma once
 

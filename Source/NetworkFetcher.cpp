@@ -1,3 +1,14 @@
+/**
+ * @file NetworkFetcher.cpp
+ * @brief Implementation of the NetworkFetcher class for network operations.
+ *
+ * This file provides the concrete implementation of the INetworkFetcher interface
+ * using JUCE's URL and InputStream classes for network operations. It includes
+ * methods for fetching JSON data and binary data from URLs with proper error
+ * handling and timeout configuration. The file also includes a DummyNetworkFetcher
+ * implementation for the Null Object Pattern used in testing.
+ */
+
 // RealNetworkFetcher.cpp
 #include "NetworkFetcher.h"
 #include <JuceHeader.h>

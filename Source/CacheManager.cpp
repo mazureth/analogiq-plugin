@@ -1,3 +1,15 @@
+/**
+ * @file CacheManager.cpp
+ * @brief Implementation of the CacheManager class for local caching operations.
+ *
+ * This file provides the concrete implementation of the CacheManager class,
+ * which handles caching of unit JSON definitions, faceplate images, thumbnails,
+ * and control assets to improve performance and enable offline usage. The cache
+ * is stored in the user's application data directory and mirrors the remote
+ * structure for consistency. Includes methods for managing recently used items
+ * and favorites.
+ */
+
 #include "CacheManager.h"
 #include "FileSystem.h"
 #include "IFileSystem.h"
@@ -70,6 +82,12 @@ juce::String CacheManager::getCacheRoot() const
     return cacheRoot;
 }
 
+/**
+ * @brief Checks if a unit JSON file is cached locally.
+ *
+ * @param unitId The unit identifier (e.g., "la2a-compressor-1.0.0")
+ * @return true if the unit JSON is cached, false otherwise
+ */
 bool CacheManager::isUnitCached(const juce::String &unitId) const
 {
     juce::String unitFilePath = getCachedUnitPath(unitId);
@@ -94,21 +112,47 @@ bool CacheManager::isControlAssetCached(const juce::String &assetPath) const
     return fileSystem.fileExists(assetFilePath);
 }
 
+/**
+ * @brief Gets the cached file path for a unit JSON.
+ *
+ * @param unitId The unit identifier
+ * @return The cached file path as a string
+ */
 juce::String CacheManager::getCachedUnitPath(const juce::String &unitId) const
 {
     return fileSystem.joinPath(getUnitsDirectory(), unitId + ".json");
 }
 
+/**
+ * @brief Gets the cached file path for a faceplate image.
+ *
+ * @param unitId The unit identifier
+ * @param filename The faceplate filename (e.g., "la2a-compressor-1.0.0.jpg")
+ * @return The cached file path as a string
+ */
 juce::String CacheManager::getCachedFaceplatePath(const juce::String &unitId, const juce::String &filename) const
 {
     return fileSystem.joinPath(getFaceplatesDirectory(), filename);
 }
 
+/**
+ * @brief Gets the cached file path for a thumbnail image.
+ *
+ * @param unitId The unit identifier
+ * @param filename The thumbnail filename (e.g., "la2a-compressor-1.0.0.jpg")
+ * @return The cached file path as a string
+ */
 juce::String CacheManager::getCachedThumbnailPath(const juce::String &unitId, const juce::String &filename) const
 {
     return fileSystem.joinPath(getThumbnailsDirectory(), filename);
 }
 
+/**
+ * @brief Gets the cached file path for a control asset.
+ *
+ * @param assetPath The relative path to the control asset
+ * @return The cached file path as a string
+ */
 juce::String CacheManager::getCachedControlAssetPath(const juce::String &assetPath) const
 {
     // Strip "assets/controls/" prefix if present to prevent redundant nesting

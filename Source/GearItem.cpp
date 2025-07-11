@@ -2,8 +2,10 @@
  * @file GearItem.cpp
  * @brief Implementation of the GearItem class for managing audio gear items.
  *
- * This file contains the implementation of methods for loading images,
- * creating instances, managing state, and serializing gear items to/from JSON.
+ * This file contains the implementation of methods for loading images, creating instances,
+ * managing state, and serializing gear items to/from JSON. It handles both remote and
+ * local image loading with caching support, placeholder image generation, and instance
+ * management for gear items that can be duplicated in the rack.
  */
 
 #include "GearItem.h"
