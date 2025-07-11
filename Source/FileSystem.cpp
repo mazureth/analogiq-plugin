@@ -1,3 +1,14 @@
+/**
+ * @file FileSystem.cpp
+ * @brief Implementation of the FileSystem class for file operations.
+ *
+ * This file provides the concrete implementation of the IFileSystem interface
+ * using JUCE's File class for all file I/O operations. It includes methods
+ * for creating directories, reading/writing files, checking file existence,
+ * and path manipulation utilities. The file also includes a DummyFileSystem
+ * implementation for the Null Object Pattern used in testing.
+ */
+
 #include "FileSystem.h"
 #include <JuceHeader.h>
 
