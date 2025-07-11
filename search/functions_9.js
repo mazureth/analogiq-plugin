@@ -1,10 +1,15 @@
 var searchData=
 [
-  ['mightcontainsubitems_0',['mightContainSubItems',['../d6/dc0/class_gear_tree_item.html#a61e7c46c1f129accf67c8c9dd1f028eb',1,'GearTreeItem']]],
-  ['mousedoubleclick_1',['mouseDoubleClick',['../dc/dde/class_rack_slot.html#af283ef7ac9dcfd53bb86f076dfdbf57e',1,'RackSlot']]],
-  ['mousedown_2',['mouseDown',['../d6/d30/class_draggable_list_box.html#a26aa332ad50a9ba1991023ea20ce3834',1,'DraggableListBox::mouseDown()'],['../d5/d8c/class_gear_library.html#a3b5997fa4b8c6addbec4c6aa266b55fe',1,'GearLibrary::mouseDown()'],['../dc/dde/class_rack_slot.html#aef6997010c3d9c8158edad4c21fca2d1',1,'RackSlot::mouseDown()']]],
-  ['mousedrag_3',['mouseDrag',['../d6/d30/class_draggable_list_box.html#aafd67fa6bb588af621d095c98a85617f',1,'DraggableListBox::mouseDrag()'],['../d5/d8c/class_gear_library.html#a1e760e967503e06437c5f8095db844dd',1,'GearLibrary::mouseDrag()'],['../dc/dde/class_rack_slot.html#a15035758be3c77f7eee2250ba0f40fa3',1,'RackSlot::mouseDrag()']]],
-  ['mouseup_4',['mouseUp',['../d6/d30/class_draggable_list_box.html#a8ac86db89a740fff843f2a2e5bd61d92',1,'DraggableListBox::mouseUp()'],['../dc/dde/class_rack_slot.html#a8f41021888b4377fa04cb7e64d4aac5a',1,'RackSlot::mouseUp(const juce::MouseEvent &amp;e) override']]],
-  ['movedown_5',['moveDown',['../dc/dde/class_rack_slot.html#a44a0aa7d313d4512a8dd6e8efdda81a4',1,'RackSlot']]],
-  ['moveup_6',['moveUp',['../dc/dde/class_rack_slot.html#afa296f9ba6af3ba35625e506fb1cbbc1',1,'RackSlot']]]
+  ['listboxitemclicked_0',['listBoxItemClicked',['../d2/d9a/class_gear_list_box_model.html#a259cfe9e83eddb48632a50de4ee98a35',1,'GearListBoxModel::listBoxItemClicked()'],['../d5/d8c/class_gear_library.html#ac56b525c20233d46b493a3841ffb0c5a',1,'GearLibrary::listBoxItemClicked()']]],
+  ['listboxitemdoubleclicked_1',['listBoxItemDoubleClicked',['../d2/d9a/class_gear_list_box_model.html#a63964fb3eb60c49d2759bee9a9ba538a',1,'GearListBoxModel::listBoxItemDoubleClicked()'],['../d5/d8c/class_gear_library.html#abc95a750c71d28df24ac04df65a5ca52',1,'GearLibrary::listBoxItemDoubleClicked()']]],
+  ['loadcontrolassetfromcache_2',['loadControlAssetFromCache',['../d4/d9f/class_cache_manager.html#ac27b9a2b933df809c3c730ea3e33b2b7',1,'CacheManager']]],
+  ['loadfaceplatefromcache_3',['loadFaceplateFromCache',['../d4/d9f/class_cache_manager.html#a215e2cf14a7512fe38bbc8804b67b685',1,'CacheManager']]],
+  ['loadfromjson_4',['loadFromJSON',['../dd/dee/class_gear_item.html#a126b6a46ce450cf55e9836d7e59c702e',1,'GearItem']]],
+  ['loadgearitemsasync_5',['loadGearItemsAsync',['../d5/d8c/class_gear_library.html#aa7b268a3a0caddde39aed00520a800e3',1,'GearLibrary']]],
+  ['loadimage_6',['loadImage',['../dd/dee/class_gear_item.html#a6e8cc74d37434f76bd8686b6410d8ed2',1,'GearItem']]],
+  ['loadinstancestate_7',['loadInstanceState',['../d5/d18/class_analog_i_q_processor.html#a7be28b7eedab3e86edd5814e1cc81548',1,'AnalogIQProcessor::loadInstanceState()'],['../d5/d18/class_analog_i_q_processor.html#ae5ca394b208dcf866db3a0f88f38d20b',1,'AnalogIQProcessor::loadInstanceState(Rack *rack)']]],
+  ['loadlibraryasync_8',['loadLibraryAsync',['../d5/d8c/class_gear_library.html#af112c469e6db0d314c11202cd33d0826',1,'GearLibrary']]],
+  ['loadpreset_9',['loadPreset',['../d6/d6a/class_preset_manager.html#a15f0ae985361d941e16db4f7234ae57d',1,'PresetManager']]],
+  ['loadthumbnailfromcache_10',['loadThumbnailFromCache',['../d4/d9f/class_cache_manager.html#a6c6b157759a667b6d6961fe354b2d012',1,'CacheManager']]],
+  ['loadunitfromcache_11',['loadUnitFromCache',['../d4/d9f/class_cache_manager.html#ae732aa5a3c9e7dc672d3d0e65cb7100e',1,'CacheManager']]]
 ];

@@ -32,10 +32,14 @@ var NAVTREE =
     ] ],
     [ "Building and Viewing Documentation Locally", "index.html#autotoc_md5", null ],
     [ "Documentation", "index.html#autotoc_md6", null ],
-    [ "Usage", "index.html#autotoc_md7", null ],
-    [ "Project Structure", "index.html#autotoc_md8", null ],
-    [ "Contributing", "index.html#autotoc_md9", null ],
-    [ "License", "index.html#autotoc_md10", null ],
+    [ "Usage", "index.html#autotoc_md7", [
+      [ "Preset Management", "index.html#autotoc_md8", [
+        [ "Saving Presets", "index.html#autotoc_md9", null ],
+        [ "Loading Presets", "index.html#autotoc_md10", null ],
+        [ "Managing Presets", "index.html#autotoc_md11", null ]
+      ] ]
+    ] ],
+    [ "Project Structure", "index.html#autotoc_md12", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -60,6 +64,7 @@ var NAVTREE =
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
+        [ "Variables", "globals_vars.html", null ],
         [ "Enumerations", "globals_enum.html", null ]
       ] ]
     ] ]
@@ -69,7 +74,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"d6/dc0/class_gear_tree_item.html#abf3c5ad0889923553a5fa44f5a050a18"
+"d5/d8c/class_gear_library.html#a7d23ffef622782468af91057510b7a9e",
+"dc/dde/class_rack_slot.html#ab15709c651bdd8a93eb9a32896227fd8"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

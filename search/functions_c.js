@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['paint_0',['paint',['../d5/d8c/class_gear_library.html#a3af7577e865a8a3370ca83036f484ab1',1,'GearLibrary::paint()'],['../d9/dc5/class_notes_panel.html#aab7978c649424451804a27064decd22d',1,'NotesPanel::paint()'],['../d7/d9c/class_notes_panel_1_1_notes_container.html#a41e6202fa9e773c73a48d9aac9e262cb',1,'NotesPanel::NotesContainer::paint()'],['../df/d1c/class_analog_i_q_editor.html#ac6b5e63604b3ae1dbc22df50a088b300',1,'AnalogIQEditor::paint()'],['../d0/dc7/class_rack.html#af4d813335dd6ca20e989f1c7d601de42',1,'Rack::paint()'],['../d1/d32/class_rack_1_1_rack_container.html#af3fb5032f4f14efb60af824a1159bc86',1,'Rack::RackContainer::paint()'],['../dc/dde/class_rack_slot.html#a29d1436ce2e6bad5b9c9950d29832f9b',1,'RackSlot::paint()']]],
-  ['paintitem_1',['paintItem',['../d6/dc0/class_gear_tree_item.html#acfcc3980b9eacab83932e311e50db917',1,'GearTreeItem']]],
-  ['paintlistboxitem_2',['paintListBoxItem',['../d2/d9a/class_gear_list_box_model.html#a8b630141627f170d1271d62d512b4226',1,'GearListBoxModel::paintListBoxItem()'],['../d5/d8c/class_gear_library.html#a7bc524a41f90ee335d764c29d8aef21f',1,'GearLibrary::paintListBoxItem(int rowNumber, juce::Graphics &amp;g, int width, int height, bool rowIsSelected)']]],
-  ['parsegearlibrary_3',['parseGearLibrary',['../d5/d8c/class_gear_library.html#aecbf7ffd8229a58e22ca83eb74da2c01',1,'GearLibrary']]],
-  ['parseschema_4',['parseSchema',['../d0/dc7/class_rack.html#a4dfaa4fabaaaa55212bcee7389cbaf71',1,'Rack']]],
-  ['preparetoplay_5',['prepareToPlay',['../d5/d18/class_analog_i_q_processor.html#a5d2a4a8f37c1b368cb85e3f7c180e8bc',1,'AnalogIQProcessor']]],
-  ['processblock_6',['processBlock',['../d5/d18/class_analog_i_q_processor.html#ac8d88cf706929961b1528bbc90b366b5',1,'AnalogIQProcessor']]],
-  ['producesmidi_7',['producesMidi',['../d5/d18/class_analog_i_q_processor.html#ab5f17020056b9acbf7f30d207da26a6d',1,'AnalogIQProcessor']]]
+  ['ongearcontrolchanged_0',['onGearControlChanged',['../d3/d9f/class_rack_state_listener.html#a3073c363b44a7a4fd31babb626afef5f',1,'RackStateListener']]],
+  ['ongearitemadded_1',['onGearItemAdded',['../d3/d9f/class_rack_state_listener.html#a95b68c539c81eb9408fdc0b6819a58e1',1,'RackStateListener']]],
+  ['ongearitemremoved_2',['onGearItemRemoved',['../d3/d9f/class_rack_state_listener.html#aff06202a3cd9abf76050fd459634a850',1,'RackStateListener']]],
+  ['ongearitemsrearranged_3',['onGearItemsRearranged',['../d3/d9f/class_rack_state_listener.html#a5ca7c8959a39c82c957c224bbf1f155b',1,'RackStateListener']]],
+  ['onpresetloaded_4',['onPresetLoaded',['../d3/d9f/class_rack_state_listener.html#a28b9ca94a4154f030031fce9d8072cf4',1,'RackStateListener']]],
+  ['onpresetsaved_5',['onPresetSaved',['../d3/d9f/class_rack_state_listener.html#a12e777baf738ae4c01b234e401f1e8a5',1,'RackStateListener']]],
+  ['onrackstatereset_6',['onRackStateReset',['../d3/d9f/class_rack_state_listener.html#ad1bac9ded9c1afa95cf5a068bef1851e',1,'RackStateListener']]],
+  ['operator_3d_7',['operator=',['../df/d1c/class_analog_i_q_editor.html#ae4243e1e7ef5e3fccc6a2388279bf3b2',1,'AnalogIQEditor::operator=()'],['../d5/d18/class_analog_i_q_processor.html#ade260c46698ba18c43dfe00f33f7594f',1,'AnalogIQProcessor::operator=()'],['../d4/d9f/class_cache_manager.html#a28e4e56f6486a637585ae3f9d2517650',1,'CacheManager::operator=()'],['../dc/d76/class_gear_control.html#a656ac2e9ae8ffc108d52a6d7646c4c27',1,'GearControl::operator=()'],['../d5/d8c/class_gear_library.html#acb1ee776414f7db6fc92fc83e69ce22f',1,'GearLibrary::operator=()'],['../d9/dc5/class_notes_panel.html#a74bb8d828b31fe564156b02970ed91bb',1,'NotesPanel::operator=()'],['../d6/d6a/class_preset_manager.html#a5554fa8326ac79ff32b611299db924aa',1,'PresetManager::operator=()'],['../d0/dc7/class_rack.html#ae4fc1d19f3c07ac4c3afbc9a97ad5395',1,'Rack::operator=()'],['../dc/dde/class_rack_slot.html#a397ef02ee0545a4ade735880a1047344',1,'RackSlot::operator=()']]]
 ];

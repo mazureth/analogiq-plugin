@@ -100,14 +100,18 @@ $(function(){initNavTree('d4/d9f/class_cache_manager.html','../../','dc/d06/clas
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a1cb8fa2ab4e2afc29f16703ccaf4b71b" id="r_a1cb8fa2ab4e2afc29f16703ccaf4b71b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1cb8fa2ab4e2afc29f16703ccaf4b71b">CacheManager</a> (<a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;<a class="el" href="#a697acda1f4f80dafbe530346f964bd73">fileSystem</a>, const juce::String &amp;cacheRootPath=&quot;&quot;)</td></tr>
+<tr class="memdesc:a1cb8fa2ab4e2afc29f16703ccaf4b71b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for <a class="el" href="../../d4/d9f/class_cache_manager.html" title="Manages local caching of unit data and assets for the Analogiq plugin.">CacheManager</a>.  <br /></td></tr>
 <tr class="memitem:a4300ab6746d2c7c3dcf766bbac0bf65c" id="r_a4300ab6746d2c7c3dcf766bbac0bf65c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4300ab6746d2c7c3dcf766bbac0bf65c">~CacheManager</a> ()=default</td></tr>
 <tr class="memdesc:a4300ab6746d2c7c3dcf766bbac0bf65c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="memitem:a53c6688c77a6612977883ef5e65805da" id="r_a53c6688c77a6612977883ef5e65805da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53c6688c77a6612977883ef5e65805da">CacheManager</a> (const <a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;)=delete</td></tr>
 <tr class="memitem:a28e4e56f6486a637585ae3f9d2517650" id="r_a28e4e56f6486a637585ae3f9d2517650"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28e4e56f6486a637585ae3f9d2517650">operator=</a> (const <a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;)=delete</td></tr>
 <tr class="memitem:a59fc42434823b8034bacbcbd02903e9d" id="r_a59fc42434823b8034bacbcbd02903e9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59fc42434823b8034bacbcbd02903e9d">initializeCache</a> ()</td></tr>
 <tr class="memdesc:a59fc42434823b8034bacbcbd02903e9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the cache directory structure.  <br /></td></tr>
-<tr class="memitem:ac177bdaceb4ed3f40c2721e8a1c06c88" id="r_ac177bdaceb4ed3f40c2721e8a1c06c88"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac177bdaceb4ed3f40c2721e8a1c06c88">getCacheRoot</a> () const</td></tr>
-<tr class="memdesc:ac177bdaceb4ed3f40c2721e8a1c06c88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cache root directory.  <br /></td></tr>
+<tr class="memitem:ae8a24658844e227dfd4eb51c6110134c" id="r_ae8a24658844e227dfd4eb51c6110134c"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8a24658844e227dfd4eb51c6110134c">getCacheRoot</a> () const</td></tr>
+<tr class="memdesc:ae8a24658844e227dfd4eb51c6110134c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cache root directory path.  <br /></td></tr>
+<tr class="memitem:a61c26037195bdc819dc94677ec69685c" id="r_a61c26037195bdc819dc94677ec69685c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61c26037195bdc819dc94677ec69685c">getFileSystem</a> () const</td></tr>
+<tr class="memdesc:a61c26037195bdc819dc94677ec69685c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the file system used by this cache manager.  <br /></td></tr>
 <tr class="memitem:aa7dc4ed977db78f593e88d87b971dc00" id="r_aa7dc4ed977db78f593e88d87b971dc00"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa7dc4ed977db78f593e88d87b971dc00">isUnitCached</a> (const juce::String &amp;unitId) const</td></tr>
 <tr class="memdesc:aa7dc4ed977db78f593e88d87b971dc00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a unit JSON file is cached locally.  <br /></td></tr>
 <tr class="memitem:af00048a9d174d782591e1700763beca5" id="r_af00048a9d174d782591e1700763beca5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af00048a9d174d782591e1700763beca5">isFaceplateCached</a> (const juce::String &amp;unitId, const juce::String &amp;filename) const</td></tr>
@@ -116,14 +120,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a3415438e7b822a0e87ec2ed1012a96d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a thumbnail image is cached locally.  <br /></td></tr>
 <tr class="memitem:a637ef24d8b62cabeaef40ec58d010327" id="r_a637ef24d8b62cabeaef40ec58d010327"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a637ef24d8b62cabeaef40ec58d010327">isControlAssetCached</a> (const juce::String &amp;assetPath) const</td></tr>
 <tr class="memdesc:a637ef24d8b62cabeaef40ec58d010327"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a control asset is cached locally.  <br /></td></tr>
-<tr class="memitem:a61ddd69747dfa089f12783df618ae3bb" id="r_a61ddd69747dfa089f12783df618ae3bb"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61ddd69747dfa089f12783df618ae3bb">getCachedUnitPath</a> (const juce::String &amp;unitId) const</td></tr>
-<tr class="memdesc:a61ddd69747dfa089f12783df618ae3bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached file path for a unit JSON.  <br /></td></tr>
-<tr class="memitem:a6199dfe0c681c88df44a03b69c838fa2" id="r_a6199dfe0c681c88df44a03b69c838fa2"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6199dfe0c681c88df44a03b69c838fa2">getCachedFaceplatePath</a> (const juce::String &amp;unitId, const juce::String &amp;filename) const</td></tr>
-<tr class="memdesc:a6199dfe0c681c88df44a03b69c838fa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached file path for a faceplate image.  <br /></td></tr>
-<tr class="memitem:a34d4857b997534bcacadafd51440ccd5" id="r_a34d4857b997534bcacadafd51440ccd5"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a34d4857b997534bcacadafd51440ccd5">getCachedThumbnailPath</a> (const juce::String &amp;unitId, const juce::String &amp;filename) const</td></tr>
-<tr class="memdesc:a34d4857b997534bcacadafd51440ccd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached file path for a thumbnail image.  <br /></td></tr>
-<tr class="memitem:a838f79ac19a585cc51402854c1a0ede7" id="r_a838f79ac19a585cc51402854c1a0ede7"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a838f79ac19a585cc51402854c1a0ede7">getCachedControlAssetPath</a> (const juce::String &amp;assetPath) const</td></tr>
-<tr class="memdesc:a838f79ac19a585cc51402854c1a0ede7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached file path for a control asset.  <br /></td></tr>
+<tr class="memitem:abfa9ea24d79adc5d20465921b7fca3c4" id="r_abfa9ea24d79adc5d20465921b7fca3c4"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abfa9ea24d79adc5d20465921b7fca3c4">getCachedUnitPath</a> (const juce::String &amp;unitId) const</td></tr>
+<tr class="memdesc:abfa9ea24d79adc5d20465921b7fca3c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached file path for a unit JSON.  <br /></td></tr>
+<tr class="memitem:aaf8353c4fef9965922888082c2d6bb88" id="r_aaf8353c4fef9965922888082c2d6bb88"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf8353c4fef9965922888082c2d6bb88">getCachedFaceplatePath</a> (const juce::String &amp;unitId, const juce::String &amp;filename) const</td></tr>
+<tr class="memdesc:aaf8353c4fef9965922888082c2d6bb88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached file path for a faceplate image.  <br /></td></tr>
+<tr class="memitem:a06d0790360b5a9fbd517c36791367a56" id="r_a06d0790360b5a9fbd517c36791367a56"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06d0790360b5a9fbd517c36791367a56">getCachedThumbnailPath</a> (const juce::String &amp;unitId, const juce::String &amp;filename) const</td></tr>
+<tr class="memdesc:a06d0790360b5a9fbd517c36791367a56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached file path for a thumbnail image.  <br /></td></tr>
+<tr class="memitem:ad0ebb81a88cbaae27b3bbb658a27d5a6" id="r_ad0ebb81a88cbaae27b3bbb658a27d5a6"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0ebb81a88cbaae27b3bbb658a27d5a6">getCachedControlAssetPath</a> (const juce::String &amp;assetPath) const</td></tr>
+<tr class="memdesc:ad0ebb81a88cbaae27b3bbb658a27d5a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cached file path for a control asset.  <br /></td></tr>
 <tr class="memitem:a9d2a18f0d0a6f71a6bc3e78eb180299f" id="r_a9d2a18f0d0a6f71a6bc3e78eb180299f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d2a18f0d0a6f71a6bc3e78eb180299f">saveUnitToCache</a> (const juce::String &amp;unitId, const juce::String &amp;jsonData)</td></tr>
 <tr class="memdesc:a9d2a18f0d0a6f71a6bc3e78eb180299f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves unit JSON data to the cache.  <br /></td></tr>
 <tr class="memitem:a7dd47d9177cc5cc3d0c4c83559d93ebf" id="r_a7dd47d9177cc5cc3d0c4c83559d93ebf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7dd47d9177cc5cc3d0c4c83559d93ebf">saveFaceplateToCache</a> (const juce::String &amp;unitId, const juce::String &amp;filename, const juce::Image &amp;image)</td></tr>
@@ -145,34 +149,30 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9c275a029d071140d97561d9b62caaf8" id="r_a9c275a029d071140d97561d9b62caaf8"><td class="memItemLeft" align="right" valign="top">juce::int64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c275a029d071140d97561d9b62caaf8">getCacheSize</a> () const</td></tr>
 <tr class="memdesc:a9c275a029d071140d97561d9b62caaf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the total size of the cache in bytes.  <br /></td></tr>
 <tr class="memitem:aba70bc2a5835a1cb7a6a13c79bae9fad" id="r_aba70bc2a5835a1cb7a6a13c79bae9fad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba70bc2a5835a1cb7a6a13c79bae9fad">addToRecentlyUsed</a> (const juce::String &amp;unitId)</td></tr>
-<tr class="memdesc:aba70bc2a5835a1cb7a6a13c79bae9fad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a gear item to the recently used list.  <br /></td></tr>
+<tr class="memdesc:aba70bc2a5835a1cb7a6a13c79bae9fad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a unit to the recently used list.  <br /></td></tr>
 <tr class="memitem:ab754933784ed9c3df6be3a3c2af37b8c" id="r_ab754933784ed9c3df6be3a3c2af37b8c"><td class="memItemLeft" align="right" valign="top">juce::StringArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab754933784ed9c3df6be3a3c2af37b8c">getRecentlyUsed</a> (int maxCount=<a class="el" href="#a8ca4cd650aadf20f7fb9a02ce9088208">MAX_RECENTLY_USED</a>) const</td></tr>
-<tr class="memdesc:ab754933784ed9c3df6be3a3c2af37b8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the list of recently used unit IDs.  <br /></td></tr>
+<tr class="memdesc:ab754933784ed9c3df6be3a3c2af37b8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the list of recently used units.  <br /></td></tr>
 <tr class="memitem:a8a9cb736ed5ca6fb67b35cb35963044c" id="r_a8a9cb736ed5ca6fb67b35cb35963044c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a9cb736ed5ca6fb67b35cb35963044c">removeFromRecentlyUsed</a> (const juce::String &amp;unitId)</td></tr>
 <tr class="memdesc:a8a9cb736ed5ca6fb67b35cb35963044c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a unit from the recently used list.  <br /></td></tr>
 <tr class="memitem:aead8d282297d30872f751703c04c7194" id="r_aead8d282297d30872f751703c04c7194"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aead8d282297d30872f751703c04c7194">clearRecentlyUsed</a> ()</td></tr>
 <tr class="memdesc:aead8d282297d30872f751703c04c7194"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the recently used list.  <br /></td></tr>
-<tr class="memitem:a5acd4a5578973ff12cfbcbc0076f886b" id="r_a5acd4a5578973ff12cfbcbc0076f886b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5acd4a5578973ff12cfbcbc0076f886b">getRecentlyUsedCount</a> () const</td></tr>
-<tr class="memdesc:a5acd4a5578973ff12cfbcbc0076f886b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of items in the recently used list.  <br /></td></tr>
 <tr class="memitem:aa76fe5e409ae3ddc459e92b83ccf13a9" id="r_aa76fe5e409ae3ddc459e92b83ccf13a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa76fe5e409ae3ddc459e92b83ccf13a9">isRecentlyUsed</a> (const juce::String &amp;unitId) const</td></tr>
 <tr class="memdesc:aa76fe5e409ae3ddc459e92b83ccf13a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a unit is in the recently used list.  <br /></td></tr>
 <tr class="memitem:a9febd36337bdebc9609aa5aed1f5c34b" id="r_a9febd36337bdebc9609aa5aed1f5c34b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9febd36337bdebc9609aa5aed1f5c34b">addToFavorites</a> (const juce::String &amp;unitId)</td></tr>
-<tr class="memdesc:a9febd36337bdebc9609aa5aed1f5c34b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a gear item to the favorites list.  <br /></td></tr>
-<tr class="memitem:ab55062e9b28abc68303139aef63e1b03" id="r_ab55062e9b28abc68303139aef63e1b03"><td class="memItemLeft" align="right" valign="top">juce::StringArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab55062e9b28abc68303139aef63e1b03">getFavorites</a> () const</td></tr>
-<tr class="memdesc:ab55062e9b28abc68303139aef63e1b03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the list of favorite unit IDs.  <br /></td></tr>
+<tr class="memdesc:a9febd36337bdebc9609aa5aed1f5c34b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a unit to the favorites list.  <br /></td></tr>
 <tr class="memitem:ad9a9376c553d54ac5719cd0c89c322e1" id="r_ad9a9376c553d54ac5719cd0c89c322e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9a9376c553d54ac5719cd0c89c322e1">removeFromFavorites</a> (const juce::String &amp;unitId)</td></tr>
 <tr class="memdesc:ad9a9376c553d54ac5719cd0c89c322e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a unit from the favorites list.  <br /></td></tr>
 <tr class="memitem:afb51fab67df72842bae128ee00d53db4" id="r_afb51fab67df72842bae128ee00d53db4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb51fab67df72842bae128ee00d53db4">clearFavorites</a> ()</td></tr>
 <tr class="memdesc:afb51fab67df72842bae128ee00d53db4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the favorites list.  <br /></td></tr>
-<tr class="memitem:abfb1b82a8a390dd6405f4ac185e936fd" id="r_abfb1b82a8a390dd6405f4ac185e936fd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abfb1b82a8a390dd6405f4ac185e936fd">getFavoritesCount</a> () const</td></tr>
-<tr class="memdesc:abfb1b82a8a390dd6405f4ac185e936fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of items in the favorites list.  <br /></td></tr>
 <tr class="memitem:a149e95abfe0d03f47b3478f57db12948" id="r_a149e95abfe0d03f47b3478f57db12948"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a149e95abfe0d03f47b3478f57db12948">isFavorite</a> (const juce::String &amp;unitId) const</td></tr>
 <tr class="memdesc:a149e95abfe0d03f47b3478f57db12948"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a unit is in the favorites list.  <br /></td></tr>
+<tr class="memitem:ab55062e9b28abc68303139aef63e1b03" id="r_ab55062e9b28abc68303139aef63e1b03"><td class="memItemLeft" align="right" valign="top">juce::StringArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab55062e9b28abc68303139aef63e1b03">getFavorites</a> () const</td></tr>
+<tr class="memdesc:ab55062e9b28abc68303139aef63e1b03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the list of favorite units.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a7bad0731cff79ab853026765848b965b" id="r_a7bad0731cff79ab853026765848b965b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7bad0731cff79ab853026765848b965b">getInstance</a> ()</td></tr>
-<tr class="memdesc:a7bad0731cff79ab853026765848b965b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the singleton instance of <a class="el" href="../../d4/d9f/class_cache_manager.html" title="Manages local caching of unit data and assets for the Analogiq plugin.">CacheManager</a>.  <br /></td></tr>
+<tr class="memitem:afc6c6dc927f491b3adb8767a9d83ec38" id="r_afc6c6dc927f491b3adb8767a9d83ec38"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afc6c6dc927f491b3adb8767a9d83ec38">getDummy</a> ()</td></tr>
+<tr class="memdesc:afc6c6dc927f491b3adb8767a9d83ec38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a reference to a dummy cache manager (Null Object Pattern).  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -181,34 +181,63 @@ Static Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:ab6113eb81c72ceadf34bf78d0706024d" id="r_ab6113eb81c72ceadf34bf78d0706024d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6113eb81c72ceadf34bf78d0706024d">CacheManager</a> ()</td></tr>
-<tr class="memdesc:ab6113eb81c72ceadf34bf78d0706024d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Private constructor for singleton pattern.  <br /></td></tr>
-<tr class="memitem:aa20c81b4f59a9185a2712d707fa26679" id="r_aa20c81b4f59a9185a2712d707fa26679"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa20c81b4f59a9185a2712d707fa26679">createDirectoryIfNeeded</a> (const juce::File &amp;directory) const</td></tr>
-<tr class="memdesc:aa20c81b4f59a9185a2712d707fa26679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a directory if it doesn't exist.  <br /></td></tr>
-<tr class="memitem:a0b24545a116ecd46e28298f09eb8e744" id="r_a0b24545a116ecd46e28298f09eb8e744"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b24545a116ecd46e28298f09eb8e744">getUnitsDirectory</a> () const</td></tr>
-<tr class="memdesc:a0b24545a116ecd46e28298f09eb8e744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the units directory.  <br /></td></tr>
-<tr class="memitem:af874321078d292b639f9b4c38645c651" id="r_af874321078d292b639f9b4c38645c651"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af874321078d292b639f9b4c38645c651">getAssetsDirectory</a> () const</td></tr>
-<tr class="memdesc:af874321078d292b639f9b4c38645c651"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the assets directory.  <br /></td></tr>
-<tr class="memitem:aba626d248cbf50746e35b04b59ce3ad7" id="r_aba626d248cbf50746e35b04b59ce3ad7"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba626d248cbf50746e35b04b59ce3ad7">getFaceplatesDirectory</a> () const</td></tr>
-<tr class="memdesc:aba626d248cbf50746e35b04b59ce3ad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the faceplates directory.  <br /></td></tr>
-<tr class="memitem:a210cf47f03e7ae0b819ea88f7d280d79" id="r_a210cf47f03e7ae0b819ea88f7d280d79"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a210cf47f03e7ae0b819ea88f7d280d79">getThumbnailsDirectory</a> () const</td></tr>
-<tr class="memdesc:a210cf47f03e7ae0b819ea88f7d280d79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the thumbnails directory.  <br /></td></tr>
-<tr class="memitem:a9896ddbd00ea77f52af80674ac539c8a" id="r_a9896ddbd00ea77f52af80674ac539c8a"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9896ddbd00ea77f52af80674ac539c8a">getControlsDirectory</a> () const</td></tr>
-<tr class="memdesc:a9896ddbd00ea77f52af80674ac539c8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the controls directory.  <br /></td></tr>
-<tr class="memitem:ac194f3d2a7767c078c26dba22fe66ccc" id="r_ac194f3d2a7767c078c26dba22fe66ccc"><td class="memItemLeft" align="right" valign="top">juce::int64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac194f3d2a7767c078c26dba22fe66ccc">calculateDirectorySize</a> (const juce::File &amp;directory) const</td></tr>
-<tr class="memdesc:ac194f3d2a7767c078c26dba22fe66ccc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the total size of a directory recursively.  <br /></td></tr>
+<tr class="memitem:a823d4cc6278ce1c4eee4c96772037fde" id="r_a823d4cc6278ce1c4eee4c96772037fde"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a823d4cc6278ce1c4eee4c96772037fde">getUnitsDirectory</a> () const</td></tr>
+<tr class="memitem:ade0242826497f75082691cf5272b0a0d" id="r_ade0242826497f75082691cf5272b0a0d"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade0242826497f75082691cf5272b0a0d">getAssetsDirectory</a> () const</td></tr>
+<tr class="memitem:ab13b9428ad2a6a4fd3e76e5e48aff37d" id="r_ab13b9428ad2a6a4fd3e76e5e48aff37d"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab13b9428ad2a6a4fd3e76e5e48aff37d">getFaceplatesDirectory</a> () const</td></tr>
+<tr class="memitem:a3d598115f76a5f4f94319c9fea50c67a" id="r_a3d598115f76a5f4f94319c9fea50c67a"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3d598115f76a5f4f94319c9fea50c67a">getThumbnailsDirectory</a> () const</td></tr>
+<tr class="memitem:a15a81d0bea7a1e756045439ad8d217a7" id="r_a15a81d0bea7a1e756045439ad8d217a7"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a15a81d0bea7a1e756045439ad8d217a7">getControlsDirectory</a> () const</td></tr>
+<tr class="memitem:a8cd3397fe046b953408ec240bff6e50a" id="r_a8cd3397fe046b953408ec240bff6e50a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8cd3397fe046b953408ec240bff6e50a">createDirectoryIfNeeded</a> (const juce::String &amp;directoryPath) const</td></tr>
+<tr class="memdesc:a8cd3397fe046b953408ec240bff6e50a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a directory if it doesn't exist.  <br /></td></tr>
+<tr class="memitem:af71410d99572ee5275d46664efe211bf" id="r_af71410d99572ee5275d46664efe211bf"><td class="memItemLeft" align="right" valign="top">juce::int64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af71410d99572ee5275d46664efe211bf">calculateDirectorySize</a> (const juce::String &amp;directoryPath) const</td></tr>
+<tr class="memdesc:af71410d99572ee5275d46664efe211bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the size of a directory recursively.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a2d8d44178eb184c4bf756397c97029b6" id="r_a2d8d44178eb184c4bf756397c97029b6"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d8d44178eb184c4bf756397c97029b6">cacheRoot</a></td></tr>
-<tr class="memdesc:a2d8d44178eb184c4bf756397c97029b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The cache root directory.  <br /></td></tr>
+<tr class="memitem:a697acda1f4f80dafbe530346f964bd73" id="r_a697acda1f4f80dafbe530346f964bd73"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a697acda1f4f80dafbe530346f964bd73">fileSystem</a></td></tr>
+<tr class="memitem:aaa5cf149d24e4e508962678256c9d0fe" id="r_aaa5cf149d24e4e508962678256c9d0fe"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa5cf149d24e4e508962678256c9d0fe">cacheRoot</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages local caching of unit data and assets for the Analogiq plugin. </p>
-<p>This singleton class handles caching of unit JSON definitions, faceplate images, thumbnails, and control assets to improve performance and enable offline usage. The cache is stored in the user's application data directory and mirrors the remote structure for consistency. </p>
+<p>This class handles caching of unit JSON definitions, faceplate images, thumbnails, and control assets to improve performance and enable offline usage. The cache is stored in the user's application data directory and mirrors the remote structure for consistency. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00015">15</a> of file <a class="el" href="../../dd/dab/_cache_manager_8h_source.html">CacheManager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00017">17</a> of file <a class="el" href="../../dd/dab/_cache_manager_8h_source.html">CacheManager.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a1cb8fa2ab4e2afc29f16703ccaf4b71b" name="a1cb8fa2ab4e2afc29f16703ccaf4b71b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cb8fa2ab4e2afc29f16703ccaf4b71b">&#9670;&#160;</a></span>CacheManager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CacheManager::CacheManager </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fileSystem</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>cacheRootPath</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for <a class="el" href="../../d4/d9f/class_cache_manager.html" title="Manages local caching of unit data and assets for the Analogiq plugin.">CacheManager</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fileSystem</td><td>Reference to the file system implementation </td></tr>
+    <tr><td class="paramname">cacheRootPath</td><td>Optional custom cache root path (for testing) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00008">8</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="#a53c6688c77a6612977883ef5e65805da">CacheManager()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00774">getDummy()</a>, and <a class="el" href="#a28e4e56f6486a637585ae3f9d2517650">operator=()</a>.</p>
+
+</div>
+</div>
 <a id="a4300ab6746d2c7c3dcf766bbac0bf65c" name="a4300ab6746d2c7c3dcf766bbac0bf65c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4300ab6746d2c7c3dcf766bbac0bf65c">&#9670;&#160;</a></span>~CacheManager()</h2>
 
@@ -237,7 +266,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a53c6688c77a6612977883ef5e65805da" name="a53c6688c77a6612977883ef5e65805da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a53c6688c77a6612977883ef5e65805da">&#9670;&#160;</a></span>CacheManager() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a53c6688c77a6612977883ef5e65805da">&#9670;&#160;</a></span>CacheManager() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -259,40 +288,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="reference">References <a class="el" href="#a53c6688c77a6612977883ef5e65805da">CacheManager()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="#a53c6688c77a6612977883ef5e65805da">CacheManager()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00013">getInstance()</a>, and <a class="el" href="#a28e4e56f6486a637585ae3f9d2517650">operator=()</a>.</p>
-
-</div>
-</div>
-<a id="ab6113eb81c72ceadf34bf78d0706024d" name="ab6113eb81c72ceadf34bf78d0706024d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab6113eb81c72ceadf34bf78d0706024d">&#9670;&#160;</a></span>CacheManager() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">CacheManager::CacheManager </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Private constructor for singleton pattern. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00006">6</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00008">CacheManager()</a>.</p>
 
 </div>
 </div>
@@ -312,20 +308,18 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Adds a gear item to the favorites list. </p>
+<p>Adds a unit to the favorites list. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">unitId</td><td>The unit identifier to add to favorites </td></tr>
+    <tr><td class="paramname">unitId</td><td>The unit identifier to add </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the operation was successful, false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the unit was added successfully, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00601">601</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00603">603</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00744">GearTreeItem::itemClicked()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
@@ -344,25 +338,23 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Adds a gear item to the recently used list. </p>
+<p>Adds a unit to the recently used list. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">unitId</td><td>The unit identifier to add to recently used </td></tr>
+    <tr><td class="paramname">unitId</td><td>The unit identifier to add </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the operation was successful, false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the unit was added successfully, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00393">393</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00417">417</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00021">MAX_RECENTLY_USED</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">Rack::itemDropped()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00023">MAX_RECENTLY_USED</a>.</p>
 
 </div>
 </div>
-<a id="ac194f3d2a7767c078c26dba22fe66ccc" name="ac194f3d2a7767c078c26dba22fe66ccc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac194f3d2a7767c078c26dba22fe66ccc">&#9670;&#160;</a></span>calculateDirectorySize()</h2>
+<a id="af71410d99572ee5275d46664efe211bf" name="af71410d99572ee5275d46664efe211bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af71410d99572ee5275d46664efe211bf">&#9670;&#160;</a></span>calculateDirectorySize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -373,7 +365,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">juce::int64 CacheManager::calculateDirectorySize </td>
           <td>(</td>
-          <td class="paramtype">const juce::File &amp;</td>          <td class="paramname"><span class="paramname"><em>directory</em></span></td><td>)</td>
+          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>directoryPath</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -384,20 +376,20 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Calculates the total size of a directory recursively. </p>
+<p>Calculates the size of a directory recursively. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">directory</td><td>The directory to calculate size for </td></tr>
+    <tr><td class="paramname">directoryPath</td><td>The directory path to calculate size for </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The total size in bytes </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00325">325</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00348">348</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00325">calculateDirectorySize()</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00348">calculateDirectorySize()</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00325">calculateDirectorySize()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00308">getCacheSize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00348">calculateDirectorySize()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00331">getCacheSize()</a>.</p>
 
 </div>
 </div>
@@ -417,12 +409,12 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Clears all cached data. </p>
-<p>Removes all files from the cache directory.</p>
+<p>Removes all files and directories in the cache.</p>
 <dl class="section return"><dt>Returns</dt><dd>true if clearing was successful, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00291">291</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00314">314</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
@@ -442,13 +434,11 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Clears the favorites list. </p>
-<dl class="section return"><dt>Returns</dt><dd>true if the operation was successful, false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if clearing was successful, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00723">723</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00725">725</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00671">GearLibrary::clearFavorites()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
@@ -468,18 +458,16 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Clears the recently used list. </p>
-<dl class="section return"><dt>Returns</dt><dd>true if the operation was successful, false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if clearing was successful, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00527">527</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00553">553</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00631">GearLibrary::clearRecentlyUsed()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
-<a id="aa20c81b4f59a9185a2712d707fa26679" name="aa20c81b4f59a9185a2712d707fa26679"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa20c81b4f59a9185a2712d707fa26679">&#9670;&#160;</a></span>createDirectoryIfNeeded()</h2>
+<a id="a8cd3397fe046b953408ec240bff6e50a" name="a8cd3397fe046b953408ec240bff6e50a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cd3397fe046b953408ec240bff6e50a">&#9670;&#160;</a></span>createDirectoryIfNeeded()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -490,7 +478,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">bool CacheManager::createDirectoryIfNeeded </td>
           <td>(</td>
-          <td class="paramtype">const juce::File &amp;</td>          <td class="paramname"><span class="paramname"><em>directory</em></span></td><td>)</td>
+          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>directoryPath</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -504,20 +492,22 @@ Private Attributes</h2></td></tr>
 <p>Creates a directory if it doesn't exist. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">directory</td><td>The directory to create </td></tr>
+    <tr><td class="paramname">directoryPath</td><td>The directory path to create </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if creation was successful or directory already exists, false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the directory was created or already exists, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00350">350</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00374">374</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00019">initializeCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00185">saveControlAssetToCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00131">saveFaceplateToCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00158">saveThumbnailToCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">saveUnitToCache()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00024">initializeCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00203">saveControlAssetToCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00147">saveFaceplateToCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00175">saveThumbnailToCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00128">saveUnitToCache()</a>.</p>
 
 </div>
 </div>
-<a id="af874321078d292b639f9b4c38645c651" name="af874321078d292b639f9b4c38645c651"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af874321078d292b639f9b4c38645c651">&#9670;&#160;</a></span>getAssetsDirectory()</h2>
+<a id="ade0242826497f75082691cf5272b0a0d" name="ade0242826497f75082691cf5272b0a0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade0242826497f75082691cf5272b0a0d">&#9670;&#160;</a></span>getAssetsDirectory()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -526,7 +516,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getAssetsDirectory </td>
+          <td class="memname">juce::String CacheManager::getAssetsDirectory </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -539,25 +529,22 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the assets directory. </p>
-<dl class="section return"><dt>Returns</dt><dd>The assets directory </dd></dl>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00396">396</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00372">372</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00387">getControlsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00377">getFaceplatesDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00382">getThumbnailsDirectory()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00019">initializeCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00411">getControlsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00401">getFaceplatesDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00406">getThumbnailsDirectory()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00024">initializeCache()</a>.</p>
 
 </div>
 </div>
-<a id="a838f79ac19a585cc51402854c1a0ede7" name="a838f79ac19a585cc51402854c1a0ede7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a838f79ac19a585cc51402854c1a0ede7">&#9670;&#160;</a></span>getCachedControlAssetPath()</h2>
+<a id="ad0ebb81a88cbaae27b3bbb658a27d5a6" name="ad0ebb81a88cbaae27b3bbb658a27d5a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0ebb81a88cbaae27b3bbb658a27d5a6">&#9670;&#160;</a></span>getCachedControlAssetPath()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getCachedControlAssetPath </td>
+          <td class="memname">juce::String CacheManager::getCachedControlAssetPath </td>
           <td>(</td>
           <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>assetPath</em></span></td><td>)</td>
           <td> const</td>
@@ -572,24 +559,24 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The cached file path, or empty string if not cached </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The cached file path as a string </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">107</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">112</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00387">getControlsDirectory()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00411">getControlsDirectory()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00086">isControlAssetCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00271">loadControlAssetFromCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00185">saveControlAssetToCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00091">isControlAssetCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00290">loadControlAssetFromCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00203">saveControlAssetToCache()</a>.</p>
 
 </div>
 </div>
-<a id="a6199dfe0c681c88df44a03b69c838fa2" name="a6199dfe0c681c88df44a03b69c838fa2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6199dfe0c681c88df44a03b69c838fa2">&#9670;&#160;</a></span>getCachedFaceplatePath()</h2>
+<a id="aaf8353c4fef9965922888082c2d6bb88" name="aaf8353c4fef9965922888082c2d6bb88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf8353c4fef9965922888082c2d6bb88">&#9670;&#160;</a></span>getCachedFaceplatePath()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getCachedFaceplatePath </td>
+          <td class="memname">juce::String CacheManager::getCachedFaceplatePath </td>
           <td>(</td>
           <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>unitId</em></span>, </td>
         </tr>
@@ -609,24 +596,24 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The cached file path, or empty string if not cached </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The cached file path as a string </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">97</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">102</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00377">getFaceplatesDirectory()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00401">getFaceplatesDirectory()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00074">isFaceplateCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00231">loadFaceplateFromCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00131">saveFaceplateToCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00079">isFaceplateCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00242">loadFaceplateFromCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00147">saveFaceplateToCache()</a>.</p>
 
 </div>
 </div>
-<a id="a34d4857b997534bcacadafd51440ccd5" name="a34d4857b997534bcacadafd51440ccd5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a34d4857b997534bcacadafd51440ccd5">&#9670;&#160;</a></span>getCachedThumbnailPath()</h2>
+<a id="a06d0790360b5a9fbd517c36791367a56" name="a06d0790360b5a9fbd517c36791367a56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06d0790360b5a9fbd517c36791367a56">&#9670;&#160;</a></span>getCachedThumbnailPath()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getCachedThumbnailPath </td>
+          <td class="memname">juce::String CacheManager::getCachedThumbnailPath </td>
           <td>(</td>
           <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>unitId</em></span>, </td>
         </tr>
@@ -646,24 +633,24 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The cached file path, or empty string if not cached </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The cached file path as a string </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">102</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">107</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00382">getThumbnailsDirectory()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00406">getThumbnailsDirectory()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00080">isThumbnailCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00251">loadThumbnailFromCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00158">saveThumbnailToCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00085">isThumbnailCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00266">loadThumbnailFromCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00175">saveThumbnailToCache()</a>.</p>
 
 </div>
 </div>
-<a id="a61ddd69747dfa089f12783df618ae3bb" name="a61ddd69747dfa089f12783df618ae3bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61ddd69747dfa089f12783df618ae3bb">&#9670;&#160;</a></span>getCachedUnitPath()</h2>
+<a id="abfa9ea24d79adc5d20465921b7fca3c4" name="abfa9ea24d79adc5d20465921b7fca3c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfa9ea24d79adc5d20465921b7fca3c4">&#9670;&#160;</a></span>getCachedUnitPath()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getCachedUnitPath </td>
+          <td class="memname">juce::String CacheManager::getCachedUnitPath </td>
           <td>(</td>
           <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>unitId</em></span></td><td>)</td>
           <td> const</td>
@@ -678,24 +665,24 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The cached file path, or empty string if not cached </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The cached file path as a string </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00092">92</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">97</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00367">getUnitsDirectory()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00391">getUnitsDirectory()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00068">isUnitCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00212">loadUnitFromCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">saveUnitToCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00073">isUnitCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00223">loadUnitFromCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00128">saveUnitToCache()</a>.</p>
 
 </div>
 </div>
-<a id="ac177bdaceb4ed3f40c2721e8a1c06c88" name="ac177bdaceb4ed3f40c2721e8a1c06c88"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac177bdaceb4ed3f40c2721e8a1c06c88">&#9670;&#160;</a></span>getCacheRoot()</h2>
+<a id="ae8a24658844e227dfd4eb51c6110134c" name="ae8a24658844e227dfd4eb51c6110134c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8a24658844e227dfd4eb51c6110134c">&#9670;&#160;</a></span>getCacheRoot()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getCacheRoot </td>
+          <td class="memname">juce::String CacheManager::getCacheRoot </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -703,12 +690,12 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the cache root directory. </p>
-<dl class="section return"><dt>Returns</dt><dd>The cache root directory as a JUCE File object </dd></dl>
+<p>Gets the cache root directory path. </p>
+<dl class="section return"><dt>Returns</dt><dd>The cache root directory path as a string </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00063">63</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00068">68</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>.</p>
 
 </div>
 </div>
@@ -728,16 +715,16 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the total size of the cache in bytes. </p>
-<dl class="section return"><dt>Returns</dt><dd>The total cache size in bytes </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The cache size in bytes </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00308">308</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00331">331</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00325">calculateDirectorySize()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00348">calculateDirectorySize()</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
-<a id="a9896ddbd00ea77f52af80674ac539c8a" name="a9896ddbd00ea77f52af80674ac539c8a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9896ddbd00ea77f52af80674ac539c8a">&#9670;&#160;</a></span>getControlsDirectory()</h2>
+<a id="a15a81d0bea7a1e756045439ad8d217a7" name="a15a81d0bea7a1e756045439ad8d217a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15a81d0bea7a1e756045439ad8d217a7">&#9670;&#160;</a></span>getControlsDirectory()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -746,7 +733,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getControlsDirectory </td>
+          <td class="memname">juce::String CacheManager::getControlsDirectory </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -759,19 +746,16 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the controls directory. </p>
-<dl class="section return"><dt>Returns</dt><dd>The controls directory </dd></dl>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00411">411</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00387">387</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00396">getAssetsDirectory()</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00372">getAssetsDirectory()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">getCachedControlAssetPath()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00019">initializeCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">getCachedControlAssetPath()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00024">initializeCache()</a>.</p>
 
 </div>
 </div>
-<a id="aba626d248cbf50746e35b04b59ce3ad7" name="aba626d248cbf50746e35b04b59ce3ad7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba626d248cbf50746e35b04b59ce3ad7">&#9670;&#160;</a></span>getFaceplatesDirectory()</h2>
+<a id="afc6c6dc927f491b3adb8767a9d83ec38" name="afc6c6dc927f491b3adb8767a9d83ec38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc6c6dc927f491b3adb8767a9d83ec38">&#9670;&#160;</a></span>getDummy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -780,7 +764,41 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getFaceplatesDirectory </td>
+          <td class="memname"><a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp; CacheManager::getDummy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns a reference to a dummy cache manager (Null Object Pattern). </p>
+<p>This can be used for default-constructed objects or in cases where a real cache manager is not available. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00774">774</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00008">CacheManager()</a>, and <a class="el" href="../../d1/d4c/_file_system_8cpp_source.html#l00181">IFileSystem::getDummy()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00309">GearItem::loadFromJSON()</a>.</p>
+
+</div>
+</div>
+<a id="ab13b9428ad2a6a4fd3e76e5e48aff37d" name="ab13b9428ad2a6a4fd3e76e5e48aff37d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab13b9428ad2a6a4fd3e76e5e48aff37d">&#9670;&#160;</a></span>getFaceplatesDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">juce::String CacheManager::getFaceplatesDirectory </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -793,14 +811,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the faceplates directory. </p>
-<dl class="section return"><dt>Returns</dt><dd>The faceplates directory </dd></dl>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00401">401</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00377">377</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00396">getAssetsDirectory()</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00372">getAssetsDirectory()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">getCachedFaceplatePath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00019">initializeCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00131">saveFaceplateToCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">getCachedFaceplatePath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00024">initializeCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00147">saveFaceplateToCache()</a>.</p>
 
 </div>
 </div>
@@ -819,43 +834,17 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the list of favorite unit IDs. </p>
-<dl class="section return"><dt>Returns</dt><dd>Array of favorite unit IDs </dd></dl>
+<p>Gets the list of favorite units. </p>
+<dl class="section return"><dt>Returns</dt><dd>Array of favorite unit identifiers </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00645">645</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00647">647</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00469">GearTreeItem::refreshSubItems()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">GearLibrary::updateFilteredItems()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
-<a id="abfb1b82a8a390dd6405f4ac185e936fd" name="abfb1b82a8a390dd6405f4ac185e936fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abfb1b82a8a390dd6405f4ac185e936fd">&#9670;&#160;</a></span>getFavoritesCount()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int CacheManager::getFavoritesCount </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets the number of items in the favorites list. </p>
-<dl class="section return"><dt>Returns</dt><dd>The number of favorite items </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00742">742</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-</div>
-</div>
-<a id="a7bad0731cff79ab853026765848b965b" name="a7bad0731cff79ab853026765848b965b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7bad0731cff79ab853026765848b965b">&#9670;&#160;</a></span>getInstance()</h2>
+<a id="a61c26037195bdc819dc94677ec69685c" name="a61c26037195bdc819dc94677ec69685c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61c26037195bdc819dc94677ec69685c">&#9670;&#160;</a></span>getFileSystem()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -864,27 +853,25 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp; CacheManager::getInstance </td>
+          <td class="memname"><a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp; CacheManager::getFileSystem </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the singleton instance of <a class="el" href="../../d4/d9f/class_cache_manager.html" title="Manages local caching of unit data and assets for the Analogiq plugin.">CacheManager</a>. </p>
-<dl class="section return"><dt>Returns</dt><dd>Reference to the <a class="el" href="../../d4/d9f/class_cache_manager.html" title="Manages local caching of unit data and assets for the Analogiq plugin.">CacheManager</a> instance </dd></dl>
+<p>Gets the file system used by this cache manager. </p>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the file system implementation </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00013">13</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00064">64</a> of file <a class="el" href="../../dd/dab/_cache_manager_8h_source.html">CacheManager.h</a>.</p>
 
-<p class="reference">References <a class="el" href="#a53c6688c77a6612977883ef5e65805da">CacheManager()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00671">GearLibrary::clearFavorites()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00631">GearLibrary::clearRecentlyUsed()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01782">Rack::fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">Rack::fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01318">Rack::fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01087">Rack::fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00452">Rack::fetchSchemaForGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01550">Rack::fetchSwitchSpriteSheet()</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00744">GearTreeItem::itemClicked()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">Rack::itemDropped()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00021">GearItem::loadImage()</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00376">GearTreeItem::paintItem()</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00469">GearTreeItem::refreshSubItems()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">GearLibrary::updateFilteredItems()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
@@ -903,49 +890,23 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the list of recently used unit IDs. </p>
+<p>Gets the list of recently used units. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">maxCount</td><td>Maximum number of items to return (default: MAX_RECENTLY_USED) </td></tr>
+    <tr><td class="paramname">maxCount</td><td>The maximum number of items to return (default: MAX_RECENTLY_USED) </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Array of recently used unit IDs, most recent first </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Array of recently used unit identifiers </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00443">443</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00468">468</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00469">GearTreeItem::refreshSubItems()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00330">GearLibrary::updateFilteredItems()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
-<a id="a5acd4a5578973ff12cfbcbc0076f886b" name="a5acd4a5578973ff12cfbcbc0076f886b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5acd4a5578973ff12cfbcbc0076f886b">&#9670;&#160;</a></span>getRecentlyUsedCount()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int CacheManager::getRecentlyUsedCount </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets the number of items in the recently used list. </p>
-<dl class="section return"><dt>Returns</dt><dd>The number of recently used items </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00546">546</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-</div>
-</div>
-<a id="a210cf47f03e7ae0b819ea88f7d280d79" name="a210cf47f03e7ae0b819ea88f7d280d79"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a210cf47f03e7ae0b819ea88f7d280d79">&#9670;&#160;</a></span>getThumbnailsDirectory()</h2>
+<a id="a3d598115f76a5f4f94319c9fea50c67a" name="a3d598115f76a5f4f94319c9fea50c67a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d598115f76a5f4f94319c9fea50c67a">&#9670;&#160;</a></span>getThumbnailsDirectory()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -954,7 +915,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getThumbnailsDirectory </td>
+          <td class="memname">juce::String CacheManager::getThumbnailsDirectory </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -967,19 +928,16 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the thumbnails directory. </p>
-<dl class="section return"><dt>Returns</dt><dd>The thumbnails directory </dd></dl>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00406">406</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00382">382</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00396">getAssetsDirectory()</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00372">getAssetsDirectory()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">getCachedThumbnailPath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00019">initializeCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00158">saveThumbnailToCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">getCachedThumbnailPath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00024">initializeCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00175">saveThumbnailToCache()</a>.</p>
 
 </div>
 </div>
-<a id="a0b24545a116ecd46e28298f09eb8e744" name="a0b24545a116ecd46e28298f09eb8e744"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b24545a116ecd46e28298f09eb8e744">&#9670;&#160;</a></span>getUnitsDirectory()</h2>
+<a id="a823d4cc6278ce1c4eee4c96772037fde" name="a823d4cc6278ce1c4eee4c96772037fde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a823d4cc6278ce1c4eee4c96772037fde">&#9670;&#160;</a></span>getUnitsDirectory()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -988,7 +946,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::getUnitsDirectory </td>
+          <td class="memname">juce::String CacheManager::getUnitsDirectory </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -1001,14 +959,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the units directory. </p>
-<dl class="section return"><dt>Returns</dt><dd>The units directory </dd></dl>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00391">391</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00367">367</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00092">getCachedUnitPath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00019">initializeCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">saveUnitToCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">getCachedUnitPath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00024">initializeCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00128">saveUnitToCache()</a>.</p>
 
 </div>
 </div>
@@ -1031,9 +986,9 @@ Private Attributes</h2></td></tr>
 <p>Creates the cache root directory and all necessary subdirectories if they don't already exist.</p>
 <dl class="section return"><dt>Returns</dt><dd>true if initialization was successful, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00019">19</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00024">24</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00350">createDirectoryIfNeeded()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00372">getAssetsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00387">getControlsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00377">getFaceplatesDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00382">getThumbnailsDirectory()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00367">getUnitsDirectory()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00374">createDirectoryIfNeeded()</a>, <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00396">getAssetsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00411">getControlsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00401">getFaceplatesDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00406">getThumbnailsDirectory()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00391">getUnitsDirectory()</a>.</p>
 
 </div>
 </div>
@@ -1061,11 +1016,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the control asset is cached, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00086">86</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00091">91</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">getCachedControlAssetPath()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01782">Rack::fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01318">Rack::fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01087">Rack::fetchKnobImage()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01550">Rack::fetchSwitchSpriteSheet()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">getCachedControlAssetPath()</a>.</p>
 
 </div>
 </div>
@@ -1098,11 +1051,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the faceplate image is cached, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00074">74</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00079">79</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">getCachedFaceplatePath()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">Rack::fetchFaceplateImage()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">getCachedFaceplatePath()</a>.</p>
 
 </div>
 </div>
@@ -1128,13 +1079,11 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the unit is in the favorites list, false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the unit is favorited, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00766">766</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00744">744</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00744">GearTreeItem::itemClicked()</a>, and <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00376">GearTreeItem::paintItem()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
@@ -1160,11 +1109,11 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the unit is in the recently used list, false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the unit is recently used, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00570">570</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00572">572</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
@@ -1197,11 +1146,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the thumbnail image is cached, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00080">80</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00085">85</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">getCachedThumbnailPath()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00021">GearItem::loadImage()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">getCachedThumbnailPath()</a>.</p>
 
 </div>
 </div>
@@ -1229,11 +1176,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the unit JSON is cached, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00068">68</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00073">73</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00092">getCachedUnitPath()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00452">Rack::fetchSchemaForGearItem()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">getCachedUnitPath()</a>.</p>
 
 </div>
 </div>
@@ -1261,11 +1206,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The cached image, or invalid image if not found </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00271">271</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00290">290</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">getCachedControlAssetPath()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01782">Rack::fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01318">Rack::fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01087">Rack::fetchKnobImage()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01550">Rack::fetchSwitchSpriteSheet()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">getCachedControlAssetPath()</a>.</p>
 
 </div>
 </div>
@@ -1298,11 +1241,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The cached image, or invalid image if not found </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00231">231</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00242">242</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">getCachedFaceplatePath()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">Rack::fetchFaceplateImage()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">getCachedFaceplatePath()</a>.</p>
 
 </div>
 </div>
@@ -1335,11 +1276,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The cached image, or invalid image if not found </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00251">251</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00266">266</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">getCachedThumbnailPath()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00021">GearItem::loadImage()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">getCachedThumbnailPath()</a>.</p>
 
 </div>
 </div>
@@ -1367,11 +1306,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The cached JSON data, or empty string if not found </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00212">212</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00223">223</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00092">getCachedUnitPath()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00452">Rack::fetchSchemaForGearItem()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">getCachedUnitPath()</a>.</p>
 
 </div>
 </div>
@@ -1398,7 +1335,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="reference">References <a class="el" href="#a53c6688c77a6612977883ef5e65805da">CacheManager()</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00021">MAX_RECENTLY_USED</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00008">CacheManager()</a>.</p>
 
 </div>
 </div>
@@ -1424,13 +1361,11 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the operation was successful, false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the unit was removed successfully, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00673">673</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00675">675</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00744">GearTreeItem::itemClicked()</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
@@ -1456,11 +1391,11 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the operation was successful, false otherwise </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the unit was removed successfully, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00477">477</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00503">503</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">cacheRoot</a>.</p>
+<p class="reference">References <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">cacheRoot</a>, and <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>.</p>
 
 </div>
 </div>
@@ -1493,11 +1428,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if saving was successful, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00185">185</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00203">203</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00350">createDirectoryIfNeeded()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">getCachedControlAssetPath()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01782">Rack::fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01318">Rack::fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01087">Rack::fetchKnobImage()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01550">Rack::fetchSwitchSpriteSheet()</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00374">createDirectoryIfNeeded()</a>, <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">getCachedControlAssetPath()</a>.</p>
 
 </div>
 </div>
@@ -1536,11 +1469,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if saving was successful, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00131">131</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00147">147</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00350">createDirectoryIfNeeded()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">getCachedFaceplatePath()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00377">getFaceplatesDirectory()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">Rack::fetchFaceplateImage()</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00374">createDirectoryIfNeeded()</a>, <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">getCachedFaceplatePath()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00401">getFaceplatesDirectory()</a>.</p>
 
 </div>
 </div>
@@ -1579,11 +1510,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if saving was successful, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00158">158</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00175">175</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00350">createDirectoryIfNeeded()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">getCachedThumbnailPath()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00382">getThumbnailsDirectory()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00021">GearItem::loadImage()</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00374">createDirectoryIfNeeded()</a>, <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">getCachedThumbnailPath()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00406">getThumbnailsDirectory()</a>.</p>
 
 </div>
 </div>
@@ -1616,17 +1545,15 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if saving was successful, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">112</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00128">128</a> of file <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html">CacheManager.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00350">createDirectoryIfNeeded()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00092">getCachedUnitPath()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00367">getUnitsDirectory()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00452">Rack::fetchSchemaForGearItem()</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00374">createDirectoryIfNeeded()</a>, <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">fileSystem</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">getCachedUnitPath()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00391">getUnitsDirectory()</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="a2d8d44178eb184c4bf756397c97029b6" name="a2d8d44178eb184c4bf756397c97029b6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d8d44178eb184c4bf756397c97029b6">&#9670;&#160;</a></span>cacheRoot</h2>
+<a id="aaa5cf149d24e4e508962678256c9d0fe" name="aaa5cf149d24e4e508962678256c9d0fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa5cf149d24e4e508962678256c9d0fe">&#9670;&#160;</a></span>cacheRoot</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1635,7 +1562,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">juce::File CacheManager::cacheRoot</td>
+          <td class="memname">juce::String CacheManager::cacheRoot</td>
         </tr>
       </table>
   </td>
@@ -1645,11 +1572,35 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The cache root directory. </p>
+<p class="definition">Definition at line <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00308">308</a> of file <a class="el" href="../../dd/dab/_cache_manager_8h_source.html">CacheManager.h</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00362">362</a> of file <a class="el" href="../../dd/dab/_cache_manager_8h_source.html">CacheManager.h</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00603">addToFavorites()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00417">addToRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00314">clearCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00725">clearFavorites()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00553">clearRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00396">getAssetsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00068">getCacheRoot()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00331">getCacheSize()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00647">getFavorites()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00468">getRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00391">getUnitsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00024">initializeCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00744">isFavorite()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00572">isRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00675">removeFromFavorites()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00503">removeFromRecentlyUsed()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00601">addToFavorites()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00393">addToRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00006">CacheManager()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00291">clearCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00723">clearFavorites()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00527">clearRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00372">getAssetsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00063">getCacheRoot()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00308">getCacheSize()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00645">getFavorites()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00742">getFavoritesCount()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00443">getRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00546">getRecentlyUsedCount()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00367">getUnitsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00019">initializeCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00766">isFavorite()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00570">isRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00673">removeFromFavorites()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00477">removeFromRecentlyUsed()</a>.</p>
+</div>
+</div>
+<a id="a697acda1f4f80dafbe530346f964bd73" name="a697acda1f4f80dafbe530346f964bd73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a697acda1f4f80dafbe530346f964bd73">&#9670;&#160;</a></span>fileSystem</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a>&amp; CacheManager::fileSystem</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00307">307</a> of file <a class="el" href="../../dd/dab/_cache_manager_8h_source.html">CacheManager.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00603">addToFavorites()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00417">addToRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00008">CacheManager()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00348">calculateDirectorySize()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00314">clearCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00725">clearFavorites()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00553">clearRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00374">createDirectoryIfNeeded()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00396">getAssetsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">getCachedControlAssetPath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00102">getCachedFaceplatePath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00107">getCachedThumbnailPath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00097">getCachedUnitPath()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00331">getCacheSize()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00411">getControlsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00401">getFaceplatesDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00647">getFavorites()</a>, <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00064">getFileSystem()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00468">getRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00406">getThumbnailsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00391">getUnitsDirectory()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00024">initializeCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00091">isControlAssetCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00079">isFaceplateCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00744">isFavorite()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00572">isRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00085">isThumbnailCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00073">isUnitCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00290">loadControlAssetFromCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00242">loadFaceplateFromCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00266">loadThumbnailFromCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00223">loadUnitFromCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00675">removeFromFavorites()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00503">removeFromRecentlyUsed()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00203">saveControlAssetToCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00147">saveFaceplateToCache()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00175">saveThumbnailToCache()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00128">saveUnitToCache()</a>.</p>
 
 </div>
 </div>
@@ -1675,9 +1626,9 @@ Private Attributes</h2></td></tr>
 
 <p>Maximum number of recently used items that can be stored and displayed. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00021">21</a> of file <a class="el" href="../../dd/dab/_cache_manager_8h_source.html">CacheManager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/dab/_cache_manager_8h_source.html#l00023">23</a> of file <a class="el" href="../../dd/dab/_cache_manager_8h_source.html">CacheManager.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00393">addToRecentlyUsed()</a>, <a class="el" href="#a28e4e56f6486a637585ae3f9d2517650">operator=()</a>, and <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00469">GearTreeItem::refreshSubItems()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00417">addToRecentlyUsed()</a>, and <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00505">GearTreeItem::refreshSubItems()</a>.</p>
 
 </div>
 </div>

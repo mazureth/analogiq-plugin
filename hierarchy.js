@@ -8,6 +8,7 @@ var hierarchy =
     ] ],
     [ "CacheManager", "d4/d9f/class_cache_manager.html", null ],
     [ "juce::Component", null, [
+      [ "AnalogIQEditor::MenuBarContainer", "de/d5e/class_analog_i_q_editor_1_1_menu_bar_container.html", null ],
       [ "GearLibrary", "d5/d8c/class_gear_library.html", null ],
       [ "NotesPanel", "d9/dc5/class_notes_panel.html", null ],
       [ "NotesPanel::NotesContainer", "d7/d9c/class_notes_panel_1_1_notes_container.html", null ],
@@ -24,6 +25,10 @@ var hierarchy =
     ] ],
     [ "GearControl", "dc/d76/class_gear_control.html", null ],
     [ "GearItem", "dd/dee/class_gear_item.html", null ],
+    [ "IFileSystem", "d6/d20/class_i_file_system.html", [
+      [ "DummyFileSystem", "db/d22/class_dummy_file_system.html", null ],
+      [ "FileSystem", "d5/d0f/class_file_system.html", null ]
+    ] ],
     [ "INetworkFetcher", "d0/dbe/class_i_network_fetcher.html", [
       [ "DummyNetworkFetcher", "d6/dad/class_dummy_network_fetcher.html", null ],
       [ "NetworkFetcher", "d0/dcb/class_network_fetcher.html", null ]
@@ -38,6 +43,11 @@ var hierarchy =
       [ "GearLibrary", "d5/d8c/class_gear_library.html", null ],
       [ "RackSlot", "dc/dde/class_rack_slot.html", null ]
     ] ],
+    [ "juce::LookAndFeel_V4", null, [
+      [ "AnalogIQEditor::FlatMenuButtonLookAndFeel", "df/d01/class_analog_i_q_editor_1_1_flat_menu_button_look_and_feel.html", null ]
+    ] ],
+    [ "PresetManager", "d6/d6a/class_preset_manager.html", null ],
+    [ "RackStateListener", "d3/d9f/class_rack_state_listener.html", null ],
     [ "GearControl::SwitchOptionFrame", "df/d72/struct_gear_control_1_1_switch_option_frame.html", null ],
     [ "juce::TreeViewItem", null, [
       [ "GearTreeItem", "d6/dc0/class_gear_tree_item.html", null ]

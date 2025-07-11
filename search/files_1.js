@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['draggablelistbox_2eh_0',['DraggableListBox.h',['../d7/d31/_draggable_list_box_8h.html',1,'']]]
+  ['cachemanager_2ecpp_0',['CacheManager.cpp',['../df/dbf/_cache_manager_8cpp.html',1,'']]],
+  ['cachemanager_2eh_1',['CacheManager.h',['../dd/dab/_cache_manager_8h.html',1,'']]]
 ];

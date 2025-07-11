@@ -97,128 +97,164 @@ $(function(){initNavTree('index.html','',''); });
 <h1 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
 Features</h1>
 <ul>
-<li><b>Virtual Rack System</b>: Organize and visualize your outboard gear in a virtual 500-series and 19" rack environment</li>
-<li><b>Gear Library</b>: Browse and add gear from a comprehensive library of popular analog equipment<ul>
-<li>Hierarchical tree view for easy navigation</li>
-<li>Search functionality</li>
-<li>Search by name, manufacturer, category, and tags</li>
-<li>Remote gear library with automatic updates</li>
+<li><b>Virtual Rack System</b>: Organize and visualize your outboard gear in a virtual 500-series and 19" rack environment
+- &lt;strong&gt;Gear Library&lt;/strong&gt;: Browse and add gear from a comprehensive library of popular analog equipment
+  - Hierarchical tree view for easy navigation
+  - Search functionality
+  - Search by name, manufacturer, category, and tags
+  - Remote gear library with automatic updates
+- &lt;strong&gt;Drag-and-Drop Interface&lt;/strong&gt;: Easily arrange gear in the rack via intuitive drag-and-drop
+- &lt;strong&gt;Gear Controls&lt;/strong&gt;: Interactive controls for each piece of gear
+  - Knobs with customizable ranges and steps
+  - Faders with vertical/horizontal orientation
+  - Switches with multiple states
+  - Buttons with momentary/latching behavior
+- &lt;strong&gt;Session Notes&lt;/strong&gt;: Document patchbay connections, settings, and other important session details
+- &lt;strong&gt;Instance Management&lt;/strong&gt;: Create and manage multiple instances of the same gear
+  - Save and load instance states
+  - Reset instances to source settings
+  - Track instance IDs and relationships
+- &lt;strong&gt;Preset System&lt;/strong&gt;: Save and load complete rack configurations
+  - Save current rack state as named presets
+  - Load presets to restore complete configurations
+  - Delete unwanted presets
+  - Automatic conflict detection and validation
+  - Timestamp tracking for preset management
+  - User-friendly preset naming with validation
+  - Confirmation dialogs for destructive operations
+- &lt;strong&gt;Remote Resource Management&lt;/strong&gt;: Automatic downloading and caching of gear resources
+  - Faceplate images
+  - Control images (knobs, faders, switches, buttons)
+  - Gear schemas and metadata
+- &lt;strong&gt;User-Created Gear&lt;/strong&gt;: Import your own gear images and create custom controls (coming soon)
+- &lt;strong&gt;MIDI/OSC Integration&lt;/strong&gt;: Control your digital-enabled analog gear directly from the plugin (coming soon)
+
+@section autotoc_md2 Building the Plugin
+
+@subsection autotoc_md3 Requirements
+
+- CMake 3.15+
+- C++17 compatible compiler
+- JUCE framework (will be downloaded automatically by CMake)
+- Doxygen (for building documentation)
+
+@subsection autotoc_md4 Build Steps
+
+1. Clone the repository:
+   @icode{bash} 
+   git clone https://github.com/mazureth/analogiq-client.git
+   cd analogiq-client
+   @endicode 
+
+2. Build the project using one of the provided scripts:
+   @icode{bash} 
+   # Normal build
+   ./build.sh
+   
+   # Clean build (removes build directory first)
+   ./clean_build.sh
+   @endicode 
+
+   Both scripts will accept flags that will be passed through to the build command
+
+   @icode 
+   # Build with verbose output
+   ./build.sh --verbose
+   
+   # Build with specific CMake flags
+   ./build.sh --parallel 4
+   @endicode 
+
+3. Run the tests:
+   @icode{bash} 
+   ./run_tests.sh
+   @endicode 
+
+4. Open your IDE &lt;em&gt;after&lt;/em&gt; you build so JUCE is correctly downloaded. This will help with linter issues.
+
+5. To build the documentation:
+   @icode{bash} 
+   cmake --build build --target docs
+   @endicode 
+   The documentation will be generated in the &lt;tt&gt;docs/html&lt;/tt&gt; directory.
+
+The plugin will be built in the &lt;tt&gt;build&lt;/tt&gt; directory. The first build might take longer as it downloads JUCE automatically.
+
+@section autotoc_md5 Building and Viewing Documentation Locally
+
+You can easily build and view the Doxygen-generated documentation using the provided helper script:
+
+@icode{sh} 
+./build_docs.sh
+@endicode 
+
+This script will:
+- Configure the project with CMake
+- Build the documentation
+- Prompt you to open the generated docs in your browser
+
+The documentation will be generated in &lt;tt&gt;docs/html/index.html&lt;/tt&gt;.
+
+@section autotoc_md6 Documentation
+
+The project documentation is automatically generated using Doxygen and is available in two places:
+
+1. &lt;strong&gt;Local Documentation&lt;/strong&gt;: After building, you can find the documentation in the &lt;tt&gt;docs/html&lt;/tt&gt; directory. Open &lt;tt&gt;index.html&lt;/tt&gt; in your web browser to view it.
+
+2. &lt;strong&gt;Online Documentation&lt;/strong&gt;: The latest documentation is automatically built and deployed to GitHub Pages whenever changes are pushed to the main branch. You can find it at: https://mazureth.github.io/analogiq-client/
+
+The documentation includes:
+- Detailed API documentation
+- Class hierarchies and relationships
+- Source code cross-references
+- Call graphs and dependency diagrams
+
+@section autotoc_md7 Usage
+
+1. Add the AnalogIQ plugin to a track in your DAW
+2. Browse the gear library and drag items into the rack
+3. Arrange gear in your preferred signal flow
+4. Interact with gear controls to document settings
+5. Use the notes section to document critical details about your setup
+6. Save your DAW project to preserve your rack configuration and notes
+
+@subsection autotoc_md8 Preset Management
+
+The preset system allows you to save and load complete rack configurations:
+
+@subsubsection autotoc_md9 Saving Presets
+1. Configure your rack with the desired gear and settings
+2. Click the "Presets" menu button in the top menu bar
+3. Select "Save Preset" from the dropdown menu
+4. Enter a name for your preset (names are validated for compatibility)
+5. Click "OK" to save the preset
+
+@subsubsection autotoc_md10 Loading Presets
+1. Click the "Presets" menu button in the top menu bar
+2. Either:
+   - Select "Load Preset" and choose from the list of available presets, or
+   - Click directly on a preset name in the menu to load it immediately
+3. If your rack contains gear items, you'll be prompted to confirm the operation
+4. The preset will be loaded, replacing your current rack configuration
+
+@subsubsection autotoc_md11 Managing Presets
+- &lt;strong&gt;Delete Preset&lt;/strong&gt;: Select "Delete Preset" from the presets menu and choose which preset to remove
+- &lt;strong&gt;Preset Names&lt;/strong&gt;: Must be 1-255 characters long and cannot contain special characters like &lt;tt&gt;/&lt;/tt&gt;, &lt;tt&gt;\\&lt;/tt&gt;, &lt;tt&gt;:&lt;/tt&gt;, &lt;tt&gt;*&lt;/tt&gt;, &lt;tt&gt;?&lt;/tt&gt;, &lt;tt&gt;"</li>
 </ul>
-</li>
-<li><b>Drag-and-Drop Interface</b>: Easily arrange gear in the rack via intuitive drag-and-drop</li>
-<li><b>Gear Controls</b>: Interactive controls for each piece of gear<ul>
-<li>Knobs with customizable ranges and steps</li>
-<li>Faders with vertical/horizontal orientation</li>
-<li>Switches with multiple states</li>
-<li>Buttons with momentary/latching behavior</li>
+<p>, <span class="tt">&lt;</span>, <span class="tt">&gt;</span>, or <span class="tt">|</span></p><ul>
+<li><b>Timestamps</b>: Presets are automatically timestamped for easy identification</li>
+<li><b>Conflict Detection</b>: The system prevents overwriting existing presets without explicit confirmation</li>
 </ul>
-</li>
-<li><b>Session Notes</b>: Document patchbay connections, settings, and other important session details</li>
-<li><b>Instance Management</b>: Create and manage multiple instances of the same gear<ul>
-<li>Save and load instance states</li>
-<li>Reset instances to source settings</li>
-<li>Track instance IDs and relationships</li>
-</ul>
-</li>
-<li><b>Remote Resource Management</b>: Automatic downloading and caching of gear resources<ul>
-<li>Faceplate images</li>
-<li>Control images (knobs, faders, switches, buttons)</li>
-<li>Gear schemas and metadata</li>
-</ul>
-</li>
-<li><b>User-Created Gear</b>: Import your own gear images and create custom controls (coming soon)</li>
-<li><b>MIDI/OSC Integration</b>: Control your digital-enabled analog gear directly from the plugin (coming soon)</li>
-</ul>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
-Building the Plugin</h1>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
-Requirements</h2>
-<ul>
-<li>CMake 3.15+</li>
-<li>C++17 compatible compiler</li>
-<li>JUCE framework (will be downloaded automatically by CMake)</li>
-<li>Doxygen (for building documentation)</li>
-</ul>
-<h2 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
-Build Steps</h2>
-<ol type="1">
-<li>Clone the repository: <div class="fragment"><div class="line">git clone https://github.com/mazureth/analogiq-client.git</div>
-<div class="line">cd analogiq-client</div>
-</div><!-- fragment --></li>
-<li><p class="startli">Build the project using one of the provided scripts: </p><div class="fragment"><div class="line"># Normal build</div>
-<div class="line">./build.sh</div>
-<div class="line"> </div>
-<div class="line"># Clean build (removes build directory first)</div>
-<div class="line">./clean_build.sh</div>
-</div><!-- fragment --><p class="startli">Both scripts will accept flags that will be passed through to the build command</p>
-<div class="fragment"><div class="line"># Build with verbose output</div>
-<div class="line">./build.sh --verbose</div>
-<div class="line"> </div>
-<div class="line"># Build with specific CMake flags</div>
-<div class="line">./build.sh --parallel 4</div>
-</div><!-- fragment --></li>
-<li>Run the tests: <div class="fragment"><div class="line">./run_tests.sh</div>
-</div><!-- fragment --></li>
-<li>Open your IDE <em>after</em> you build so JUCE is correctly downloaded. This will help with linter issues.</li>
-<li>To build the documentation: <div class="fragment"><div class="line">cmake --build build --target docs</div>
-</div><!-- fragment --> The documentation will be generated in the <span class="tt">docs/html</span> directory.</li>
-</ol>
-<p>The plugin will be built in the <span class="tt">build</span> directory. The first build might take longer as it downloads JUCE automatically.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
-Building and Viewing Documentation Locally</h1>
-<p>You can easily build and view the Doxygen-generated documentation using the provided helper script:</p>
-<div class="fragment"><div class="line">./build_docs.sh</div>
-</div><!-- fragment --><p>This script will:</p><ul>
-<li>Configure the project with CMake</li>
-<li>Build the documentation</li>
-<li>Prompt you to open the generated docs in your browser</li>
-</ul>
-<p>The documentation will be generated in <span class="tt">docs/html/index.html</span>.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md6"></a>
-Documentation</h1>
-<p>The project documentation is automatically generated using Doxygen and is available in two places:</p>
-<ol type="1">
-<li><b>Local Documentation</b>: After building, you can find the documentation in the <span class="tt">docs/html</span> directory. Open <span class="tt">index.html</span> in your web browser to view it.</li>
-<li><b>Online Documentation</b>: The latest documentation is automatically built and deployed to GitHub Pages whenever changes are pushed to the main branch. You can find it at: <a href="https://mazureth.github.io/analogiq-client/">https://mazureth.github.io/analogiq-client/</a></li>
-</ol>
-<p>The documentation includes:</p><ul>
-<li>Detailed API documentation</li>
-<li>Class hierarchies and relationships</li>
-<li>Source code cross-references</li>
-<li>Call graphs and dependency diagrams</li>
-</ul>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md7"></a>
-Usage</h1>
-<ol type="1">
-<li>Add the AnalogIQ plugin to a track in your DAW</li>
-<li>Browse the gear library and drag items into the rack</li>
-<li>Arrange gear in your preferred signal flow</li>
-<li>Interact with gear controls to document settings</li>
-<li>Use the notes section to document critical details about your setup</li>
-<li>Save your DAW project to preserve your rack configuration and notes</li>
-</ol>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md8"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md12"></a>
 Project Structure</h1>
 <ul>
 <li><span class="tt">Source/</span> - All source files<ul>
-<li><span class="tt">PluginProcessor.*</span> - Core plugin functionality</li>
-<li><span class="tt">PluginEditor.*</span> - Main UI components</li>
-<li><span class="tt">GearLibrary.*</span> - Gear browser and library management</li>
-<li><span class="tt">GearItem.*</span> - Individual gear item representation</li>
-<li><span class="tt">Rack.*</span> - Virtual rack system</li>
-<li><span class="tt">RackSlot.*</span> - Individual rack slot</li>
-<li><span class="tt">NotesPanel.*</span> - Session notes functionality</li>
+<li><span class="tt">AnalogIQProcessor.*</span> - Core plugin functionality</li>
+<li><span class="tt">AnalogIQEditor.*</span> - Main UI components</li>
+<li><span class="tt">GearLibrary.*</span> - Gear browser and library management </li>
 </ul>
 </li>
-<li><span class="tt">Assets/</span> - Images and other resources</li>
-<li><span class="tt">CMakeLists.txt</span> - CMake build configuration</li>
 </ul>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md9"></a>
-Contributing</h1>
-<p>Contributions to AnalogIQ are welcome! Please feel free to submit pull requests, create issues or contact the maintainers.</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md10"></a>
-License</h1>
-<p>This project is licensed under the MIT License - see the LICENSE file for details. </p>
 </div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->

@@ -1,4 +1,18 @@
 var searchData=
 [
-  ['operator_3d_0',['operator=',['../d4/d9f/class_cache_manager.html#a28e4e56f6486a637585ae3f9d2517650',1,'CacheManager::operator=()'],['../dc/d76/class_gear_control.html#a656ac2e9ae8ffc108d52a6d7646c4c27',1,'GearControl::operator=()'],['../d5/d8c/class_gear_library.html#acb1ee776414f7db6fc92fc83e69ce22f',1,'GearLibrary::operator=()'],['../d9/dc5/class_notes_panel.html#a74bb8d828b31fe564156b02970ed91bb',1,'NotesPanel::operator=()'],['../df/d1c/class_analog_i_q_editor.html#ae4243e1e7ef5e3fccc6a2388279bf3b2',1,'AnalogIQEditor::operator=()'],['../d5/d18/class_analog_i_q_processor.html#ade260c46698ba18c43dfe00f33f7594f',1,'AnalogIQProcessor::operator=()'],['../d0/dc7/class_rack.html#ae4fc1d19f3c07ac4c3afbc9a97ad5395',1,'Rack::operator=()'],['../dc/dde/class_rack_slot.html#a397ef02ee0545a4ade735880a1047344',1,'RackSlot::operator=()']]]
+  ['nametofilename_0',['nameToFilename',['../d6/d6a/class_preset_manager.html#a1f3ff03569f18f28eee274c0a8fae5cc',1,'PresetManager']]],
+  ['normalizeforsearch_1',['normalizeForSearch',['../d5/d8c/class_gear_library.html#a65c6503f1cf09260961cdfedad8c7923',1,'GearLibrary']]],
+  ['normalizepath_2',['normalizePath',['../db/d22/class_dummy_file_system.html#a379684dfce2af638b583bd1c3be97fd1',1,'DummyFileSystem::normalizePath()'],['../d5/d0f/class_file_system.html#afafbfe10865799631ba3e91b40773bf8',1,'FileSystem::normalizePath()'],['../d6/d20/class_i_file_system.html#a2ae248b09289480749fb0f51265bdcb6',1,'IFileSystem::normalizePath()']]],
+  ['notescontainer_3',['NotesContainer',['../d7/d9c/class_notes_panel_1_1_notes_container.html#a7a7b6d9703af2c666d9c88e929714d6a',1,'NotesPanel::NotesContainer']]],
+  ['notespanel_4',['NotesPanel',['../d9/dc5/class_notes_panel.html#abefbcb9c322a405b2db9a0e38bca58d4',1,'NotesPanel::NotesPanel()'],['../d9/dc5/class_notes_panel.html#ac37b4fa50342c8613a361c74d217802b',1,'NotesPanel::NotesPanel(const NotesPanel &amp;)=delete']]],
+  ['notifygearcontrolchanged_5',['notifyGearControlChanged',['../d0/dc7/class_rack.html#a3bd3441098bcd7675a8bfc55e3da8fd4',1,'Rack']]],
+  ['notifygearitemadded_6',['notifyGearItemAdded',['../d0/dc7/class_rack.html#a8170d5a46078781c6753798e1678e9a5',1,'Rack']]],
+  ['notifygearitemremoved_7',['notifyGearItemRemoved',['../d0/dc7/class_rack.html#afdbd0ba52048488c16219ca8bdc9cbc1',1,'Rack']]],
+  ['notifygearitemsrearranged_8',['notifyGearItemsRearranged',['../d0/dc7/class_rack.html#a413444c3fd844def7f4780ac66f8ab86',1,'Rack']]],
+  ['notifypresetloaded_9',['notifyPresetLoaded',['../d0/dc7/class_rack.html#a808df1eaca7f0e7e1524c7edf242151d',1,'Rack']]],
+  ['notifypresetsaved_10',['notifyPresetSaved',['../d0/dc7/class_rack.html#aad46d9a957e8435904af20bf5664110b',1,'Rack']]],
+  ['notifyrackofcontrolchanged_11',['notifyRackOfControlChanged',['../dc/dde/class_rack_slot.html#a89de580c65ebedd0bbdff12a8a16b983',1,'RackSlot']]],
+  ['notifyrackofgearitemadded_12',['notifyRackOfGearItemAdded',['../dc/dde/class_rack_slot.html#aca239639ff21ea59834863682bcfe054',1,'RackSlot']]],
+  ['notifyrackofgearitemremoved_13',['notifyRackOfGearItemRemoved',['../dc/dde/class_rack_slot.html#aea7b227d76e3dbce1340c9c5fa8d3cef',1,'RackSlot']]],
+  ['notifyrackstatereset_14',['notifyRackStateReset',['../d0/dc7/class_rack.html#a7fc3517726c710fc85183c2e33d609f2',1,'Rack']]]
 ];

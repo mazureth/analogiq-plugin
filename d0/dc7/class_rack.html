@@ -111,8 +111,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4941a9ecc2befb82d4f7a10225060e9c" id="r_a4941a9ecc2befb82d4f7a10225060e9c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4941a9ecc2befb82d4f7a10225060e9c">Rack</a> (<a class="el" href="../../d0/dbe/class_i_network_fetcher.html">INetworkFetcher</a> &amp;<a class="el" href="#a7c33d552a1b4da131274f3d45c938572">networkFetcher</a>)</td></tr>
-<tr class="memdesc:a4941a9ecc2befb82d4f7a10225060e9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new <a class="el" href="../../d0/dc7/class_rack.html" title="A component that manages a virtual rack of audio gear items.">Rack</a> instance.  <br /></td></tr>
+<tr class="memitem:a159b1af76485a375ebb69293acac34f7" id="r_a159b1af76485a375ebb69293acac34f7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a159b1af76485a375ebb69293acac34f7">Rack</a> (<a class="el" href="../../d0/dbe/class_i_network_fetcher.html">INetworkFetcher</a> &amp;<a class="el" href="#a7c33d552a1b4da131274f3d45c938572">networkFetcher</a>, <a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;<a class="el" href="#a6b1196b66145427f903eba2e65db6333">fileSystem</a>, <a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;<a class="el" href="#a1817fe609768dd87a6f1f592e1fe215f">cacheManager</a>, <a class="el" href="../../d6/d6a/class_preset_manager.html">PresetManager</a> &amp;<a class="el" href="#a030459a24a5d4d917a05b2b682790fd7">presetManager</a>, <a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a> *<a class="el" href="#aa2e59d59e52138bd5ac02496011edf9d">gearLibrary</a>)</td></tr>
+<tr class="memdesc:a159b1af76485a375ebb69293acac34f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a new <a class="el" href="../../d0/dc7/class_rack.html" title="A component that manages a virtual rack of audio gear items.">Rack</a> instance.  <br /></td></tr>
 <tr class="memitem:afe8d5b0650ba5038d2dc02652cea66b9" id="r_afe8d5b0650ba5038d2dc02652cea66b9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe8d5b0650ba5038d2dc02652cea66b9">~Rack</a> () override</td></tr>
 <tr class="memdesc:afe8d5b0650ba5038d2dc02652cea66b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for the <a class="el" href="../../d0/dc7/class_rack.html" title="A component that manages a virtual rack of audio gear items.">Rack</a> class.  <br /></td></tr>
 <tr class="memitem:af4d813335dd6ca20e989f1c7d601de42" id="r_af4d813335dd6ca20e989f1c7d601de42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af4d813335dd6ca20e989f1c7d601de42">paint</a> (juce::Graphics &amp;g) override</td></tr>
@@ -139,10 +139,28 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af60ca37f0883b0ab35a9fbf8680f0f73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a specific slot by index.  <br /></td></tr>
 <tr class="memitem:af0ddba251de6d89d76ad32db6bef03cf" id="r_af0ddba251de6d89d76ad32db6bef03cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af0ddba251de6d89d76ad32db6bef03cf">setGearLibrary</a> (<a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a> *library)</td></tr>
 <tr class="memdesc:af0ddba251de6d89d76ad32db6bef03cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the gear library reference.  <br /></td></tr>
-<tr class="memitem:a52950c4ad2f1b075a3b3dfd70bc45353" id="r_a52950c4ad2f1b075a3b3dfd70bc45353"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52950c4ad2f1b075a3b3dfd70bc45353">fetchSchemaForGearItem</a> (<a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *item)</td></tr>
-<tr class="memdesc:a52950c4ad2f1b075a3b3dfd70bc45353"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the schema for a gear item.  <br /></td></tr>
-<tr class="memitem:a4dfaa4fabaaaa55212bcee7389cbaf71" id="r_a4dfaa4fabaaaa55212bcee7389cbaf71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4dfaa4fabaaaa55212bcee7389cbaf71">parseSchema</a> (const juce::String &amp;schemaData, <a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *item)</td></tr>
-<tr class="memdesc:a4dfaa4fabaaaa55212bcee7389cbaf71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the schema data for a gear item.  <br /></td></tr>
+<tr class="memitem:a6dfd3961e520236eaf1905f0e88660bd" id="r_a6dfd3961e520236eaf1905f0e88660bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6dfd3961e520236eaf1905f0e88660bd">addRackStateListener</a> (<a class="el" href="../../d3/d9f/class_rack_state_listener.html">RackStateListener</a> *listener)</td></tr>
+<tr class="memdesc:a6dfd3961e520236eaf1905f0e88660bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a listener for rack state changes.  <br /></td></tr>
+<tr class="memitem:a95d1ab6f932fcd442c51f1facdf33d1a" id="r_a95d1ab6f932fcd442c51f1facdf33d1a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a95d1ab6f932fcd442c51f1facdf33d1a">removeRackStateListener</a> (<a class="el" href="../../d3/d9f/class_rack_state_listener.html">RackStateListener</a> *listener)</td></tr>
+<tr class="memdesc:a95d1ab6f932fcd442c51f1facdf33d1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a listener for rack state changes.  <br /></td></tr>
+<tr class="memitem:a8170d5a46078781c6753798e1678e9a5" id="r_a8170d5a46078781c6753798e1678e9a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8170d5a46078781c6753798e1678e9a5">notifyGearItemAdded</a> (int slotIndex, <a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *gearItem)</td></tr>
+<tr class="memdesc:a8170d5a46078781c6753798e1678e9a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies all listeners of a gear item being added.  <br /></td></tr>
+<tr class="memitem:afdbd0ba52048488c16219ca8bdc9cbc1" id="r_afdbd0ba52048488c16219ca8bdc9cbc1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afdbd0ba52048488c16219ca8bdc9cbc1">notifyGearItemRemoved</a> (int slotIndex)</td></tr>
+<tr class="memdesc:afdbd0ba52048488c16219ca8bdc9cbc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies all listeners of a gear item being removed.  <br /></td></tr>
+<tr class="memitem:a3bd3441098bcd7675a8bfc55e3da8fd4" id="r_a3bd3441098bcd7675a8bfc55e3da8fd4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3bd3441098bcd7675a8bfc55e3da8fd4">notifyGearControlChanged</a> (int slotIndex, <a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *gearItem, int controlIndex)</td></tr>
+<tr class="memdesc:a3bd3441098bcd7675a8bfc55e3da8fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies all listeners of a gear control being changed.  <br /></td></tr>
+<tr class="memitem:a413444c3fd844def7f4780ac66f8ab86" id="r_a413444c3fd844def7f4780ac66f8ab86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a413444c3fd844def7f4780ac66f8ab86">notifyGearItemsRearranged</a> (int sourceSlotIndex, int targetSlotIndex)</td></tr>
+<tr class="memdesc:a413444c3fd844def7f4780ac66f8ab86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies all listeners of gear items being rearranged.  <br /></td></tr>
+<tr class="memitem:a7fc3517726c710fc85183c2e33d609f2" id="r_a7fc3517726c710fc85183c2e33d609f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7fc3517726c710fc85183c2e33d609f2">notifyRackStateReset</a> ()</td></tr>
+<tr class="memdesc:a7fc3517726c710fc85183c2e33d609f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies all listeners of the rack state being reset.  <br /></td></tr>
+<tr class="memitem:a808df1eaca7f0e7e1524c7edf242151d" id="r_a808df1eaca7f0e7e1524c7edf242151d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a808df1eaca7f0e7e1524c7edf242151d">notifyPresetLoaded</a> (const juce::String &amp;presetName)</td></tr>
+<tr class="memdesc:a808df1eaca7f0e7e1524c7edf242151d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies all listeners of a preset being loaded.  <br /></td></tr>
+<tr class="memitem:aad46d9a957e8435904af20bf5664110b" id="r_aad46d9a957e8435904af20bf5664110b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad46d9a957e8435904af20bf5664110b">notifyPresetSaved</a> (const juce::String &amp;presetName)</td></tr>
+<tr class="memdesc:aad46d9a957e8435904af20bf5664110b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies all listeners of a preset being saved.  <br /></td></tr>
+<tr class="memitem:a3828525f0b86250e46ca0a65c3d3ab5e" id="r_a3828525f0b86250e46ca0a65c3d3ab5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3828525f0b86250e46ca0a65c3d3ab5e">fetchSchemaForGearItem</a> (<a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *item, std::function&lt; void()&gt; onComplete=nullptr)</td></tr>
+<tr class="memdesc:a3828525f0b86250e46ca0a65c3d3ab5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the schema for a gear item.  <br /></td></tr>
+<tr class="memitem:ac1fd318e8627e4cd1f39ab8d78a6cfd6" id="r_ac1fd318e8627e4cd1f39ab8d78a6cfd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1fd318e8627e4cd1f39ab8d78a6cfd6">parseSchema</a> (const juce::String &amp;schemaData, <a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *item, std::function&lt; void()&gt; onComplete=nullptr)</td></tr>
+<tr class="memdesc:ac1fd318e8627e4cd1f39ab8d78a6cfd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the schema data for a gear item.  <br /></td></tr>
 <tr class="memitem:ae304ddb2a78faaba71656d2d8498d408" id="r_ae304ddb2a78faaba71656d2d8498d408"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae304ddb2a78faaba71656d2d8498d408">fetchFaceplateImage</a> (<a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *item)</td></tr>
 <tr class="memdesc:ae304ddb2a78faaba71656d2d8498d408"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the faceplate image for a gear item.  <br /></td></tr>
 <tr class="memitem:a79a2c9c6b634c62533bb73340c1f591e" id="r_a79a2c9c6b634c62533bb73340c1f591e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79a2c9c6b634c62533bb73340c1f591e">fetchKnobImage</a> (<a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *item, int controlIndex)</td></tr>
@@ -185,19 +203,24 @@ Private Attributes</h2></td></tr>
 <tr class="memdesc:a5e004552f75b1e4a6b5878dd75daf751"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container for rack slots.  <br /></td></tr>
 <tr class="memitem:a5cca6da54f2c934435d6b5fd5d1a4918" id="r_a5cca6da54f2c934435d6b5fd5d1a4918"><td class="memItemLeft" align="right" valign="top">juce::OwnedArray&lt; <a class="el" href="../../dc/dde/class_rack_slot.html">RackSlot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5cca6da54f2c934435d6b5fd5d1a4918">slots</a></td></tr>
 <tr class="memdesc:a5cca6da54f2c934435d6b5fd5d1a4918"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array of rack slots.  <br /></td></tr>
-<tr class="memitem:aa2e59d59e52138bd5ac02496011edf9d" id="r_aa2e59d59e52138bd5ac02496011edf9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2e59d59e52138bd5ac02496011edf9d">gearLibrary</a> = nullptr</td></tr>
-<tr class="memdesc:aa2e59d59e52138bd5ac02496011edf9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the gear library.  <br /></td></tr>
+<tr class="memitem:aa2e59d59e52138bd5ac02496011edf9d" id="r_aa2e59d59e52138bd5ac02496011edf9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2e59d59e52138bd5ac02496011edf9d">gearLibrary</a></td></tr>
+<tr class="memdesc:aa2e59d59e52138bd5ac02496011edf9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the gear library.  <br /></td></tr>
 <tr class="memitem:a7c33d552a1b4da131274f3d45c938572" id="r_a7c33d552a1b4da131274f3d45c938572"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/dbe/class_i_network_fetcher.html">INetworkFetcher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c33d552a1b4da131274f3d45c938572">networkFetcher</a></td></tr>
 <tr class="memdesc:a7c33d552a1b4da131274f3d45c938572"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the network fetcher.  <br /></td></tr>
+<tr class="memitem:a6b1196b66145427f903eba2e65db6333" id="r_a6b1196b66145427f903eba2e65db6333"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6b1196b66145427f903eba2e65db6333">fileSystem</a></td></tr>
+<tr class="memitem:a1817fe609768dd87a6f1f592e1fe215f" id="r_a1817fe609768dd87a6f1f592e1fe215f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1817fe609768dd87a6f1f592e1fe215f">cacheManager</a></td></tr>
+<tr class="memitem:a030459a24a5d4d917a05b2b682790fd7" id="r_a030459a24a5d4d917a05b2b682790fd7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d6/d6a/class_preset_manager.html">PresetManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a030459a24a5d4d917a05b2b682790fd7">presetManager</a></td></tr>
+<tr class="memitem:a1b557b50dad79c22ea2457db8cd1a0b8" id="r_a1b557b50dad79c22ea2457db8cd1a0b8"><td class="memItemLeft" align="right" valign="top">juce::Array&lt; <a class="el" href="../../d3/d9f/class_rack_state_listener.html">RackStateListener</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b557b50dad79c22ea2457db8cd1a0b8">rackStateListeners</a></td></tr>
+<tr class="memdesc:a1b557b50dad79c22ea2457db8cd1a0b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array of rack state listeners.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A component that manages a virtual rack of audio gear items. </p>
 <p>The <a class="el" href="../../d0/dc7/class_rack.html" title="A component that manages a virtual rack of audio gear items.">Rack</a> class provides a visual interface for managing audio gear items in a virtual rack. It handles the layout of gear items, drag-and-drop functionality for adding and rearranging items, and manages the loading and display of gear resources like faceplates and controls. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00026">26</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00029">29</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a4941a9ecc2befb82d4f7a10225060e9c" name="a4941a9ecc2befb82d4f7a10225060e9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4941a9ecc2befb82d4f7a10225060e9c">&#9670;&#160;</a></span>Rack() <span class="overload">[1/2]</span></h2>
+<a id="a159b1af76485a375ebb69293acac34f7" name="a159b1af76485a375ebb69293acac34f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a159b1af76485a375ebb69293acac34f7">&#9670;&#160;</a></span>Rack() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -205,20 +228,49 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">Rack::Rack </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d0/dbe/class_i_network_fetcher.html">INetworkFetcher</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>networkFetcher</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="../../d0/dbe/class_i_network_fetcher.html">INetworkFetcher</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>networkFetcher</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fileSystem</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cacheManager</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d6/d6a/class_preset_manager.html">PresetManager</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>presetManager</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a> *</td>          <td class="paramname"><span class="paramname"><em>gearLibrary</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Constructs a new <a class="el" href="../../d0/dc7/class_rack.html" title="A component that manages a virtual rack of audio gear items.">Rack</a> instance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">networkFetcher</td><td>Reference to the network fetcher </td></tr>
+    <tr><td class="paramname">fileSystem</td><td>Reference to the file system </td></tr>
+    <tr><td class="paramname">cacheManager</td><td>Reference to the cache manager </td></tr>
+    <tr><td class="paramname">presetManager</td><td>Reference to the preset manager </td></tr>
+    <tr><td class="paramname">gearLibrary</td><td>Pointer to the gear library</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>Initializes the rack with a viewport and container, creates the specified number of rack slots, and sets up drag-and-drop functionality. </p>
 
 <p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">21</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00267">networkFetcher</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00255">numSlots</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00260">rackContainer</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00259">rackViewport</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00347">cacheManager</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00344">fileSystem</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00338">gearLibrary</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00341">networkFetcher</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00329">numSlots</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00350">presetManager</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00334">rackContainer</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00333">rackViewport</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01782">fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01318">fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01087">fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00452">fetchSchemaForGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01550">fetchSwitchSpriteSheet()</a>, and <a class="el" href="#ae4fc1d19f3c07ac4c3afbc9a97ad5395">operator=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01789">fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01325">fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01094">fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00450">fetchSchemaForGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01557">fetchSwitchSpriteSheet()</a>, and <a class="el" href="#ae4fc1d19f3c07ac4c3afbc9a97ad5395">operator=()</a>.</p>
 
 </div>
 </div>
@@ -250,7 +302,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00052">52</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00423">GearItem::controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem::faceplateImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00420">GearItem::image</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">GearItem::controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00439">GearItem::faceplateImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00437">GearItem::image</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>.</p>
 
 </div>
 </div>
@@ -280,6 +332,35 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a6dfd3961e520236eaf1905f0e88660bd" name="a6dfd3961e520236eaf1905f0e88660bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dfd3961e520236eaf1905f0e88660bd">&#9670;&#160;</a></span>addRackStateListener()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Rack::addRackStateListener </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d3/d9f/class_rack_state_listener.html">RackStateListener</a> *</td>          <td class="paramname"><span class="paramname"><em>listener</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a listener for rack state changes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">listener</td><td>Pointer to the listener to add </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02088">2088</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">rackStateListeners</a>.</p>
+
+</div>
+</div>
 <a id="afeaea662a2e4de86da999562d7dada56" name="afeaea662a2e4de86da999562d7dada56"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afeaea662a2e4de86da999562d7dada56">&#9670;&#160;</a></span>createInstance()</h2>
 
@@ -303,9 +384,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02013">2013</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02020">2020</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>.</p>
 
 </div>
 </div>
@@ -360,12 +441,13 @@ Private Attributes</h2></td></tr>
 <p>&lt; The ID of the control being updated</p>
 <p>&lt; The name of the control being updated</p>
 <p>&lt; The asset path to use for caching</p>
+<p>&lt; Reference to cache manager</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01782">1782</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01789">1789</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00228">GearControl::buttonSpriteSheet</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00423">GearItem::controls</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00182">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00166">RackSlot::getGearItem()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00013">CacheManager::getInstance()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00118">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00201">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00210">GearControl::image</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00086">CacheManager::isControlAssetCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00271">CacheManager::loadControlAssetFromCache()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00185">CacheManager::saveControlAssetToCache()</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00231">GearControl::buttonSpriteSheet</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00347">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">GearItem::controls</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00194">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">RackSlot::getGearItem()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00204">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00213">GearControl::image</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00567">parseSchema()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">parseSchema()</a>.</p>
 
 </div>
 </div>
@@ -411,12 +493,13 @@ Private Attributes</h2></td></tr>
 <p>&lt; The gear item to update</p>
 <p>&lt; The rack to notify</p>
 <p>&lt; The filename to use for caching</p>
+<p>&lt; Reference to cache manager</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">854</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">862</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem::faceplateImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00421">GearItem::faceplateImagePath</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00182">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00166">RackSlot::getGearItem()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00013">CacheManager::getInstance()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00118">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00074">CacheManager::isFaceplateCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00231">CacheManager::loadFaceplateFromCache()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00131">CacheManager::saveFaceplateToCache()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00409">GearItem::unitId</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00347">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00439">GearItem::faceplateImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00438">GearItem::faceplateImagePath</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00344">fileSystem</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00194">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">RackSlot::getGearItem()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">GearItem::unitId</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00567">parseSchema()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">parseSchema()</a>.</p>
 
 </div>
 </div>
@@ -471,12 +554,13 @@ Private Attributes</h2></td></tr>
 <p>&lt; The ID of the control being updated</p>
 <p>&lt; The name of the control being updated</p>
 <p>&lt; The asset path to use for caching</p>
+<p>&lt; Reference to cache manager</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01318">1318</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01325">1325</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00423">GearItem::controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00223">GearControl::faderImage</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00182">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00166">RackSlot::getGearItem()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00013">CacheManager::getInstance()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00118">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00201">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00210">GearControl::image</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00086">CacheManager::isControlAssetCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00271">CacheManager::loadControlAssetFromCache()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00185">CacheManager::saveControlAssetToCache()</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00347">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">GearItem::controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00226">GearControl::faderImage</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00194">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">RackSlot::getGearItem()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00204">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00213">GearControl::image</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00567">parseSchema()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">parseSchema()</a>.</p>
 
 </div>
 </div>
@@ -531,17 +615,18 @@ Private Attributes</h2></td></tr>
 <p>&lt; The ID of the control being updated</p>
 <p>&lt; The name of the control being updated</p>
 <p>&lt; The asset path to use for caching</p>
+<p>&lt; Reference to cache manager</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01087">1087</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01094">1094</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00423">GearItem::controls</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00182">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00166">RackSlot::getGearItem()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00013">CacheManager::getInstance()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00118">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00201">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00210">GearControl::image</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00086">CacheManager::isControlAssetCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00271">CacheManager::loadControlAssetFromCache()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00219">GearControl::loadedImage</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, and <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00185">CacheManager::saveControlAssetToCache()</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00347">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">GearItem::controls</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00194">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">RackSlot::getGearItem()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00204">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00213">GearControl::image</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00222">GearControl::loadedImage</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00567">parseSchema()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">parseSchema()</a>.</p>
 
 </div>
 </div>
-<a id="a52950c4ad2f1b075a3b3dfd70bc45353" name="a52950c4ad2f1b075a3b3dfd70bc45353"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a52950c4ad2f1b075a3b3dfd70bc45353">&#9670;&#160;</a></span>fetchSchemaForGearItem()</h2>
+<a id="a3828525f0b86250e46ca0a65c3d3ab5e" name="a3828525f0b86250e46ca0a65c3d3ab5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3828525f0b86250e46ca0a65c3d3ab5e">&#9670;&#160;</a></span>fetchSchemaForGearItem()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -549,8 +634,12 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">void Rack::fetchSchemaForGearItem </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *</td>          <td class="paramname"><span class="paramname"><em>item</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *</td>          <td class="paramname"><span class="paramname"><em>item</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>onComplete</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -558,6 +647,8 @@ Private Attributes</h2></td></tr>
 <p>Fetches the schema for a gear item. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">item</td><td>The gear item to fetch the schema for </td></tr>
+    <tr><td class="paramname">onComplete</td><td>Optional callback to execute when schema loading is complete</td></tr>
     <tr><td class="paramname">item</td><td>The gear item to fetch the schema for </td></tr>
   </table>
   </dd>
@@ -570,7 +661,8 @@ Private Attributes</h2></td></tr>
     <tr><td class="paramname">urlToUse</td><td>The URL to download the schema from </td></tr>
     <tr><td class="paramname">itemToUpdate</td><td>The gear item to update with the schema </td></tr>
     <tr><td class="paramname">rackToNotify</td><td>The rack to notify when the schema is loaded </td></tr>
-    <tr><td class="paramname">unitIdToCache</td><td>The unit ID to use for caching</td></tr>
+    <tr><td class="paramname">unitIdToCache</td><td>The unit ID to use for caching </td></tr>
+    <tr><td class="paramname">onComplete</td><td>Optional callback to execute when parsing is complete</td></tr>
   </table>
   </dd>
 </dl>
@@ -584,12 +676,14 @@ Private Attributes</h2></td></tr>
 <p>&lt; The downloaded schema data</p>
 <p>&lt; Whether the download was successful</p>
 <p>&lt; The unit ID to use for caching</p>
+<p>&lt; Reference to cache manager</p>
+<p>&lt; Optional completion callback</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00452">452</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00450">450</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00182">GearLibrary::getFullUrl()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00013">CacheManager::getInstance()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00068">CacheManager::isUnitCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00212">CacheManager::loadUnitFromCache()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00567">parseSchema()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00112">CacheManager::saveUnitToCache()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00416">GearItem::schemaPath</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00409">GearItem::unitId</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00347">cacheManager</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00194">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">parseSchema()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00433">GearItem::schemaPath</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">GearItem::unitId</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>.</p>
 
 </div>
 </div>
@@ -644,12 +738,13 @@ Private Attributes</h2></td></tr>
 <p>&lt; The ID of the control being updated</p>
 <p>&lt; The name of the control being updated</p>
 <p>&lt; The asset path to use for caching</p>
+<p>&lt; Reference to cache manager</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01550">1550</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01557">1557</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00423">GearItem::controls</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00182">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00166">RackSlot::getGearItem()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00013">CacheManager::getInstance()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00118">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00201">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00210">GearControl::image</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00086">CacheManager::isControlAssetCached()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00271">CacheManager::loadControlAssetFromCache()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00185">CacheManager::saveControlAssetToCache()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00212">GearControl::switchSpriteSheet</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00347">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">GearItem::controls</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00194">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">RackSlot::getGearItem()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00204">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00213">GearControl::image</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00215">GearControl::switchSpriteSheet</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00567">parseSchema()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">parseSchema()</a>.</p>
 
 </div>
 </div>
@@ -677,9 +772,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the nearest <a class="el" href="../../dc/dde/class_rack_slot.html" title="Represents a slot in the rack that can contain a gear item.">RackSlot</a>, or nullptr if none found </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00411">411</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00409">409</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00260">rackContainer</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00334">rackContainer</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00228">itemDragMove()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>.</p>
 
@@ -711,7 +806,7 @@ Private Attributes</h2></td></tr>
 <p>Gets the default height for a slot. </p>
 <dl class="section return"><dt>Returns</dt><dd>The default slot height in pixels </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00282">282</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00368">368</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">getSlotHeight()</a>.</p>
 
@@ -741,9 +836,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The instance ID as a string </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02055">2055</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02062">2062</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>.</p>
 
 </div>
 </div>
@@ -773,11 +868,11 @@ Private Attributes</h2></td></tr>
 <p>Gets the number of slots in the rack. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of slots </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00118">118</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">124</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01782">fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01318">fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01087">fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01550">fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">RackSlot::moveDown()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">RackSlot::updateButtonStates()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01789">fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01325">fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01094">fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01557">fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">RackSlot::moveDown()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00139">PresetManager::serializeRackToJSON()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">RackSlot::updateButtonStates()</a>.</p>
 
 </div>
 </div>
@@ -813,11 +908,11 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the <a class="el" href="../../dc/dde/class_rack_slot.html" title="Represents a slot in the rack that can contain a gear item.">RackSlot</a>, or nullptr if index is invalid </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">126</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">132</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02013">createInstance()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01782">fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01318">fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01087">fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01550">fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02055">getInstanceId()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02040">isInstance()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02067">resetAllInstances()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02026">resetToSource()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02020">createInstance()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01789">fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01325">fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01094">fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01557">fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02062">getInstanceId()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02047">isInstance()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02074">resetAllInstances()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02033">resetToSource()</a>, and <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00139">PresetManager::serializeRackToJSON()</a>.</p>
 
 </div>
 </div>
@@ -855,7 +950,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">95</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem::faceplateImage</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00282">getDefaultSlotHeight()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00166">RackSlot::getGearItem()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00173">RackSlot::isAvailable()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00260">rackContainer</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00256">slotSpacing</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00439">GearItem::faceplateImage</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00368">getDefaultSlotHeight()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">RackSlot::getGearItem()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00186">RackSlot::isAvailable()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00334">rackContainer</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00330">slotSpacing</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>.</p>
 
@@ -885,9 +980,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the slot contains an instance </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02040">2040</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02047">2047</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>.</p>
 
 </div>
 </div>
@@ -995,7 +1090,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00245">245</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>.</p>
 
 </div>
 </div>
@@ -1033,7 +1128,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00228">228</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00411">findNearestSlot()</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>.</p>
+<p class="reference">References <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00409">findNearestSlot()</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>.</p>
 
 </div>
 </div>
@@ -1071,9 +1166,233 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">259</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00393">CacheManager::addToRecentlyUsed()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00452">fetchSchemaForGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00411">findNearestSlot()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00264">gearLibrary</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00166">RackSlot::getGearItem()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00013">CacheManager::getInstance()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00267">networkFetcher</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01402">RackSlot::setGearItem()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00409">GearItem::unitId</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00347">cacheManager</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00450">fetchSchemaForGearItem()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00344">fileSystem</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00409">findNearestSlot()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00338">gearLibrary</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">RackSlot::getGearItem()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00341">networkFetcher</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">RackSlot::setGearItem()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">GearItem::unitId</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01340">RackSlot::itemDropped()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01400">RackSlot::itemDropped()</a>.</p>
+
+</div>
+</div>
+<a id="a3bd3441098bcd7675a8bfc55e3da8fd4" name="a3bd3441098bcd7675a8bfc55e3da8fd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bd3441098bcd7675a8bfc55e3da8fd4">&#9670;&#160;</a></span>notifyGearControlChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Rack::notifyGearControlChanged </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>slotIndex</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *</td>          <td class="paramname"><span class="paramname"><em>gearItem</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>controlIndex</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notifies all listeners of a gear control being changed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">slotIndex</td><td>The index of the slot that was modified </td></tr>
+    <tr><td class="paramname">gearItem</td><td>Pointer to the gear item that was modified </td></tr>
+    <tr><td class="paramname">controlIndex</td><td>The index of the control that was modified </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02123">2123</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">rackStateListeners</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01683">RackSlot::notifyRackOfControlChanged()</a>.</p>
+
+</div>
+</div>
+<a id="a8170d5a46078781c6753798e1678e9a5" name="a8170d5a46078781c6753798e1678e9a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8170d5a46078781c6753798e1678e9a5">&#9670;&#160;</a></span>notifyGearItemAdded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Rack::notifyGearItemAdded </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>slotIndex</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *</td>          <td class="paramname"><span class="paramname"><em>gearItem</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notifies all listeners of a gear item being added. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">slotIndex</td><td>The index of the slot that was modified </td></tr>
+    <tr><td class="paramname">gearItem</td><td>Pointer to the gear item that was added </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02101">2101</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">rackStateListeners</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01635">RackSlot::notifyRackOfGearItemAdded()</a>.</p>
+
+</div>
+</div>
+<a id="afdbd0ba52048488c16219ca8bdc9cbc1" name="afdbd0ba52048488c16219ca8bdc9cbc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdbd0ba52048488c16219ca8bdc9cbc1">&#9670;&#160;</a></span>notifyGearItemRemoved()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Rack::notifyGearItemRemoved </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>slotIndex</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notifies all listeners of a gear item being removed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">slotIndex</td><td>The index of the slot that was modified </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02112">2112</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">rackStateListeners</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01659">RackSlot::notifyRackOfGearItemRemoved()</a>.</p>
+
+</div>
+</div>
+<a id="a413444c3fd844def7f4780ac66f8ab86" name="a413444c3fd844def7f4780ac66f8ab86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a413444c3fd844def7f4780ac66f8ab86">&#9670;&#160;</a></span>notifyGearItemsRearranged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Rack::notifyGearItemsRearranged </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>sourceSlotIndex</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>targetSlotIndex</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notifies all listeners of gear items being rearranged. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sourceSlotIndex</td><td>The index of the source slot </td></tr>
+    <tr><td class="paramname">targetSlotIndex</td><td>The index of the target slot </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02134">2134</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">rackStateListeners</a>.</p>
+
+</div>
+</div>
+<a id="a808df1eaca7f0e7e1524c7edf242151d" name="a808df1eaca7f0e7e1524c7edf242151d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a808df1eaca7f0e7e1524c7edf242151d">&#9670;&#160;</a></span>notifyPresetLoaded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Rack::notifyPresetLoaded </td>
+          <td>(</td>
+          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>presetName</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notifies all listeners of a preset being loaded. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">presetName</td><td>The name of the preset that was loaded </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02156">2156</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">rackStateListeners</a>.</p>
+
+</div>
+</div>
+<a id="aad46d9a957e8435904af20bf5664110b" name="aad46d9a957e8435904af20bf5664110b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad46d9a957e8435904af20bf5664110b">&#9670;&#160;</a></span>notifyPresetSaved()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Rack::notifyPresetSaved </td>
+          <td>(</td>
+          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>presetName</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notifies all listeners of a preset being saved. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">presetName</td><td>The name of the preset that was saved </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02167">2167</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">rackStateListeners</a>.</p>
+
+</div>
+</div>
+<a id="a7fc3517726c710fc85183c2e33d609f2" name="a7fc3517726c710fc85183c2e33d609f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fc3517726c710fc85183c2e33d609f2">&#9670;&#160;</a></span>notifyRackStateReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Rack::notifyRackStateReset </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notifies all listeners of the rack state being reset. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02145">2145</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">rackStateListeners</a>.</p>
 
 </div>
 </div>
@@ -1139,8 +1458,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4dfaa4fabaaaa55212bcee7389cbaf71" name="a4dfaa4fabaaaa55212bcee7389cbaf71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4dfaa4fabaaaa55212bcee7389cbaf71">&#9670;&#160;</a></span>parseSchema()</h2>
+<a id="ac1fd318e8627e4cd1f39ab8d78a6cfd6" name="ac1fd318e8627e4cd1f39ab8d78a6cfd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1fd318e8627e4cd1f39ab8d78a6cfd6">&#9670;&#160;</a></span>parseSchema()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1153,7 +1472,12 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *</td>          <td class="paramname"><span class="paramname"><em>item</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="../../dd/dee/class_gear_item.html">GearItem</a> *</td>          <td class="paramname"><span class="paramname"><em>item</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>onComplete</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1163,15 +1487,16 @@ Private Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">schemaData</td><td>The JSON schema data to parse </td></tr>
     <tr><td class="paramname">item</td><td>The gear item to update with the parsed schema </td></tr>
+    <tr><td class="paramname">onComplete</td><td>Optional callback to execute when parsing is complete </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00567">567</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">571</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00076">GearControl::Button</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00227">GearControl::buttonFrames</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00423">GearItem::controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00208">GearControl::currentIndex</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00218">GearControl::currentStepIndex</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00216">GearControl::endAngle</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00421">GearItem::faceplateImagePath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00077">GearControl::Fader</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01782">fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01318">fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01087">fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01550">fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00063">GearControl::SwitchOptionFrame::height</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00201">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00210">GearControl::image</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00204">GearControl::initialValue</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Knob</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00065">GearControl::SwitchOptionFrame::label</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00222">GearControl::length</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00226">GearControl::momentary</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00207">GearControl::options</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00209">GearControl::orientation</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00215">GearControl::startAngle</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00217">GearControl::steps</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00078">GearControl::Switch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00211">GearControl::switchFrames</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00199">GearControl::type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00064">GearControl::SwitchOptionFrame::value</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00203">GearControl::value</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00062">GearControl::SwitchOptionFrame::width</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00060">GearControl::SwitchOptionFrame::x</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00061">GearControl::SwitchOptionFrame::y</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00230">GearControl::buttonFrames</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">GearItem::controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00211">GearControl::currentIndex</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00221">GearControl::currentStepIndex</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00219">GearControl::endAngle</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00438">GearItem::faceplateImagePath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00080">GearControl::Fader</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01789">fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01325">fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01094">fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01557">fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00066">GearControl::SwitchOptionFrame::height</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00204">GearControl::id</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00213">GearControl::image</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00207">GearControl::initialValue</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00082">GearControl::Knob</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00068">GearControl::SwitchOptionFrame::label</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00225">GearControl::length</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00229">GearControl::momentary</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00210">GearControl::options</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00212">GearControl::orientation</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00218">GearControl::startAngle</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00220">GearControl::steps</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00214">GearControl::switchFrames</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00202">GearControl::type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00067">GearControl::SwitchOptionFrame::value</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00206">GearControl::value</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00065">GearControl::SwitchOptionFrame::width</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00063">GearControl::SwitchOptionFrame::x</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00064">GearControl::SwitchOptionFrame::y</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00452">fetchSchemaForGearItem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00450">fetchSchemaForGearItem()</a>.</p>
 
 </div>
 </div>
@@ -1203,11 +1528,40 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00358">358</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00356">356</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01460">RackSlot::clearGearItem()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00166">RackSlot::getGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01402">RackSlot::setGearItem()</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01535">RackSlot::clearGearItem()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">RackSlot::getGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">RackSlot::setGearItem()</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">RackSlot::moveDown()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">RackSlot::moveUp()</a>.</p>
+
+</div>
+</div>
+<a id="a95d1ab6f932fcd442c51f1facdf33d1a" name="a95d1ab6f932fcd442c51f1facdf33d1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95d1ab6f932fcd442c51f1facdf33d1a">&#9670;&#160;</a></span>removeRackStateListener()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Rack::removeRackStateListener </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d3/d9f/class_rack_state_listener.html">RackStateListener</a> *</td>          <td class="paramname"><span class="paramname"><em>listener</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a listener for rack state changes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">listener</td><td>Pointer to the listener to remove </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02096">2096</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">rackStateListeners</a>.</p>
 
 </div>
 </div>
@@ -1228,9 +1582,9 @@ Private Attributes</h2></td></tr>
 
 <p>Resets all instances in the rack to their source gear items. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02067">2067</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02074">2074</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>.</p>
 
 </div>
 </div>
@@ -1257,9 +1611,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02026">2026</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02033">2033</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>.</p>
 
 </div>
 </div>
@@ -1291,9 +1645,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">138</a> of file <a class="el" href="../../d0/d7a/_rack_8cpp_source.html">Rack.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">getSlotHeight()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00260">rackContainer</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00259">rackViewport</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">slots</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00256">slotSpacing</a>.</p>
+<p class="reference">References <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">getSlotHeight()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00334">rackContainer</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00333">rackViewport</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">slots</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00330">slotSpacing</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01460">RackSlot::clearGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00854">fetchFaceplateImage()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00358">rearrangeGearAsSortableList()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01535">RackSlot::clearGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">fetchFaceplateImage()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00356">rearrangeGearAsSortableList()</a>.</p>
 
 </div>
 </div>
@@ -1328,13 +1682,65 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00133">133</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00139">139</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00264">gearLibrary</a>.</p>
+<p class="reference">References <a class="el" href="../../d7/d44/_rack_8h_source.html#l00338">gearLibrary</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a1817fe609768dd87a6f1f592e1fe215f" name="a1817fe609768dd87a6f1f592e1fe215f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1817fe609768dd87a6f1f592e1fe215f">&#9670;&#160;</a></span>cacheManager</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a>&amp; Rack::cacheManager</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00347">347</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01789">fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01325">fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01094">fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00450">fetchSchemaForGearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01557">fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>.</p>
+
+</div>
+</div>
+<a id="a6b1196b66145427f903eba2e65db6333" name="a6b1196b66145427f903eba2e65db6333"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b1196b66145427f903eba2e65db6333">&#9670;&#160;</a></span>fileSystem</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a>&amp; Rack::fileSystem</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00344">344</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>.</p>
+
+</div>
+</div>
 <a id="aa2e59d59e52138bd5ac02496011edf9d" name="aa2e59d59e52138bd5ac02496011edf9d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa2e59d59e52138bd5ac02496011edf9d">&#9670;&#160;</a></span>gearLibrary</h2>
 
@@ -1345,7 +1751,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a>* Rack::gearLibrary = nullptr</td>
+          <td class="memname"><a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a>* Rack::gearLibrary</td>
         </tr>
       </table>
   </td>
@@ -1355,11 +1761,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reference to the gear library. </p>
+<p>Pointer to the gear library. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00264">264</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00338">338</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00133">setGearLibrary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, and <a class="el" href="../../d7/d44/_rack_8h_source.html#l00139">setGearLibrary()</a>.</p>
 
 </div>
 </div>
@@ -1385,7 +1791,7 @@ Private Attributes</h2></td></tr>
 
 <p>Reference to the network fetcher. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00267">267</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00341">341</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>.</p>
 
@@ -1413,7 +1819,33 @@ Private Attributes</h2></td></tr>
 
 <p>Number of slots in the rack. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00255">255</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00329">329</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>.</p>
+
+</div>
+</div>
+<a id="a030459a24a5d4d917a05b2b682790fd7" name="a030459a24a5d4d917a05b2b682790fd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a030459a24a5d4d917a05b2b682790fd7">&#9670;&#160;</a></span>presetManager</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d6/d6a/class_preset_manager.html">PresetManager</a>&amp; Rack::presetManager</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00350">350</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>.</p>
 
@@ -1441,9 +1873,37 @@ Private Attributes</h2></td></tr>
 
 <p>Container for rack slots. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00260">260</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00334">334</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00411">findNearestSlot()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">getSlotHeight()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00409">findNearestSlot()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">getSlotHeight()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>.</p>
+
+</div>
+</div>
+<a id="a1b557b50dad79c22ea2457db8cd1a0b8" name="a1b557b50dad79c22ea2457db8cd1a0b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b557b50dad79c22ea2457db8cd1a0b8">&#9670;&#160;</a></span>rackStateListeners</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">juce::Array&lt;<a class="el" href="../../d3/d9f/class_rack_state_listener.html">RackStateListener</a> *&gt; Rack::rackStateListeners</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Array of rack state listeners. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00353">353</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02088">addRackStateListener()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02123">notifyGearControlChanged()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02101">notifyGearItemAdded()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02112">notifyGearItemRemoved()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02134">notifyGearItemsRearranged()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02156">notifyPresetLoaded()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02167">notifyPresetSaved()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02145">notifyRackStateReset()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02096">removeRackStateListener()</a>.</p>
 
 </div>
 </div>
@@ -1469,7 +1929,7 @@ Private Attributes</h2></td></tr>
 
 <p>Viewport for scrolling the rack. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00259">259</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00333">333</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>.</p>
 
@@ -1497,9 +1957,9 @@ Private Attributes</h2></td></tr>
 
 <p>Array of rack slots. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00261">261</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00335">335</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00411">findNearestSlot()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00118">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00126">getSlot()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">getSlotHeight()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00245">itemDragExit()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00228">itemDragMove()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00358">rearrangeGearAsSortableList()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02067">resetAllInstances()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00052">~Rack()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00409">findNearestSlot()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">getNumSlots()</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00132">getSlot()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">getSlotHeight()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00245">itemDragExit()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00228">itemDragMove()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">itemDropped()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00021">Rack()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00356">rearrangeGearAsSortableList()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02074">resetAllInstances()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00052">~Rack()</a>.</p>
 
 </div>
 </div>
@@ -1525,7 +1985,7 @@ Private Attributes</h2></td></tr>
 
 <p>Spacing between slots in pixels. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00256">256</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d44/_rack_8h_source.html#l00330">330</a> of file <a class="el" href="../../d7/d44/_rack_8h_source.html">Rack.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">getSlotHeight()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">resized()</a>.</p>
 

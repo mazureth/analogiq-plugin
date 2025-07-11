@@ -1,5 +1,27 @@
 var searchData=
 [
-  ['updatebuttonstates_0',['updateButtonStates',['../dc/dde/class_rack_slot.html#a4e11cf0282f711f39fb75925526decb6',1,'RackSlot']]],
-  ['updatefiltereditems_1',['updateFilteredItems',['../d5/d8c/class_gear_library.html#a5adc5749ef27eee5dc6116f9c2862e40',1,'GearLibrary']]]
+  ['savecontrolassettocache_0',['saveControlAssetToCache',['../d4/d9f/class_cache_manager.html#a52a543d5875ae048c9aeb1eeb4c9f4bd',1,'CacheManager']]],
+  ['savefaceplatetocache_1',['saveFaceplateToCache',['../d4/d9f/class_cache_manager.html#a7dd47d9177cc5cc3d0c4c83559d93ebf',1,'CacheManager']]],
+  ['saveinstancestate_2',['saveInstanceState',['../d5/d18/class_analog_i_q_processor.html#a09a64297585fb8e649484ec6ebf2a41f',1,'AnalogIQProcessor']]],
+  ['saveinstancestatefromrack_3',['saveInstanceStateFromRack',['../d5/d18/class_analog_i_q_processor.html#a2b1f3b3f177a805f809a7badebc3642f',1,'AnalogIQProcessor']]],
+  ['savelibraryasync_4',['saveLibraryAsync',['../d5/d8c/class_gear_library.html#a3d6d583b29b7daa9e159834bfeb18086',1,'GearLibrary']]],
+  ['savepreset_5',['savePreset',['../d6/d6a/class_preset_manager.html#a03b806c49e2be9ba6b8760f57842102b',1,'PresetManager']]],
+  ['savethumbnailtocache_6',['saveThumbnailToCache',['../d4/d9f/class_cache_manager.html#aaf622e48bfdd09265e8c73744e2ed083',1,'CacheManager']]],
+  ['savetojson_7',['saveToJSON',['../dd/dee/class_gear_item.html#a5ca34e1864cea41800b17e86ba4889c7',1,'GearItem']]],
+  ['saveunittocache_8',['saveUnitToCache',['../d4/d9f/class_cache_manager.html#a9d2a18f0d0a6f71a6bc3e78eb180299f',1,'CacheManager']]],
+  ['serializeracktojson_9',['serializeRackToJSON',['../d6/d6a/class_preset_manager.html#a27951e5d836188b0ad2a4ecd62c1b844',1,'PresetManager']]],
+  ['setcurrentprogram_10',['setCurrentProgram',['../d5/d18/class_analog_i_q_processor.html#a8bfaf8110e387b9b2b63bd30495c4aa3',1,'AnalogIQProcessor']]],
+  ['setgearitem_11',['setGearItem',['../dc/dde/class_rack_slot.html#a1f441a7ac2af9a416ef33503c586fe01',1,'RackSlot']]],
+  ['setgearlibrary_12',['setGearLibrary',['../d0/dc7/class_rack.html#af0ddba251de6d89d76ad32db6bef03cf',1,'Rack']]],
+  ['sethighlighted_13',['setHighlighted',['../dc/dde/class_rack_slot.html#ad20a009fccb07bd8aabad9194d84054e',1,'RackSlot']]],
+  ['setindex_14',['setIndex',['../dc/dde/class_rack_slot.html#a6d5b8887f8a82fbb438c090615de89d3',1,'RackSlot']]],
+  ['setopenness_15',['setOpenness',['../d6/dc0/class_gear_tree_item.html#a5b89d654a3c02210458a214ee86c0933',1,'GearTreeItem']]],
+  ['setstateinformation_16',['setStateInformation',['../d5/d18/class_analog_i_q_processor.html#ae6a26bb6d89e85ae70dda21ff075704e',1,'AnalogIQProcessor']]],
+  ['settext_17',['setText',['../d9/dc5/class_notes_panel.html#a04fdc2b575f441b6a3763f8fe163c03c',1,'NotesPanel']]],
+  ['setvisible_18',['setVisible',['../d6/dc0/class_gear_tree_item.html#aba16a7ef419890bf9c4faca9d2e4e4cc',1,'GearTreeItem']]],
+  ['shouldshowitem_19',['shouldShowItem',['../d5/d8c/class_gear_library.html#a38f9c79cba66e4559ea5545fc9843922',1,'GearLibrary']]],
+  ['showdeletepresetdialog_20',['showDeletePresetDialog',['../df/d1c/class_analog_i_q_editor.html#a96ee64e08688ad098b124902b53e55b0',1,'AnalogIQEditor']]],
+  ['showloadpresetdialog_21',['showLoadPresetDialog',['../df/d1c/class_analog_i_q_editor.html#ac9032823afe6446416b189fbd8f92c18',1,'AnalogIQEditor']]],
+  ['showpresetmenu_22',['showPresetMenu',['../df/d1c/class_analog_i_q_editor.html#aff8d10c8a90fbc6785216c27382aebed',1,'AnalogIQEditor']]],
+  ['showsavepresetdialog_23',['showSavePresetDialog',['../df/d1c/class_analog_i_q_editor.html#a74103fcef44367cbe0dbb5d32402e4df',1,'AnalogIQEditor']]]
 ];
