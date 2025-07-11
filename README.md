@@ -21,6 +21,14 @@ AnalogIQ is a virtual rack and documentation plugin for DAWs that allows audio e
   - Save and load instance states
   - Reset instances to source settings
   - Track instance IDs and relationships
+- **Preset System**: Save and load complete rack configurations
+  - Save current rack state as named presets
+  - Load presets to restore complete configurations
+  - Delete unwanted presets
+  - Automatic conflict detection and validation
+  - Timestamp tracking for preset management
+  - User-friendly preset naming with validation
+  - Confirmation dialogs for destructive operations
 - **Remote Resource Management**: Automatic downloading and caching of gear resources
   - Faceplate images
   - Control images (knobs, faders, switches, buttons)
@@ -117,23 +125,34 @@ The documentation includes:
 5. Use the notes section to document critical details about your setup
 6. Save your DAW project to preserve your rack configuration and notes
 
+### Preset Management
+
+The preset system allows you to save and load complete rack configurations:
+
+#### Saving Presets
+1. Configure your rack with the desired gear and settings
+2. Click the "Presets" menu button in the top menu bar
+3. Select "Save Preset" from the dropdown menu
+4. Enter a name for your preset (names are validated for compatibility)
+5. Click "OK" to save the preset
+
+#### Loading Presets
+1. Click the "Presets" menu button in the top menu bar
+2. Either:
+   - Select "Load Preset" and choose from the list of available presets, or
+   - Click directly on a preset name in the menu to load it immediately
+3. If your rack contains gear items, you'll be prompted to confirm the operation
+4. The preset will be loaded, replacing your current rack configuration
+
+#### Managing Presets
+- **Delete Preset**: Select "Delete Preset" from the presets menu and choose which preset to remove
+- **Preset Names**: Must be 1-255 characters long and cannot contain special characters like `/`, `\`, `:`, `*`, `?`, `"`, `<`, `>`, or `|`
+- **Timestamps**: Presets are automatically timestamped for easy identification
+- **Conflict Detection**: The system prevents overwriting existing presets without explicit confirmation
+
 ## Project Structure
 
 - `Source/` - All source files
-  - `PluginProcessor.*` - Core plugin functionality
-  - `PluginEditor.*` - Main UI components
+  - `AnalogIQProcessor.*` - Core plugin functionality
+  - `AnalogIQEditor.*` - Main UI components
   - `GearLibrary.*` - Gear browser and library management
-  - `GearItem.*` - Individual gear item representation
-  - `Rack.*` - Virtual rack system
-  - `RackSlot.*` - Individual rack slot
-  - `NotesPanel.*` - Session notes functionality
-- `Assets/` - Images and other resources
-- `CMakeLists.txt` - CMake build configuration
-
-## Contributing
-
-Contributions to AnalogIQ are welcome! Please feel free to submit pull requests, create issues or contact the maintainers.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details. 

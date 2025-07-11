@@ -14,6 +14,9 @@
 #include "GearItem.h"
 #include "GearLibrary.h"
 #include "INetworkFetcher.h"
+#include "RackStateListener.h"
+#include "IFileSystem.h"
+#include "PresetManager.h"
 
 /**
  * @class Rack
@@ -30,10 +33,13 @@ public:
     /**
      * @brief Constructs a new Rack instance.
      *
-     * Initializes the rack with a viewport and container, creates the specified number
-     * of rack slots, and sets up drag-and-drop functionality.
+     * @param networkFetcher Reference to the network fetcher
+     * @param fileSystem Reference to the file system
+     * @param cacheManager Reference to the cache manager
+     * @param presetManager Reference to the preset manager
+     * @param gearLibrary Pointer to the gear library
      */
-    Rack(INetworkFetcher &networkFetcher);
+    Rack(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary *gearLibrary);
 
     /**
      * @brief Destructor for the Rack class.
@@ -132,21 +138,89 @@ public:
      */
     void setGearLibrary(GearLibrary *library) { gearLibrary = library; }
 
+    // Listener management
+    /**
+     * @brief Adds a listener for rack state changes.
+     *
+     * @param listener Pointer to the listener to add
+     */
+    void addRackStateListener(RackStateListener *listener);
+
+    /**
+     * @brief Removes a listener for rack state changes.
+     *
+     * @param listener Pointer to the listener to remove
+     */
+    void removeRackStateListener(RackStateListener *listener);
+
+    /**
+     * @brief Notifies all listeners of a gear item being added.
+     *
+     * @param slotIndex The index of the slot that was modified
+     * @param gearItem Pointer to the gear item that was added
+     */
+    void notifyGearItemAdded(int slotIndex, GearItem *gearItem);
+
+    /**
+     * @brief Notifies all listeners of a gear item being removed.
+     *
+     * @param slotIndex The index of the slot that was modified
+     */
+    void notifyGearItemRemoved(int slotIndex);
+
+    /**
+     * @brief Notifies all listeners of a gear control being changed.
+     *
+     * @param slotIndex The index of the slot that was modified
+     * @param gearItem Pointer to the gear item that was modified
+     * @param controlIndex The index of the control that was modified
+     */
+    void notifyGearControlChanged(int slotIndex, GearItem *gearItem, int controlIndex);
+
+    /**
+     * @brief Notifies all listeners of gear items being rearranged.
+     *
+     * @param sourceSlotIndex The index of the source slot
+     * @param targetSlotIndex The index of the target slot
+     */
+    void notifyGearItemsRearranged(int sourceSlotIndex, int targetSlotIndex);
+
+    /**
+     * @brief Notifies all listeners of the rack state being reset.
+     */
+    void notifyRackStateReset();
+
+    /**
+     * @brief Notifies all listeners of a preset being loaded.
+     *
+     * @param presetName The name of the preset that was loaded
+     */
+    void notifyPresetLoaded(const juce::String &presetName);
+
+    /**
+     * @brief Notifies all listeners of a preset being saved.
+     *
+     * @param presetName The name of the preset that was saved
+     */
+    void notifyPresetSaved(const juce::String &presetName);
+
     // Schema management
     /**
      * @brief Fetches the schema for a gear item.
      *
      * @param item The gear item to fetch the schema for
+     * @param onComplete Optional callback to execute when schema loading is complete
      */
-    void fetchSchemaForGearItem(GearItem *item);
+    void fetchSchemaForGearItem(GearItem *item, std::function<void()> onComplete = nullptr);
 
     /**
      * @brief Parses the schema data for a gear item.
      *
      * @param schemaData The JSON schema data to parse
      * @param item The gear item to update with the parsed schema
+     * @param onComplete Optional callback to execute when parsing is complete
      */
-    void parseSchema(const juce::String &schemaData, GearItem *item);
+    void parseSchema(const juce::String &schemaData, GearItem *item, std::function<void()> onComplete = nullptr);
 
     /**
      * @brief Fetches the faceplate image for a gear item.
@@ -261,10 +335,22 @@ private:
     juce::OwnedArray<RackSlot> slots;             ///< Array of rack slots
 
     // Reference to the gear library (for drag and drop)
-    GearLibrary *gearLibrary = nullptr; ///< Reference to the gear library
+    GearLibrary *gearLibrary; ///< Pointer to the gear library
 
     // Reference to the network fetcher
     INetworkFetcher &networkFetcher; ///< Reference to the network fetcher
+
+    // Reference to the file system
+    IFileSystem &fileSystem;
+
+    // Reference to the cache manager
+    CacheManager &cacheManager;
+
+    // Reference to the preset manager
+    PresetManager &presetManager;
+
+    // Listener management
+    juce::Array<RackStateListener *> rackStateListeners; ///< Array of rack state listeners
 
     /**
      * @brief Gets the height of a specific rack slot.

@@ -5,6 +5,8 @@
 #include "GearLibrary.h"
 #include "TestFixture.h"
 #include "MockNetworkFetcher.h"
+#include "MockFileSystem.h"
+#include "PresetManager.h"
 
 class RackTests : public juce::UnitTest
 {
@@ -99,19 +101,25 @@ public:
     {
         TestFixture fixture;
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
         mockFetcher.reset();
+        mockFileSystem.reset();
+
+        // Create local instances with proper dependency injection
+        CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
+        PresetManager presetManager(mockFileSystem, cacheManager);
 
         beginTest("Initial State");
         {
             setUpMocks(mockFetcher);
-            Rack rack(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
             expectEquals(rack.getNumSlots(), 16, "Rack should have 16 slots");
         }
 
         beginTest("Slot Management");
         {
             setUpMocks(mockFetcher);
-            Rack rack(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -150,6 +158,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -170,7 +180,7 @@ public:
         beginTest("Instance Management");
         {
             setUpMocks(mockFetcher);
-            Rack rack(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -209,6 +219,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -240,7 +252,7 @@ public:
         beginTest("Multiple Slots");
         {
             setUpMocks(mockFetcher);
-            Rack rack(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -279,6 +291,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -294,6 +308,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -327,6 +343,111 @@ public:
                 expect(slot1->getGearItem()->name == "LA-2A Tube Compressor 1", "Slot 1 name should remain unchanged after reset");
                 expect(slot2->getGearItem()->name == "LA-2A Tube Compressor 2", "Slot 2 name should remain unchanged after reset");
             }
+        }
+
+        beginTest("Preset Integration");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            // Test that the rack can load preset state
+            auto *slot = rack.getSlot(0);
+            expect(slot != nullptr, "Slot should exist");
+
+            // Create a gear item for testing using the constructor
+            juce::StringArray tags = {"test"};
+            juce::Array<GearControl> controls;
+
+            auto gearItem = std::make_unique<GearItem>(
+                "test-gear",
+                "Test Gear",
+                "Test Manufacturer",
+                "test-type",
+                "1.0.0",
+                "units/test-gear-1.0.0.json",
+                "assets/thumbnails/test-gear-1.0.0.jpg",
+                tags,
+                mockFetcher,
+                mockFileSystem,
+                cacheManager,
+                GearType::Rack19Inch,
+                GearCategory::Other,
+                1,
+                controls);
+
+            // Set the gear item in the slot
+            slot->setGearItem(gearItem.get());
+            expect(slot->getGearItem() == gearItem.get(), "Gear item should be set");
+
+            // Test that the rack state can be saved for presets
+            auto *slot2 = rack.getSlot(0);
+            expect(slot2 != nullptr, "Slot should exist");
+            expect(slot2->getGearItem() == gearItem.get(), "Gear item should be persisted");
+
+            // Test that all slots can be cleared for preset loading
+            auto *slot3 = rack.getSlot(0);
+            expect(slot3 != nullptr, "Slot should exist");
+            slot3->setGearItem(nullptr);
+            expect(slot3->getGearItem() == nullptr, "Gear item should be cleared");
+
+            // Test that the rack provides the correct slot count for preset operations
+            int slotCount = rack.getNumSlots();
+            expect(slotCount > 0, "Slot count should be greater than 0");
+
+            // Verify we can access all slots
+            for (int i = 0; i < slotCount; ++i)
+            {
+                auto *slot = rack.getSlot(i);
+                expect(slot != nullptr, "Slot should exist");
+            }
+
+            // Test that multiple gear items can be set and cleared for preset operations
+            auto gearItem1 = std::make_unique<GearItem>(
+                "test-gear-1",
+                "Test Gear 1",
+                "Test Manufacturer",
+                "test-type-1",
+                "1.0.0",
+                "units/test-gear-1-1.0.0.json",
+                "assets/thumbnails/test-gear-1-1.0.0.jpg",
+                tags,
+                mockFetcher,
+                mockFileSystem,
+                cacheManager,
+                GearType::Rack19Inch,
+                GearCategory::Other,
+                1,
+                controls);
+
+            auto gearItem2 = std::make_unique<GearItem>(
+                "test-gear-2",
+                "Test Gear 2",
+                "Test Manufacturer",
+                "test-type-2",
+                "1.0.0",
+                "units/test-gear-2-1.0.0.json",
+                "assets/thumbnails/test-gear-2-1.0.0.jpg",
+                tags,
+                mockFetcher,
+                mockFileSystem,
+                cacheManager,
+                GearType::Rack19Inch,
+                GearCategory::Other,
+                1,
+                controls);
+
+            // Set first gear item
+            auto *slot4 = rack.getSlot(0);
+            slot4->setGearItem(gearItem1.get());
+            expect(slot4->getGearItem() == gearItem1.get(), "First gear item should be set");
+
+            // Replace with second gear item
+            slot4->setGearItem(gearItem2.get());
+            expect(slot4->getGearItem() == gearItem2.get(), "Second gear item should be set");
+
+            // Clear gear item
+            slot4->setGearItem(nullptr);
+            expect(slot4->getGearItem() == nullptr, "Gear item should be cleared");
         }
     }
 };

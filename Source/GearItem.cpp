@@ -25,13 +25,12 @@ bool GearItem::loadImage()
         return createPlaceholderImage();
 
     // Extract filename from thumbnail path
-    juce::String filename = juce::File(thumbnailImage).getFileName();
+    juce::String filename = fileSystem.getFileName(thumbnailImage);
 
-    // Check cache first
-    CacheManager &cache = CacheManager::getInstance();
-    if (cache.isThumbnailCached(unitId, filename))
+    // Check cache first using the injected cache manager
+    if (cacheManager.isThumbnailCached(unitId, filename))
     {
-        juce::Image cachedImage = cache.loadThumbnailFromCache(unitId, filename);
+        juce::Image cachedImage = cacheManager.loadThumbnailFromCache(unitId, filename);
         if (cachedImage.isValid())
         {
             image = cachedImage;
@@ -78,7 +77,7 @@ bool GearItem::loadImage()
             // If successfully loaded image, cache it and return true
             if (image.isValid())
             {
-                cache.saveThumbnailToCache(unitId, filename, image);
+                cacheManager.saveThumbnailToCache(unitId, filename, image);
                 return true;
             }
         }
@@ -200,9 +199,9 @@ void GearItem::resetToSource()
  * Serializes all properties including controls, tags, and instance data
  * to a JSON format and writes to the specified file.
  *
- * @param destinationFile The file to save the JSON data to
+ * @param filePath The path to save the JSON data to
  */
-void GearItem::saveToJSON(juce::File destinationFile)
+void GearItem::saveToJSON(const juce::String &filePath)
 {
     // Create a JSON object with all of our properties
     juce::DynamicObject::Ptr jsonObj = new juce::DynamicObject();
@@ -292,8 +291,8 @@ void GearItem::saveToJSON(juce::File destinationFile)
     juce::var jsonVar(jsonObj.get());
     juce::String jsonString = juce::JSON::toString(jsonVar);
 
-    // Write to file
-    destinationFile.replaceWithText(jsonString);
+    // Write to file using the injected file system
+    fileSystem.writeFile(filePath, jsonString);
 }
 
 /**
@@ -302,14 +301,15 @@ void GearItem::saveToJSON(juce::File destinationFile)
  * Deserializes a gear item's properties from JSON format,
  * including controls, tags, and instance data.
  *
- * @param sourceFile The JSON file to load from
+ * @param filePath The path to the JSON file to load from
  * @param networkFetcher Reference to network fetcher
+ * @param fileSystem Reference to file system
  * @return A new GearItem instance with the loaded data
  */
-GearItem GearItem::loadFromJSON(juce::File sourceFile, INetworkFetcher &networkFetcher)
+GearItem GearItem::loadFromJSON(const juce::String &filePath, INetworkFetcher &networkFetcher, IFileSystem &fileSystem)
 {
-    // Read the JSON from file
-    juce::String jsonString = sourceFile.loadFileAsString();
+    // Read the JSON from file using the injected file system
+    juce::String jsonString = fileSystem.readFile(filePath);
 
     // Parse the JSON
     juce::var jsonVar = juce::JSON::parse(jsonString);
@@ -398,7 +398,7 @@ GearItem GearItem::loadFromJSON(juce::File sourceFile, INetworkFetcher &networkF
 
     // Create and return the gear item with the new constructor
     GearItem item(unitId, name, manufacturer, categoryStr, version, schemaPath,
-                  thumbnailImage, tags, networkFetcher, type, category, slotSize, controls);
+                  thumbnailImage, tags, networkFetcher, fileSystem, CacheManager::getDummy(), type, category, slotSize, controls);
 
     // Try to load the image
     item.loadImage();

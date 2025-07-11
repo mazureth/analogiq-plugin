@@ -1,5 +1,5 @@
 /**
- * @file PluginProcessor.h
+ * @file AnalogIQProcessor.h
  * @brief Header file for the AnalogIQProcessor class.
  *
  * This file defines the main audio processor for the AnalogIQ plugin,
@@ -13,9 +13,12 @@
 #include <JuceHeader.h>
 #include "Rack.h"
 #include "NetworkFetcher.h"
+#include "CacheManager.h"
+#include "PresetManager.h"
+#include "FileSystem.h"
 
 // Forward declare the test class
-class PluginProcessorTests;
+class AnalogIQProcessorTests;
 
 /**
  * @brief Main audio processor for the AnalogIQ plugin.
@@ -26,15 +29,16 @@ class PluginProcessorTests;
  */
 class AnalogIQProcessor : public juce::AudioProcessor
 {
-    friend class PluginProcessorTests; // Allow test class to access private members
+    friend class AnalogIQProcessorTests; // Allow test class to access private members
 
 public:
     /**
      * @brief Constructs a new AnalogIQProcessor.
      *
      * @param networkFetcher Reference to the network fetcher to use
+     * @param fileSystem Reference to the file system to use
      */
-    AnalogIQProcessor(INetworkFetcher &networkFetcher);
+    AnalogIQProcessor(INetworkFetcher &networkFetcher, IFileSystem &fileSystem);
 
     /**
      * @brief Destructor for AnalogIQProcessor.
@@ -196,6 +200,34 @@ public:
     INetworkFetcher &getNetworkFetcher() { return networkFetcher; }
 
     /**
+     * @brief Gets the processor's file system.
+     *
+     * @return Reference to the file system
+     */
+    IFileSystem &getFileSystem() { return *fileSystem; }
+
+    /**
+     * @brief Gets the processor's cache manager.
+     *
+     * @return Reference to the cache manager
+     */
+    CacheManager &getCacheManager() { return *cacheManager; }
+
+    /**
+     * @brief Gets the processor's preset manager.
+     *
+     * @return Reference to the preset manager
+     */
+    PresetManager &getPresetManager() { return *presetManager; }
+
+    /**
+     * @brief Gets the processor's gear library.
+     *
+     * @return Reference to the gear library
+     */
+    GearLibrary &getGearLibrary() { return *gearLibrary; }
+
+    /**
      * @brief Saves the current state of all gear instances.
      */
     void saveInstanceState();
@@ -231,6 +263,10 @@ private:
     juce::AudioProcessorEditor *lastCreatedEditor = nullptr; ///< Pointer to the last created editor (for testing)
     Rack *rack = nullptr;                                    ///< Pointer to the rack (for testing)
     INetworkFetcher &networkFetcher;                         ///< Reference to the network fetcher for making HTTP requests
+    std::unique_ptr<IFileSystem> fileSystem;
+    std::unique_ptr<CacheManager> cacheManager;
+    std::unique_ptr<PresetManager> presetManager;
+    std::unique_ptr<GearLibrary> gearLibrary;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };

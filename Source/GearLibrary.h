@@ -14,6 +14,9 @@
 #include "GearItem.h"
 #include "INetworkFetcher.h"
 #include "CacheManager.h"
+#include "IFileSystem.h"
+#include "PresetManager.h" // Added for PresetManager
+#include <utility>
 
 /**
  * @brief Namespace containing remote resource URLs and paths.
@@ -44,12 +47,14 @@ class GearLibrary : public juce::Component,
 {
 public:
     /**
-     * @brief Constructs a new GearLibrary.
+     * @brief Constructor for GearLibrary.
      *
-     * @param networkFetcher The network fetcher to use for remote requests
-     * @param autoLoad Whether to automatically load the library data (default: true)
+     * @param networkFetcher The network fetcher to use for loading resources
+     * @param fileSystem The file system to use for file operations
+     * @param cacheManager The cache manager to use for file operations
+     * @param presetManager The preset manager to use for preset operations
      */
-    explicit GearLibrary(INetworkFetcher &networkFetcher, bool autoLoad = true);
+    GearLibrary(INetworkFetcher &networkFetcher, IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager);
 
     /**
      * @brief Destructor for GearLibrary.
@@ -147,6 +152,13 @@ public:
      * @return Constant reference to the array of gear items
      */
     const juce::Array<GearItem> &getItems() const { return gearItems; }
+
+    /**
+     * @brief Gets the cache manager.
+     *
+     * @return Reference to the cache manager
+     */
+    CacheManager &getCacheManager() { return cacheManager; }
 
     /**
      * @brief Loads the gear library data asynchronously.
@@ -314,7 +326,10 @@ private:
      */
     static juce::Array<juce::juce_wchar> getIgnoredCharacters();
 
-    INetworkFetcher &fetcher; ///< Reference to the network fetcher
+    INetworkFetcher &networkFetcher; ///< Reference to the network fetcher
+    IFileSystem &fileSystem;         ///< Reference to the file system
+    CacheManager &cacheManager;      ///< Reference to the cache manager
+    PresetManager &presetManager;    ///< Reference to the preset manager
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GearLibrary)
 };
@@ -347,13 +362,15 @@ public:
      * @param typeIn The type of the item
      * @param nameIn The name of the item
      * @param ownerIn Pointer to the owning GearLibrary
+     * @param cacheManagerIn Reference to the cache manager
      * @param gearItemIn Pointer to the associated gear item (for gear items)
      * @param gearIndexIn Index of the gear item (for gear items)
      */
-    GearTreeItem(ItemType typeIn, const juce::String &nameIn, GearLibrary *ownerIn = nullptr,
-                 GearItem *gearItemIn = nullptr, int gearIndexIn = -1)
-        : itemType(typeIn), name(nameIn), owner(ownerIn), gearItem(gearItemIn), gearIndex(gearIndexIn)
+    GearTreeItem(ItemType typeIn, const juce::String &nameIn, GearLibrary *ownerIn, CacheManager *cacheManagerIn = nullptr, GearItem *gearItemIn = nullptr, int itemIndexIn = -1)
+        : type(typeIn), name(nameIn), owner(ownerIn), cacheManager(cacheManagerIn), gearItem(gearItemIn), itemIndex(itemIndexIn)
     {
+        // Debug: Log cacheManager for gear items
+        // juce::Logger::writeToLog("GearTreeItem constructor for: " + nameIn + " - cacheManager: " + (cacheManagerIn != nullptr ? "valid" : "null"));
     }
 
     /**
@@ -363,7 +380,7 @@ public:
      */
     bool mightContainSubItems() override
     {
-        return itemType != ItemType::Gear;
+        return type != ItemType::Gear;
     }
 
     /**
@@ -376,14 +393,14 @@ public:
     void paintItem(juce::Graphics &g, int width, int height) override
     {
         // Suppress selection highlighting for all items for cleaner UI
-        // if (isSelected() && itemType != ItemType::Gear)
+        // if (isSelected() && type != ItemType::Gear)
         //     g.fillAll(juce::Colours::lightblue.darker(0.2f));
 
         g.setColour(juce::Colours::white);
-        g.setFont(itemType == ItemType::Gear ? 14.0f : 16.0f);
+        g.setFont(type == ItemType::Gear ? 14.0f : 16.0f);
 
         // Handle message items (simple text without tree styling)
-        if (itemType == ItemType::Message)
+        if (type == ItemType::Message)
         {
             g.setColour(juce::Colours::lightgrey);
             g.setFont(14.0f);
@@ -396,13 +413,24 @@ public:
         juce::String itemText = name;
 
         // Only draw icons for actual gear items (leaf nodes)
-        if (itemType == ItemType::Gear)
+        if (type == ItemType::Gear)
         {
-            // Draw star icon for favorites first (far left)
-            if (gearItem != nullptr)
+            // Debug: Log cacheManager state for Categories tree items
+            if (name.contains("LA-2A") || name.contains("1176"))
             {
-                CacheManager &cache = CacheManager::getInstance();
-                bool isFavorite = cache.isFavorite(gearItem->unitId);
+                // juce::Logger::writeToLog("paintItem for: " + name + " - cacheManager: " + (cacheManager != nullptr ? "valid" : "null") + " gearItem: " + (gearItem != nullptr ? "valid" : "null"));
+            }
+
+            // Draw star icon for favorites first (far left)
+            if (gearItem != nullptr && cacheManager != nullptr)
+            {
+                bool isFavorite = cacheManager->isFavorite(gearItem->unitId);
+
+                // Debug: Log star drawing for Categories tree
+                if (name.contains("LA-2A") || name.contains("1176")) // Common test items
+                {
+                    // juce::Logger::writeToLog("Drawing star for: " + name + " - isFavorite: " + (isFavorite ? "true" : "false"));
+                }
 
                 const int starSize = 16;
                 const int starX = 4; // Far left position
@@ -422,6 +450,14 @@ public:
                 starPath.applyTransform(rotation);
 
                 g.fillPath(starPath);
+            }
+            else
+            {
+                // Debug: Log when star is not drawn
+                if (name.contains("LA-2A") || name.contains("1176"))
+                {
+                    // juce::Logger::writeToLog("NOT drawing star for: " + name + " - gearItem: " + (gearItem != nullptr ? "valid" : "null") + " cacheManager: " + (cacheManager != nullptr ? "valid" : "null"));
+                }
             }
 
             // Move text position to account for star
@@ -474,46 +510,48 @@ public:
         if (owner == nullptr)
             return;
 
-        if (itemType == ItemType::Root)
+        if (type == ItemType::Root)
         {
             // Add Recently Used group
-            addSubItem(new GearTreeItem(ItemType::RecentlyUsed, "Recently Used", owner));
+            addSubItem(new GearTreeItem(ItemType::RecentlyUsed, "Recently Used", owner, &owner->getCacheManager()));
 
             // Add Favorites group
-            addSubItem(new GearTreeItem(ItemType::Favorites, "My Gear", owner));
+            addSubItem(new GearTreeItem(ItemType::Favorites, "My Gear", owner, &owner->getCacheManager()));
 
             // Add Categories group
-            addSubItem(new GearTreeItem(ItemType::Category, "Categories", owner));
+            addSubItem(new GearTreeItem(ItemType::Category, "Categories", owner, &owner->getCacheManager()));
         }
-        else if (itemType == ItemType::RecentlyUsed)
+        else if (type == ItemType::RecentlyUsed)
         {
             // Get recently used items from cache
-            CacheManager &cache = CacheManager::getInstance();
-            juce::StringArray recentlyUsed = cache.getRecentlyUsed(CacheManager::MAX_RECENTLY_USED); // Show up to MAX_RECENTLY_USED items
-
-            if (!recentlyUsed.isEmpty())
+            if (cacheManager != nullptr)
             {
-                // Get all items from the library
-                const auto &items = owner->getItems();
+                juce::StringArray recentlyUsed = cacheManager->getRecentlyUsed(CacheManager::MAX_RECENTLY_USED); // Show up to MAX_RECENTLY_USED items
 
-                // Add each recently used item
-                for (const auto &unitId : recentlyUsed)
+                if (!recentlyUsed.isEmpty())
                 {
-                    // Find the gear item in the library
-                    for (int i = 0; i < items.size(); ++i)
+                    // Get all items from the library
+                    const auto &items = owner->getItems();
+
+                    // Add each recently used item
+                    for (const auto &unitId : recentlyUsed)
                     {
-                        const auto &item = items.getReference(i);
-                        if (item.unitId == unitId)
+                        // Find the gear item in the library
+                        for (int i = 0; i < items.size(); ++i)
                         {
-                            addSubItem(new GearTreeItem(ItemType::Gear, item.name, owner,
-                                                        const_cast<GearItem *>(&item), i));
-                            break;
+                            const auto &item = items.getReference(i);
+                            if (item.unitId == unitId)
+                            {
+                                addSubItem(new GearTreeItem(ItemType::Gear, item.name, owner, cacheManager,
+                                                            const_cast<GearItem *>(&item), i));
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
-        else if (itemType == ItemType::Category && name == "Categories")
+        else if (type == ItemType::Category && name == "Categories")
         {
             // Get all items from the library
             const auto &items = owner->getItems();
@@ -525,191 +563,42 @@ public:
             for (int i = 0; i < items.size(); ++i)
             {
                 const auto &item = items.getReference(i);
-
-                // Get the category string or derive it from the enum
-                juce::String category;
-
-                if (!item.categoryString.isEmpty())
-                {
-                    category = item.categoryString.toLowerCase();
-                }
-                else
-                {
-                    // Fallback to enum if string is empty
-                    switch (item.category)
-                    {
-                    case GearCategory::EQ:
-                        category = "equalizer";
-                        break;
-                    case GearCategory::Compressor:
-                        category = "compressor";
-                        break;
-                    case GearCategory::Preamp:
-                        category = "preamp";
-                        break;
-                    case GearCategory::Other:
-                        category = "other";
-                        break;
-                    }
-                }
-
-                // Add to our unique list if not already present
-                if (!category.isEmpty() && !categories.contains(category))
-                    categories.add(category);
+                if (!categories.contains(item.categoryString))
+                    categories.add(item.categoryString);
             }
 
-            // Sort categories alphabetically
-            categories.sort(true);
-
-            // Add a tree item for each category
+            // Add a GearTreeItem for each category
             for (const auto &category : categories)
             {
                 // Format category name for display (capitalize first letter)
                 juce::String displayName = category.substring(0, 1).toUpperCase() + category.substring(1);
-                addSubItem(new GearTreeItem(ItemType::Category, displayName, owner));
+                addSubItem(new GearTreeItem(ItemType::Category, displayName, owner, &owner->getCacheManager()));
             }
         }
-        else if (itemType == ItemType::Category)
+        else if (type == ItemType::Category)
         {
-            // Find items matching this category
+            // Get all items from the library
             const auto &items = owner->getItems();
             bool hasItems = false;
-
             for (int i = 0; i < items.size(); ++i)
             {
                 const auto &item = items.getReference(i);
-
-                // Check if this item matches the category
-                bool matches = false;
-
-                if (name.equalsIgnoreCase("EQ") || name.equalsIgnoreCase("Equalizer"))
+                if (item.categoryString.equalsIgnoreCase(name))
                 {
-                    matches = (item.category == GearCategory::EQ ||
-                               item.categoryString.equalsIgnoreCase("equalizer") ||
-                               item.categoryString.equalsIgnoreCase("eq"));
-                }
-                else if (name.equalsIgnoreCase("Compressor"))
-                {
-                    matches = (item.category == GearCategory::Compressor ||
-                               item.categoryString.equalsIgnoreCase("compressor"));
-                }
-                else if (name.equalsIgnoreCase("Preamp"))
-                {
-                    matches = (item.category == GearCategory::Preamp ||
-                               item.categoryString.equalsIgnoreCase("preamp"));
-                }
-                else if (name.equalsIgnoreCase("Other"))
-                {
-                    matches = (item.category == GearCategory::Other ||
-                               item.categoryString.equalsIgnoreCase("other"));
-                }
-                else
-                {
-                    // For any other category, match directly with the item's categoryString
-                    matches = item.categoryString.equalsIgnoreCase(name);
-                }
-
-                if (matches)
-                {
-                    addSubItem(new GearTreeItem(ItemType::Gear, item.name, owner,
+                    addSubItem(new GearTreeItem(ItemType::Gear, item.name, owner, &owner->getCacheManager(),
                                                 const_cast<GearItem *>(&item), i));
                     hasItems = true;
                 }
             }
-
-            // If no items were found for this category, don't expand it
             if (!hasItems)
-                setOpen(false);
-        }
-        else if (itemType == ItemType::Favorites)
-        {
-            // Get favorite items from cache
-            CacheManager &cache = CacheManager::getInstance();
-            juce::StringArray favorites = cache.getFavorites();
-
-            if (!favorites.isEmpty())
             {
-                // Get all items from the library
-                const auto &items = owner->getItems();
-
-                // Group favorites by category (same approach as Categories tree)
-                juce::HashMap<juce::String, juce::Array<GearItem *>> categoryGroups;
-
-                // Collect favorite items and group them by category
-                for (const auto &unitId : favorites)
-                {
-                    // Find the gear item in the library
-                    for (int i = 0; i < items.size(); ++i)
-                    {
-                        const auto &item = items.getReference(i);
-                        if (item.unitId == unitId)
-                        {
-                            // Get the category string or derive it from the enum
-                            juce::String category;
-                            if (!item.categoryString.isEmpty())
-                            {
-                                category = item.categoryString.toLowerCase();
-                            }
-                            else
-                            {
-                                // Fallback to enum if string is empty
-                                switch (item.category)
-                                {
-                                case GearCategory::EQ:
-                                    category = "equalizer";
-                                    break;
-                                case GearCategory::Compressor:
-                                    category = "compressor";
-                                    break;
-                                case GearCategory::Preamp:
-                                    category = "preamp";
-                                    break;
-                                case GearCategory::Other:
-                                    category = "other";
-                                    break;
-                                }
-                            }
-
-                            if (!categoryGroups.contains(category))
-                                categoryGroups.set(category, juce::Array<GearItem *>());
-
-                            categoryGroups.getReference(category).add(const_cast<GearItem *>(&item));
-                            break;
-                        }
-                    }
-                }
-
-                // Add category groups as sub-items
-                for (auto it = categoryGroups.begin(); it != categoryGroups.end(); ++it)
-                {
-                    juce::String categoryName = it.getKey();
-                    juce::String displayName = categoryName.substring(0, 1).toUpperCase() + categoryName.substring(1);
-
-                    auto categoryNode = new GearTreeItem(ItemType::Category, displayName, owner);
-                    addSubItem(categoryNode);
-
-                    // Add gear items to this category group
-                    for (auto *item : it.getValue())
-                    {
-                        // Find the index of this item in the original array
-                        int itemIndex = -1;
-                        for (int i = 0; i < items.size(); ++i)
-                        {
-                            if (&items.getReference(i) == item)
-                            {
-                                itemIndex = i;
-                                break;
-                            }
-                        }
-
-                        if (itemIndex >= 0)
-                        {
-                            categoryNode->addSubItem(new GearTreeItem(ItemType::Gear, item->name, owner,
-                                                                      item, itemIndex));
-                        }
-                    }
-                }
+                addSubItem(new GearTreeItem(ItemType::Message, "No items in this category", owner, &owner->getCacheManager()));
             }
+        }
+        else if (type == ItemType::Favorites)
+        {
+            // Favorites are handled by refreshFavoritesSection() in GearLibrary.cpp
+            // This method is not used for favorites
         }
     }
 
@@ -744,7 +633,7 @@ public:
     void itemClicked(const juce::MouseEvent &e) override
     {
         // Handle right-click on Recently Used item
-        if (itemType == ItemType::RecentlyUsed && e.mods.isRightButtonDown())
+        if (type == ItemType::RecentlyUsed && e.mods.isRightButtonDown())
         {
             juce::PopupMenu menu;
             menu.addItem(1, "Clear Recently Used");
@@ -761,7 +650,7 @@ public:
         }
 
         // Handle right-click on Favorites item
-        if (itemType == ItemType::Favorites && e.mods.isRightButtonDown())
+        if (type == ItemType::Favorites && e.mods.isRightButtonDown())
         {
             juce::PopupMenu menu;
             menu.addItem(1, "Clear My Gear");
@@ -778,7 +667,7 @@ public:
         }
 
         // Handle star icon clicks for gear items
-        if (itemType == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
+        if (type == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
         {
             // Check if click is in the left portion of the item where the star would be
             // The star is drawn at the left edge, so check if click is in the left 20 pixels
@@ -787,16 +676,18 @@ public:
             if (e.x <= starAreaWidth)
             {
                 // Toggle favorite status
-                CacheManager &cache = CacheManager::getInstance();
-                bool isFavorite = cache.isFavorite(gearItem->unitId);
+                if (cacheManager != nullptr)
+                {
+                    bool isFavorite = cacheManager->isFavorite(gearItem->unitId);
 
-                if (isFavorite)
-                {
-                    cache.removeFromFavorites(gearItem->unitId);
-                }
-                else
-                {
-                    cache.addToFavorites(gearItem->unitId);
+                    if (isFavorite)
+                    {
+                        cacheManager->removeFromFavorites(gearItem->unitId);
+                    }
+                    else
+                    {
+                        cacheManager->addToFavorites(gearItem->unitId);
+                    }
                 }
 
                 // Refresh only the favorites section to preserve tree expansion state
@@ -813,7 +704,7 @@ public:
         TreeViewItem::itemClicked(e);
 
         // If this is a gear item, make it draggable
-        if (itemType == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
+        if (type == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
         {
             // Find the parent drag container
             juce::Component *comp = getOwnerView();
@@ -843,7 +734,7 @@ public:
             g.drawText(gearItem->name, 30, 5, itemWidth - 40, 30, juce::Justification::centredLeft);
 
             // Create a structured drag description that the rack can recognize
-            juce::String dragDesc = "GEAR:" + juce::String(gearIndex) + ":" + gearItem->name;
+            juce::String dragDesc = "GEAR:" + juce::String(itemIndex) + ":" + gearItem->name;
 
             // Calculate the drag image offset from the mouse
             juce::Point<int> imageOffset(e.x - 10, e.y - itemHeight / 2);
@@ -895,6 +786,16 @@ public:
         setOpen(shouldBeOpen);
     }
 
+    /**
+     * @brief Gets the openness of the item.
+     *
+     * @return Whether the item is currently open
+     */
+    bool getOpenness() const
+    {
+        return isOpen;
+    }
+
     juce::String getItemText() const
     {
         return name;
@@ -906,11 +807,12 @@ public:
     }
 
 private:
-    ItemType itemType;    ///< Type of this tree item
-    juce::String name;    ///< Name of this tree item
-    GearLibrary *owner;   ///< Pointer to the owning GearLibrary
-    GearItem *gearItem;   ///< Associated gear item (for gear items)
-    int gearIndex;        ///< Index of the gear item (for gear items)
-    bool isVisible{true}; ///< Whether this item is visible
-    bool isOpen{false};   ///< Whether this item is open
+    ItemType type;              ///< Type of this tree item
+    juce::String name;          ///< Name of this tree item
+    GearLibrary *owner;         ///< Pointer to the owning GearLibrary
+    CacheManager *cacheManager; ///< Reference to the cache manager
+    GearItem *gearItem;         ///< Associated gear item (for gear items)
+    int itemIndex;              ///< Index of the gear item (for gear items)
+    bool isVisible{true};       ///< Whether this item is visible
+    bool isOpen{false};         ///< Whether this item is open
 };

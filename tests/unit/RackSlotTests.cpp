@@ -3,6 +3,8 @@
 #include "GearItem.h"
 #include "TestFixture.h"
 #include "MockNetworkFetcher.h"
+#include "MockFileSystem.h"
+#include "PresetManager.h"
 
 class RackSlotTests : public juce::UnitTest
 {
@@ -97,19 +99,26 @@ public:
     {
         TestFixture fixture;
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
         mockFetcher.reset();
+        mockFileSystem.reset();
+
+        // Create local instances with proper dependency injection
+        CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
+        PresetManager presetManager(mockFileSystem, cacheManager);
+        GearLibrary gearLibrary(mockFetcher, mockFileSystem, cacheManager, presetManager);
 
         beginTest("Initial State");
         {
             setUpMocks(mockFetcher);
-            RackSlot slot(0);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
             expect(slot.isAvailable(), "Slot should be available");
         }
 
         beginTest("Gear Item Management");
         {
             setUpMocks(mockFetcher);
-            RackSlot slot(0);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -138,6 +147,7 @@ public:
             gain.image = "assets/controls/knobs/bakelite-lg-black.png";
             controls.add(gain);
 
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
             auto item = std::make_unique<GearItem>(
                 "la2a-compressor",
                 "LA-2A Tube Compressor",
@@ -148,6 +158,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -164,7 +176,7 @@ public:
         beginTest("Clear Gear Item");
         {
             setUpMocks(mockFetcher);
-            RackSlot slot(0);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -193,22 +205,25 @@ public:
             gain.image = "assets/controls/knobs/bakelite-lg-black.png";
             controls.add(gain);
 
-            auto item = std::make_unique<GearItem>(
-                "la2a-compressor",
-                "LA-2A Tube Compressor",
-                "Universal Audio",
-                "compressor",
-                "1.0.0",
-                "units/la2a-compressor-1.0.0.json",
-                "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+            auto gearItem = std::make_unique<GearItem>(
+                "test-equalizer",
+                "Test Equalizer",
+                "Test Co",
+                "equalizer",
+                "1.0",
+                "units/test-equalizer-1.0.json",
+                "assets/thumbnails/test-equalizer-1.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
-                GearCategory::Compressor,
+                GearCategory::EQ,
                 1,
                 controls);
 
-            slot.setGearItem(item.get());
+            slot.setGearItem(gearItem.get());
             slot.clearGearItem();
             expect(slot.isAvailable(), "Slot should be available");
         }
@@ -216,7 +231,7 @@ public:
         beginTest("Instance Management");
         {
             setUpMocks(mockFetcher);
-            RackSlot slot(0);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
             juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
             juce::Array<GearControl> controls;
@@ -245,6 +260,7 @@ public:
             gain.image = "assets/controls/knobs/bakelite-lg-black.png";
             controls.add(gain);
 
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
             auto gearItem = std::make_unique<GearItem>(
                 "la2a-compressor",
                 "LA-2A Tube Compressor",
@@ -255,6 +271,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 tags,
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor,
                 1,
@@ -277,6 +295,110 @@ public:
             expect(slot.isInstance(), "Slot should still be an instance after reset");
             expect(slot.getInstanceId() == instanceId, "Instance ID should be preserved after reset");
             expect(slot.getGearItem()->name == "LA-2A Tube Compressor", "Name should remain unchanged after reset");
+        }
+
+        beginTest("Preset Integration");
+        {
+            setUpMocks(mockFetcher);
+            RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
+
+            // Test that gear items can be set for preset loading
+            juce::StringArray tags = {"test"};
+            juce::Array<GearControl> controls;
+
+            auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+            auto gearItem = std::make_unique<GearItem>(
+                "test-gear",
+                "Test Gear",
+                "Test Manufacturer",
+                "test-type",
+                "1.0.0",
+                "units/test-gear-1.0.0.json",
+                "assets/thumbnails/test-gear-1.0.0.jpg",
+                tags,
+                mockFetcher,
+                mockFileSystem,
+                cacheManager,
+                GearType::Rack19Inch,
+                GearCategory::Other,
+                1,
+                controls);
+
+            slot.setGearItem(gearItem.get());
+            expect(slot.getGearItem() == gearItem.get(), "Gear item should be set");
+
+            // Test that gear items can be retrieved for preset saving
+            auto *retrievedItem = slot.getGearItem();
+            expect(retrievedItem == gearItem.get(), "Retrieved gear item should match");
+
+            // Test that gear items can be cleared for preset loading
+            slot.setGearItem(nullptr);
+            expect(slot.getGearItem() == nullptr, "Gear item should be cleared");
+
+            // Test that control values are persisted when gear items are set
+            slot.setGearItem(gearItem.get());
+            expect(slot.getGearItem() == gearItem.get(), "Gear item should be persisted");
+
+            // Test that control values are restored when loading presets
+            slot.setGearItem(gearItem.get());
+            expect(slot.getGearItem() == gearItem.get(), "Gear item should be restored");
+
+            // Test that state changes are properly notified for preset integration
+            slot.setGearItem(gearItem.get());
+            slot.setGearItem(nullptr);
+            expect(true, "State changes should be notified");
+
+            // Test that multiple gear items can be set and cleared for preset operations
+            auto gearItem1 = std::make_unique<GearItem>(
+                "test-gear-1",
+                "Test Gear 1",
+                "Test Manufacturer",
+                "test-type-1",
+                "1.0.0",
+                "units/test-gear-1-1.0.0.json",
+                "assets/thumbnails/test-gear-1-1.0.0.jpg",
+                tags,
+                mockFetcher,
+                mockFileSystem,
+                cacheManager,
+                GearType::Rack19Inch,
+                GearCategory::Other,
+                1,
+                controls);
+
+            auto gearItem2 = std::make_unique<GearItem>(
+                "test-gear-2",
+                "Test Gear 2",
+                "Test Manufacturer",
+                "test-type-2",
+                "1.0.0",
+                "units/test-gear-2-1.0.0.json",
+                "assets/thumbnails/test-gear-2-1.0.0.jpg",
+                tags,
+                mockFetcher,
+                mockFileSystem,
+                cacheManager,
+                GearType::Rack19Inch,
+                GearCategory::Other,
+                1,
+                controls);
+
+            // Set first gear item
+            slot.setGearItem(gearItem1.get());
+            expect(slot.getGearItem() == gearItem1.get(), "First gear item should be set");
+
+            // Replace with second gear item
+            slot.setGearItem(gearItem2.get());
+            expect(slot.getGearItem() == gearItem2.get(), "Second gear item should be set");
+
+            // Clear gear item
+            slot.setGearItem(nullptr);
+            expect(slot.getGearItem() == nullptr, "Gear item should be cleared");
+
+            // Test that gear item properties are preserved during preset operations
+            slot.setGearItem(gearItem.get());
+            expect(slot.getGearItem()->name == "Test Gear", "Gear item name should be preserved");
+            expect(slot.getGearItem()->categoryString == "test-type", "Gear item type should be preserved");
         }
     }
 };

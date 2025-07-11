@@ -1,19 +1,24 @@
 #include "CacheManager.h"
+#include "FileSystem.h"
+#include "IFileSystem.h"
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <juce_data_structures/juce_data_structures.h>
 
-CacheManager::CacheManager()
+CacheManager::CacheManager(IFileSystem &fileSystem, const juce::String &cacheRootPath)
+    : fileSystem(fileSystem)
 {
-    // Initialize cache root directory using JUCE's cross-platform path resolution
-    cacheRoot = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
-                    .getChildFile("AnalogiqCache");
-}
-
-CacheManager &CacheManager::getInstance()
-{
-    static CacheManager instance;
-    return instance;
+    // Initialize cache root directory
+    if (cacheRootPath.isNotEmpty())
+    {
+        // Use provided cache root path (for testing)
+        cacheRoot = cacheRootPath;
+    }
+    else
+    {
+        // Use OS-agnostic approach through the injected fileSystem
+        cacheRoot = fileSystem.getCacheRootDirectory();
+    }
 }
 
 bool CacheManager::initializeCache()
@@ -40,16 +45,16 @@ bool CacheManager::initializeCache()
             return false;
 
         // Create subdirectories for different control types
-        if (!createDirectoryIfNeeded(getControlsDirectory().getChildFile("buttons")))
+        if (!createDirectoryIfNeeded(fileSystem.joinPath(getControlsDirectory(), "buttons")))
             return false;
 
-        if (!createDirectoryIfNeeded(getControlsDirectory().getChildFile("faders")))
+        if (!createDirectoryIfNeeded(fileSystem.joinPath(getControlsDirectory(), "faders")))
             return false;
 
-        if (!createDirectoryIfNeeded(getControlsDirectory().getChildFile("knobs")))
+        if (!createDirectoryIfNeeded(fileSystem.joinPath(getControlsDirectory(), "knobs")))
             return false;
 
-        if (!createDirectoryIfNeeded(getControlsDirectory().getChildFile("switches")))
+        if (!createDirectoryIfNeeded(fileSystem.joinPath(getControlsDirectory(), "switches")))
             return false;
 
         return true;
@@ -60,67 +65,78 @@ bool CacheManager::initializeCache()
     }
 }
 
-juce::File CacheManager::getCacheRoot() const
+juce::String CacheManager::getCacheRoot() const
 {
     return cacheRoot;
 }
 
 bool CacheManager::isUnitCached(const juce::String &unitId) const
 {
-    juce::File unitFile = getCachedUnitPath(unitId);
-    return unitFile.existsAsFile();
+    juce::String unitFilePath = getCachedUnitPath(unitId);
+    return fileSystem.fileExists(unitFilePath);
 }
 
 bool CacheManager::isFaceplateCached(const juce::String &unitId, const juce::String &filename) const
 {
-    juce::File faceplateFile = getCachedFaceplatePath(unitId, filename);
-    return faceplateFile.existsAsFile();
+    juce::String faceplateFilePath = getCachedFaceplatePath(unitId, filename);
+    return fileSystem.fileExists(faceplateFilePath);
 }
 
 bool CacheManager::isThumbnailCached(const juce::String &unitId, const juce::String &filename) const
 {
-    juce::File thumbnailFile = getCachedThumbnailPath(unitId, filename);
-    return thumbnailFile.existsAsFile();
+    juce::String thumbnailFilePath = getCachedThumbnailPath(unitId, filename);
+    return fileSystem.fileExists(thumbnailFilePath);
 }
 
 bool CacheManager::isControlAssetCached(const juce::String &assetPath) const
 {
-    juce::File assetFile = getCachedControlAssetPath(assetPath);
-    return assetFile.existsAsFile();
+    juce::String assetFilePath = getCachedControlAssetPath(assetPath);
+    return fileSystem.fileExists(assetFilePath);
 }
 
-juce::File CacheManager::getCachedUnitPath(const juce::String &unitId) const
+juce::String CacheManager::getCachedUnitPath(const juce::String &unitId) const
 {
-    return getUnitsDirectory().getChildFile(unitId + ".json");
+    return fileSystem.joinPath(getUnitsDirectory(), unitId + ".json");
 }
 
-juce::File CacheManager::getCachedFaceplatePath(const juce::String &unitId, const juce::String &filename) const
+juce::String CacheManager::getCachedFaceplatePath(const juce::String &unitId, const juce::String &filename) const
 {
-    return getFaceplatesDirectory().getChildFile(filename);
+    return fileSystem.joinPath(getFaceplatesDirectory(), filename);
 }
 
-juce::File CacheManager::getCachedThumbnailPath(const juce::String &unitId, const juce::String &filename) const
+juce::String CacheManager::getCachedThumbnailPath(const juce::String &unitId, const juce::String &filename) const
 {
-    return getThumbnailsDirectory().getChildFile(filename);
+    return fileSystem.joinPath(getThumbnailsDirectory(), filename);
 }
 
-juce::File CacheManager::getCachedControlAssetPath(const juce::String &assetPath) const
+juce::String CacheManager::getCachedControlAssetPath(const juce::String &assetPath) const
 {
-    return getControlsDirectory().getChildFile(assetPath);
+    // Strip "assets/controls/" prefix if present to prevent redundant nesting
+    juce::String cleanAssetPath = assetPath;
+    if (cleanAssetPath.startsWith("assets/controls/"))
+    {
+        cleanAssetPath = cleanAssetPath.substring(16); // Remove "assets/controls/" prefix
+    }
+    else if (cleanAssetPath.startsWith("controls/"))
+    {
+        cleanAssetPath = cleanAssetPath.substring(9); // Remove "controls/" prefix
+    }
+
+    return fileSystem.joinPath(getControlsDirectory(), cleanAssetPath);
 }
 
 bool CacheManager::saveUnitToCache(const juce::String &unitId, const juce::String &jsonData)
 {
     try
     {
-        juce::File unitFile = getCachedUnitPath(unitId);
+        juce::String unitFilePath = getCachedUnitPath(unitId);
 
         // Ensure the units directory exists
         if (!createDirectoryIfNeeded(getUnitsDirectory()))
             return false;
 
         // Write the JSON data to file
-        return unitFile.replaceWithText(jsonData);
+        return fileSystem.writeFile(unitFilePath, jsonData);
     }
     catch (...)
     {
@@ -132,7 +148,7 @@ bool CacheManager::saveFaceplateToCache(const juce::String &unitId, const juce::
 {
     try
     {
-        juce::File faceplateFile = getCachedFaceplatePath(unitId, filename);
+        juce::String faceplateFilePath = getCachedFaceplatePath(unitId, filename);
 
         // Ensure the faceplates directory exists
         if (!createDirectoryIfNeeded(getFaceplatesDirectory()))
@@ -140,11 +156,12 @@ bool CacheManager::saveFaceplateToCache(const juce::String &unitId, const juce::
 
         // Save the image as JPEG
         juce::JPEGImageFormat jpegFormat;
-        juce::FileOutputStream stream(faceplateFile);
+        juce::MemoryBlock imageData;
+        juce::MemoryOutputStream stream(imageData, false);
 
-        if (stream.openedOk())
+        if (jpegFormat.writeImageToStream(image, stream))
         {
-            return jpegFormat.writeImageToStream(image, stream);
+            return fileSystem.writeFile(faceplateFilePath, imageData);
         }
 
         return false;
@@ -159,7 +176,7 @@ bool CacheManager::saveThumbnailToCache(const juce::String &unitId, const juce::
 {
     try
     {
-        juce::File thumbnailFile = getCachedThumbnailPath(unitId, filename);
+        juce::String thumbnailFilePath = getCachedThumbnailPath(unitId, filename);
 
         // Ensure the thumbnails directory exists
         if (!createDirectoryIfNeeded(getThumbnailsDirectory()))
@@ -167,11 +184,12 @@ bool CacheManager::saveThumbnailToCache(const juce::String &unitId, const juce::
 
         // Save the image as JPEG
         juce::JPEGImageFormat jpegFormat;
-        juce::FileOutputStream stream(thumbnailFile);
+        juce::MemoryBlock imageData;
+        juce::MemoryOutputStream stream(imageData, false);
 
-        if (stream.openedOk())
+        if (jpegFormat.writeImageToStream(image, stream))
         {
-            return jpegFormat.writeImageToStream(image, stream);
+            return fileSystem.writeFile(thumbnailFilePath, imageData);
         }
 
         return false;
@@ -186,22 +204,15 @@ bool CacheManager::saveControlAssetToCache(const juce::String &assetPath, const 
 {
     try
     {
-        juce::File assetFile = getCachedControlAssetPath(assetPath);
+        juce::String assetFilePath = getCachedControlAssetPath(assetPath);
 
         // Ensure the parent directory exists
-        juce::File parentDir = assetFile.getParentDirectory();
+        juce::String parentDir = fileSystem.getParentDirectory(assetFilePath);
         if (!createDirectoryIfNeeded(parentDir))
             return false;
 
         // Write the image data to file
-        juce::FileOutputStream stream(assetFile);
-
-        if (stream.openedOk())
-        {
-            return stream.write(imageData.getData(), imageData.getSize()) == imageData.getSize();
-        }
-
-        return false;
+        return fileSystem.writeFile(assetFilePath, imageData);
     }
     catch (...)
     {
@@ -213,11 +224,11 @@ juce::String CacheManager::loadUnitFromCache(const juce::String &unitId) const
 {
     try
     {
-        juce::File unitFile = getCachedUnitPath(unitId);
+        juce::String unitFilePath = getCachedUnitPath(unitId);
 
-        if (unitFile.existsAsFile())
+        if (fileSystem.fileExists(unitFilePath))
         {
-            return unitFile.loadFileAsString();
+            return fileSystem.readFile(unitFilePath);
         }
 
         return juce::String();
@@ -232,12 +243,16 @@ juce::Image CacheManager::loadFaceplateFromCache(const juce::String &unitId, con
 {
     try
     {
-        juce::File faceplateFile = getCachedFaceplatePath(unitId, filename);
+        juce::String faceplateFilePath = getCachedFaceplatePath(unitId, filename);
 
-        if (faceplateFile.existsAsFile())
+        if (fileSystem.fileExists(faceplateFilePath))
         {
-            juce::Image image = juce::ImageFileFormat::loadFrom(faceplateFile);
-            return image;
+            juce::MemoryBlock imageData = fileSystem.readBinaryFile(faceplateFilePath);
+            if (imageData.getSize() > 0)
+            {
+                juce::MemoryInputStream stream(imageData, false);
+                return juce::ImageFileFormat::loadFrom(stream);
+            }
         }
 
         return juce::Image();
@@ -252,12 +267,16 @@ juce::Image CacheManager::loadThumbnailFromCache(const juce::String &unitId, con
 {
     try
     {
-        juce::File thumbnailFile = getCachedThumbnailPath(unitId, filename);
+        juce::String thumbnailFilePath = getCachedThumbnailPath(unitId, filename);
 
-        if (thumbnailFile.existsAsFile())
+        if (fileSystem.fileExists(thumbnailFilePath))
         {
-            juce::Image image = juce::ImageFileFormat::loadFrom(thumbnailFile);
-            return image;
+            juce::MemoryBlock imageData = fileSystem.readBinaryFile(thumbnailFilePath);
+            if (imageData.getSize() > 0)
+            {
+                juce::MemoryInputStream stream(imageData, false);
+                return juce::ImageFileFormat::loadFrom(stream);
+            }
         }
 
         return juce::Image();
@@ -272,12 +291,16 @@ juce::Image CacheManager::loadControlAssetFromCache(const juce::String &assetPat
 {
     try
     {
-        juce::File assetFile = getCachedControlAssetPath(assetPath);
+        juce::String assetFilePath = getCachedControlAssetPath(assetPath);
 
-        if (assetFile.existsAsFile())
+        if (fileSystem.fileExists(assetFilePath))
         {
-            juce::Image image = juce::ImageFileFormat::loadFrom(assetFile);
-            return image;
+            juce::MemoryBlock imageData = fileSystem.readBinaryFile(assetFilePath);
+            if (imageData.getSize() > 0)
+            {
+                juce::MemoryInputStream stream(imageData, false);
+                return juce::ImageFileFormat::loadFrom(stream);
+            }
         }
 
         return juce::Image();
@@ -292,9 +315,9 @@ bool CacheManager::clearCache()
 {
     try
     {
-        if (cacheRoot.exists())
+        if (fileSystem.directoryExists(cacheRoot))
         {
-            return cacheRoot.deleteRecursively();
+            return fileSystem.deleteDirectory(cacheRoot);
         }
 
         return true;
@@ -309,7 +332,7 @@ juce::int64 CacheManager::getCacheSize() const
 {
     try
     {
-        if (cacheRoot.exists())
+        if (fileSystem.directoryExists(cacheRoot))
         {
             return calculateDirectorySize(cacheRoot);
         }
@@ -322,38 +345,39 @@ juce::int64 CacheManager::getCacheSize() const
     }
 }
 
-juce::int64 CacheManager::calculateDirectorySize(const juce::File &directory) const
+juce::int64 CacheManager::calculateDirectorySize(const juce::String &directory) const
 {
     juce::int64 totalSize = 0;
 
-    if (directory.isDirectory())
+    if (fileSystem.directoryExists(directory))
     {
-        juce::Array<juce::File> children;
-        directory.findChildFiles(children, juce::File::findFilesAndDirectories, false);
-
-        for (const auto &child : children)
+        // Get all files in the directory
+        auto files = fileSystem.getFiles(directory);
+        for (const auto &filename : files)
         {
-            if (child.isDirectory())
-            {
-                totalSize += calculateDirectorySize(child);
-            }
-            else
-            {
-                totalSize += child.getSize();
-            }
+            juce::String fullPath = directory + "/" + filename;
+            totalSize += fileSystem.getFileSize(fullPath);
+        }
+
+        // Recursively calculate size of subdirectories
+        auto subdirs = fileSystem.getDirectories(directory);
+        for (const auto &dirname : subdirs)
+        {
+            juce::String fullPath = directory + "/" + dirname;
+            totalSize += calculateDirectorySize(fullPath);
         }
     }
 
     return totalSize;
 }
 
-bool CacheManager::createDirectoryIfNeeded(const juce::File &directory) const
+bool CacheManager::createDirectoryIfNeeded(const juce::String &directory) const
 {
     try
     {
-        if (!directory.exists())
+        if (!fileSystem.directoryExists(directory))
         {
-            return directory.createDirectory();
+            return fileSystem.createDirectory(directory);
         }
 
         return true;
@@ -364,29 +388,29 @@ bool CacheManager::createDirectoryIfNeeded(const juce::File &directory) const
     }
 }
 
-juce::File CacheManager::getUnitsDirectory() const
+juce::String CacheManager::getUnitsDirectory() const
 {
-    return cacheRoot.getChildFile("units");
+    return fileSystem.joinPath(cacheRoot, "units");
 }
 
-juce::File CacheManager::getAssetsDirectory() const
+juce::String CacheManager::getAssetsDirectory() const
 {
-    return cacheRoot.getChildFile("assets");
+    return fileSystem.joinPath(cacheRoot, "assets");
 }
 
-juce::File CacheManager::getFaceplatesDirectory() const
+juce::String CacheManager::getFaceplatesDirectory() const
 {
-    return getAssetsDirectory().getChildFile("faceplates");
+    return fileSystem.joinPath(getAssetsDirectory(), "faceplates");
 }
 
-juce::File CacheManager::getThumbnailsDirectory() const
+juce::String CacheManager::getThumbnailsDirectory() const
 {
-    return getAssetsDirectory().getChildFile("thumbnails");
+    return fileSystem.joinPath(getAssetsDirectory(), "thumbnails");
 }
 
-juce::File CacheManager::getControlsDirectory() const
+juce::String CacheManager::getControlsDirectory() const
 {
-    return getAssetsDirectory().getChildFile("controls");
+    return fileSystem.joinPath(getAssetsDirectory(), "controls");
 }
 
 // Recently Used functionality
@@ -394,13 +418,13 @@ bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
 {
     try
     {
-        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+        juce::String recentlyUsedFilePath = fileSystem.joinPath(cacheRoot, "recently_used.json");
 
         // Load existing recently used list
         juce::StringArray recentlyUsed;
-        if (recentlyUsedFile.existsAsFile())
+        if (fileSystem.fileExists(recentlyUsedFilePath))
         {
-            auto json = juce::JSON::parse(recentlyUsedFile);
+            auto json = juce::JSON::parse(fileSystem.readFile(recentlyUsedFilePath));
             if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
             {
                 auto array = json["recentlyUsed"].getArray();
@@ -411,16 +435,17 @@ bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
             }
         }
 
-        // Remove the unit if it already exists (to move it to the front)
-        recentlyUsed.removeString(unitId);
-
-        // Add the unit to the front of the list
+        // Add the unit to the beginning of the list (most recent first)
+        if (recentlyUsed.contains(unitId))
+        {
+            recentlyUsed.removeString(unitId);
+        }
         recentlyUsed.insert(0, unitId);
 
-        // Limit the list to MAX_RECENTLY_USED items
-        while (recentlyUsed.size() > MAX_RECENTLY_USED)
+        // Limit the list size
+        if (recentlyUsed.size() > MAX_RECENTLY_USED)
         {
-            recentlyUsed.remove(recentlyUsed.size() - 1);
+            recentlyUsed.removeRange(MAX_RECENTLY_USED, recentlyUsed.size() - MAX_RECENTLY_USED);
         }
 
         // Save the updated list
@@ -432,7 +457,7 @@ bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
         }
         jsonObj->setProperty("recentlyUsed", array);
 
-        return recentlyUsedFile.replaceWithText(juce::JSON::toString(juce::var(jsonObj)));
+        return fileSystem.writeFile(recentlyUsedFilePath, juce::JSON::toString(juce::var(jsonObj)));
     }
     catch (...)
     {
@@ -444,12 +469,13 @@ juce::StringArray CacheManager::getRecentlyUsed(int maxCount) const
 {
     try
     {
-        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+        juce::String recentlyUsedFilePath = fileSystem.joinPath(cacheRoot, "recently_used.json");
+
         juce::StringArray recentlyUsed;
 
-        if (recentlyUsedFile.existsAsFile())
+        if (fileSystem.fileExists(recentlyUsedFilePath))
         {
-            auto json = juce::JSON::parse(recentlyUsedFile);
+            auto json = juce::JSON::parse(fileSystem.readFile(recentlyUsedFilePath));
             if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
             {
                 auto array = json["recentlyUsed"].getArray();
@@ -478,13 +504,13 @@ bool CacheManager::removeFromRecentlyUsed(const juce::String &unitId)
 {
     try
     {
-        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+        juce::String recentlyUsedFilePath = fileSystem.joinPath(cacheRoot, "recently_used.json");
 
         // Load existing recently used list
         juce::StringArray recentlyUsed;
-        if (recentlyUsedFile.existsAsFile())
+        if (fileSystem.fileExists(recentlyUsedFilePath))
         {
-            auto json = juce::JSON::parse(recentlyUsedFile);
+            auto json = juce::JSON::parse(fileSystem.readFile(recentlyUsedFilePath));
             if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
             {
                 auto array = json["recentlyUsed"].getArray();
@@ -513,7 +539,7 @@ bool CacheManager::removeFromRecentlyUsed(const juce::String &unitId)
             }
             jsonObj->setProperty("recentlyUsed", array);
 
-            return recentlyUsedFile.replaceWithText(juce::JSON::toString(juce::var(jsonObj)));
+            return fileSystem.writeFile(recentlyUsedFilePath, juce::JSON::toString(juce::var(jsonObj)));
         }
 
         return true; // Unit wasn't in the list, so "successfully" removed
@@ -528,11 +554,11 @@ bool CacheManager::clearRecentlyUsed()
 {
     try
     {
-        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+        juce::String recentlyUsedFilePath = fileSystem.joinPath(cacheRoot, "recently_used.json");
 
-        if (recentlyUsedFile.existsAsFile())
+        if (fileSystem.fileExists(recentlyUsedFilePath))
         {
-            return recentlyUsedFile.deleteFile();
+            return fileSystem.deleteFile(recentlyUsedFilePath);
         }
 
         return true; // File doesn't exist, so "successfully" cleared
@@ -543,39 +569,15 @@ bool CacheManager::clearRecentlyUsed()
     }
 }
 
-int CacheManager::getRecentlyUsedCount() const
-{
-    try
-    {
-        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
-
-        if (recentlyUsedFile.existsAsFile())
-        {
-            auto json = juce::JSON::parse(recentlyUsedFile);
-            if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
-            {
-                auto array = json["recentlyUsed"].getArray();
-                return array->size();
-            }
-        }
-
-        return 0;
-    }
-    catch (...)
-    {
-        return 0;
-    }
-}
-
 bool CacheManager::isRecentlyUsed(const juce::String &unitId) const
 {
     try
     {
-        juce::File recentlyUsedFile = cacheRoot.getChildFile("recently_used.json");
+        juce::String recentlyUsedFilePath = fileSystem.joinPath(cacheRoot, "recently_used.json");
 
-        if (recentlyUsedFile.existsAsFile())
+        if (fileSystem.fileExists(recentlyUsedFilePath))
         {
-            auto json = juce::JSON::parse(recentlyUsedFile);
+            auto json = juce::JSON::parse(fileSystem.readFile(recentlyUsedFilePath));
             if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
             {
                 auto array = json["recentlyUsed"].getArray();
@@ -602,13 +604,13 @@ bool CacheManager::addToFavorites(const juce::String &unitId)
 {
     try
     {
-        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+        juce::String favoritesFilePath = fileSystem.joinPath(cacheRoot, "favorites.json");
 
         // Load existing favorites list
         juce::StringArray favorites;
-        if (favoritesFile.existsAsFile())
+        if (fileSystem.fileExists(favoritesFilePath))
         {
-            auto json = juce::JSON::parse(favoritesFile);
+            auto json = juce::JSON::parse(fileSystem.readFile(favoritesFilePath));
             if (json.hasProperty("favorites") && json["favorites"].isArray())
             {
                 auto array = json["favorites"].getArray();
@@ -634,7 +636,7 @@ bool CacheManager::addToFavorites(const juce::String &unitId)
         }
         jsonObj->setProperty("favorites", array);
 
-        return favoritesFile.replaceWithText(juce::JSON::toString(juce::var(jsonObj)));
+        return fileSystem.writeFile(favoritesFilePath, juce::JSON::toString(juce::var(jsonObj)));
     }
     catch (...)
     {
@@ -646,12 +648,12 @@ juce::StringArray CacheManager::getFavorites() const
 {
     try
     {
-        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+        juce::String favoritesFilePath = fileSystem.joinPath(cacheRoot, "favorites.json");
         juce::StringArray favorites;
 
-        if (favoritesFile.existsAsFile())
+        if (fileSystem.fileExists(favoritesFilePath))
         {
-            auto json = juce::JSON::parse(favoritesFile);
+            auto json = juce::JSON::parse(fileSystem.readFile(favoritesFilePath));
             if (json.hasProperty("favorites") && json["favorites"].isArray())
             {
                 auto array = json["favorites"].getArray();
@@ -674,13 +676,13 @@ bool CacheManager::removeFromFavorites(const juce::String &unitId)
 {
     try
     {
-        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+        juce::String favoritesFilePath = fileSystem.joinPath(cacheRoot, "favorites.json");
 
         // Load existing favorites list
         juce::StringArray favorites;
-        if (favoritesFile.existsAsFile())
+        if (fileSystem.fileExists(favoritesFilePath))
         {
-            auto json = juce::JSON::parse(favoritesFile);
+            auto json = juce::JSON::parse(fileSystem.readFile(favoritesFilePath));
             if (json.hasProperty("favorites") && json["favorites"].isArray())
             {
                 auto array = json["favorites"].getArray();
@@ -709,7 +711,7 @@ bool CacheManager::removeFromFavorites(const juce::String &unitId)
             }
             jsonObj->setProperty("favorites", array);
 
-            return favoritesFile.replaceWithText(juce::JSON::toString(juce::var(jsonObj)));
+            return fileSystem.writeFile(favoritesFilePath, juce::JSON::toString(juce::var(jsonObj)));
         }
 
         return true; // Unit wasn't in the list, so "successfully" removed
@@ -724,11 +726,11 @@ bool CacheManager::clearFavorites()
 {
     try
     {
-        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+        juce::String favoritesFilePath = fileSystem.joinPath(cacheRoot, "favorites.json");
 
-        if (favoritesFile.existsAsFile())
+        if (fileSystem.fileExists(favoritesFilePath))
         {
-            return favoritesFile.deleteFile();
+            return fileSystem.deleteFile(favoritesFilePath);
         }
 
         return true; // File doesn't exist, so "successfully" cleared
@@ -739,39 +741,15 @@ bool CacheManager::clearFavorites()
     }
 }
 
-int CacheManager::getFavoritesCount() const
-{
-    try
-    {
-        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
-
-        if (favoritesFile.existsAsFile())
-        {
-            auto json = juce::JSON::parse(favoritesFile);
-            if (json.hasProperty("favorites") && json["favorites"].isArray())
-            {
-                auto array = json["favorites"].getArray();
-                return array->size();
-            }
-        }
-
-        return 0;
-    }
-    catch (...)
-    {
-        return 0;
-    }
-}
-
 bool CacheManager::isFavorite(const juce::String &unitId) const
 {
     try
     {
-        juce::File favoritesFile = cacheRoot.getChildFile("favorites.json");
+        juce::String favoritesFilePath = fileSystem.joinPath(cacheRoot, "favorites.json");
 
-        if (favoritesFile.existsAsFile())
+        if (fileSystem.fileExists(favoritesFilePath))
         {
-            auto json = juce::JSON::parse(favoritesFile);
+            auto json = juce::JSON::parse(fileSystem.readFile(favoritesFilePath));
             if (json.hasProperty("favorites") && json["favorites"].isArray())
             {
                 auto array = json["favorites"].getArray();
@@ -791,4 +769,11 @@ bool CacheManager::isFavorite(const juce::String &unitId) const
     {
         return false;
     }
+}
+
+CacheManager &CacheManager::getDummy()
+{
+    static IFileSystem &dummyFileSystem = IFileSystem::getDummy();
+    static CacheManager dummyCacheManager(dummyFileSystem, "");
+    return dummyCacheManager;
 }

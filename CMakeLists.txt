@@ -72,10 +72,10 @@ target_compile_features(AnalogIQ PRIVATE cxx_std_17)
 
 # Add source files
 target_sources(AnalogIQ PRIVATE
-    Source/PluginProcessor.cpp
-    Source/PluginProcessor.h
-    Source/PluginEditor.cpp
-    Source/PluginEditor.h
+    Source/AnalogIQProcessor.cpp
+    Source/AnalogIQProcessor.h
+    Source/AnalogIQEditor.cpp
+    Source/AnalogIQEditor.h
     Source/GearLibrary.cpp
     Source/GearItem.cpp
     Source/Rack.cpp

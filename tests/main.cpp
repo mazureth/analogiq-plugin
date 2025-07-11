@@ -1,8 +1,9 @@
 #include <JuceHeader.h>
+#include "../Source/CacheManager.h"
+#include "../Source/PresetManager.h"
 
 int main(int argc, char *argv[])
 {
-
     // Ensure JUCE GUI + threading systems are initialized
     juce::ScopedJuceInitialiser_GUI guiInit;
 
@@ -11,12 +12,15 @@ int main(int argc, char *argv[])
     // JUCE will run all tests (including theirs) automatically
     // We want to explicitly only run our tests
     juce::StringArray testsToRun;
+    testsToRun.add("CacheManagerTests");
     testsToRun.add("DraggableListBoxTests");
     testsToRun.add("GearItemTests");
     testsToRun.add("GearLibraryTests");
     testsToRun.add("NotesPanelTests");
-    testsToRun.add("PluginEditorTests");
-    testsToRun.add("PluginProcessorTests");
+    testsToRun.add("AnalogIQEditorTests");
+    testsToRun.add("AnalogIQProcessorTests");
+    testsToRun.add("PresetManagerTests");
+    testsToRun.add("PresetIntegrationTests");
     testsToRun.add("RackSlotTests");
     testsToRun.add("RackTests");
 

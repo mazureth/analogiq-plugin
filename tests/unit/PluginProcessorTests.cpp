@@ -1,14 +1,16 @@
 #include <JuceHeader.h>
-#include "PluginProcessor.h"
+#include "AnalogIQProcessor.h"
+#include "AnalogIQEditor.h"
 #include "GearItem.h"
-#include "PluginEditor.h"
 #include "TestFixture.h"
 #include "MockNetworkFetcher.h"
+#include "MockFileSystem.h"
+#include "PresetManager.h"
 
-class PluginProcessorTests : public juce::UnitTest
+class AnalogIQProcessorTests : public juce::UnitTest
 {
 public:
-    PluginProcessorTests() : UnitTest("PluginProcessorTests") {}
+    AnalogIQProcessorTests() : UnitTest("AnalogIQProcessorTests") {}
 
     // Helper function to verify a gear instance matches our test state
     void verifyTestGearInstance(const GearItem &item)
@@ -147,11 +149,16 @@ public:
     {
         TestFixture fixture;
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
+
+        // Create local instances with proper dependency injection
+        CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
+        PresetManager presetManager(mockFileSystem, cacheManager);
 
         beginTest("Construction");
         {
             setUpMocks(mockFetcher);
-            AnalogIQProcessor processor(mockFetcher);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
             expectEquals(processor.getName(), juce::String("AnalogIQ"),
                          "Processor name should be AnalogIQ, but got: " + processor.getName());
         }
@@ -159,7 +166,7 @@ public:
         beginTest("Plugin State Management");
         {
             setUpMocks(mockFetcher);
-            AnalogIQProcessor processor(mockFetcher);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
 
             // Save initial state
             juce::MemoryBlock state;
@@ -180,7 +187,7 @@ public:
         beginTest("Gear Save Instance");
         {
             setUpMocks(mockFetcher);
-            AnalogIQProcessor processor(mockFetcher);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
 
             // Create editor and get rack
             auto *editor = dynamic_cast<AnalogIQEditor *>(processor.createEditor());
@@ -204,6 +211,8 @@ public:
                         "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                         juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
                         mockFetcher,
+                        mockFileSystem,
+                        cacheManager,
                         GearType::Rack19Inch,
                         GearCategory::Compressor);
                     testGear.createInstance(testGear.unitId);
@@ -281,7 +290,7 @@ public:
         {
             setUpMocks(mockFetcher);
             // Create processor and editor
-            AnalogIQProcessor processor(mockFetcher);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
             std::unique_ptr<AnalogIQEditor> editor(static_cast<AnalogIQEditor *>(processor.createEditor()));
             auto *rack = editor->getRack();
 
@@ -296,6 +305,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor);
             testGear.createInstance(testGear.unitId);
@@ -353,7 +364,7 @@ public:
         {
             setUpMocks(mockFetcher);
             // Create processor and editor
-            AnalogIQProcessor processor(mockFetcher);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
             auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
             expect(editor != nullptr, "Editor should be created");
 
@@ -372,6 +383,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor);
 
@@ -393,6 +406,8 @@ public:
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
                 juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
                 mockFetcher,
+                mockFileSystem,
+                cacheManager,
                 GearType::Rack19Inch,
                 GearCategory::Compressor);
 
@@ -474,4 +489,4 @@ public:
     }
 };
 
-static PluginProcessorTests pluginProcessorTests;
+static AnalogIQProcessorTests analogIQProcessorTests;

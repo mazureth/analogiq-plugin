@@ -1,5 +1,5 @@
 /**
- * @file PluginProcessor.cpp
+ * @file AnalogIQProcessor.cpp
  * @brief Implementation of the AnalogIQProcessor class.
  *
  * This file implements the audio processor for the AnalogIQ plugin,
@@ -8,8 +8,8 @@
  * the editor interface and the audio processing system.
  */
 
-#include "PluginProcessor.h"
-#include "PluginEditor.h"
+#include "AnalogIQProcessor.h"
+#include "AnalogIQEditor.h"
 #include "CacheManager.h"
 
 /**
@@ -19,16 +19,19 @@
  * and sets up the state management system.
  *
  * @param networkFetcher Reference to the network fetcher to use
+ * @param fileSystem Reference to the file system to use
  */
-AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &networkFetcher)
+AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &networkFetcher, IFileSystem &fileSystem)
     : AudioProcessor(BusesProperties()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       state(*this, &undoManager, "Parameters", {}),
-      networkFetcher(networkFetcher)
+      networkFetcher(networkFetcher),
+      fileSystem(std::make_unique<FileSystem>()),
+      cacheManager(std::make_unique<CacheManager>(*this->fileSystem)),
+      presetManager(std::make_unique<PresetManager>(*this->fileSystem, *cacheManager)),
+      gearLibrary(std::make_unique<GearLibrary>(networkFetcher, *this->fileSystem, *cacheManager, *presetManager))
 {
-    // Initialize the cache manager
-    CacheManager::getInstance();
 }
 
 /**
@@ -210,7 +213,7 @@ bool AnalogIQProcessor::hasEditor() const
  */
 juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
-    auto *editor = new AnalogIQEditor(*this);
+    auto *editor = new AnalogIQEditor(*this, *fileSystem, *cacheManager, *presetManager, *gearLibrary);
     lastCreatedEditor = editor;
     if (auto *rackEditor = dynamic_cast<AnalogIQEditor *>(editor))
     {
@@ -351,6 +354,7 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                     // Create a new gear item from the source
                     // TODO: why is this using inline test data instead of whatever is
                     // stored in the instanceTree?
+                    // Use the file system from the cache manager instead of creating a new one
                     GearItem *item = new GearItem(
                         sourceUnitId,              // unitId
                         "Test EQ",                 // name
@@ -361,6 +365,8 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                         "",                        // thumbnailImage
                         juce::StringArray(),       // tags
                         networkFetcher,            // networkFetcher (required)
+                        *fileSystem,               // fileSystem (required)
+                        *cacheManager,             // cacheManager (required)
                         GearType::Series500,       // type
                         GearCategory::EQ,          // category
                         1,                         // slotSize
@@ -481,5 +487,6 @@ void AnalogIQProcessor::resetAllInstances()
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
     static NetworkFetcher networkFetcher;
-    return new AnalogIQProcessor(networkFetcher);
+    static FileSystem fileSystem;
+    return new AnalogIQProcessor(networkFetcher, fileSystem);
 }

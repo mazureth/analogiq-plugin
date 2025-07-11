@@ -15,6 +15,8 @@
 
 // Forward declaration
 class Rack;
+class PresetManager;
+class GearLibrary;
 
 /**
  * @class RackSlot
@@ -35,7 +37,18 @@ public:
      *
      * @param slotIndex The index of this slot in the rack
      */
-    RackSlot(int slotIndex);
+    RackSlot(IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary &gearLibrary, int slotIndex = 0);
+
+    /**
+     * @brief Sets the index of this slot in the rack.
+     *
+     * @param newIndex The new index for this slot
+     */
+    void setIndex(int newIndex)
+    {
+        index = newIndex;
+        updateButtonStates();
+    }
 
     /**
      * @brief Destructor for the RackSlot class.
@@ -199,19 +212,26 @@ public:
      */
     void resetToSource();
 
-    /**
-     * @brief Checks if the current gear item is an instance.
-     *
-     * @return true if the current gear item is an instance
-     */
     bool isInstance() const { return gearItem != nullptr && gearItem->isInstance; }
+    juce::String getInstanceId() const { return gearItem != nullptr ? gearItem->instanceId : juce::String(); }
+
+private:
+    /**
+     * @brief Notifies the rack that a gear item was added to this slot.
+     */
+    void notifyRackOfGearItemAdded();
 
     /**
-     * @brief Gets the instance ID of the current gear item.
-     *
-     * @return The instance ID, or empty string if no gear item or not an instance
+     * @brief Notifies the rack that a gear item was removed from this slot.
      */
-    juce::String getInstanceId() const { return gearItem != nullptr ? gearItem->instanceId : juce::String(); }
+    void notifyRackOfGearItemRemoved();
+
+    /**
+     * @brief Notifies the rack that a control was changed in this slot.
+     *
+     * @param controlIndex The index of the control that was changed
+     */
+    void notifyRackOfControlChanged(int controlIndex);
 
 private:
     // Helper methods for control rendering
@@ -317,6 +337,11 @@ private:
     std::unique_ptr<juce::DrawableButton> upButton;     ///< Button for moving item up
     std::unique_ptr<juce::DrawableButton> downButton;   ///< Button for moving item down
     std::unique_ptr<juce::DrawableButton> removeButton; ///< Button for removing item
+
+    IFileSystem &fileSystem;
+    CacheManager &cacheManager;
+    PresetManager &presetManager;
+    GearLibrary &gearLibrary;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RackSlot)
 };

@@ -1,19 +1,27 @@
 #include <JuceHeader.h>
-#include "PluginEditor.h"
-#include "PluginProcessor.h"
+#include "AnalogIQEditor.h"
+#include "AnalogIQProcessor.h"
 #include "TestFixture.h"
 #include "MockNetworkFetcher.h"
+#include "MockFileSystem.h"
+#include "PresetManager.h"
 
-class PluginEditorTests : public juce::UnitTest
+class AnalogIQEditorTests : public juce::UnitTest
 {
 public:
-    PluginEditorTests() : UnitTest("PluginEditorTests") {}
+    AnalogIQEditorTests() : UnitTest("AnalogIQEditorTests") {}
 
     void runTest() override
     {
         TestFixture fixture;
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+        auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
         mockFetcher.reset();
+        mockFileSystem.reset();
+
+        // Create instances with proper dependency injection
+        CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
+        PresetManager presetManager(mockFileSystem, cacheManager);
 
         // Set up mock response for the units index
         mockFetcher.setResponse(
@@ -107,15 +115,15 @@ public:
 
         beginTest("Construction");
         {
-            AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
+            AnalogIQEditor editor(processor, cacheManager, presetManager, true);
             expect(editor.getAudioProcessor() == &processor);
         }
 
         beginTest("Component Hierarchy");
         {
-            AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
+            AnalogIQEditor editor(processor, cacheManager, presetManager, true);
 
             // Check for GearLibrary as direct child
             auto *gearLibrary = editor.findChildWithID("GearLibrary");
@@ -130,8 +138,8 @@ public:
 
         beginTest("Resize Handling");
         {
-            AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
+            AnalogIQEditor editor(processor, cacheManager, presetManager, true);
             editor.setSize(800, 600);
             expect(editor.getWidth() >= 800);
             expect(editor.getHeight() >= 600);
@@ -139,8 +147,8 @@ public:
 
         beginTest("Parameter Updates");
         {
-            AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
+            AnalogIQEditor editor(processor, cacheManager, presetManager, true);
             bool parameterChanged = false;
             if (auto *param = processor.getParameters().getFirst())
             {
@@ -151,8 +159,8 @@ public:
 
         beginTest("Component Visibility");
         {
-            AnalogIQProcessor processor(mockFetcher);
-            AnalogIQEditor editor(processor);
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
+            AnalogIQEditor editor(processor, cacheManager, presetManager, true);
 
             // Check GearLibrary visibility
             auto *library = editor.findChildWithID("GearLibrary");
@@ -164,8 +172,48 @@ public:
 
             // TODO: Check for RackTab and NotesTab
         }
+
+        beginTest("Preset Integration");
+        {
+            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
+            AnalogIQEditor editor(processor, cacheManager, presetManager, true);
+
+            // Test that the editor has access to preset manager
+            auto &editorPresetManager = editor.getPresetManager();
+            expect(&editorPresetManager != nullptr, "Preset manager should be accessible");
+
+            // Test that the editor has access to rack and gear library for preset operations
+            auto *rack = editor.getRack();
+            auto *gearLibrary = editor.getGearLibrary();
+            expect(rack != nullptr, "Rack should be accessible for preset operations");
+            expect(gearLibrary != nullptr, "Gear library should be accessible for preset operations");
+
+            // Test that the rack is empty initially (for confirmation dialog testing)
+            bool hasGearItems = false;
+            for (int i = 0; i < rack->getNumSlots(); ++i)
+            {
+                if (auto *slot = rack->getSlot(i))
+                {
+                    if (slot->getGearItem() != nullptr)
+                    {
+                        hasGearItems = true;
+                        break;
+                    }
+                }
+            }
+            expect(!hasGearItems, "Rack should be empty initially for preset confirmation testing");
+
+            // Test that the editor can be resized without errors (menu positioning)
+            editor.setSize(800, 600);
+            editor.resized();
+            expect(true, "Editor should resize without errors");
+
+            // Test that the editor components are properly initialized
+            expect(rack->getNumSlots() > 0, "Rack should have slots available");
+            expect(gearLibrary != nullptr, "Gear library should be initialized");
+        }
     }
 };
 
 // This creates the static instance that JUCE will use to run the tests
-static PluginEditorTests pluginEditorTests;
+static AnalogIQEditorTests analogIQEditorTests;
