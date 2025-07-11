@@ -178,7 +178,7 @@ juce::String PresetManager::serializeRackToJSON(Rack *rack) const
                     controlObj->setProperty("value", control.value);
                     controlObj->setProperty("initialValue", control.initialValue);
 
-                    if (control.type == GearControl::Type::Switch)
+                    if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
                     {
                         controlObj->setProperty("currentIndex", control.currentIndex);
                     }
@@ -327,7 +327,7 @@ bool PresetManager::deserializeJSONToRack(const juce::String &jsonData, Rack *ra
                                             control.value = saved.value;
                                             control.initialValue = saved.initialValue;
 
-                                            if (control.type == GearControl::Type::Switch)
+                                            if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
                                             {
                                                 control.currentIndex = saved.currentIndex;
                                             }
