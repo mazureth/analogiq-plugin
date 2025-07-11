@@ -281,7 +281,7 @@ bool GearLibrary::shouldShowItem(const GearItem &item) const
         juce::String normalizedManufacturer = normalizeForSearch(item.manufacturer);
 
         // Uncomment the next line for debug output
-        juce::Logger::writeToLog("Search: '" + currentSearchText + "' -> '" + normalizedSearch + "' | Item: '" + item.name + "' -> '" + normalizedName + "' | Match: " + (normalizedName.contains(normalizedSearch) ? "YES" : "NO"));
+        // juce::Logger::writeToLog("Search: '" + currentSearchText + "' -> '" + normalizedSearch + "' | Item: '" + item.name + "' -> '" + normalizedName + "' | Match: " + (normalizedName.contains(normalizedSearch) ? "YES" : "NO"));
 
         bool matchesSearch = false;
 
@@ -616,11 +616,11 @@ void GearLibrary::refreshRecentlyUsedSection()
     {
         // Debug: Check what's in the cache
         juce::StringArray recentlyUsed = cacheManager.getRecentlyUsed();
-        juce::Logger::writeToLog("refreshRecentlyUsedSection: Found " + juce::String(recentlyUsed.size()) + " recently used items");
-        for (const auto &unitId : recentlyUsed)
-        {
-            juce::Logger::writeToLog("  - " + unitId);
-        }
+        // juce::Logger::writeToLog("refreshRecentlyUsedSection: Found " + juce::String(recentlyUsed.size()) + " recently used items");
+        // for (const auto &unitId : recentlyUsed)
+        // {
+        //     juce::Logger::writeToLog("  - " + unitId);
+        // }
 
         // Find the Recently Used item in the tree
         GearTreeItem *recentlyUsedItem = nullptr;
@@ -631,7 +631,7 @@ void GearLibrary::refreshRecentlyUsedSection()
                 if (item->getItemText() == "Recently Used")
                 {
                     recentlyUsedItem = item;
-                    juce::Logger::writeToLog("Found existing Recently Used section");
+                    // juce::Logger::writeToLog("Found existing Recently Used section");
                     break;
                 }
             }
@@ -640,7 +640,7 @@ void GearLibrary::refreshRecentlyUsedSection()
         // If Recently Used section doesn't exist, create it
         if (recentlyUsedItem == nullptr)
         {
-            juce::Logger::writeToLog("Recently Used section doesn't exist, creating it");
+            // juce::Logger::writeToLog("Recently Used section doesn't exist, creating it");
 
             // Get recently used items from cache
             juce::Array<GearItem *> matchingRecentlyUsed;
@@ -651,7 +651,7 @@ void GearLibrary::refreshRecentlyUsedSection()
                 if (recentlyUsed.contains(item.unitId))
                 {
                     matchingRecentlyUsed.add(&item);
-                    juce::Logger::writeToLog("  - Found matching item: " + item.name);
+                    // juce::Logger::writeToLog("  - Found matching item: " + item.name);
                 }
             }
 
@@ -678,19 +678,19 @@ void GearLibrary::refreshRecentlyUsedSection()
                     if (itemIndex >= 0)
                     {
                         recentlyUsedItem->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
-                        juce::Logger::writeToLog("  - Added item to tree: " + item->name);
+                        // juce::Logger::writeToLog("  - Added item to tree: " + item->name);
                     }
                 }
                 recentlyUsedItem->setOpen(true);
             }
             else
             {
-                juce::Logger::writeToLog("No matching items found in gear library");
+                // juce::Logger::writeToLog("No matching items found in gear library");
             }
         }
         else
         {
-            juce::Logger::writeToLog("Recently Used section exists, refreshing it");
+            // juce::Logger::writeToLog("Recently Used section exists, refreshing it");
 
             // Clear existing sub-items and rebuild the Recently Used section
             recentlyUsedItem->clearSubItems();
@@ -706,7 +706,7 @@ void GearLibrary::refreshRecentlyUsedSection()
                     {
                         recentlyUsedItem->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item.name, this, &cacheManager,
                                                                       const_cast<GearItem *>(&item), i));
-                        juce::Logger::writeToLog("  - Added item to existing section: " + item.name);
+                        // juce::Logger::writeToLog("  - Added item to existing section: " + item.name);
                         break;
                     }
                 }
@@ -741,11 +741,11 @@ void GearLibrary::refreshFavoritesSection()
     {
         // Get favorites from cache
         juce::StringArray favorites = cacheManager.getFavorites();
-        juce::Logger::writeToLog("refreshFavoritesSection: Found " + juce::String(favorites.size()) + " favorite items");
-        for (const auto &unitId : favorites)
-        {
-            juce::Logger::writeToLog("  - " + unitId);
-        }
+        // juce::Logger::writeToLog("refreshFavoritesSection: Found " + juce::String(favorites.size()) + " favorite items");
+        // for (const auto &unitId : favorites)
+        // {
+        //     juce::Logger::writeToLog("  - " + unitId);
+        // }
 
         // Find the My Gear item in the tree
         GearTreeItem *favoritesItem = nullptr;
@@ -756,7 +756,7 @@ void GearLibrary::refreshFavoritesSection()
                 if (item->getItemText() == "My Gear")
                 {
                     favoritesItem = item;
-                    juce::Logger::writeToLog("Found existing My Gear section");
+                    // juce::Logger::writeToLog("Found existing My Gear section");
                     break;
                 }
             }
@@ -765,7 +765,7 @@ void GearLibrary::refreshFavoritesSection()
         // If My Gear section doesn't exist, create it
         if (favoritesItem == nullptr)
         {
-            juce::Logger::writeToLog("My Gear section doesn't exist, creating it");
+            // juce::Logger::writeToLog("My Gear section doesn't exist, creating it");
 
             // Find matching items in our gear library
             juce::Array<GearItem *> matchingFavorites;
@@ -775,7 +775,7 @@ void GearLibrary::refreshFavoritesSection()
                 if (favorites.contains(item.unitId))
                 {
                     matchingFavorites.add(&item);
-                    juce::Logger::writeToLog("  - Found matching item: " + item.name);
+                    // juce::Logger::writeToLog("  - Found matching item: " + item.name);
                 }
             }
 
@@ -865,20 +865,20 @@ void GearLibrary::refreshFavoritesSection()
                         if (itemIndex >= 0)
                         {
                             categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, this, &cacheManager, item, itemIndex));
-                            juce::Logger::writeToLog("  - Added item to tree: " + item->name);
+                            // juce::Logger::writeToLog("  - Added item to tree: " + item->name);
                         }
                     }
                 }
             }
             else
             {
-                juce::Logger::writeToLog("No matching items found in gear library");
+                // juce::Logger::writeToLog("No matching items found in gear library");
             }
             favoritesItem->setOpen(true);
         }
         else
         {
-            juce::Logger::writeToLog("My Gear section exists, refreshing it");
+            // juce::Logger::writeToLog("My Gear section exists, refreshing it");
 
             // Capture the current tree state before clearing
             juce::HashMap<juce::String, bool> categoryExpansionState;
@@ -889,7 +889,7 @@ void GearLibrary::refreshFavoritesSection()
                 {
                     juce::String categoryName = categoryItem->getItemText();
                     categoryExpansionState.set(categoryName, categoryItem->getOpenness());
-                    juce::Logger::writeToLog("Captured expansion state for category: " + categoryName + " = " + (categoryItem->getOpenness() ? "open" : "closed"));
+                    // juce::Logger::writeToLog("Captured expansion state for category: " + categoryName + " = " + (categoryItem->getOpenness() ? "open" : "closed"));
                 }
             }
 
@@ -937,7 +937,7 @@ void GearLibrary::refreshFavoritesSection()
                             favoriteCategoryGroups.set(category, juce::Array<GearItem *>());
 
                         favoriteCategoryGroups.getReference(category).add(const_cast<GearItem *>(&item));
-                        juce::Logger::writeToLog("  - Added item to existing section: " + item.name);
+                        // juce::Logger::writeToLog("  - Added item to existing section: " + item.name);
                         break;
                     }
                 }
@@ -991,7 +991,7 @@ void GearLibrary::refreshFavoritesSection()
                 // Restore the expansion state for this category
                 if (categoryExpansionState.contains(displayName))
                 {
-                    juce::Logger::writeToLog("Restoring expansion state for category: " + displayName + " = " + (categoryExpansionState[displayName] ? "open" : "closed"));
+                    // juce::Logger::writeToLog("Restoring expansion state for category: " + displayName + " = " + (categoryExpansionState[displayName] ? "open" : "closed"));
                     categoryNode->setOpenness(categoryExpansionState[displayName]);
                 }
             }
@@ -1127,7 +1127,7 @@ void GearLibrary::loadGearItemsAsync()
     else
     {
         // TODO: Handle error case
-        juce::Logger::writeToLog("Failed to load gear items from: " + url.toString(false));
+        // juce::Logger::writeToLog("Failed to load gear items from: " + url.toString(false));
     }
 }
 

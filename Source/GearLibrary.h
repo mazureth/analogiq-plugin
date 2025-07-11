@@ -366,15 +366,11 @@ public:
      * @param gearItemIn Pointer to the associated gear item (for gear items)
      * @param gearIndexIn Index of the gear item (for gear items)
      */
-    GearTreeItem(ItemType typeIn, const juce::String &nameIn, GearLibrary *ownerIn = nullptr,
-                 CacheManager *cacheManagerIn = nullptr, GearItem *gearItemIn = nullptr, int gearIndexIn = -1)
-        : itemType(typeIn), name(nameIn), owner(ownerIn), cacheManager(cacheManagerIn), gearItem(gearItemIn), gearIndex(gearIndexIn)
+    GearTreeItem(ItemType typeIn, const juce::String &nameIn, GearLibrary *ownerIn, CacheManager *cacheManagerIn = nullptr, GearItem *gearItemIn = nullptr, int itemIndexIn = -1)
+        : type(typeIn), name(nameIn), owner(ownerIn), cacheManager(cacheManagerIn), gearItem(gearItemIn), itemIndex(itemIndexIn)
     {
         // Debug: Log cacheManager for gear items
-        if (itemType == ItemType::Gear && (nameIn.contains("LA-2A") || nameIn.contains("1176")))
-        {
-            juce::Logger::writeToLog("GearTreeItem constructor for: " + nameIn + " - cacheManager: " + (cacheManagerIn != nullptr ? "valid" : "null"));
-        }
+        // juce::Logger::writeToLog("GearTreeItem constructor for: " + nameIn + " - cacheManager: " + (cacheManagerIn != nullptr ? "valid" : "null"));
     }
 
     /**
@@ -384,7 +380,7 @@ public:
      */
     bool mightContainSubItems() override
     {
-        return itemType != ItemType::Gear;
+        return type != ItemType::Gear;
     }
 
     /**
@@ -397,14 +393,14 @@ public:
     void paintItem(juce::Graphics &g, int width, int height) override
     {
         // Suppress selection highlighting for all items for cleaner UI
-        // if (isSelected() && itemType != ItemType::Gear)
+        // if (isSelected() && type != ItemType::Gear)
         //     g.fillAll(juce::Colours::lightblue.darker(0.2f));
 
         g.setColour(juce::Colours::white);
-        g.setFont(itemType == ItemType::Gear ? 14.0f : 16.0f);
+        g.setFont(type == ItemType::Gear ? 14.0f : 16.0f);
 
         // Handle message items (simple text without tree styling)
-        if (itemType == ItemType::Message)
+        if (type == ItemType::Message)
         {
             g.setColour(juce::Colours::lightgrey);
             g.setFont(14.0f);
@@ -417,12 +413,12 @@ public:
         juce::String itemText = name;
 
         // Only draw icons for actual gear items (leaf nodes)
-        if (itemType == ItemType::Gear)
+        if (type == ItemType::Gear)
         {
             // Debug: Log cacheManager state for Categories tree items
             if (name.contains("LA-2A") || name.contains("1176"))
             {
-                juce::Logger::writeToLog("paintItem for: " + name + " - cacheManager: " + (cacheManager != nullptr ? "valid" : "null") + " gearItem: " + (gearItem != nullptr ? "valid" : "null"));
+                // juce::Logger::writeToLog("paintItem for: " + name + " - cacheManager: " + (cacheManager != nullptr ? "valid" : "null") + " gearItem: " + (gearItem != nullptr ? "valid" : "null"));
             }
 
             // Draw star icon for favorites first (far left)
@@ -433,7 +429,7 @@ public:
                 // Debug: Log star drawing for Categories tree
                 if (name.contains("LA-2A") || name.contains("1176")) // Common test items
                 {
-                    juce::Logger::writeToLog("Drawing star for: " + name + " - isFavorite: " + (isFavorite ? "true" : "false"));
+                    // juce::Logger::writeToLog("Drawing star for: " + name + " - isFavorite: " + (isFavorite ? "true" : "false"));
                 }
 
                 const int starSize = 16;
@@ -460,7 +456,7 @@ public:
                 // Debug: Log when star is not drawn
                 if (name.contains("LA-2A") || name.contains("1176"))
                 {
-                    juce::Logger::writeToLog("NOT drawing star for: " + name + " - gearItem: " + (gearItem != nullptr ? "valid" : "null") + " cacheManager: " + (cacheManager != nullptr ? "valid" : "null"));
+                    // juce::Logger::writeToLog("NOT drawing star for: " + name + " - gearItem: " + (gearItem != nullptr ? "valid" : "null") + " cacheManager: " + (cacheManager != nullptr ? "valid" : "null"));
                 }
             }
 
@@ -514,7 +510,7 @@ public:
         if (owner == nullptr)
             return;
 
-        if (itemType == ItemType::Root)
+        if (type == ItemType::Root)
         {
             // Add Recently Used group
             addSubItem(new GearTreeItem(ItemType::RecentlyUsed, "Recently Used", owner, &owner->getCacheManager()));
@@ -525,7 +521,7 @@ public:
             // Add Categories group
             addSubItem(new GearTreeItem(ItemType::Category, "Categories", owner, &owner->getCacheManager()));
         }
-        else if (itemType == ItemType::RecentlyUsed)
+        else if (type == ItemType::RecentlyUsed)
         {
             // Get recently used items from cache
             if (cacheManager != nullptr)
@@ -555,7 +551,7 @@ public:
                 }
             }
         }
-        else if (itemType == ItemType::Category && name == "Categories")
+        else if (type == ItemType::Category && name == "Categories")
         {
             // Get all items from the library
             const auto &items = owner->getItems();
@@ -579,7 +575,7 @@ public:
                 addSubItem(new GearTreeItem(ItemType::Category, displayName, owner, &owner->getCacheManager()));
             }
         }
-        else if (itemType == ItemType::Category)
+        else if (type == ItemType::Category)
         {
             // Get all items from the library
             const auto &items = owner->getItems();
@@ -599,7 +595,7 @@ public:
                 addSubItem(new GearTreeItem(ItemType::Message, "No items in this category", owner, &owner->getCacheManager()));
             }
         }
-        else if (itemType == ItemType::Favorites)
+        else if (type == ItemType::Favorites)
         {
             // Favorites are handled by refreshFavoritesSection() in GearLibrary.cpp
             // This method is not used for favorites
@@ -637,7 +633,7 @@ public:
     void itemClicked(const juce::MouseEvent &e) override
     {
         // Handle right-click on Recently Used item
-        if (itemType == ItemType::RecentlyUsed && e.mods.isRightButtonDown())
+        if (type == ItemType::RecentlyUsed && e.mods.isRightButtonDown())
         {
             juce::PopupMenu menu;
             menu.addItem(1, "Clear Recently Used");
@@ -654,7 +650,7 @@ public:
         }
 
         // Handle right-click on Favorites item
-        if (itemType == ItemType::Favorites && e.mods.isRightButtonDown())
+        if (type == ItemType::Favorites && e.mods.isRightButtonDown())
         {
             juce::PopupMenu menu;
             menu.addItem(1, "Clear My Gear");
@@ -671,7 +667,7 @@ public:
         }
 
         // Handle star icon clicks for gear items
-        if (itemType == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
+        if (type == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
         {
             // Check if click is in the left portion of the item where the star would be
             // The star is drawn at the left edge, so check if click is in the left 20 pixels
@@ -708,7 +704,7 @@ public:
         TreeViewItem::itemClicked(e);
 
         // If this is a gear item, make it draggable
-        if (itemType == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
+        if (type == ItemType::Gear && gearItem != nullptr && e.mods.isLeftButtonDown())
         {
             // Find the parent drag container
             juce::Component *comp = getOwnerView();
@@ -738,7 +734,7 @@ public:
             g.drawText(gearItem->name, 30, 5, itemWidth - 40, 30, juce::Justification::centredLeft);
 
             // Create a structured drag description that the rack can recognize
-            juce::String dragDesc = "GEAR:" + juce::String(gearIndex) + ":" + gearItem->name;
+            juce::String dragDesc = "GEAR:" + juce::String(itemIndex) + ":" + gearItem->name;
 
             // Calculate the drag image offset from the mouse
             juce::Point<int> imageOffset(e.x - 10, e.y - itemHeight / 2);
@@ -811,12 +807,12 @@ public:
     }
 
 private:
-    ItemType itemType;          ///< Type of this tree item
+    ItemType type;              ///< Type of this tree item
     juce::String name;          ///< Name of this tree item
     GearLibrary *owner;         ///< Pointer to the owning GearLibrary
     CacheManager *cacheManager; ///< Reference to the cache manager
     GearItem *gearItem;         ///< Associated gear item (for gear items)
-    int gearIndex;              ///< Index of the gear item (for gear items)
+    int itemIndex;              ///< Index of the gear item (for gear items)
     bool isVisible{true};       ///< Whether this item is visible
     bool isOpen{false};         ///< Whether this item is open
 };

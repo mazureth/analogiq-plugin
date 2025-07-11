@@ -5,15 +5,6 @@
 #include <juce_graphics/juce_graphics.h>
 #include <juce_data_structures/juce_data_structures.h>
 
-// Debug helper function
-void writeDebugLog(const juce::String &message)
-{
-    juce::File debugFile = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile("analogiq_debug.log");
-    juce::String timestamp = juce::Time::getCurrentTime().formatted("%H:%M:%S");
-    juce::String logMessage = timestamp + ": " + message + "\n";
-    debugFile.appendText(logMessage);
-}
-
 CacheManager::CacheManager(IFileSystem &fileSystem, const juce::String &cacheRootPath)
     : fileSystem(fileSystem)
 {
@@ -429,10 +420,6 @@ bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
     {
         juce::String recentlyUsedFilePath = fileSystem.joinPath(cacheRoot, "recently_used.json");
 
-        // Debug: Log the file path being written to
-        writeDebugLog("addToRecentlyUsed: Writing to file: " + recentlyUsedFilePath);
-        writeDebugLog("addToRecentlyUsed: Adding unitId: " + unitId);
-
         // Load existing recently used list
         juce::StringArray recentlyUsed;
         if (fileSystem.fileExists(recentlyUsedFilePath))
@@ -470,14 +457,10 @@ bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
         }
         jsonObj->setProperty("recentlyUsed", array);
 
-        bool success = fileSystem.writeFile(recentlyUsedFilePath, juce::JSON::toString(juce::var(jsonObj)));
-        writeDebugLog("addToRecentlyUsed: Write success: " + juce::String(success ? "true" : "false"));
-
-        return success;
+        return fileSystem.writeFile(recentlyUsedFilePath, juce::JSON::toString(juce::var(jsonObj)));
     }
     catch (...)
     {
-        writeDebugLog("addToRecentlyUsed: Exception occurred");
         return false;
     }
 }
@@ -488,18 +471,11 @@ juce::StringArray CacheManager::getRecentlyUsed(int maxCount) const
     {
         juce::String recentlyUsedFilePath = fileSystem.joinPath(cacheRoot, "recently_used.json");
 
-        // Debug: Log the file path and whether it exists
-        writeDebugLog("getRecentlyUsed: Checking file: " + recentlyUsedFilePath);
-        writeDebugLog("getRecentlyUsed: File exists: " + juce::String(fileSystem.fileExists(recentlyUsedFilePath) ? "true" : "false"));
-
         juce::StringArray recentlyUsed;
 
         if (fileSystem.fileExists(recentlyUsedFilePath))
         {
-            juce::String fileContent = fileSystem.readFile(recentlyUsedFilePath);
-            writeDebugLog("getRecentlyUsed: File content: " + fileContent);
-
-            auto json = juce::JSON::parse(fileContent);
+            auto json = juce::JSON::parse(fileSystem.readFile(recentlyUsedFilePath));
             if (json.hasProperty("recentlyUsed") && json["recentlyUsed"].isArray())
             {
                 auto array = json["recentlyUsed"].getArray();
@@ -509,10 +485,6 @@ juce::StringArray CacheManager::getRecentlyUsed(int maxCount) const
                 }
             }
         }
-        else
-        {
-            writeDebugLog("getRecentlyUsed: File does not exist");
-        }
 
         // Limit the returned list to maxCount
         if (recentlyUsed.size() > maxCount)
@@ -520,12 +492,10 @@ juce::StringArray CacheManager::getRecentlyUsed(int maxCount) const
             recentlyUsed.removeRange(maxCount, recentlyUsed.size() - maxCount);
         }
 
-        writeDebugLog("getRecentlyUsed: Returning " + juce::String(recentlyUsed.size()) + " items");
         return recentlyUsed;
     }
     catch (...)
     {
-        writeDebugLog("getRecentlyUsed: Exception occurred");
         return juce::StringArray();
     }
 }

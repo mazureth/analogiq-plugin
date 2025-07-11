@@ -484,7 +484,6 @@ void AnalogIQEditor::handleSavePreset(const juce::String &presetName)
 {
     if (presetManager.savePreset(presetName, rack.get()))
     {
-        juce::Logger::writeToLog("Preset saved: " + presetName);
         currentPresetName = presetName;
         clearModifiedState();
 
@@ -496,7 +495,6 @@ void AnalogIQEditor::handleSavePreset(const juce::String &presetName)
     else
     {
         juce::String errorMessage = presetManager.getLastErrorMessage();
-        juce::Logger::writeToLog("Failed to save preset: " + presetName + " - " + errorMessage);
 
         // Show detailed error message
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
@@ -552,8 +550,6 @@ void AnalogIQEditor::handleDeletePreset(const juce::String &presetName)
 {
     if (presetManager.deletePreset(presetName))
     {
-        juce::Logger::writeToLog("Preset deleted: " + presetName);
-
         // If this was the currently loaded preset, clear the current preset name
         if (currentPresetName == presetName)
         {
@@ -568,7 +564,6 @@ void AnalogIQEditor::handleDeletePreset(const juce::String &presetName)
     else
     {
         juce::String errorMessage = presetManager.getLastErrorMessage();
-        juce::Logger::writeToLog("Failed to delete preset: " + presetName + " - " + errorMessage);
 
         // Show detailed error message
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
@@ -582,7 +577,6 @@ void AnalogIQEditor::refreshPresetMenu()
     // The menu is rebuilt each time showPresetMenu() is called,
     // so this method can be used to trigger a menu refresh if needed
     // For now, we'll just log that it was called
-    juce::Logger::writeToLog("Preset menu refresh requested");
 }
 
 bool AnalogIQEditor::hasUnsavedChanges() const
@@ -595,7 +589,6 @@ void AnalogIQEditor::markAsModified()
     if (!isModified)
     {
         isModified = true;
-        juce::Logger::writeToLog("Rack state marked as modified");
     }
 }
 
@@ -604,7 +597,6 @@ void AnalogIQEditor::clearModifiedState()
     if (isModified)
     {
         isModified = false;
-        juce::Logger::writeToLog("Rack state marked as saved");
     }
 }
 
@@ -612,7 +604,6 @@ void AnalogIQEditor::performLoadPreset(const juce::String &presetName)
 {
     if (presetManager.loadPreset(presetName, rack.get(), &gearLibrary))
     {
-        juce::Logger::writeToLog("Preset loaded: " + presetName);
         currentPresetName = presetName;
         clearModifiedState();
 
@@ -624,7 +615,6 @@ void AnalogIQEditor::performLoadPreset(const juce::String &presetName)
     else
     {
         juce::String errorMessage = presetManager.getLastErrorMessage();
-        juce::Logger::writeToLog("Failed to load preset: " + presetName + " - " + errorMessage);
 
         // Show detailed error message
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,

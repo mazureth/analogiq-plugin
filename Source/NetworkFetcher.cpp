@@ -42,17 +42,15 @@ juce::MemoryBlock NetworkFetcher::fetchBinaryBlocking(const juce::URL &url, bool
 class DummyNetworkFetcher : public INetworkFetcher
 {
 public:
-    juce::String fetchJsonBlocking(const juce::URL &, bool &success) override
+    juce::String fetchJsonBlocking(const juce::URL &url, bool &success) override
     {
         success = false;
-        juce::Logger::writeToLog("[DummyNetworkFetcher] fetchJsonBlocking called. Returning empty string.");
-        return {};
+        return "";
     }
-    juce::MemoryBlock fetchBinaryBlocking(const juce::URL &, bool &success) override
+    juce::MemoryBlock fetchBinaryBlocking(const juce::URL &url, bool &success) override
     {
         success = false;
-        juce::Logger::writeToLog("[DummyNetworkFetcher] fetchBinaryBlocking called. Returning empty block.");
-        return {};
+        return juce::MemoryBlock();
     }
 };
 
