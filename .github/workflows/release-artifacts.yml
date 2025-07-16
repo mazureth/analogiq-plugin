@@ -29,7 +29,8 @@ jobs:
             -DANALOGIQ_BUILD_AU=ON \
             -DANALOGIQ_BUILD_STANDALONE=ON \
             -DANALOGIQ_BUILD_TESTS=OFF \
-            -DANALOGIQ_COPY_PLUGINS=ON
+            -DANALOGIQ_COPY_PLUGINS=OFF \
+            -DCMAKE_SKIP_INSTALL_RULES=ON
           cmake --build build --config Release --parallel
 
       - name: Find Plugin Files
