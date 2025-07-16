@@ -1,0 +1,132 @@
+name: Build and Release Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0, v2.1.3, etc.
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    name: Build for macOS
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        run: |
+          brew install cmake
+
+      - name: Configure and Build
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DANALOGIQ_BUILD_AAX=ON \
+            -DANALOGIQ_BUILD_VST3=ON \
+            -DANALOGIQ_BUILD_AU=ON \
+            -DANALOGIQ_BUILD_STANDALONE=ON \
+            -DANALOGIQ_BUILD_TESTS=OFF \
+            -DANALOGIQ_COPY_PLUGINS=ON
+          cmake --build build --config Release --parallel
+
+      - name: Find Plugin Files
+        id: find-plugins
+        run: |
+          echo "vst3_files=$(find build -name "*.vst3" -type d)" >> $GITHUB_OUTPUT
+          echo "au_files=$(find build -name "*.component" -type d)" >> $GITHUB_OUTPUT
+          echo "aax_files=$(find build -name "*.aaxplugin" -type d)" >> $GITHUB_OUTPUT
+          echo "standalone_files=$(find build -name "AnalogIQ" -type f -perm +111)" >> $GITHUB_OUTPUT
+
+      - name: Create macOS Release Package
+        run: |
+          mkdir -p release/macos
+          
+          # Copy VST3 plugins
+          if [ -d "build/AnalogIQ_artefacts/Release/VST3" ]; then
+            cp -R build/AnalogIQ_artefacts/Release/VST3 release/macos/
+          fi
+          
+          # Copy AU plugins
+          if [ -d "build/AnalogIQ_artefacts/Release/AU" ]; then
+            cp -R build/AnalogIQ_artefacts/Release/AU release/macos/
+          fi
+          
+          # Copy AAX plugins
+          if [ -d "build/AnalogIQ_artefacts/Release/AAX" ]; then
+            cp -R build/AnalogIQ_artefacts/Release/AAX release/macos/
+          fi
+          
+          # Copy Standalone app
+          if [ -f "build/AnalogIQ_artefacts/Release/Standalone/AnalogIQ.app/Contents/MacOS/AnalogIQ" ]; then
+            cp -R build/AnalogIQ_artefacts/Release/Standalone/AnalogIQ.app release/macos/
+          fi
+          
+          # Create zip archive
+          cd release
+          zip -r AnalogIQ-macos-${GITHUB_REF_NAME}.zip macos/
+          cd ..
+
+      - name: Upload macOS Release Assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnalogIQ-macos-${{ github.ref_name }}
+          path: release/AnalogIQ-macos-${{ github.ref_name }}.zip
+
+  build-windows:
+    runs-on: windows-latest
+    name: Build for Windows
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        run: |
+          # Install Visual Studio Build Tools
+          # These are pre-installed on windows-latest
+
+      - name: Configure and Build
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DANALOGIQ_BUILD_AAX=ON \
+            -DANALOGIQ_BUILD_VST3=ON \
+            -DANALOGIQ_BUILD_AU=OFF \
+            -DANALOGIQ_BUILD_STANDALONE=ON \
+            -DANALOGIQ_BUILD_TESTS=OFF \
+            -DANALOGIQ_COPY_PLUGINS=ON
+          cmake --build build --config Release --parallel
+
+      - name: Create Windows Release Package
+        run: |
+          mkdir -p release/windows
+          
+          # Copy VST3 plugins
+          if (Test-Path "build/AnalogIQ_artefacts/Release/VST3") {
+            Copy-Item -Recurse "build/AnalogIQ_artefacts/Release/VST3" "release/windows/"
+          }
+          
+          # Copy AAX plugins
+          if (Test-Path "build/AnalogIQ_artefacts/Release/AAX") {
+            Copy-Item -Recurse "build/AnalogIQ_artefacts/Release/AAX" "release/windows/"
+          }
+          
+          # Copy Standalone executable
+          if (Test-Path "build/AnalogIQ_artefacts/Release/Standalone/AnalogIQ.exe") {
+            Copy-Item -Recurse "build/AnalogIQ_artefacts/Release/Standalone" "release/windows/"
+          }
+          
+          # Create zip archive
+          cd release
+          Compress-Archive -Path "windows/*" -DestinationPath "AnalogIQ-windows-${{ github.ref_name }}.zip"
+          cd ..
+
+      - name: Upload Windows Release Assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnalogIQ-windows-${{ github.ref_name }}
+          path: release/AnalogIQ-windows-${{ github.ref_name }}.zip
