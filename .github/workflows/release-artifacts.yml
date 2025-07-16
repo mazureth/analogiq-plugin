@@ -93,12 +93,12 @@ jobs:
 
       - name: Configure and Build
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release \
-            -DANALOGIQ_BUILD_AAX=ON \
-            -DANALOGIQ_BUILD_VST3=ON \
-            -DANALOGIQ_BUILD_AU=OFF \
-            -DANALOGIQ_BUILD_STANDALONE=ON \
-            -DANALOGIQ_BUILD_TESTS=OFF \
+          cmake -B build -DCMAKE_BUILD_TYPE=Release `
+            -DANALOGIQ_BUILD_AAX=ON `
+            -DANALOGIQ_BUILD_VST3=ON `
+            -DANALOGIQ_BUILD_AU=OFF `
+            -DANALOGIQ_BUILD_STANDALONE=ON `
+            -DANALOGIQ_BUILD_TESTS=OFF `
             -DANALOGIQ_COPY_PLUGINS=ON
           cmake --build build --config Release --parallel
 
