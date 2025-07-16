@@ -24,5 +24,6 @@ var searchData=
   ['findnearestslot_21',['findNearestSlot',['../d0/dc7/class_rack.html#a6e406e2ad71ce489731812feaef68068',1,'Rack']]],
   ['findparentrackcomponent_22',['findParentRackComponent',['../dc/dde/class_rack_slot.html#aab809ff30b8c5e5c35c59169fb66ae28',1,'RackSlot']]],
   ['flatmenubuttonlookandfeel_23',['FlatMenuButtonLookAndFeel',['../df/d01/class_analog_i_q_editor_1_1_flat_menu_button_look_and_feel.html',1,'AnalogIQEditor']]],
-  ['flatmenulookandfeel_24',['flatMenuLookAndFeel',['../df/d1c/class_analog_i_q_editor.html#ad9c3fc5e401f9df36f9b7b34a3e2df1a',1,'AnalogIQEditor']]]
+  ['flatmenulookandfeel_24',['flatMenuLookAndFeel',['../df/d1c/class_analog_i_q_editor.html#ad9c3fc5e401f9df36f9b7b34a3e2df1a',1,'AnalogIQEditor']]],
+  ['formats_25',['Supported Plugin Formats',['../index.html#autotoc_md16',1,'']]]
 ];

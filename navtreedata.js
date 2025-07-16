@@ -40,6 +40,12 @@ var NAVTREE =
       ] ]
     ] ],
     [ "Project Structure", "index.html#autotoc_md12", null ],
+    [ "Automated Releases", "index.html#autotoc_md13", [
+      [ "Creating a Release", "index.html#autotoc_md14", null ],
+      [ "Release Artifacts", "index.html#autotoc_md15", null ],
+      [ "Supported Plugin Formats", "index.html#autotoc_md16", null ],
+      [ "Build Configuration", "index.html#autotoc_md17", null ]
+    ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [

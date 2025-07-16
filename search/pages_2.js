@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['documentation_0',['Documentation',['../index.html#autotoc_md6',1,'']]],
-  ['documentation_20locally_1',['Building and Viewing Documentation Locally',['../index.html#autotoc_md5',1,'']]]
+  ['configuration_0',['Build Configuration',['../index.html#autotoc_md17',1,'']]],
+  ['creating_20a_20release_1',['Creating a Release',['../index.html#autotoc_md14',1,'']]]
 ];

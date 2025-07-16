@@ -251,9 +251,54 @@ Project Structure</h1>
 <li><span class="tt">Source/</span> - All source files<ul>
 <li><span class="tt">AnalogIQProcessor.*</span> - Core plugin functionality</li>
 <li><span class="tt">AnalogIQEditor.*</span> - Main UI components</li>
-<li><span class="tt">GearLibrary.*</span> - Gear browser and library management </li>
+<li><span class="tt">GearLibrary.*</span> - Gear browser and library management</li>
 </ul>
 </li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md13"></a>
+Automated Releases</h1>
+<p>This project uses GitHub Actions to automatically build and release the plugin when a new version tag is pushed.</p>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md14"></a>
+Creating a Release</h2>
+<ol type="1">
+<li><b>Update the version</b> in <span class="tt">CMakeLists.txt</span> (optional - will be auto-updated): <div class="fragment"><div class="line"># Edit CMakeLists.txt and change the VERSION line</div>
+<div class="line">project(AnalogIQ VERSION 1.0.0)</div>
+</div><!-- fragment --></li>
+<li><b>Create and push a new tag</b>: <div class="fragment"><div class="line">git tag -a v1.0.0 -m &quot;[some message]&quot;</div>
+<div class="line">git push origin v1.0.0</div>
+</div><!-- fragment --></li>
+<li><b>The GitHub Action will automatically</b>:<ul>
+<li>Update the version in <span class="tt">CMakeLists.txt</span> to match the tag</li>
+<li>Build the plugin for both macOS and Windows</li>
+<li>Create a GitHub release with downloadable packages</li>
+<li>Include all plugin formats (VST3, AAX, AU, Standalone)</li>
+</ul>
+</li>
+</ol>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md15"></a>
+Release Artifacts</h2>
+<p>Each release includes:</p><ul>
+<li><b>AnalogIQ-macos-v1.0.0.zip</b> - macOS package with VST3, AU, AAX, and Standalone</li>
+<li><b>AnalogIQ-windows-v1.0.0.zip</b> - Windows package with VST3, AAX, and Standalone</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md16"></a>
+Supported Plugin Formats</h2>
+<ul>
+<li><b>VST3</b>: Compatible with most modern DAWs (Cubase, Reaper, etc.)</li>
+<li><b>AAX</b>: Pro Tools compatibility</li>
+<li><b>Audio Unit (AU)</b>: Native macOS plugin format</li>
+<li><b>Standalone</b>: Run without a DAW</li>
+</ul>
+<h2 class="doxsection"><a class="anchor" id="autotoc_md17"></a>
+Build Configuration</h2>
+<p>The automated builds use the following CMake options:</p><ul>
+<li><span class="tt">ANALOGIQ_BUILD_AAX=ON</span> - Build AAX plugins</li>
+<li><span class="tt">ANALOGIQ_BUILD_VST3=ON</span> - Build VST3 plugins <br  />
+</li>
+<li><span class="tt">ANALOGIQ_BUILD_AU=ON</span> (macOS only) - Build Audio Unit plugins</li>
+<li><span class="tt">ANALOGIQ_BUILD_STANDALONE=ON</span> - Build standalone application</li>
+<li><span class="tt">ANALOGIQ_BUILD_TESTS=OFF</span> - Skip tests for faster builds</li>
+<li><span class="tt">ANALOGIQ_COPY_PLUGINS=ON</span> - Copy plugins to artifacts directory </li>
 </ul>
 </div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>

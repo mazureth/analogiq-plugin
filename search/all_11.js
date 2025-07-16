@@ -38,8 +38,9 @@ var searchData=
   ['steps_35',['Build Steps',['../index.html#autotoc_md4',1,'']]],
   ['steps_36',['steps',['../dc/d76/class_gear_control.html#a35717d28c62fb8605c1d4b87c63d7788',1,'GearControl']]],
   ['structure_37',['Project Structure',['../index.html#autotoc_md12',1,'']]],
-  ['switch_38',['Switch',['../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521abbc155fb2b111bf61c4f5ff892915e6b',1,'GearControl']]],
-  ['switchframes_39',['switchFrames',['../dc/d76/class_gear_control.html#a7c222196311140f605608100f51c0093',1,'GearControl']]],
-  ['switchoptionframe_40',['SwitchOptionFrame',['../df/d72/struct_gear_control_1_1_switch_option_frame.html',1,'GearControl']]],
-  ['switchspritesheet_41',['switchSpriteSheet',['../dc/d76/class_gear_control.html#a60d36f5169699b7f48c732504f481e9f',1,'GearControl']]]
+  ['supported_20plugin_20formats_38',['Supported Plugin Formats',['../index.html#autotoc_md16',1,'']]],
+  ['switch_39',['Switch',['../dc/d76/class_gear_control.html#a814efd48f14cfb7a9fac9a9c6cbec521abbc155fb2b111bf61c4f5ff892915e6b',1,'GearControl']]],
+  ['switchframes_40',['switchFrames',['../dc/d76/class_gear_control.html#a7c222196311140f605608100f51c0093',1,'GearControl']]],
+  ['switchoptionframe_41',['SwitchOptionFrame',['../df/d72/struct_gear_control_1_1_switch_option_frame.html',1,'GearControl']]],
+  ['switchspritesheet_42',['switchSpriteSheet',['../dc/d76/class_gear_control.html#a60d36f5169699b7f48c732504f481e9f',1,'GearControl']]]
 ];

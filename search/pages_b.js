@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['viewing_20documentation_20locally_0',['Building and Viewing Documentation Locally',['../index.html#autotoc_md5',1,'']]]
+  ['usage_0',['Usage',['../index.html#autotoc_md7',1,'']]]
 ];

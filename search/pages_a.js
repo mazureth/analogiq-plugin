@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['usage_0',['Usage',['../index.html#autotoc_md7',1,'']]]
+  ['the_20plugin_0',['Building the Plugin',['../index.html#autotoc_md2',1,'']]]
 ];

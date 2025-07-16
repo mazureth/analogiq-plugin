@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['management_0',['Preset Management',['../index.html#autotoc_md8',1,'']]],
-  ['managing_20presets_1',['Managing Presets',['../index.html#autotoc_md11',1,'']]]
+  ['loading_20presets_0',['Loading Presets',['../index.html#autotoc_md10',1,'']]],
+  ['locally_1',['Building and Viewing Documentation Locally',['../index.html#autotoc_md5',1,'']]]
 ];
