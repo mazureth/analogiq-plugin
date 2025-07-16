@@ -33,14 +33,6 @@ jobs:
             -DCMAKE_SKIP_INSTALL_RULES=ON
           cmake --build build --config Release --parallel
 
-      - name: Find Plugin Files
-        id: find-plugins
-        run: |
-          echo "vst3_files=$(find build -name "*.vst3" -type d)" >> $GITHUB_OUTPUT
-          echo "au_files=$(find build -name "*.component" -type d)" >> $GITHUB_OUTPUT
-          echo "aax_files=$(find build -name "*.aaxplugin" -type d)" >> $GITHUB_OUTPUT
-          echo "standalone_files=$(find build -name "AnalogIQ" -type f -perm +111)" >> $GITHUB_OUTPUT
-
       - name: Create macOS Release Package
         run: |
           mkdir -p release/macos
