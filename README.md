@@ -156,3 +156,50 @@ The preset system allows you to save and load complete rack configurations:
   - `AnalogIQProcessor.*` - Core plugin functionality
   - `AnalogIQEditor.*` - Main UI components
   - `GearLibrary.*` - Gear browser and library management
+
+## Automated Releases
+
+This project uses GitHub Actions to automatically build and release the plugin when a new version tag is pushed.
+
+### Creating a Release
+
+1. **Update the version** in `CMakeLists.txt` (optional - will be auto-updated):
+   ```bash
+   # Edit CMakeLists.txt and change the VERSION line
+   project(AnalogIQ VERSION 1.0.0)
+   ```
+
+2. **Create and push a new tag**:
+   ```bash
+   git tag -a v1.0.0 -m "[some message]"
+   git push origin v1.0.0
+   ```
+
+3. **The GitHub Action will automatically**:
+   - Update the version in `CMakeLists.txt` to match the tag
+   - Build the plugin for both macOS and Windows
+   - Create a GitHub release with downloadable packages
+   - Include all plugin formats (VST3, AAX, AU, Standalone)
+
+### Release Artifacts
+
+Each release includes:
+- **AnalogIQ-macos-v1.0.0.zip** - macOS package with VST3, AU, AAX, and Standalone
+- **AnalogIQ-windows-v1.0.0.zip** - Windows package with VST3, AAX, and Standalone
+
+### Supported Plugin Formats
+
+- **VST3**: Compatible with most modern DAWs (Cubase, Reaper, etc.)
+- **AAX**: Pro Tools compatibility
+- **Audio Unit (AU)**: Native macOS plugin format
+- **Standalone**: Run without a DAW
+
+### Build Configuration
+
+The automated builds use the following CMake options:
+- `ANALOGIQ_BUILD_AAX=ON` - Build AAX plugins
+- `ANALOGIQ_BUILD_VST3=ON` - Build VST3 plugins  
+- `ANALOGIQ_BUILD_AU=ON` (macOS only) - Build Audio Unit plugins
+- `ANALOGIQ_BUILD_STANDALONE=ON` - Build standalone application
+- `ANALOGIQ_BUILD_TESTS=OFF` - Skip tests for faster builds
+- `ANALOGIQ_COPY_PLUGINS=ON` - Copy plugins to artifacts directory
