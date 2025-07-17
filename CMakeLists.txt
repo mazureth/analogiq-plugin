@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(AnalogIQ VERSION 0.2.0)
+# Read version from VERSION file
+file(READ VERSION VERSION_STRING)
+string(STRIP ${VERSION_STRING} VERSION_STRING)
+
+project(AnalogIQ VERSION ${VERSION_STRING})
 
 # Enable testing
 enable_testing()

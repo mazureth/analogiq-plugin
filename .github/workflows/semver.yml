@@ -1,0 +1,91 @@
+name: Check Version Update
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-version-update:
+    runs-on: ubuntu-latest
+    name: Check if VERSION file was updated
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history to compare with base branch
+
+      - name: Get base branch version
+        id: base-version
+        run: |
+          # Get the version from the base branch (main)
+          git fetch origin main
+          git checkout origin/main
+          BASE_VERSION=$(xargs < VERSION)
+          echo "base_version=$BASE_VERSION" >> $GITHUB_OUTPUT
+          echo "Base branch version: $BASE_VERSION"
+
+      - name: Get PR branch version
+        id: pr-version
+        run: |
+          # Get the version from the PR branch
+          git checkout ${{ github.head_ref }}
+          PR_VERSION=$(xargs < VERSION)
+          if [[ ! $PR_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid SemVer format: '$PR_VERSION'"
+            exit 1
+          fi
+          echo "pr_version=$PR_VERSION" >> $GITHUB_OUTPUT
+          echo "PR branch version: $PR_VERSION"
+
+      - name: Check if version was updated
+        id: version-check
+        run: |
+          BASE_VERSION="${{ steps.base-version.outputs.base_version }}"
+          PR_VERSION="${{ steps.pr-version.outputs.pr_version }}"
+          
+          echo "Comparing versions:"
+          echo "  Base: $BASE_VERSION"
+          echo "  PR:   $PR_VERSION"
+          
+          if [ "$BASE_VERSION" = "$PR_VERSION" ]; then
+            echo "❌ VERSION file was not updated"
+            echo "Please update the VERSION file to reflect the changes in this PR"
+            echo "Current version: $BASE_VERSION"
+            echo "::error::VERSION file must be updated for this PR"
+            exit 1
+          else
+            echo "✅ VERSION file was updated from $BASE_VERSION to $PR_VERSION"
+            echo "::notice::Version updated from $BASE_VERSION to $PR_VERSION"
+          fi
+
+      - name: Check for version bump type
+        run: |
+          BASE_VERSION="${{ steps.base-version.outputs.base_version }}"
+          PR_VERSION="${{ steps.pr-version.outputs.pr_version }}"
+          
+          # Parse version components
+          IFS='.' read -r base_major base_minor base_patch <<< "$BASE_VERSION"
+          IFS='.' read -r pr_major pr_minor pr_patch <<< "$PR_VERSION"
+          
+          echo "Version comparison:"
+          echo "  Base: $base_major.$base_minor.$base_patch"
+          echo "  PR:   $pr_major.$pr_minor.$pr_patch"
+          
+          # Check if this is a valid version bump
+          if [ "$pr_major" -gt "$base_major" ]; then
+            echo "✅ Major version bump detected"
+          elif [ "$pr_major" -eq "$base_major" ] && [ "$pr_minor" -gt "$base_minor" ]; then
+            echo "✅ Minor version bump detected"
+          elif [ "$pr_major" -eq "$base_major" ] && [ "$pr_minor" -eq "$base_minor" ] && [ "$pr_patch" -gt "$base_patch" ]; then
+            echo "✅ Patch version bump detected"
+          else
+            echo "❌ Invalid version bump detected"
+            echo "Version must be incremented according to semantic versioning:"
+            echo "  - Major: $base_major.$base_minor.$base_patch -> $((base_major + 1)).0.0"
+            echo "  - Minor: $base_major.$base_minor.$base_patch -> $base_major.$((base_minor + 1)).0"
+            echo "  - Patch: $base_major.$base_minor.$base_patch -> $base_major.$base_minor.$((base_patch + 1))"
+            echo "::error::Invalid version bump: $BASE_VERSION -> $PR_VERSION"
+            exit 1
+          fi 

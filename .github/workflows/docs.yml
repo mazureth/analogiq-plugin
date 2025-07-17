@@ -23,6 +23,10 @@ jobs:
 
       - name: Configure and Generate Documentation
         run: |
+          # Generate Doxyfile with current version
+          chmod +x generate_doxyfile.sh
+          ./generate_doxyfile.sh
+          
           cmake -B build -DANALOGIQ_BUILD_AAX=OFF -DANALOGIQ_BUILD_VST3=OFF -DANALOGIQ_BUILD_AU=OFF -DANALOGIQ_BUILD_STANDALONE=OFF -DANALOGIQ_BUILD_TESTS=OFF -DANALOGIQ_COPY_PLUGINS=OFF
           cmake --build build --target docs
 
