@@ -5,8 +5,8 @@ project(AnalogIQ VERSION 0.2.0)
 # Enable testing
 enable_testing()
 
-# Find Doxygen
-find_package(Doxygen REQUIRED)
+# Find Doxygen (optional - only for documentation builds)
+find_package(Doxygen)
 
 # Set compiler flags for macOS 15.0 compatibility
 if(APPLE)

@@ -29,16 +29,9 @@ jobs:
             -DANALOGIQ_BUILD_AU=ON \
             -DANALOGIQ_BUILD_STANDALONE=ON \
             -DANALOGIQ_BUILD_TESTS=OFF \
-            -DANALOGIQ_COPY_PLUGINS=ON
+            -DANALOGIQ_COPY_PLUGINS=OFF \
+            -DCMAKE_SKIP_INSTALL_RULES=ON
           cmake --build build --config Release --parallel
-
-      - name: Find Plugin Files
-        id: find-plugins
-        run: |
-          echo "vst3_files=$(find build -name "*.vst3" -type d)" >> $GITHUB_OUTPUT
-          echo "au_files=$(find build -name "*.component" -type d)" >> $GITHUB_OUTPUT
-          echo "aax_files=$(find build -name "*.aaxplugin" -type d)" >> $GITHUB_OUTPUT
-          echo "standalone_files=$(find build -name "AnalogIQ" -type f -perm +111)" >> $GITHUB_OUTPUT
 
       - name: Create macOS Release Package
         run: |
@@ -92,12 +85,12 @@ jobs:
 
       - name: Configure and Build
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release \
-            -DANALOGIQ_BUILD_AAX=ON \
-            -DANALOGIQ_BUILD_VST3=ON \
-            -DANALOGIQ_BUILD_AU=OFF \
-            -DANALOGIQ_BUILD_STANDALONE=ON \
-            -DANALOGIQ_BUILD_TESTS=OFF \
+          cmake -B build -DCMAKE_BUILD_TYPE=Release `
+            -DANALOGIQ_BUILD_AAX=ON `
+            -DANALOGIQ_BUILD_VST3=ON `
+            -DANALOGIQ_BUILD_AU=OFF `
+            -DANALOGIQ_BUILD_STANDALONE=ON `
+            -DANALOGIQ_BUILD_TESTS=OFF `
             -DANALOGIQ_COPY_PLUGINS=ON
           cmake --build build --config Release --parallel
 

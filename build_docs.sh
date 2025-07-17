@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# Check if Doxygen is available
+if ! command -v doxygen &> /dev/null; then
+    echo "❌ Doxygen is not installed. Please install it first:"
+    echo "   macOS: brew install doxygen"
+    echo "   Ubuntu/Debian: sudo apt-get install doxygen"
+    echo "   Windows: Download from https://www.doxygen.nl/"
+    exit 1
+fi
+
 echo "Configuring project with CMake..."
 cmake -B build
 
