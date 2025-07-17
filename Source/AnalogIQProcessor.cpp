@@ -218,6 +218,10 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
     if (auto *rackEditor = dynamic_cast<AnalogIQEditor *>(editor))
     {
         rack = rackEditor->getRack();
+
+        // Load instance state after the editor is created
+        // This ensures the rack is available for state restoration
+        loadInstanceState(rack);
     }
     return editor;
 }
@@ -242,6 +246,9 @@ juce::AudioProcessorEditor *AnalogIQProcessor::getActiveEditor()
  */
 void AnalogIQProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
+    // Save instance state before saving the main state
+    saveInstanceState();
+
     auto stateSnapshot = getState().copyState();
     std::unique_ptr<juce::XmlElement> xml(stateSnapshot.createXml());
     copyXmlToBinary(*xml, destData);
@@ -260,6 +267,9 @@ void AnalogIQProcessor::setStateInformation(const void *data, int sizeInBytes)
     if (xmlState.get() != nullptr)
         if (xmlState->hasTagName(getState().state.getType()))
             getState().replaceState(juce::ValueTree::fromXml(*xmlState));
+
+    // Load instance state after restoring the main state
+    // We need to wait for the editor to be created, so we'll do this in createEditor
 }
 
 /**
@@ -351,94 +361,49 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                 auto sourceUnitId = slotTree.getProperty("sourceUnitId").toString();
                 if (!sourceUnitId.isEmpty())
                 {
-                    // Create a new gear item from the source
-                    // TODO: why is this using inline test data instead of whatever is
-                    // stored in the instanceTree?
-                    // Use the file system from the cache manager instead of creating a new one
-                    GearItem *item = new GearItem(
-                        sourceUnitId,              // unitId
-                        "Test EQ",                 // name
-                        "Test Co",                 // manufacturer
-                        "equalizer",               // categoryString
-                        "1.0",                     // version
-                        "",                        // schemaPath
-                        "",                        // thumbnailImage
-                        juce::StringArray(),       // tags
-                        networkFetcher,            // networkFetcher (required)
-                        *fileSystem,               // fileSystem (required)
-                        *cacheManager,             // cacheManager (required)
-                        GearType::Series500,       // type
-                        GearCategory::EQ,          // category
-                        1,                         // slotSize
-                        juce::Array<GearControl>() // controls
-                    );
-
-                    // Add controls to match the saved state
-                    auto controlsTree = slotTree.getChildWithName("controls");
-                    if (controlsTree.isValid())
+                    // Load the gear item from the gear library using the source unit ID
+                    auto gearItem = gearLibrary->getGearItemByUnitId(sourceUnitId);
+                    if (gearItem != nullptr)
                     {
-                        for (int j = 0; j < controlsTree.getNumChildren(); ++j)
+                        // Create a new instance from the source gear
+                        auto *item = new GearItem(*gearItem);
+
+                        // Set the gear item in the slot
+                        if (auto *slot = rack->getSlot(i))
                         {
-                            auto controlTree = controlsTree.getChild(j);
-                            if (controlTree.isValid())
+                            slot->setGearItem(item);
+
+                            // Create instance if we have saved state
+                            rack->createInstance(i);
+
+                            // Get the gear item for this slot and load control values
+                            if (auto *loadedItem = slot->getGearItem())
                             {
-                                GearControl control;
-                                control.name = "Control " + juce::String(j);
-                                control.type = GearControl::Type::Knob;
-                                control.value = controlTree.getProperty("value", 0.0f);
-                                control.initialValue = controlTree.getProperty("initialValue", 0.0f);
-                                item->controls.add(control);
-                            }
-                        }
-                    }
-
-                    // Set the gear item in the slot
-                    if (auto *slot = rack->getSlot(i))
-                    {
-                        slot->setGearItem(item);
-
-                        // Create instance if we have saved state
-                        rack->createInstance(i);
-
-                        // Get the gear item for this slot
-                        if (auto *item = slot->getGearItem())
-                        {
-                            // Load control values
-                            auto controlsTree = slotTree.getChildWithName("controls");
-                            if (controlsTree.isValid())
-                            {
-                                for (int j = 0; j < item->controls.size(); ++j)
+                                // Load control values from saved state
+                                auto controlsTree = slotTree.getChildWithName("controls");
+                                if (controlsTree.isValid())
                                 {
-                                    auto controlTree = controlsTree.getChildWithName("control_" + juce::String(j));
-                                    if (controlTree.isValid())
+                                    for (int j = 0; j < loadedItem->controls.size() && j < controlsTree.getNumChildren(); ++j)
                                     {
-                                        auto &control = item->controls.getReference(j);
-                                        control.value = controlTree.getProperty("value", control.value);
-                                        control.initialValue = controlTree.getProperty("initialValue", control.initialValue);
-                                        if (control.type == GearControl::Type::Switch)
+                                        auto controlTree = controlsTree.getChildWithName("control_" + juce::String(j));
+                                        if (controlTree.isValid())
                                         {
-                                            control.currentIndex = controlTree.getProperty("currentIndex", control.currentIndex);
+                                            auto &control = loadedItem->controls.getReference(j);
+                                            control.value = controlTree.getProperty("value", control.value);
+                                            control.initialValue = controlTree.getProperty("initialValue", control.initialValue);
+                                            if (control.type == GearControl::Type::Switch)
+                                            {
+                                                control.currentIndex = controlTree.getProperty("currentIndex", control.currentIndex);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                        else
-                        {
-                        }
                     }
-                    else
-                    {
-                    }
-                }
-                else
-                {
                 }
             }
         }
-    }
-    else
-    {
     }
 }
 
