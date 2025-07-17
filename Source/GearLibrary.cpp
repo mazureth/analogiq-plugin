@@ -1307,6 +1307,23 @@ GearItem *GearLibrary::getGearItem(int index)
 }
 
 /**
+ * @brief Gets a gear item by unit ID.
+ *
+ * @param unitId The unit ID of the gear item to retrieve
+ * @return Pointer to the gear item, or nullptr if not found
+ */
+GearItem *GearLibrary::getGearItemByUnitId(const juce::String &unitId)
+{
+    for (auto &item : gearItems)
+    {
+        if (item.unitId == unitId)
+            return &item;
+    }
+
+    return nullptr;
+}
+
+/**
  * @brief Handles mouse down events.
  *
  * @param e The mouse event details

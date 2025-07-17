@@ -147,6 +147,14 @@ public:
     GearItem *getGearItem(int index);
 
     /**
+     * @brief Gets a gear item by unit ID.
+     *
+     * @param unitId The unit ID of the gear item to retrieve
+     * @return Pointer to the gear item, or nullptr if not found
+     */
+    GearItem *getGearItemByUnitId(const juce::String &unitId);
+
+    /**
      * @brief Gets the full array of gear items.
      *
      * @return Constant reference to the array of gear items
