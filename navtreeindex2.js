@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"dc/dde/class_rack_slot.html#ab115bb3cd0b8f21461d5fdaa7e87af96":[8,0,18,16],
 "dc/dde/class_rack_slot.html#ab15709c651bdd8a93eb9a32896227fd8":[8,0,18,11],
 "dc/dde/class_rack_slot.html#ab8c60dfc32aa701374b14767fa8beb4a":[8,0,18,6],
 "dc/dde/class_rack_slot.html#ac133a767b3cb082a415beb85b93053ef":[8,0,18,53],

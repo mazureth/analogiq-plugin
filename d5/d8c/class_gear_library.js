@@ -10,6 +10,7 @@ var class_gear_library =
     [ "getCacheManager", "d5/d8c/class_gear_library.html#a082edde1cf30dd40c76763a5d67477e5", null ],
     [ "getFullUrl", "d5/d8c/class_gear_library.html#a064c5552f9e9a794d363d74320c0c0da", null ],
     [ "getGearItem", "d5/d8c/class_gear_library.html#a2eabb53827162098981a4f472397346b", null ],
+    [ "getGearItemByUnitId", "d5/d8c/class_gear_library.html#a08ef58f393e0c6fb2a94181feb9d2705", null ],
     [ "getIgnoredCharacters", "d5/d8c/class_gear_library.html#ab4d6e447aef17a0fbbde8e97e11185c3", null ],
     [ "getItems", "d5/d8c/class_gear_library.html#ae585caef1ac3fe8aa8a7e9277051a023", null ],
     [ "getNumRows", "d5/d8c/class_gear_library.html#afad041e312721b6764580b991d5afd82", null ],
