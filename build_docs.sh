@@ -10,6 +10,10 @@ if ! command -v doxygen &> /dev/null; then
     exit 1
 fi
 
+# Generate Doxyfile with current version
+echo "Generating Doxyfile with current version..."
+./generate_doxyfile.sh
+
 echo "Configuring project with CMake..."
 cmake -B build
 

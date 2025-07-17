@@ -1,22 +1,29 @@
+#!/bin/bash
+
+# Read version from VERSION file
+VERSION=$(cat VERSION | tr -d '\n\r')
+
+# Create Doxyfile from template
+cat > Doxyfile << EOF
 # Project information
 PROJECT_NAME           = "AnalogIQ"
-PROJECT_NUMBER         = 0.3.2 
+PROJECT_NUMBER         = ${VERSION}
 PROJECT_BRIEF         = "Audio plugin for managing and simulating audio gear"
 OUTPUT_DIRECTORY      = docs
 CREATE_SUBDIRS        = YES
 OUTPUT_LANGUAGE       = English
 BRIEF_MEMBER_DESC     = YES
 REPEAT_BRIEF          = YES
-ABBREVIATE_BRIEF      = "The $name class" \
-                       "The $name widget" \
-                       "The $name file" \
-                       is \
-                       provides \
-                       specifies \
-                       contains \
-                       represents \
-                       a \
-                       an \
+ABBREVIATE_BRIEF      = "The \$name class" \\
+                       "The \$name widget" \\
+                       "The \$name file" \\
+                       is \\
+                       provides \\
+                       specifies \\
+                       contains \\
+                       represents \\
+                       a \\
+                       an \\
                        the
 
 # Input settings
@@ -96,14 +103,14 @@ ENABLE_PREPROCESSING  = YES
 MACRO_EXPANSION      = YES
 EXPAND_ONLY_PREDEF   = NO
 SEARCH_INCLUDES      = YES
-INCLUDE_PATH         = build/_deps/juce-src/modules \
+INCLUDE_PATH         = build/_deps/juce-src/modules \\
                       build/AnalogIQ_artefacts/JuceLibraryCode
 INCLUDE_FILE_PATTERNS =
-PREDEFINED          = JUCE_MODAL_LOOPS_PERMITTED=1 \
-                      JUCE_WEB_BROWSER=0 \
-                      JUCE_USE_CURL=0 \
-                      JUCE_STRICT_REFCOUNTEDPOINTER=1 \
-                      JUCE_DISPLAY_SPLASH_SCREEN=0 \
+PREDEFINED          = JUCE_MODAL_LOOPS_PERMITTED=1 \\
+                      JUCE_WEB_BROWSER=0 \\
+                      JUCE_USE_CURL=0 \\
+                      JUCE_STRICT_REFCOUNTEDPOINTER=1 \\
+                      JUCE_DISPLAY_SPLASH_SCREEN=0 \\
                       JUCE_REPORT_APP_USAGE=0
 EXPAND_AS_DEFINED    =
 SKIP_FUNCTION_MACROS = YES
@@ -121,3 +128,6 @@ MAX_DOT_GRAPH_DEPTH = 0
 DOT_MULTI_TARGETS   = NO
 GENERATE_LEGEND     = YES
 DOT_CLEANUP         = YES
+EOF
+
+echo "Generated Doxyfile with version ${VERSION}"
