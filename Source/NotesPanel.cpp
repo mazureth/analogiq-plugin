@@ -42,7 +42,10 @@ NotesPanel::NotesPanel()
     textEditor.setColour(juce::TextEditor::backgroundColourId, juce::Colours::white);
     textEditor.setColour(juce::TextEditor::textColourId, juce::Colours::black);
     textEditor.setColour(juce::TextEditor::outlineColourId, juce::Colours::grey);
-    textEditor.setText("Enter your session notes here. Document patchbay connections, settings, and any other important details.");
+
+    // Set placeholder text that behaves like HTML placeholder
+    textEditor.setTextToShowWhenEmpty("Enter your session notes here. Document patchbay connections, settings, and any other important details.", juce::Colours::grey);
+
     notesContainer->addAndMakeVisible(textEditor);
 }
 

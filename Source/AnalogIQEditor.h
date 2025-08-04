@@ -92,6 +92,13 @@ public:
      */
     PresetManager &getPresetManager() const { return presetManager; }
 
+    /**
+     * @brief Gets a pointer to the notes panel component.
+     *
+     * @return Pointer to the NotesPanel component
+     */
+    NotesPanel *getNotesPanel() const { return notesPanel.get(); }
+
 private:
     /**
      * @brief Shows the presets popup menu.
