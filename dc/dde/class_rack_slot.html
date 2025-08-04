@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">AnalogIQ<span id="projectnumber">&#160;0.3.2</span>
+   <div id="projectname">AnalogIQ<span id="projectnumber">&#160;0.3.3</span>
    </div>
    <div id="projectbrief">Audio plugin for managing and simulating audio gear</div>
   </td>
@@ -278,7 +278,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">24</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00342">cacheManager</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00338">downButton</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00341">fileSystem</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00344">gearLibrary</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00343">presetManager</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00339">removeButton</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00337">upButton</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
+<p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00333">activeControl</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00342">cacheManager</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00334">currentFaceplateScale</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00338">downButton</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00331">dragStartValue</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00341">fileSystem</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00344">gearLibrary</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00329">highlighted</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00330">isDragging</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00343">presetManager</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00339">removeButton</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00337">upButton</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="#a397ef02ee0545a4ade735880a1047344">operator=()</a>.</p>
 
@@ -382,7 +382,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00669">669</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01535">clearGearItem()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00338">downButton</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">moveDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">moveUp()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00339">removeButton</a>, and <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00337">upButton</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01497">clearGearItem()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00338">downButton</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">moveDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">moveUp()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00339">removeButton</a>, and <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00337">upButton</a>.</p>
 
 </div>
 </div>
@@ -404,9 +404,9 @@ Private Attributes</h2></td></tr>
 <p>Removes the current gear item from the slot. </p>
 <p>Clears the slot and updates the UI accordingly. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01535">1535</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01497">1497</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01587">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01659">notifyRackOfGearItemRemoved()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">Rack::resized()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01558">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01630">notifyRackOfGearItemRemoved()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00138">Rack::resized()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00669">buttonClicked()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00356">Rack::rearrangeGearAsSortableList()</a>.</p>
 
@@ -430,7 +430,7 @@ Private Attributes</h2></td></tr>
 <p>Creates a new instance of the current gear item. </p>
 <p>Converts the current gear item into an instance if it isn't already one. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01606">1606</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01577">1577</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>.</p>
 
@@ -793,9 +793,9 @@ Private Attributes</h2></td></tr>
 <p>Finds the parent <a class="el" href="../../d0/dc7/class_rack.html" title="A component that manages a virtual rack of audio gear items.">Rack</a> component. </p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the parent <a class="el" href="../../d0/dc7/class_rack.html" title="A component that manages a virtual rack of audio gear items.">Rack</a> component, or nullptr if not found </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01587">1587</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01558">1558</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01535">clearGearItem()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01400">itemDropped()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">moveDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">moveUp()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01683">notifyRackOfControlChanged()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01635">notifyRackOfGearItemAdded()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01659">notifyRackOfGearItemRemoved()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01497">clearGearItem()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01400">itemDropped()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">moveDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">moveUp()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01654">notifyRackOfControlChanged()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01606">notifyRackOfGearItemAdded()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01630">notifyRackOfGearItemRemoved()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
 
 </div>
 </div>
@@ -1188,7 +1188,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01365">1365</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01580">setHighlighted()</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01551">setHighlighted()</a>.</p>
 
 </div>
 </div>
@@ -1232,7 +1232,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01387">1387</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01580">setHighlighted()</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01551">setHighlighted()</a>.</p>
 
 </div>
 </div>
@@ -1312,7 +1312,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01400">1400</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01587">findParentRackComponent()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">Rack::itemDropped()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01580">setHighlighted()</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01558">findParentRackComponent()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">Rack::itemDropped()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01551">setHighlighted()</a>.</p>
 
 </div>
 </div>
@@ -1400,7 +1400,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">822</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00333">activeControl</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00332">dragStartPos</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00331">dragStartValue</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00080">GearControl::Fader</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01135">findControlAtPosition()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01285">handleButtonInteraction()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00330">isDragging</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00082">GearControl::Knob</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01683">notifyRackOfControlChanged()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>.</p>
+<p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00333">activeControl</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00332">dragStartPos</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00331">dragStartValue</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00080">GearControl::Fader</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01135">findControlAtPosition()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01285">handleButtonInteraction()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00330">isDragging</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00082">GearControl::Knob</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01654">notifyRackOfControlChanged()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>.</p>
 
 </div>
 </div>
@@ -1444,7 +1444,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">890</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00333">activeControl</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00334">currentFaceplateScale</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00332">dragStartPos</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00331">dragStartValue</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00080">GearControl::Fader</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01285">handleButtonInteraction()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00330">isDragging</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00082">GearControl::Knob</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01683">notifyRackOfControlChanged()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>.</p>
+<p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00333">activeControl</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00334">currentFaceplateScale</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00332">dragStartPos</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00331">dragStartValue</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00080">GearControl::Fader</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01285">handleButtonInteraction()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00330">isDragging</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00082">GearControl::Knob</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01654">notifyRackOfControlChanged()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>.</p>
 
 </div>
 </div>
@@ -1512,7 +1512,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">771</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01587">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">Rack::getNumSlots()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00186">isAvailable()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00356">Rack::rearrangeGearAsSortableList()</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01558">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">Rack::getNumSlots()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00186">isAvailable()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00356">Rack::rearrangeGearAsSortableList()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00669">buttonClicked()</a>.</p>
 
@@ -1538,7 +1538,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">726</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01587">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00186">isAvailable()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00356">Rack::rearrangeGearAsSortableList()</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01558">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00186">isAvailable()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00356">Rack::rearrangeGearAsSortableList()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00669">buttonClicked()</a>.</p>
 
@@ -1575,9 +1575,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01683">1683</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01654">1654</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01587">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02123">Rack::notifyGearControlChanged()</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01558">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02123">Rack::notifyGearControlChanged()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">mouseDown()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>.</p>
 
@@ -1608,9 +1608,9 @@ Private Attributes</h2></td></tr>
 
 <p>Notifies the rack that a gear item was added to this slot. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01635">1635</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01606">1606</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01587">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02101">Rack::notifyGearItemAdded()</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01558">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02101">Rack::notifyGearItemAdded()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">setGearItem()</a>.</p>
 
@@ -1641,11 +1641,11 @@ Private Attributes</h2></td></tr>
 
 <p>Notifies the rack that a gear item was removed from this slot. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01659">1659</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01630">1630</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01587">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02112">Rack::notifyGearItemRemoved()</a>.</p>
+<p class="reference">References <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01558">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l02112">Rack::notifyGearItemRemoved()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01535">clearGearItem()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">setGearItem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01497">clearGearItem()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">setGearItem()</a>.</p>
 
 </div>
 </div>
@@ -1738,7 +1738,7 @@ Private Attributes</h2></td></tr>
 <p>Resets an instance to its source gear item. </p>
 <p>Restores the instance to match its source gear item's state. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01623">1623</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01594">1594</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>.</p>
 
@@ -1808,7 +1808,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">1462</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">GearItem::controls</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00143">GearItem::createInstance()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00416">GearItem::instanceId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00417">GearItem::isInstance</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01635">notifyRackOfGearItemAdded()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01659">notifyRackOfGearItemRemoved()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00418">GearItem::sourceUnitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">GearItem::unitId</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
+<p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01606">notifyRackOfGearItemAdded()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01630">notifyRackOfGearItemRemoved()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">Rack::itemDropped()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00356">Rack::rearrangeGearAsSortableList()</a>.</p>
 
@@ -1844,7 +1844,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01580">1580</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01551">1551</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00329">highlighted</a>.</p>
 
@@ -1909,9 +1909,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">691</a> of file <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html">RackSlot.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00338">downButton</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01587">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">Rack::getNumSlots()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00186">isAvailable()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00339">removeButton</a>, and <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00337">upButton</a>.</p>
+<p class="reference">References <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00338">downButton</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01558">findParentRackComponent()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">gearItem</a>, <a class="el" href="../../d7/d44/_rack_8h_source.html#l00124">Rack::getNumSlots()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">index</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00186">isAvailable()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00339">removeButton</a>, and <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00337">upButton</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01535">clearGearItem()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">RackSlot()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">setGearItem()</a>, and <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00047">setIndex()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01497">clearGearItem()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">RackSlot()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">setGearItem()</a>, and <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00047">setIndex()</a>.</p>
 
 </div>
 </div>
@@ -1940,7 +1940,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00333">333</a> of file <a class="el" href="../../d4/db5/_rack_slot_8h_source.html">RackSlot.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">mouseDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01077">mouseUp()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">mouseDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01077">mouseUp()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">RackSlot()</a>.</p>
 
 </div>
 </div>
@@ -1994,7 +1994,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00334">334</a> of file <a class="el" href="../../d4/db5/_rack_slot_8h_source.html">RackSlot.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00377">drawButton()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00471">drawFader()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00569">drawKnob()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00289">drawSwitch()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01135">findControlAtPosition()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00144">paint()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00377">drawButton()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00471">drawFader()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00569">drawKnob()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00289">drawSwitch()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01135">findControlAtPosition()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00144">paint()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">RackSlot()</a>.</p>
 
 </div>
 </div>
@@ -2078,7 +2078,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00331">331</a> of file <a class="el" href="../../d4/db5/_rack_slot_8h_source.html">RackSlot.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">mouseDown()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">mouseDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">RackSlot()</a>.</p>
 
 </div>
 </div>
@@ -2132,7 +2132,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00328">328</a> of file <a class="el" href="../../d4/db5/_rack_slot_8h_source.html">RackSlot.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01535">clearGearItem()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01606">createInstance()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00251">drawControls()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01135">findControlAtPosition()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">getGearItem()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00216">getInstanceId()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00186">isAvailable()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00215">isInstance()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01093">mouseDoubleClick()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">mouseDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">moveDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">moveUp()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01683">notifyRackOfControlChanged()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01635">notifyRackOfGearItemAdded()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00144">paint()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01623">resetToSource()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">setGearItem()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00109">~RackSlot()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01497">clearGearItem()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01577">createInstance()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00251">drawControls()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01135">findControlAtPosition()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00179">getGearItem()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00216">getInstanceId()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00186">isAvailable()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00215">isInstance()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01093">mouseDoubleClick()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">mouseDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">moveDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">moveUp()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01654">notifyRackOfControlChanged()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01606">notifyRackOfGearItemAdded()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00144">paint()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01594">resetToSource()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01462">setGearItem()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00109">~RackSlot()</a>.</p>
 
 </div>
 </div>
@@ -2186,7 +2186,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00329">329</a> of file <a class="el" href="../../d4/db5/_rack_slot_8h_source.html">RackSlot.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00144">paint()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01580">setHighlighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00144">paint()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">RackSlot()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01551">setHighlighted()</a>.</p>
 
 </div>
 </div>
@@ -2214,7 +2214,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00327">327</a> of file <a class="el" href="../../d4/db5/_rack_slot_8h_source.html">RackSlot.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00202">getIndex()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">moveDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">moveUp()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01683">notifyRackOfControlChanged()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01635">notifyRackOfGearItemAdded()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01659">notifyRackOfGearItemRemoved()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00144">paint()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">RackSlot()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00047">setIndex()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00202">getIndex()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00771">moveDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00726">moveUp()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01654">notifyRackOfControlChanged()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01606">notifyRackOfGearItemAdded()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01630">notifyRackOfGearItemRemoved()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00144">paint()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">RackSlot()</a>, <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00047">setIndex()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00691">updateButtonStates()</a>.</p>
 
 </div>
 </div>
@@ -2242,7 +2242,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d4/db5/_rack_slot_8h_source.html#l00330">330</a> of file <a class="el" href="../../d4/db5/_rack_slot_8h_source.html">RackSlot.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">mouseDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01077">mouseUp()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00822">mouseDown()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00890">mouseDrag()</a>, <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l01077">mouseUp()</a>, and <a class="el" href="../../d5/d8d/_rack_slot_8cpp_source.html#l00024">RackSlot()</a>.</p>
 
 </div>
 </div>

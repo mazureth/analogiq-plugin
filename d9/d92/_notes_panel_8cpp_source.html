@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">AnalogIQ<span id="projectnumber">&#160;0.3.2</span>
+   <div id="projectname">AnalogIQ<span id="projectnumber">&#160;0.3.3</span>
    </div>
    <div id="projectbrief">Audio plugin for managing and simulating audio gear</div>
   </td>
@@ -124,70 +124,73 @@ $(function(){initNavTree('d9/d92/_notes_panel_8cpp_source.html','../../',''); })
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.setColour(juce::TextEditor::backgroundColourId, juce::Colours::white);</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.setColour(juce::TextEditor::textColourId, juce::Colours::black);</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.setColour(juce::TextEditor::outlineColourId, juce::Colours::grey);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.setText(<span class="stringliteral">&quot;Enter your session notes here. Document patchbay connections, settings, and any other important details.&quot;</span>);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5127250dcc7ed7608cbd805b727dd7e7">notesContainer</a>-&gt;addAndMakeVisible(<a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="comment">// Set placeholder text that behaves like HTML placeholder</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.setTextToShowWhenEmpty(<span class="stringliteral">&quot;Enter your session notes here. Document patchbay connections, settings, and any other important details.&quot;</span>, juce::Colours::grey);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5127250dcc7ed7608cbd805b727dd7e7">notesContainer</a>-&gt;addAndMakeVisible(<a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
 </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span></div>
-<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#a5d9f93680159bfad1a49452df95ac131">   52</a></span><a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#a5d9f93680159bfad1a49452df95ac131">NotesPanel::~NotesPanel</a>()</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>{</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// unique_ptr members will be automatically deleted</span></div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span></div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="}">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#a5d9f93680159bfad1a49452df95ac131">   55</a></span><a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#a5d9f93680159bfad1a49452df95ac131">NotesPanel::~NotesPanel</a>()</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>{</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// unique_ptr members will be automatically deleted</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
 </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span></div>
-<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#aab7978c649424451804a27064decd22d">   62</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#aab7978c649424451804a27064decd22d">NotesPanel::paint</a>(juce::Graphics &amp;g)</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>{</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    g.fillAll(juce::Colours::darkgrey.darker(0.2f));</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span></div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="}">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#aab7978c649424451804a27064decd22d">   65</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#aab7978c649424451804a27064decd22d">NotesPanel::paint</a>(juce::Graphics &amp;g)</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>{</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    g.fillAll(juce::Colours::darkgrey.darker(0.2f));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
 </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span></div>
-<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#aeb1471cfb9d9dddb7348e7d64a08da7f">   72</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#aeb1471cfb9d9dddb7348e7d64a08da7f">NotesPanel::resized</a>()</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>{</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">auto</span> bounds = getLocalBounds().reduced(20);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="comment">// Title at top</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5d57d0e1d9f13790f5071b15eae37fd0">titleLabel</a>.setBounds(bounds.removeFromTop(40));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span></div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#aeb1471cfb9d9dddb7348e7d64a08da7f">   75</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#aeb1471cfb9d9dddb7348e7d64a08da7f">NotesPanel::resized</a>()</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>{</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">auto</span> bounds = getLocalBounds().reduced(20);</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">// Viewport fills the rest</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5739fcedbf33867a541e1c76c441eaf9">notesViewport</a>-&gt;setBounds(bounds);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">// Title at top</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5d57d0e1d9f13790f5071b15eae37fd0">titleLabel</a>.setBounds(bounds.removeFromTop(40));</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="comment">// Size the container to match the viewport width</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> containerWidth = <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5739fcedbf33867a541e1c76c441eaf9">notesViewport</a>-&gt;getWidth();</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> containerHeight = juce::jmax(<a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5739fcedbf33867a541e1c76c441eaf9">notesViewport</a>-&gt;getHeight(), 400); <span class="comment">// Minimum height of 400</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5127250dcc7ed7608cbd805b727dd7e7">notesContainer</a>-&gt;setSize(containerWidth, containerHeight);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="comment">// Text editor fills the container</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.setBounds(<a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5127250dcc7ed7608cbd805b727dd7e7">notesContainer</a>-&gt;getLocalBounds().reduced(10));</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="comment">// Viewport fills the rest</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5739fcedbf33867a541e1c76c441eaf9">notesViewport</a>-&gt;setBounds(bounds);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="comment">// Size the container to match the viewport width</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> containerWidth = <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5739fcedbf33867a541e1c76c441eaf9">notesViewport</a>-&gt;getWidth();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> containerHeight = juce::jmax(<a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5739fcedbf33867a541e1c76c441eaf9">notesViewport</a>-&gt;getHeight(), 400); <span class="comment">// Minimum height of 400</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5127250dcc7ed7608cbd805b727dd7e7">notesContainer</a>-&gt;setSize(containerWidth, containerHeight);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// Text editor fills the container</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.setBounds(<a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a5127250dcc7ed7608cbd805b727dd7e7">notesContainer</a>-&gt;getLocalBounds().reduced(10));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
 </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span></div>
-<div class="foldopen" id="foldopen00096" data-start="{" data-end="}">
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#a04fdc2b575f441b6a3763f8fe163c03c">   96</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#a04fdc2b575f441b6a3763f8fe163c03c">NotesPanel::setText</a>(<span class="keyword">const</span> juce::String &amp;text)</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>{</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.setText(text);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span></div>
+<div class="foldopen" id="foldopen00099" data-start="{" data-end="}">
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#a04fdc2b575f441b6a3763f8fe163c03c">   99</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#a04fdc2b575f441b6a3763f8fe163c03c">NotesPanel::setText</a>(<span class="keyword">const</span> juce::String &amp;text)</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>{</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.setText(text);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
 </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span></div>
-<div class="foldopen" id="foldopen00106" data-start="{" data-end="}">
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#a959fc96238b163a4faa0bd5c5e8209a2">  106</a></span>juce::String <a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#a959fc96238b163a4faa0bd5c5e8209a2">NotesPanel::getText</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.getText();</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span></div>
+<div class="foldopen" id="foldopen00109" data-start="{" data-end="}">
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="../../d9/dc5/class_notes_panel.html#a959fc96238b163a4faa0bd5c5e8209a2">  109</a></span>juce::String <a class="code hl_function" href="../../d9/dc5/class_notes_panel.html#a959fc96238b163a4faa0bd5c5e8209a2">NotesPanel::getText</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">textEditor</a>.getText();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
 </div>
 <div class="ttc" id="a_notes_panel_8h_html"><div class="ttname"><a href="../../d0/d86/_notes_panel_8h.html">NotesPanel.h</a></div><div class="ttdoc">Header file for the NotesPanel class.</div></div>
-<div class="ttc" id="aclass_notes_panel_html_a04fdc2b575f441b6a3763f8fe163c03c"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a04fdc2b575f441b6a3763f8fe163c03c">NotesPanel::setText</a></div><div class="ttdeci">void setText(const juce::String &amp;text)</div><div class="ttdoc">Sets the text content of the notes panel.</div><div class="ttdef"><b>Definition</b> <a href="#l00096">NotesPanel.cpp:96</a></div></div>
+<div class="ttc" id="aclass_notes_panel_html_a04fdc2b575f441b6a3763f8fe163c03c"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a04fdc2b575f441b6a3763f8fe163c03c">NotesPanel::setText</a></div><div class="ttdeci">void setText(const juce::String &amp;text)</div><div class="ttdoc">Sets the text content of the notes panel.</div><div class="ttdef"><b>Definition</b> <a href="#l00099">NotesPanel.cpp:99</a></div></div>
 <div class="ttc" id="aclass_notes_panel_html_a5127250dcc7ed7608cbd805b727dd7e7"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a5127250dcc7ed7608cbd805b727dd7e7">NotesPanel::notesContainer</a></div><div class="ttdeci">std::unique_ptr&lt; NotesContainer &gt; notesContainer</div><div class="ttdoc">Container for notes content.</div><div class="ttdef"><b>Definition</b> <a href="../../d0/d86/_notes_panel_8h_source.html#l00092">NotesPanel.h:92</a></div></div>
 <div class="ttc" id="aclass_notes_panel_html_a5739fcedbf33867a541e1c76c441eaf9"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a5739fcedbf33867a541e1c76c441eaf9">NotesPanel::notesViewport</a></div><div class="ttdeci">std::unique_ptr&lt; juce::Viewport &gt; notesViewport</div><div class="ttdoc">Viewport for scrolling the notes.</div><div class="ttdef"><b>Definition</b> <a href="../../d0/d86/_notes_panel_8h_source.html#l00091">NotesPanel.h:91</a></div></div>
 <div class="ttc" id="aclass_notes_panel_html_a5d57d0e1d9f13790f5071b15eae37fd0"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a5d57d0e1d9f13790f5071b15eae37fd0">NotesPanel::titleLabel</a></div><div class="ttdeci">juce::Label titleLabel</div><div class="ttdoc">Label displaying the panel title.</div><div class="ttdef"><b>Definition</b> <a href="../../d0/d86/_notes_panel_8h_source.html#l00090">NotesPanel.h:90</a></div></div>
-<div class="ttc" id="aclass_notes_panel_html_a5d9f93680159bfad1a49452df95ac131"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a5d9f93680159bfad1a49452df95ac131">NotesPanel::~NotesPanel</a></div><div class="ttdeci">~NotesPanel() override</div><div class="ttdoc">Destructor for NotesPanel.</div><div class="ttdef"><b>Definition</b> <a href="#l00052">NotesPanel.cpp:52</a></div></div>
+<div class="ttc" id="aclass_notes_panel_html_a5d9f93680159bfad1a49452df95ac131"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a5d9f93680159bfad1a49452df95ac131">NotesPanel::~NotesPanel</a></div><div class="ttdeci">~NotesPanel() override</div><div class="ttdoc">Destructor for NotesPanel.</div><div class="ttdef"><b>Definition</b> <a href="#l00055">NotesPanel.cpp:55</a></div></div>
 <div class="ttc" id="aclass_notes_panel_html_a7c082fa0909804f36d7bca9e6490ef9e"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a7c082fa0909804f36d7bca9e6490ef9e">NotesPanel::textEditor</a></div><div class="ttdeci">juce::TextEditor textEditor</div><div class="ttdoc">Text editor component for entering notes.</div><div class="ttdef"><b>Definition</b> <a href="../../d0/d86/_notes_panel_8h_source.html#l00089">NotesPanel.h:89</a></div></div>
-<div class="ttc" id="aclass_notes_panel_html_a959fc96238b163a4faa0bd5c5e8209a2"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a959fc96238b163a4faa0bd5c5e8209a2">NotesPanel::getText</a></div><div class="ttdeci">juce::String getText() const</div><div class="ttdoc">Gets the current text content from the notes panel.</div><div class="ttdef"><b>Definition</b> <a href="#l00106">NotesPanel.cpp:106</a></div></div>
-<div class="ttc" id="aclass_notes_panel_html_aab7978c649424451804a27064decd22d"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#aab7978c649424451804a27064decd22d">NotesPanel::paint</a></div><div class="ttdeci">void paint(juce::Graphics &amp;) override</div><div class="ttdoc">Paints the NotesPanel component.</div><div class="ttdef"><b>Definition</b> <a href="#l00062">NotesPanel.cpp:62</a></div></div>
+<div class="ttc" id="aclass_notes_panel_html_a959fc96238b163a4faa0bd5c5e8209a2"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#a959fc96238b163a4faa0bd5c5e8209a2">NotesPanel::getText</a></div><div class="ttdeci">juce::String getText() const</div><div class="ttdoc">Gets the current text content from the notes panel.</div><div class="ttdef"><b>Definition</b> <a href="#l00109">NotesPanel.cpp:109</a></div></div>
+<div class="ttc" id="aclass_notes_panel_html_aab7978c649424451804a27064decd22d"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#aab7978c649424451804a27064decd22d">NotesPanel::paint</a></div><div class="ttdeci">void paint(juce::Graphics &amp;) override</div><div class="ttdoc">Paints the NotesPanel component.</div><div class="ttdef"><b>Definition</b> <a href="#l00065">NotesPanel.cpp:65</a></div></div>
 <div class="ttc" id="aclass_notes_panel_html_abefbcb9c322a405b2db9a0e38bca58d4"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#abefbcb9c322a405b2db9a0e38bca58d4">NotesPanel::NotesPanel</a></div><div class="ttdeci">NotesPanel()</div><div class="ttdoc">Constructs a new NotesPanel.</div><div class="ttdef"><b>Definition</b> <a href="#l00018">NotesPanel.cpp:18</a></div></div>
-<div class="ttc" id="aclass_notes_panel_html_aeb1471cfb9d9dddb7348e7d64a08da7f"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#aeb1471cfb9d9dddb7348e7d64a08da7f">NotesPanel::resized</a></div><div class="ttdeci">void resized() override</div><div class="ttdoc">Handles resizing of the NotesPanel component.</div><div class="ttdef"><b>Definition</b> <a href="#l00072">NotesPanel.cpp:72</a></div></div>
+<div class="ttc" id="aclass_notes_panel_html_aeb1471cfb9d9dddb7348e7d64a08da7f"><div class="ttname"><a href="../../d9/dc5/class_notes_panel.html#aeb1471cfb9d9dddb7348e7d64a08da7f">NotesPanel::resized</a></div><div class="ttdeci">void resized() override</div><div class="ttdoc">Handles resizing of the NotesPanel component.</div><div class="ttdef"><b>Definition</b> <a href="#l00075">NotesPanel.cpp:75</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

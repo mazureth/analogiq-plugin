@@ -8,6 +8,7 @@ var class_analog_i_q_editor =
     [ "AnalogIQEditor", "df/d1c/class_analog_i_q_editor.html#a02432a0502e82fc7103d96b4030a16bf", null ],
     [ "clearModifiedState", "df/d1c/class_analog_i_q_editor.html#ae31e5185f80172788d17a304c355cc89", null ],
     [ "getGearLibrary", "df/d1c/class_analog_i_q_editor.html#accbce11387631af8ae2c83351dc667c0", null ],
+    [ "getNotesPanel", "df/d1c/class_analog_i_q_editor.html#a370222e5b38a8d5ed1503c37d3bd90a7", null ],
     [ "getPresetManager", "df/d1c/class_analog_i_q_editor.html#a0a2f16e82841e0522c731be41b7fa978", null ],
     [ "getRack", "df/d1c/class_analog_i_q_editor.html#a4a8eb71568ba23ef0641cf7937bcba6b", null ],
     [ "handleDeletePreset", "df/d1c/class_analog_i_q_editor.html#abc48b0b9be02da75a91405e6dd658c15", null ],
