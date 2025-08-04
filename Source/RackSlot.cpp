@@ -22,7 +22,7 @@
  * @param slotIndex The index of this slot in the rack
  */
 RackSlot::RackSlot(IFileSystem &fileSystem, CacheManager &cacheManager, PresetManager &presetManager, GearLibrary &gearLibrary, int slotIndex)
-    : fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary), index(slotIndex)
+    : fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary), index(slotIndex), highlighted(false), isDragging(false), dragStartValue(0.0f), activeControl(nullptr), currentFaceplateScale(1.0f)
 {
     setComponentID("RackSlot_" + juce::String(index));
     setInterceptsMouseClicks(true, true);
@@ -1464,51 +1464,13 @@ void RackSlot::setGearItem(GearItem *newGearItem)
     // Store the old gear item for notification
     GearItem *oldGearItem = gearItem;
 
-    // If we already have a gear item and it's an instance, preserve its state
-    if (gearItem != nullptr && gearItem->isInstance)
+    // Set the new gear item
+    gearItem = newGearItem;
+
+    // If we have a new gear item and it's not already an instance, make it one
+    if (gearItem != nullptr && !gearItem->isInstance)
     {
-        // Store the current state
-        juce::String instanceId = gearItem->instanceId;
-        juce::String sourceUnitId = gearItem->sourceUnitId;
-        juce::Array<GearControl> preservedControls;
-
-        // Create new GearControl objects with preserved values
-        for (const auto &control : gearItem->controls)
-        {
-            GearControl newControl = control; // Use copy constructor
-            preservedControls.add(newControl);
-        }
-
-        // Set the new gear item
-        gearItem = newGearItem;
-
-        // If the new item is the same type as the source, restore the instance state
-        if (newGearItem != nullptr && newGearItem->unitId == sourceUnitId)
-        {
-            // Create a new instance of the source item
-            newGearItem->createInstance(sourceUnitId);
-
-            // Restore the preserved controls
-            newGearItem->controls = preservedControls;
-
-            // Update initial values to match current values
-            for (auto &control : newGearItem->controls)
-            {
-                control.initialValue = control.value;
-            }
-        }
-    }
-    else if (newGearItem != nullptr && !newGearItem->isInstance)
-    {
-        // For new non-instance items, ensure they're not marked as instances
-        newGearItem->isInstance = false;
-        newGearItem->instanceId = juce::String();
-        newGearItem->sourceUnitId = juce::String();
-        gearItem = newGearItem;
-    }
-    else
-    {
-        gearItem = newGearItem;
+        gearItem->createInstance(gearItem->unitId);
     }
 
     updateButtonStates(); // Update button states when gear changes
@@ -1536,6 +1498,15 @@ void RackSlot::clearGearItem()
 {
     // Store the old gear item for notification
     GearItem *oldGearItem = gearItem;
+
+    // Clean up the gear item if it's an instance
+    if (gearItem != nullptr && gearItem->isInstance)
+    {
+        // Clear instance-specific data
+        gearItem->instanceId = juce::String();
+        gearItem->sourceUnitId = juce::String();
+        gearItem->isInstance = false;
+    }
 
     gearItem = nullptr;
     updateButtonStates(); // Update button states when gear is removed

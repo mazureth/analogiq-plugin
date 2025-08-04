@@ -305,8 +305,7 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
         {
             if (auto *item = slot->getGearItem())
             {
-
-                // Save state if this is an instance with a valid instance ID
+                // Save state for instances only (all items in rack are now instances)
                 if (item->isInstance && !item->instanceId.isEmpty() && !item->unitId.isEmpty())
                 {
                     auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), nullptr);
@@ -321,17 +320,23 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                         auto controlTree = controlsTree.getOrCreateChildWithName("control_" + juce::String(j), nullptr);
                         controlTree.setProperty("value", control.value, nullptr);
                         controlTree.setProperty("initialValue", control.initialValue, nullptr);
-                        if (control.type == GearControl::Type::Switch)
+                        if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
                         {
                             controlTree.setProperty("currentIndex", control.currentIndex, nullptr);
                         }
                     }
                 }
-                else
-                {
-                    // TODO: Remove this logging and handle this case
-                }
             }
+        }
+    }
+
+    // Save notes panel content
+    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
+    {
+        if (auto *notesPanel = editor->getNotesPanel())
+        {
+            auto notesTree = instanceTree.getOrCreateChildWithName("notes", nullptr);
+            notesTree.setProperty("content", notesPanel->getText(), nullptr);
         }
     }
 }
@@ -391,7 +396,7 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                                             auto &control = loadedItem->controls.getReference(j);
                                             control.value = controlTree.getProperty("value", control.value);
                                             control.initialValue = controlTree.getProperty("initialValue", control.initialValue);
-                                            if (control.type == GearControl::Type::Switch)
+                                            if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
                                             {
                                                 control.currentIndex = controlTree.getProperty("currentIndex", control.currentIndex);
                                             }
@@ -401,6 +406,23 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    // Load notes panel content
+    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
+    {
+        if (auto *notesPanel = editor->getNotesPanel())
+        {
+            auto notesTree = instanceTree.getChildWithName("notes");
+            if (notesTree.isValid())
+            {
+                auto notesContent = notesTree.getProperty("content").toString();
+                if (notesContent.isNotEmpty())
+                {
+                    notesPanel->setText(notesContent);
                 }
             }
         }
