@@ -4,7 +4,7 @@ set -e  # exit on error
 set -o pipefail  # propagate coverage failure through pipelines
 
 # Configuration
-COVERAGE_THRESHOLD=15.0
+COVERAGE_THRESHOLD=20.0
 BUILD_DIR="build"
 TEST_BINARY="${BUILD_DIR}/tests/analogiq_tests"
 RAW_PROFILE="${BUILD_DIR}/default.profraw"
