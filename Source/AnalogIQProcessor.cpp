@@ -219,9 +219,18 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
     {
         rack = rackEditor->getRack();
 
-        // Load instance state after the editor is created
-        // This ensures the rack is available for state restoration
-        loadInstanceState(rack);
+        // Load instance state after the editor is created and gear library is loaded
+        // We'll defer this to after the gear library is ready
+        juce::MessageManager::callAsync([this, rackEditor]()
+                                        {
+            // Wait a bit more to ensure gear library is fully loaded
+            juce::Timer::callAfterDelay(100, [this, rackEditor]()
+            {
+                if (auto *rack = rackEditor->getRack())
+                {
+                    loadInstanceState(rack);
+                }
+            }); });
     }
     return editor;
 }
@@ -373,35 +382,69 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                         // Create a new instance from the source gear
                         auto *item = new GearItem(*gearItem);
 
-                        // Set the gear item in the slot
+                        // Set the gear item in the slot (this automatically creates an instance)
                         if (auto *slot = rack->getSlot(i))
                         {
                             slot->setGearItem(item);
 
-                            // Create instance if we have saved state
-                            rack->createInstance(i);
-
-                            // Get the gear item for this slot and load control values
-                            if (auto *loadedItem = slot->getGearItem())
+                            // Validate that the instance was created successfully
+                            if (item->isInstance && !item->instanceId.isEmpty())
                             {
-                                // Load control values from saved state
-                                auto controlsTree = slotTree.getChildWithName("controls");
-                                if (controlsTree.isValid())
+                                // Get the gear item for this slot
+                                if (auto *loadedItem = slot->getGearItem())
                                 {
-                                    for (int j = 0; j < loadedItem->controls.size() && j < controlsTree.getNumChildren(); ++j)
+                                    // Capture control values before schema loading (following PresetManager pattern)
+                                    struct SavedControlValues
                                     {
-                                        auto controlTree = controlsTree.getChildWithName("control_" + juce::String(j));
-                                        if (controlTree.isValid())
+                                        int index;
+                                        float value;
+                                        float initialValue;
+                                        int currentIndex;
+                                    };
+                                    juce::Array<SavedControlValues> savedControls;
+
+                                    // Extract control values from saved state
+                                    auto controlsTree = slotTree.getChildWithName("controls");
+                                    if (controlsTree.isValid())
+                                    {
+                                        for (int j = 0; j < controlsTree.getNumChildren(); ++j)
                                         {
-                                            auto &control = loadedItem->controls.getReference(j);
-                                            control.value = controlTree.getProperty("value", control.value);
-                                            control.initialValue = controlTree.getProperty("initialValue", control.initialValue);
-                                            if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
+                                            auto controlTree = controlsTree.getChildWithName("control_" + juce::String(j));
+                                            if (controlTree.isValid())
                                             {
-                                                control.currentIndex = controlTree.getProperty("currentIndex", control.currentIndex);
+                                                SavedControlValues saved;
+                                                saved.index = j;
+                                                saved.value = controlTree.getProperty("value", 0.0f);
+                                                saved.initialValue = controlTree.getProperty("initialValue", 0.0f);
+                                                saved.currentIndex = controlTree.getProperty("currentIndex", 0);
+                                                savedControls.add(saved);
                                             }
                                         }
                                     }
+
+                                    // Trigger faceplate and control image loading
+                                    // We'll load the schema and then restore control values after
+                                    rack->fetchSchemaForGearItem(loadedItem, [savedControls, loadedItem]()
+                                                                 {
+                                // Apply saved control values after schema parsing (following PresetManager pattern)
+                                // Validate loadedItem is still valid
+                                if (loadedItem != nullptr && savedControls.size() > 0)
+                                {
+                                    for (const auto& saved : savedControls)
+                                    {
+                                        if (saved.index >= 0 && saved.index < loadedItem->controls.size())
+                                        {
+                                            auto &control = loadedItem->controls.getReference(saved.index);
+                                            control.value = saved.value;
+                                            control.initialValue = saved.initialValue;
+
+                                            if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
+                                            {
+                                                control.currentIndex = saved.currentIndex;
+                                            }
+                                        }
+                                    }
+                                } });
                                 }
                             }
                         }
@@ -409,20 +452,20 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                 }
             }
         }
-    }
 
-    // Load notes panel content
-    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
-    {
-        if (auto *notesPanel = editor->getNotesPanel())
+        // Load notes panel content after all gear items are processed
+        if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
         {
-            auto notesTree = instanceTree.getChildWithName("notes");
-            if (notesTree.isValid())
+            if (auto *notesPanel = editor->getNotesPanel())
             {
-                auto notesContent = notesTree.getProperty("content").toString();
-                if (notesContent.isNotEmpty())
+                auto notesTree = instanceTree.getChildWithName("notes");
+                if (notesTree.isValid())
                 {
-                    notesPanel->setText(notesContent);
+                    auto notesContent = notesTree.getProperty("content").toString();
+                    if (notesContent.isNotEmpty())
+                    {
+                        notesPanel->setText(notesContent);
+                    }
                 }
             }
         }
