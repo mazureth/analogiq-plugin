@@ -132,7 +132,9 @@ juce::String CacheManager::getCachedUnitPath(const juce::String &unitId) const
  */
 juce::String CacheManager::getCachedFaceplatePath(const juce::String &unitId, const juce::String &filename) const
 {
-    return fileSystem.joinPath(getFaceplatesDirectory(), filename);
+    juce::String faceplatesDir = getFaceplatesDirectory();
+    juce::String result = fileSystem.joinPath(faceplatesDir, filename);
+    return result;
 }
 
 /**
@@ -166,7 +168,9 @@ juce::String CacheManager::getCachedControlAssetPath(const juce::String &assetPa
         cleanAssetPath = cleanAssetPath.substring(9); // Remove "controls/" prefix
     }
 
-    return fileSystem.joinPath(getControlsDirectory(), cleanAssetPath);
+    juce::String controlsDir = getControlsDirectory();
+    juce::String result = fileSystem.joinPath(controlsDir, cleanAssetPath);
+    return result;
 }
 
 bool CacheManager::saveUnitToCache(const juce::String &unitId, const juce::String &jsonData)
@@ -313,14 +317,12 @@ juce::Image CacheManager::loadThumbnailFromCache(const juce::String &unitId, con
     {
         juce::String thumbnailFilePath = getCachedThumbnailPath(unitId, filename);
 
-        if (fileSystem.fileExists(thumbnailFilePath))
+        // No need to check fileExists again - if isThumbnailCached() returned true, we know it exists
+        juce::MemoryBlock imageData = fileSystem.readBinaryFile(thumbnailFilePath);
+        if (imageData.getSize() > 0)
         {
-            juce::MemoryBlock imageData = fileSystem.readBinaryFile(thumbnailFilePath);
-            if (imageData.getSize() > 0)
-            {
-                juce::MemoryInputStream stream(imageData, false);
-                return juce::ImageFileFormat::loadFrom(stream);
-            }
+            juce::MemoryInputStream stream(imageData, false);
+            return juce::ImageFileFormat::loadFrom(stream);
         }
 
         return juce::Image();
@@ -337,14 +339,12 @@ juce::Image CacheManager::loadControlAssetFromCache(const juce::String &assetPat
     {
         juce::String assetFilePath = getCachedControlAssetPath(assetPath);
 
-        if (fileSystem.fileExists(assetFilePath))
+        // No need to check fileExists again - if isControlAssetCached() returned true, we know it exists
+        juce::MemoryBlock imageData = fileSystem.readBinaryFile(assetFilePath);
+        if (imageData.getSize() > 0)
         {
-            juce::MemoryBlock imageData = fileSystem.readBinaryFile(assetFilePath);
-            if (imageData.getSize() > 0)
-            {
-                juce::MemoryInputStream stream(imageData, false);
-                return juce::ImageFileFormat::loadFrom(stream);
-            }
+            juce::MemoryInputStream stream(imageData, false);
+            return juce::ImageFileFormat::loadFrom(stream);
         }
 
         return juce::Image();
@@ -434,27 +434,35 @@ bool CacheManager::createDirectoryIfNeeded(const juce::String &directory) const
 
 juce::String CacheManager::getUnitsDirectory() const
 {
-    return fileSystem.joinPath(cacheRoot, "units");
+    juce::String result = fileSystem.joinPath(cacheRoot, "units");
+    return result;
 }
 
 juce::String CacheManager::getAssetsDirectory() const
 {
-    return fileSystem.joinPath(cacheRoot, "assets");
+    juce::String result = fileSystem.joinPath(cacheRoot, "assets");
+    return result;
 }
 
 juce::String CacheManager::getFaceplatesDirectory() const
 {
-    return fileSystem.joinPath(getAssetsDirectory(), "faceplates");
+    juce::String assetsDir = getAssetsDirectory();
+    juce::String result = fileSystem.joinPath(assetsDir, "faceplates");
+    return result;
 }
 
 juce::String CacheManager::getThumbnailsDirectory() const
 {
-    return fileSystem.joinPath(getAssetsDirectory(), "thumbnails");
+    juce::String assetsDir = getAssetsDirectory();
+    juce::String result = fileSystem.joinPath(assetsDir, "thumbnails");
+    return result;
 }
 
 juce::String CacheManager::getControlsDirectory() const
 {
-    return fileSystem.joinPath(getAssetsDirectory(), "controls");
+    juce::String assetsDir = getAssetsDirectory();
+    juce::String result = fileSystem.joinPath(assetsDir, "controls");
+    return result;
 }
 
 // Recently Used functionality
@@ -680,7 +688,12 @@ bool CacheManager::addToFavorites(const juce::String &unitId)
         }
         jsonObj->setProperty("favorites", array);
 
-        return fileSystem.writeFile(favoritesFilePath, juce::JSON::toString(juce::var(jsonObj)));
+        bool result = fileSystem.writeFile(favoritesFilePath, juce::JSON::toString(juce::var(jsonObj)));
+        if (result)
+        {
+            favoritesCacheValid = false; // Invalidate cache
+        }
+        return result;
     }
     catch (...)
     {
@@ -690,6 +703,12 @@ bool CacheManager::addToFavorites(const juce::String &unitId)
 
 juce::StringArray CacheManager::getFavorites() const
 {
+    // Use in-memory cache if available
+    if (favoritesCacheValid)
+    {
+        return favoritesCache;
+    }
+
     try
     {
         juce::String favoritesFilePath = fileSystem.joinPath(cacheRoot, "favorites.json");
@@ -708,10 +727,16 @@ juce::StringArray CacheManager::getFavorites() const
             }
         }
 
+        // Update the cache
+        favoritesCache = favorites;
+        favoritesCacheValid = true;
+
         return favorites;
     }
     catch (...)
     {
+        favoritesCache.clear();
+        favoritesCacheValid = false;
         return juce::StringArray();
     }
 }
@@ -755,7 +780,12 @@ bool CacheManager::removeFromFavorites(const juce::String &unitId)
             }
             jsonObj->setProperty("favorites", array);
 
-            return fileSystem.writeFile(favoritesFilePath, juce::JSON::toString(juce::var(jsonObj)));
+            bool result = fileSystem.writeFile(favoritesFilePath, juce::JSON::toString(juce::var(jsonObj)));
+            if (result)
+            {
+                favoritesCacheValid = false; // Invalidate cache
+            }
+            return result;
         }
 
         return true; // Unit wasn't in the list, so "successfully" removed
@@ -774,7 +804,12 @@ bool CacheManager::clearFavorites()
 
         if (fileSystem.fileExists(favoritesFilePath))
         {
-            return fileSystem.deleteFile(favoritesFilePath);
+            bool result = fileSystem.deleteFile(favoritesFilePath);
+            if (result)
+            {
+                favoritesCacheValid = false; // Invalidate cache
+            }
+            return result;
         }
 
         return true; // File doesn't exist, so "successfully" cleared
@@ -785,10 +820,11 @@ bool CacheManager::clearFavorites()
     }
 }
 
-bool CacheManager::isFavorite(const juce::String &unitId) const
+void CacheManager::refreshFavoritesCache() const
 {
     try
     {
+        favoritesCache.clear();
         juce::String favoritesFilePath = fileSystem.joinPath(cacheRoot, "favorites.json");
 
         if (fileSystem.fileExists(favoritesFilePath))
@@ -799,20 +835,28 @@ bool CacheManager::isFavorite(const juce::String &unitId) const
                 auto array = json["favorites"].getArray();
                 for (const auto &item : *array)
                 {
-                    if (item.toString() == unitId)
-                    {
-                        return true;
-                    }
+                    favoritesCache.add(item.toString());
                 }
             }
         }
-
-        return false;
+        favoritesCacheValid = true;
     }
     catch (...)
     {
-        return false;
+        favoritesCache.clear();
+        favoritesCacheValid = false;
     }
+}
+
+bool CacheManager::isFavorite(const juce::String &unitId) const
+{
+    // Use cached favorites if available
+    if (!favoritesCacheValid)
+    {
+        refreshFavoritesCache();
+    }
+
+    return favoritesCache.contains(unitId);
 }
 
 CacheManager &CacheManager::getDummy()

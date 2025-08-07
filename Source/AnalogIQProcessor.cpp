@@ -260,6 +260,9 @@ void AnalogIQProcessor::getStateInformation(juce::MemoryBlock &destData)
 
     auto stateSnapshot = getState().copyState();
     std::unique_ptr<juce::XmlElement> xml(stateSnapshot.createXml());
+
+    // Debug: Log the XML structure to see what's being serialized
+
     copyXmlToBinary(*xml, destData);
 }
 
@@ -307,6 +310,7 @@ void AnalogIQProcessor::saveInstanceState()
 
 void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree)
 {
+
     // Save instance data for each slot
     for (int i = 0; i < rack->getNumSlots(); ++i)
     {
@@ -314,6 +318,7 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
         {
             if (auto *item = slot->getGearItem())
             {
+
                 // Save state for instances only (all items in rack are now instances)
                 if (item->isInstance && !item->instanceId.isEmpty() && !item->unitId.isEmpty())
                 {
@@ -329,12 +334,19 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                         auto controlTree = controlsTree.getOrCreateChildWithName("control_" + juce::String(j), nullptr);
                         controlTree.setProperty("value", control.value, nullptr);
                         controlTree.setProperty("initialValue", control.initialValue, nullptr);
+
                         if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
                         {
                             controlTree.setProperty("currentIndex", control.currentIndex, nullptr);
                         }
                     }
                 }
+                else
+                {
+                }
+            }
+            else
+            {
             }
         }
     }
@@ -345,7 +357,8 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
         if (auto *notesPanel = editor->getNotesPanel())
         {
             auto notesTree = instanceTree.getOrCreateChildWithName("notes", nullptr);
-            notesTree.setProperty("content", notesPanel->getText(), nullptr);
+            auto notesContent = notesPanel->getText();
+            notesTree.setProperty("content", notesContent, nullptr);
         }
     }
 }
