@@ -22,6 +22,10 @@
  */
 bool GearItem::loadImage()
 {
+    // If image is already loaded, don't reload
+    if (image.isValid())
+        return true;
+
     // If no thumbnail specified, use placeholder
     if (thumbnailImage.isEmpty())
         return createPlaceholderImage();

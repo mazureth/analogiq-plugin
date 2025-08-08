@@ -26,7 +26,7 @@ include(FetchContent)
 FetchContent_Declare(
     JUCE
     GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-    GIT_TAG master  # Using master branch for latest macOS 15.0 support
+    GIT_TAG 8.0.8  # Using stable version instead of master
 )
 FetchContent_MakeAvailable(JUCE)
 

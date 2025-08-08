@@ -13,7 +13,7 @@ public:
         beginTest("Construction");
         {
             NotesPanel panel;
-            expectEquals(panel.getText(), juce::String("Enter your session notes here. Document patchbay connections, settings, and any other important details."), "Text should be empty");
+            expectEquals(panel.getText(), juce::String(""), "Text should be empty");
         }
 
         beginTest("Set Text");

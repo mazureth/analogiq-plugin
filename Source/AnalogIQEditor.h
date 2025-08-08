@@ -185,6 +185,12 @@ private:
     // Menu Bar Components
     juce::TextButton presetsMenuButton{"PresetsMenuButton"}; ///< Menu button for preset operations
 
+#ifdef JUCE_DEBUG
+    // Debug Components
+    juce::TextButton debugSaveButton{"DebugSaveButton"}; ///< Debug button for manual state save
+    juce::TextButton debugLoadButton{"DebugLoadButton"}; ///< Debug button for manual state load
+#endif
+
     // State tracking
     bool isModified{false};         ///< Tracks if the current state has unsaved changes
     juce::String currentPresetName; ///< Name of the currently loaded preset, if any

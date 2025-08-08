@@ -290,6 +290,13 @@ public:
     bool isFavorite(const juce::String &unitId) const;
 
     /**
+     * @brief Refreshes the in-memory favorites cache.
+     *
+     * Call this when favorites are modified to ensure cache consistency.
+     */
+    void refreshFavoritesCache() const;
+
+    /**
      * @brief Gets the list of favorite units.
      *
      * @return Array of favorite unit identifiers
@@ -306,6 +313,10 @@ public:
 private:
     IFileSystem &fileSystem;
     juce::String cacheRoot;
+
+    // In-memory cache for favorites to avoid repeated file reads
+    mutable juce::StringArray favoritesCache;
+    mutable bool favoritesCacheValid = false;
 
     // Directory path getters
     juce::String getUnitsDirectory() const;

@@ -866,6 +866,12 @@ void Rack::fetchFaceplateImage(GearItem *item)
         return;
     }
 
+    // Check if faceplate is already loaded to prevent duplicate fetching
+    if (item->faceplateImage.isValid())
+    {
+        return;
+    }
+
     // Extract filename from faceplate path
     juce::String filename = fileSystem.getFileName(item->faceplateImagePath);
 
@@ -1104,6 +1110,12 @@ void Rack::fetchKnobImage(GearItem *item, int controlIndex)
         return;
     }
 
+    // Check if image is already loaded to prevent duplicate loading
+    if (control.loadedImage.isValid())
+    {
+        return;
+    }
+
     // Check cache first
     if (cacheManager.isControlAssetCached(control.image))
     {
@@ -1331,6 +1343,12 @@ void Rack::fetchFaderImage(GearItem *item, int controlIndex)
 
     GearControl &control = item->controls.getReference(controlIndex);
     if (control.image.isEmpty())
+    {
+        return;
+    }
+
+    // Check if image is already loaded to prevent duplicate loading
+    if (control.faderImage.isValid())
     {
         return;
     }
@@ -1567,6 +1585,12 @@ void Rack::fetchSwitchSpriteSheet(GearItem *item, int controlIndex)
         return;
     }
 
+    // Check if image is already loaded to prevent duplicate loading
+    if (control.switchSpriteSheet.isValid())
+    {
+        return;
+    }
+
     // Check cache first
     if (cacheManager.isControlAssetCached(control.image))
     {
@@ -1795,6 +1819,12 @@ void Rack::fetchButtonSpriteSheet(GearItem *item, int controlIndex)
 
     GearControl &control = item->controls.getReference(controlIndex);
     if (control.image.isEmpty())
+    {
+        return;
+    }
+
+    // Check if image is already loaded to prevent duplicate loading
+    if (control.buttonSpriteSheet.isValid())
     {
         return;
     }

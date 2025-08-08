@@ -1,6 +1,6 @@
 # Project information
 PROJECT_NAME           = "AnalogIQ"
-PROJECT_NUMBER         = 0.3.3 
+PROJECT_NUMBER         = 0.3.4 
 PROJECT_BRIEF         = "Audio plugin for managing and simulating audio gear"
 OUTPUT_DIRECTORY      = docs
 CREATE_SUBDIRS        = YES

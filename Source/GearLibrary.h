@@ -32,7 +32,7 @@ namespace RemoteResources
 }
 
 // Forward declarations
-class GearListBoxModel;
+
 class GearTreeItem;
 
 /**
@@ -79,43 +79,6 @@ public:
      * @return The total number of gear items in the library
      */
     int getNumRows();
-
-    /**
-     * @brief Paints a list box item.
-     *
-     * @param rowNumber The index of the row to paint
-     * @param g The graphics context to paint with
-     * @param width The width of the item
-     * @param height The height of the item
-     * @param rowIsSelected Whether the row is currently selected
-     */
-    void paintListBoxItem(int rowNumber, juce::Graphics &g, int width, int height, bool rowIsSelected);
-
-    /**
-     * @brief Refreshes a component for a specific row in the list box.
-     *
-     * @param rowNumber The index of the row to refresh
-     * @param isRowSelected Whether the row is currently selected
-     * @param existingComponentToUpdate The existing component to update, if any
-     * @return The component to display for the row, or nullptr if using default painting
-     */
-    juce::Component *refreshComponentForRow(int rowNumber, bool isRowSelected, juce::Component *existingComponentToUpdate);
-
-    /**
-     * @brief Handles a list box item click.
-     *
-     * @param row The index of the clicked row
-     * @param e The mouse event details
-     */
-    void listBoxItemClicked(int row, const juce::MouseEvent &e);
-
-    /**
-     * @brief Handles a list box item double click.
-     *
-     * @param row The index of the double-clicked row
-     * @param e The mouse event details
-     */
-    void listBoxItemDoubleClicked(int row, const juce::MouseEvent &e);
 
     /**
      * @brief Handles mouse down events.
@@ -169,14 +132,14 @@ public:
     CacheManager &getCacheManager() { return cacheManager; }
 
     /**
-     * @brief Loads the gear library data asynchronously.
+     * @brief Loads the gear library data.
      */
-    void loadLibraryAsync();
+    void loadLibrary();
 
     /**
-     * @brief Loads gear items asynchronously.
+     * @brief Loads gear items.
      */
-    void loadGearItemsAsync();
+    void loadGearItems();
 
     /**
      * @brief Saves the gear library data asynchronously.
@@ -306,8 +269,6 @@ private:
     juce::TextEditor searchBox;                                                                                      ///< Text box for searching gear items
 
     // List box components (for legacy support)
-    std::unique_ptr<GearListBoxModel> gearListModel; ///< Model for the legacy list box
-    std::unique_ptr<DraggableListBox> gearListBox;   ///< Legacy list box component
 
     // TreeView components (new hierarchical view)
     std::unique_ptr<juce::TreeView> gearTreeView; ///< Tree view for hierarchical display
@@ -474,13 +435,28 @@ public:
             const int iconSize = 24;
             const int iconY = (height - iconSize) / 2;
 
-            if (gearItem != nullptr && gearItem->image.isValid())
+            if (gearItem != nullptr)
             {
-                // Use the gear item's thumbnail image if available
-                g.drawImageWithin(gearItem->image,
-                                  textX, iconY,
-                                  iconSize, iconSize,
-                                  juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize);
+                // Try to load image if not already loaded
+                if (!gearItem->image.isValid())
+                {
+                    gearItem->loadImage();
+                }
+
+                if (gearItem->image.isValid())
+                {
+                    // Use the gear item's thumbnail image if available
+                    g.drawImageWithin(gearItem->image,
+                                      textX, iconY,
+                                      iconSize, iconSize,
+                                      juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize);
+                }
+                else
+                {
+                    // Fallback to green circle
+                    g.setColour(juce::Colours::greenyellow);
+                    g.fillEllipse(textX + 4, height / 2 - 6, 12, 12);
+                }
             }
             else
             {

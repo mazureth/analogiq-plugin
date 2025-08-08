@@ -86,6 +86,31 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     addAndMakeVisible(menuBarContainer);
     addAndMakeVisible(presetsMenuButton);
 
+#ifdef JUCE_DEBUG
+    // Add debug buttons for testing state saving/loading
+    debugSaveButton.setButtonText("Debug: Save State");
+    debugSaveButton.onClick = [this, &processor]()
+    {
+        // Simulate the full getStateInformation process
+        processor.saveInstanceState();
+
+        // Create a dummy MemoryBlock to capture the XML
+        juce::MemoryBlock destData;
+        processor.getStateInformation(destData);
+    };
+    addAndMakeVisible(debugSaveButton);
+
+    debugLoadButton.setButtonText("Debug: Load State");
+    debugLoadButton.onClick = [this, &processor]()
+    {
+        if (auto *rack = getRack())
+        {
+            processor.loadInstanceState(rack);
+        }
+    };
+    addAndMakeVisible(debugLoadButton);
+#endif
+
     // Set up menu bar styling
     menuBarContainer.setOpaque(true);
 
@@ -94,7 +119,7 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     setInterceptsMouseClicks(false, true);
 
     // Load the gear library data now that the plugin is ready
-    gearLibrary.loadLibraryAsync();
+    gearLibrary.loadLibrary();
 }
 
 /**
@@ -212,6 +237,12 @@ void AnalogIQEditor::resized()
 
     // Position preset menu button on the left side of the menu bar
     presetsMenuButton.setBounds(menuBarArea.removeFromLeft(80));
+
+#ifdef JUCE_DEBUG
+    // Position debug buttons on the right side of the menu bar
+    debugSaveButton.setBounds(menuBarArea.removeFromRight(120));
+    debugLoadButton.setBounds(menuBarArea.removeFromRight(120));
+#endif
 
     // Left side: Gear library (1/4 of the remaining width)
     auto libraryArea = area.removeFromLeft(area.getWidth() / 4);
