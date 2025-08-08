@@ -11,5 +11,5 @@ var searchData=
   ['options_8',['options',['../dc/d76/class_gear_control.html#a7b4a8b268df7e97485af54cdee0cbb83',1,'GearControl']]],
   ['orientation_9',['orientation',['../dc/d76/class_gear_control.html#a5882c2de4e4b59bdd0e7326ec93accee',1,'GearControl']]],
   ['other_10',['Other',['../d2/d9a/_gear_item_8h.html#a77e0c5e3b198c001abd1e74890a16771a6311ae17c1ee52b36e68aaf4ad066387',1,'Other:&#160;GearItem.h'],['../d2/d9a/_gear_item_8h.html#a7399b7fdb7d0d7011f384db9a47267dda6311ae17c1ee52b36e68aaf4ad066387',1,'Other:&#160;GearItem.h']]],
-  ['owner_11',['owner',['../d2/d9a/class_gear_list_box_model.html#a35010bba217eb87c263a6e797f564235',1,'GearListBoxModel::owner'],['../d6/dc0/class_gear_tree_item.html#a6e14d7c13c06b4508bc1b0c6dee169d5',1,'GearTreeItem::owner']]]
+  ['owner_11',['owner',['../d6/dc0/class_gear_tree_item.html#a6e14d7c13c06b4508bc1b0c6dee169d5',1,'GearTreeItem']]]
 ];

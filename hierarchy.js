@@ -36,9 +36,6 @@ var hierarchy =
     [ "juce::ListBox", null, [
       [ "DraggableListBox", "d6/d30/class_draggable_list_box.html", null ]
     ] ],
-    [ "juce::ListBoxModel", null, [
-      [ "GearListBoxModel", "d2/d9a/class_gear_list_box_model.html", null ]
-    ] ],
     [ "juce::Button::Listener", null, [
       [ "GearLibrary", "d5/d8c/class_gear_library.html", null ],
       [ "RackSlot", "dc/dde/class_rack_slot.html", null ]

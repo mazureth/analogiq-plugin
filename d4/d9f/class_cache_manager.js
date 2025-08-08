@@ -37,6 +37,7 @@ var class_cache_manager =
     [ "loadThumbnailFromCache", "d4/d9f/class_cache_manager.html#a6c6b157759a667b6d6961fe354b2d012", null ],
     [ "loadUnitFromCache", "d4/d9f/class_cache_manager.html#ae732aa5a3c9e7dc672d3d0e65cb7100e", null ],
     [ "operator=", "d4/d9f/class_cache_manager.html#a28e4e56f6486a637585ae3f9d2517650", null ],
+    [ "refreshFavoritesCache", "d4/d9f/class_cache_manager.html#ab9e6d30bf50d8ae599856d4409564fa8", null ],
     [ "removeFromFavorites", "d4/d9f/class_cache_manager.html#ad9a9376c553d54ac5719cd0c89c322e1", null ],
     [ "removeFromRecentlyUsed", "d4/d9f/class_cache_manager.html#a8a9cb736ed5ca6fb67b35cb35963044c", null ],
     [ "saveControlAssetToCache", "d4/d9f/class_cache_manager.html#a52a543d5875ae048c9aeb1eeb4c9f4bd", null ],
@@ -44,6 +45,8 @@ var class_cache_manager =
     [ "saveThumbnailToCache", "d4/d9f/class_cache_manager.html#aaf622e48bfdd09265e8c73744e2ed083", null ],
     [ "saveUnitToCache", "d4/d9f/class_cache_manager.html#a9d2a18f0d0a6f71a6bc3e78eb180299f", null ],
     [ "cacheRoot", "d4/d9f/class_cache_manager.html#aaa5cf149d24e4e508962678256c9d0fe", null ],
+    [ "favoritesCache", "d4/d9f/class_cache_manager.html#a3633170df9406942be7e4bcf7d680840", null ],
+    [ "favoritesCacheValid", "d4/d9f/class_cache_manager.html#a210f196026ad21cfedc9b18f1657b065", null ],
     [ "fileSystem", "d4/d9f/class_cache_manager.html#a697acda1f4f80dafbe530346f964bd73", null ],
     [ "MAX_RECENTLY_USED", "d4/d9f/class_cache_manager.html#a8ca4cd650aadf20f7fb9a02ce9088208", null ]
 ];

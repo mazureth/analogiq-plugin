@@ -20,7 +20,7 @@ var searchData=
   ['rearrangegearassortablelist_17',['rearrangeGearAsSortableList',['../d0/dc7/class_rack.html#a0707c797b181dcac97de449373954091',1,'Rack']]],
   ['recentlyused_18',['RecentlyUsed',['../d6/dc0/class_gear_tree_item.html#a0985fbf51e0b3edb71ba7f86343cb03ea78b7854d24384edafe8e27f7faefb015',1,'GearTreeItem']]],
   ['refreshbutton_19',['refreshButton',['../d5/d8c/class_gear_library.html#ab92488c09168e4c3868d9dcffbff6663',1,'GearLibrary']]],
-  ['refreshcomponentforrow_20',['refreshComponentForRow',['../d2/d9a/class_gear_list_box_model.html#af6e672ecbebf8a8e61e4f06d0e145a46',1,'GearListBoxModel::refreshComponentForRow()'],['../d5/d8c/class_gear_library.html#a0782df8aff3601ff1593ca532fb900e9',1,'GearLibrary::refreshComponentForRow(int rowNumber, bool isRowSelected, juce::Component *existingComponentToUpdate)']]],
+  ['refreshfavoritescache_20',['refreshFavoritesCache',['../d4/d9f/class_cache_manager.html#ab9e6d30bf50d8ae599856d4409564fa8',1,'CacheManager']]],
   ['refreshfavoritessection_21',['refreshFavoritesSection',['../d5/d8c/class_gear_library.html#a68fa8005d17f561131642191752797d2',1,'GearLibrary']]],
   ['refreshpresetmenu_22',['refreshPresetMenu',['../df/d1c/class_analog_i_q_editor.html#a98a7158a89fab976b3b93a93aed72ff9',1,'AnalogIQEditor']]],
   ['refreshrecentlyusedsection_23',['refreshRecentlyUsedSection',['../d5/d8c/class_gear_library.html#a8d5c321b5a2132ac5399c3e80db68919',1,'GearLibrary']]],

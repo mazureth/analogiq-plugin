@@ -10,7 +10,6 @@ var annotated_dup =
     [ "GearControl", "dc/d76/class_gear_control.html", "dc/d76/class_gear_control" ],
     [ "GearItem", "dd/dee/class_gear_item.html", "dd/dee/class_gear_item" ],
     [ "GearLibrary", "d5/d8c/class_gear_library.html", "d5/d8c/class_gear_library" ],
-    [ "GearListBoxModel", "d2/d9a/class_gear_list_box_model.html", "d2/d9a/class_gear_list_box_model" ],
     [ "GearTreeItem", "d6/dc0/class_gear_tree_item.html", "d6/dc0/class_gear_tree_item" ],
     [ "IFileSystem", "d6/d20/class_i_file_system.html", "d6/d20/class_i_file_system" ],
     [ "INetworkFetcher", "d0/dbe/class_i_network_fetcher.html", "d0/dbe/class_i_network_fetcher" ],
