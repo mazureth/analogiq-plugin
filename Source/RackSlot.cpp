@@ -215,16 +215,6 @@ void RackSlot::paint(juce::Graphics &g)
             g.setColour(juce::Colours::lightgrey);
             juce::Rectangle<int> mfgArea = nameArea.translated(0, 20);
             g.drawText(gearItem->manufacturer, mfgArea, juce::Justification::centred, true);
-
-            // Draw thumbnail image if available
-            if (gearItem->image.isValid())
-            {
-                juce::Rectangle<int> imageArea = getLocalBounds().reduced(20);
-                g.drawImageWithin(gearItem->image,
-                                  imageArea.getX(), imageArea.getY() + 40,
-                                  imageArea.getWidth(), imageArea.getHeight() - 40,
-                                  juce::RectanglePlacement::centred);
-            }
         }
     }
     else

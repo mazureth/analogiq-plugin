@@ -77,7 +77,7 @@ GearLibrary::GearLibrary(INetworkFetcher &networkFetcher, IFileSystem &fileSyste
     addAndMakeVisible(gearTreeView.get());
 
     // Don't load initial data automatically - let the plugin load it when ready
-    // loadLibraryAsync();
+    // loadLibrary();
 }
 
 /**
@@ -933,23 +933,23 @@ int GearLibrary::getNumRows()
 }
 
 /**
- * @brief Loads the gear library data asynchronously.
+ * @brief Loads the gear library data.
  *
  * Initiates gear item loading operations.
  */
-void GearLibrary::loadLibraryAsync()
+void GearLibrary::loadLibrary()
 {
-    // Start async loading operation
-    loadGearItemsAsync();
+    // Start loading operation
+    loadGearItems();
 }
 
 /**
- * @brief Loads gear items asynchronously.
+ * @brief Loads gear items.
  *
  * Fetches gear items from a remote source or uses fallback data
  * if the remote source is unavailable.
  */
-void GearLibrary::loadGearItemsAsync()
+void GearLibrary::loadGearItems()
 {
     // Create URL for the remote endpoint using the helper method
     juce::URL url(getFullUrl(RemoteResources::LIBRARY_PATH));
@@ -1185,6 +1185,6 @@ void GearLibrary::buttonClicked(juce::Button *button)
 {
     if (button == &refreshButton)
     {
-        loadLibraryAsync();
+        loadLibrary();
     }
 }

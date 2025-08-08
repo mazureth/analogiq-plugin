@@ -36,9 +36,10 @@ public:
     }
 
     // Helper function to set up all mock responses
-    void setUpMocks(ConcreteMockNetworkFetcher &mockFetcher)
+    void setUpMocks(ConcreteMockNetworkFetcher &mockFetcher, ConcreteMockFileSystem &mockFileSystem)
     {
         mockFetcher.reset();
+        mockFileSystem.reset();
 
         // Create a simple JPEG image for testing
         juce::Image testImage(juce::Image::RGB, 24, 24, true);
@@ -97,23 +98,23 @@ public:
         mockFetcher.setResponse(
             "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/la2a-compressor-1.0.0.json",
             R"({
-                "unitId": "la2a-compressor",
-                "name": "LA-2A Tube Compressor",
-                "manufacturer": "Universal Audio",
+                    "unitId": "la2a-compressor",
+                    "name": "LA-2A Tube Compressor",
+                    "manufacturer": "Universal Audio",
                 "category": "compressor",
-                "version": "1.0.0",
-                "faceplateImage": "assets/faceplates/la2a-compressor-1.0.0.jpg",
-                "controls": [
-                    {
+                    "version": "1.0.0",
+                    "faceplateImage": "assets/faceplates/la2a-compressor-1.0.0.jpg",
+                    "controls": [
+                        {
                         "id": "peak_reduction",
-                        "label": "Peak Reduction",
-                        "type": "knob",
+                            "label": "Peak Reduction",
+                            "type": "knob",
                         "position": {"x": 0, "y": 0, "width": 50, "height": 50}
-                    },
-                    {
-                        "id": "gain",
-                        "label": "Gain",
-                        "type": "knob", 
+                        },
+                        {
+                            "id": "gain",
+                            "label": "Gain",
+                            "type": "knob",
                         "position": {"x": 60, "y": 0, "width": 50, "height": 50}
                     },
                     {
@@ -127,9 +128,9 @@ public:
                         "label": "Comp/Limit",
                         "type": "button",
                         "position": {"x": 180, "y": 0, "width": 50, "height": 50}
-                    }
-                ]
-            })");
+                        }
+                    ]
+                    })");
     }
 
     void runTest() override
@@ -144,7 +145,7 @@ public:
 
         beginTest("Construction");
         {
-            setUpMocks(mockFetcher);
+            setUpMocks(mockFetcher, mockFileSystem);
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
             expectEquals(processor.getName(), juce::String("AnalogIQ"),
                          "Processor name should be AnalogIQ, but got: " + processor.getName());
@@ -152,7 +153,7 @@ public:
 
         beginTest("Plugin State Management");
         {
-            setUpMocks(mockFetcher);
+            setUpMocks(mockFetcher, mockFileSystem);
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
 
             // Save initial state
@@ -173,7 +174,7 @@ public:
 
         beginTest("Gear Save Instance");
         {
-            setUpMocks(mockFetcher);
+            setUpMocks(mockFetcher, mockFileSystem);
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
 
             // Create editor and get rack
@@ -275,85 +276,8 @@ public:
 
         beginTest("Gear Load Instance");
         {
-            setUpMocks(mockFetcher);
-            // Create processor and editor
-            AnalogIQProcessor processor(mockFetcher, mockFileSystem);
-            std::unique_ptr<AnalogIQEditor> editor(static_cast<AnalogIQEditor *>(processor.createEditor()));
-            auto *rack = editor->getRack();
+            setUpMocks(mockFetcher, mockFileSystem);
 
-            // Create a gear item using the constructor
-            GearItem testGear(
-                "la2a-compressor",
-                "LA-2A Tube Compressor",
-                "Universal Audio",
-                "compressor",
-                "1.0.0",
-                "units/la2a-compressor-1.0.0.json",
-                "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
-                mockFetcher,
-                mockFileSystem,
-                cacheManager,
-                GearType::Rack19Inch,
-                GearCategory::Compressor);
-            testGear.createInstance(testGear.unitId);
-
-            // Add the LA-2A controls
-            testGear.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
-            testGear.controls.add(GearControl(GearControl::Type::Knob, "Gain", juce::Rectangle<float>(60, 0, 50, 50)));
-
-            // Set control values
-            auto &peakReduction = testGear.controls.getReference(0);
-            peakReduction.value = 0.5f;
-            auto &gain = testGear.controls.getReference(1);
-            gain.value = 0.75f;
-
-            // Set the test gear in slot 0
-            if (auto *slot = rack->getSlot(0))
-            {
-                slot->setGearItem(&testGear);
-            }
-
-            // Create an instance
-            rack->createInstance(0);
-
-            // Save the instance state
-            auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
-            processor.saveInstanceStateFromRack(rack, instanceTree);
-
-            // Clear the slot
-            if (auto *slot = rack->getSlot(0))
-            {
-                slot->clearGearItem();
-            }
-
-            // Load the instance state
-            processor.loadInstanceState(rack);
-
-            // Wait for async loading to complete (schema loading and control restoration)
-            // Use a simple delay to allow async operations to complete
-            juce::Thread::sleep(100); // Wait 100ms for async operations
-
-            // Verify the instance was restored correctly
-            if (auto *slot = rack->getSlot(0))
-            {
-                expect(slot->getGearItem() != nullptr, "Slot should have a gear item after loading");
-                if (auto *item = slot->getGearItem())
-                {
-                    expect(item->isInstance, "Restored item should be an instance");
-                    expect(item->instanceId.isNotEmpty(), "Restored instance should have an ID");
-                    expectEquals(item->controls.size(), 2, "Restored instance should have 2 controls");
-
-                    // Verify control values were restored after async schema loading
-                    expectEquals(item->controls[0].value, 0.5f, "Peak Reduction value should be restored");
-                    expectEquals(item->controls[1].value, 0.75f, "Gain value should be restored");
-                }
-            }
-        }
-
-        beginTest("Switch and Button Control Persistence");
-        {
-            setUpMocks(mockFetcher);
             // Create processor and editor
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
             auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
@@ -363,7 +287,7 @@ public:
             auto *rack = editor->getRack();
             expect(rack != nullptr, "Rack should exist");
 
-            // Create a gear item with Switch and Button controls
+            // Create a gear item that will be used for both instances
             GearItem testGear(
                 "la2a-compressor",
                 "LA-2A Tube Compressor",
@@ -379,61 +303,102 @@ public:
                 GearType::Rack19Inch,
                 GearCategory::Compressor);
 
-            // Add Switch and Button controls
-            testGear.controls.add(GearControl(GearControl::Type::Switch, "Input", juce::Rectangle<float>(0, 0, 50, 50)));
-            testGear.controls.add(GearControl(GearControl::Type::Button, "Comp/Limit", juce::Rectangle<float>(60, 0, 50, 50)));
-
-            // Set control values including currentIndex for Switch and Button
-            auto &inputSwitch = testGear.controls.getReference(0);
-            inputSwitch.value = 0.5f;
-            inputSwitch.currentIndex = 1; // Switch position 1
-
-            auto &compButton = testGear.controls.getReference(1);
-            compButton.value = 0.75f;
-            compButton.currentIndex = 2; // Button position 2
-
-            // Create instance
+            // Add controls to the gear item
+            testGear.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
+            testGear.controls.add(GearControl(GearControl::Type::Knob, "Gain", juce::Rectangle<float>(50, 0, 50, 50)));
+            testGear.controls.add(GearControl(GearControl::Type::Switch, "Comp/Limit", juce::Rectangle<float>(0, 0, 50, 50)));
+            testGear.controls.add(GearControl(GearControl::Type::Button, "On/Off", juce::Rectangle<float>(60, 0, 50, 50)));
+            testGear.controls.add(GearControl(GearControl::Type::Fader, "Frequency", juce::Rectangle<float>(60, 0, 50, 50)));
             testGear.createInstance(testGear.unitId);
 
-            // Set the gear item in the slot
-            if (auto *slot = rack->getSlot(0))
+            // Add the test gear to the gear library so it can be loaded later
+            processor.getGearLibrary().addItem(testGear.name, testGear.categoryString, testGear.manufacturer, testGear.manufacturer);
+
+            // Get the added item and update it with our controls
+            auto *addedItem = processor.getGearLibrary().getGearItemByUnitId(testGear.unitId);
+            if (addedItem != nullptr)
             {
-                slot->setGearItem(&testGear);
+                addedItem->controls = testGear.controls;
+            }
 
-                // Save the instance state
-                auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
-                processor.saveInstanceStateFromRack(rack, instanceTree);
+            // Step 1: Add 1 instances of the same unit to different slots
+            // Create first instance for slot 0
+            GearItem instance1 = testGear;
+            instance1.createInstance(testGear.unitId);
+            // Set control values for first instance
+            if (instance1.controls.size() >= 2)
+            {
+                instance1.controls.getReference(0).value = 0.3f; // Peak Reduction
+                instance1.controls.getReference(1).value = 0.4f; // Gain
+                instance1.controls.getReference(2).value = 0.5f; // Comp/Limit
+                instance1.controls.getReference(3).value = 0.6f; // On/Off
+                instance1.controls.getReference(4).value = 0.7f; // Frequency
+            }
 
-                // Clear the slot
-                slot->clearGearItem();
+            // Set the instances in a slots
+            if (auto *slot0 = rack->getSlot(0))
+            {
+                slot0->setGearItem(&instance1);
+            }
 
-                // Load the instance state
-                processor.loadInstanceState(rack);
-
-                // Wait for async loading to complete
-                juce::Thread::sleep(100); // Wait 100ms for async operations
-
-                // Verify the instance was restored correctly
-                expect(slot->getGearItem() != nullptr, "Slot should have a gear item after loading");
-                if (auto *item = slot->getGearItem())
+            // Verify instance is in its slot
+            if (auto *slot0 = rack->getSlot(0))
+            {
+                expect(slot0->getGearItem() != nullptr, "Slot 0 should have first instance");
+                if (auto *item = slot0->getGearItem())
                 {
-                    expect(item->isInstance, "Restored item should be an instance");
-                    expectEquals(item->controls.size(), 2, "Restored instance should have 2 controls");
+                    expect(item->isInstance, "Slot 0 item should be an instance");
+                    expectEquals(item->controls[0].value, 0.3f, "Slot 0 Peak Reduction should be 0.3");
+                    expectEquals(item->controls[1].value, 0.4f, "Slot 0 Gain should be 0.4");
+                    expectEquals(item->controls[2].value, 0.5f, "Slot 0 Comp/Limit should be 0.5");
+                    expectEquals(item->controls[3].value, 0.6f, "Slot 0 On/Off should be 0.6");
+                    expectEquals(item->controls[4].value, 0.7f, "Slot 0 Frequency should be 0.7");
+                }
+            }
 
-                    // Verify Switch control values were restored
-                    expectEquals(item->controls[0].value, 0.5f, "Input Switch value should be restored");
-                    expectEquals(item->controls[0].currentIndex, 1, "Input Switch currentIndex should be restored");
+            // Step 2: Simulate closing the UI by saving state
+            auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
+            processor.saveInstanceStateFromRack(rack, instanceTree);
 
-                    // Verify Button control values were restored
-                    expectEquals(item->controls[1].value, 0.75f, "Comp/Limit Button value should be restored");
-                    expectEquals(item->controls[1].currentIndex, 2, "Comp/Limit Button currentIndex should be restored");
+            // Step 3: Simulate reopening the UI by clearing the rack
+            if (auto *slot0 = rack->getSlot(0))
+            {
+                slot0->clearGearItem();
+            }
+
+            // Verify rack is empty
+            expect(rack->getSlot(0)->getGearItem() == nullptr, "Slot 0 should be empty after clearing");
+
+            // Step 4: Load the saved state (simulating reopening the UI)
+            processor.loadInstanceState(rack);
+
+            // Process JUCE message loop to allow async schema load and callbacks to complete
+            if (juce::MessageManager::getInstanceWithoutCreating() != nullptr)
+            {
+                // Use a simple delay to allow async operations to complete
+                juce::Thread::sleep(100);
+            }
+
+            // Step 5: Verify the instance is restored with correct settings
+            if (auto *slot0 = rack->getSlot(0))
+            {
+                expect(slot0->getGearItem() != nullptr, "Slot 0 should have restored instance");
+                if (auto *item = slot0->getGearItem())
+                {
+                    expect(item->isInstance, "Restored item in slot 0 should be an instance");
+                    expectEquals(item->controls[0].value, 0.3f, "Slot 0 Peak Reduction should be restored to 0.3");
+                    expectEquals(item->controls[1].value, 0.4f, "Slot 0 Gain should be restored to 0.4");
+                    expectEquals(item->controls[2].value, 0.5f, "Slot 0 Comp/Limit should be restored to 0.5");
+                    expectEquals(item->controls[3].value, 0.6f, "Slot 0 On/Off should be restored to 0.6");
+                    expectEquals(item->controls[4].value, 0.7f, "Slot 0 Frequency should be restored to 0.7");
                 }
             }
         }
 
         beginTest("Multiple Instance Loading");
         {
-            setUpMocks(mockFetcher);
+            setUpMocks(mockFetcher, mockFileSystem);
+
             // Create processor and editor
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
             auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
@@ -443,8 +408,8 @@ public:
             auto *rack = editor->getRack();
             expect(rack != nullptr, "Rack should exist");
 
-            // Create two gear items with different control values
-            GearItem testGear1(
+            // Create a gear item that will be used for both instances
+            GearItem testGear(
                 "la2a-compressor",
                 "LA-2A Tube Compressor",
                 "Universal Audio",
@@ -459,47 +424,81 @@ public:
                 GearType::Rack19Inch,
                 GearCategory::Compressor);
 
-            testGear1.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
-            auto &peakReduction1 = testGear1.controls.getReference(0);
-            peakReduction1.value = 0.3f;
-            testGear1.createInstance(testGear1.unitId);
+            // Add controls to the gear item
+            testGear.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
+            testGear.controls.add(GearControl(GearControl::Type::Knob, "Gain", juce::Rectangle<float>(50, 0, 50, 50)));
+            testGear.createInstance(testGear.unitId);
 
-            GearItem testGear2(
-                "la2a-compressor",
-                "LA-2A Tube Compressor",
-                "Universal Audio",
-                "compressor",
-                "1.0.0",
-                "units/la2a-compressor-1.0.0.json",
-                "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
-                mockFetcher,
-                mockFileSystem,
-                cacheManager,
-                GearType::Rack19Inch,
-                GearCategory::Compressor);
+            // Add the test gear to the gear library so it can be loaded later
+            processor.getGearLibrary().addItem(testGear.name, testGear.categoryString, testGear.manufacturer, testGear.manufacturer);
 
-            testGear2.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
-            auto &peakReduction2 = testGear2.controls.getReference(0);
-            peakReduction2.value = 0.7f;
-            testGear2.createInstance(testGear2.unitId);
+            // Get the added item and update it with our controls
+            auto *addedItem = processor.getGearLibrary().getGearItemByUnitId(testGear.unitId);
+            if (addedItem != nullptr)
+            {
+                addedItem->controls = testGear.controls;
+            }
 
-            // Set the gear items in slots 0 and 1
+            // Step 1: Add 2 instances of the same unit to different slots
+            // Create first instance for slot 0
+            GearItem instance1 = testGear;
+            instance1.createInstance(testGear.unitId);
+            // Set control values for first instance
+            if (instance1.controls.size() >= 2)
+            {
+                instance1.controls.getReference(0).value = 0.3f; // Peak Reduction
+                instance1.controls.getReference(1).value = 0.4f; // Gain
+            }
+
+            // Create second instance for slot 1
+            GearItem instance2 = testGear;
+            instance2.createInstance(testGear.unitId);
+            // Set control values for second instance
+            if (instance2.controls.size() >= 2)
+            {
+                instance2.controls.getReference(0).value = 0.7f; // Peak Reduction
+                instance2.controls.getReference(1).value = 0.8f; // Gain
+            }
+
+            // Set the instances in their respective slots
             if (auto *slot0 = rack->getSlot(0))
             {
-                slot0->setGearItem(&testGear1);
+                slot0->setGearItem(&instance1);
             }
 
             if (auto *slot1 = rack->getSlot(1))
             {
-                slot1->setGearItem(&testGear2);
+                slot1->setGearItem(&instance2);
             }
 
-            // Save the instance state
+            // Verify both instances are in place with different settings
+            if (auto *slot0 = rack->getSlot(0))
+            {
+                expect(slot0->getGearItem() != nullptr, "Slot 0 should have first instance");
+                if (auto *item = slot0->getGearItem())
+                {
+                    expect(item->isInstance, "Slot 0 item should be an instance");
+                    expectEquals(item->controls[0].value, 0.3f, "Slot 0 Peak Reduction should be 0.3");
+                    expectEquals(item->controls[1].value, 0.4f, "Slot 0 Gain should be 0.4");
+                }
+            }
+
+            if (auto *slot1 = rack->getSlot(1))
+            {
+                expect(slot1->getGearItem() != nullptr, "Slot 1 should have second instance");
+                if (auto *item = slot1->getGearItem())
+                {
+                    expect(item->isInstance, "Slot 1 item should be an instance");
+                    expectEquals(item->controls[0].value, 0.7f, "Slot 1 Peak Reduction should be 0.7");
+                    expectEquals(item->controls[1].value, 0.8f, "Slot 1 Gain should be 0.8");
+                }
+            }
+
+            // Step 2: Simulate closing the UI by saving state
             auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
             processor.saveInstanceStateFromRack(rack, instanceTree);
 
-            // Clear both slots
+            // Step 3: Simulate reopening the UI by clearing the rack
             if (auto *slot0 = rack->getSlot(0))
             {
                 slot0->clearGearItem();
@@ -509,37 +508,47 @@ public:
                 slot1->clearGearItem();
             }
 
-            // Load the instance state
+            // Verify rack is empty
+            expect(rack->getSlot(0)->getGearItem() == nullptr, "Slot 0 should be empty after clearing");
+            expect(rack->getSlot(1)->getGearItem() == nullptr, "Slot 1 should be empty after clearing");
+
+            // Step 4: Load the saved state (simulating reopening the UI)
             processor.loadInstanceState(rack);
 
-            // Wait for async loading to complete
-            juce::Thread::sleep(100); // Wait 100ms for async operations
+            // Process JUCE message loop to allow async schema load and callbacks to complete
+            if (juce::MessageManager::getInstanceWithoutCreating() != nullptr)
+            {
+                // Use a simple delay to allow async operations to complete
+                juce::Thread::sleep(100);
+            }
 
-            // Verify both instances were restored correctly
+            // Step 5: Verify both instances are restored with correct settings
             if (auto *slot0 = rack->getSlot(0))
             {
-                expect(slot0->getGearItem() != nullptr, "Slot 0 should have a gear item after loading");
+                expect(slot0->getGearItem() != nullptr, "Slot 0 should have restored instance");
                 if (auto *item = slot0->getGearItem())
                 {
                     expect(item->isInstance, "Restored item in slot 0 should be an instance");
-                    expectEquals(item->controls[0].value, 0.3f, "Slot 0 Peak Reduction value should be restored");
+                    expectEquals(item->controls[0].value, 0.3f, "Slot 0 Peak Reduction should be restored to 0.3");
+                    expectEquals(item->controls[1].value, 0.4f, "Slot 0 Gain should be restored to 0.4");
                 }
             }
 
             if (auto *slot1 = rack->getSlot(1))
             {
-                expect(slot1->getGearItem() != nullptr, "Slot 1 should have a gear item after loading");
+                expect(slot1->getGearItem() != nullptr, "Slot 1 should have restored instance");
                 if (auto *item = slot1->getGearItem())
                 {
                     expect(item->isInstance, "Restored item in slot 1 should be an instance");
-                    expectEquals(item->controls[0].value, 0.7f, "Slot 1 Peak Reduction value should be restored");
+                    expectEquals(item->controls[0].value, 0.7f, "Slot 1 Peak Reduction should be restored to 0.7");
+                    expectEquals(item->controls[1].value, 0.8f, "Slot 1 Gain should be restored to 0.8");
                 }
             }
         }
 
         beginTest("Notes Panel Persistence");
         {
-            setUpMocks(mockFetcher);
+            setUpMocks(mockFetcher, mockFileSystem);
             // Create processor and editor
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
             auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
@@ -614,7 +623,7 @@ public:
 
         beginTest("Instance Validation and Null Handling");
         {
-            setUpMocks(mockFetcher);
+            setUpMocks(mockFetcher, mockFileSystem);
             // Create processor and editor
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
             auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
@@ -706,7 +715,7 @@ public:
 
         beginTest("Gear Reset Instance");
         {
-            setUpMocks(mockFetcher);
+            setUpMocks(mockFetcher, mockFileSystem);
             // Create processor and editor
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
             auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));

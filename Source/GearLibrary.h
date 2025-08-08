@@ -132,14 +132,14 @@ public:
     CacheManager &getCacheManager() { return cacheManager; }
 
     /**
-     * @brief Loads the gear library data asynchronously.
+     * @brief Loads the gear library data.
      */
-    void loadLibraryAsync();
+    void loadLibrary();
 
     /**
-     * @brief Loads gear items asynchronously.
+     * @brief Loads gear items.
      */
-    void loadGearItemsAsync();
+    void loadGearItems();
 
     /**
      * @brief Saves the gear library data asynchronously.

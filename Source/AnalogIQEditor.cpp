@@ -119,7 +119,7 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     setInterceptsMouseClicks(false, true);
 
     // Load the gear library data now that the plugin is ready
-    gearLibrary.loadLibraryAsync();
+    gearLibrary.loadLibrary();
 }
 
 /**

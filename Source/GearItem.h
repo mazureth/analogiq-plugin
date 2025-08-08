@@ -352,9 +352,15 @@ public:
             type = GearType::Series500;
         else if (tags.contains("rack") || tags.contains("19 inch"))
             type = GearType::Rack19Inch;
+
+        // Automatically load the image
+        loadImage();
     }
 
     /**
+     * TODO: Remove this constructor and all references to it. There is no need for
+     * legacy constructors if the app has never been released.
+     *
      * @brief Legacy constructor for backward compatibility.
      *
      * @param nameParam Name of the gear
@@ -410,6 +416,9 @@ public:
             categoryString = "other";
             break;
         }
+
+        // Automatically load the image
+        loadImage();
     }
 
     // Instance management fields

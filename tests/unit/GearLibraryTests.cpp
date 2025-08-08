@@ -129,13 +129,14 @@ public:
                 })");
 
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
-            library.loadLibraryAsync();
+            library.loadLibrary();
             expectEquals(library.getItems().size(), 1, "Library should have one item after loading");
 
             // Verify image was loaded
             if (library.getItems().size() > 0)
             {
                 const auto &item = library.getItems().getReference(0);
+
                 expect(item.image.isValid(), "Gear item should have a valid image");
                 expectEquals(item.image.getWidth(), 24, "Image width should be 24");
                 expectEquals(item.image.getHeight(), 24, "Image height should be 24");
@@ -145,7 +146,7 @@ public:
         beginTest("Adding Items");
         {
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
-            library.loadLibraryAsync();
+            library.loadLibrary();
             library.addItem("Test Gear 2", "EQ", "A test gear item", "Test Co 2");
             expectEquals(library.getItems().size(), 2, "Library should have exactly one item after adding");
             expectEquals(library.getItems()[0].name, juce::String("LA-2A Tube Compressor"), "Default Item name should match");
@@ -159,7 +160,7 @@ public:
         beginTest("Item Retrieval");
         {
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
-            library.loadLibraryAsync();
+            library.loadLibrary();
             library.addItem("Test Gear", "Preamp", "A test gear item", "Test Co");
             auto *item = library.getGearItem(1);
             expect(item != nullptr);
@@ -201,7 +202,7 @@ public:
                 })");
 
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
-            library.loadLibraryAsync();
+            library.loadLibrary();
 
             expectEquals(library.getItems().size(), 1, "Library should have one item after loading");
             expect(mockFetcher.wasUrlRequested("https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json"), "Library should request units/index.json");
@@ -212,7 +213,7 @@ public:
             mockFetcher.setError("https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json");
 
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
-            library.loadLibraryAsync();
+            library.loadLibrary();
 
             // Wait for async operation to complete
             juce::Thread::sleep(100);
@@ -229,7 +230,7 @@ public:
             // Create a gear library
             auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
-            library.loadLibraryAsync();
+            library.loadLibrary();
 
             // Add some test items
             library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
@@ -256,7 +257,7 @@ public:
             // Create a gear library
             auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
-            library.loadLibraryAsync();
+            library.loadLibrary();
 
             // Add some test items
             library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
