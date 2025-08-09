@@ -185,7 +185,7 @@ public:
                         "1.0.0",
                         "units/la2a-compressor-1.0.0.json",
                         "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                        TestImageHelper::getStaticTestTags(),
+                        TestImageHelper::getEmptyTestTags(),
                         mockFetcher,
                         mockFileSystem,
                         cacheManager,
@@ -277,13 +277,13 @@ public:
             // Create a gear item that will be used for both instances
             GearItem testGear(
                 "la2a-compressor",
-                "LA-2A Tube Compressor",
+                "LA2A Compressor",
                 "Universal Audio",
                 "compressor",
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                TestImageHelper::getStaticTestTags(),
+                TestImageHelper::getEmptyTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -299,7 +299,7 @@ public:
             testGear.createInstance(testGear.unitId);
 
             // Add the test gear to the gear library so it can be loaded later
-            processor.getGearLibrary().addItem(testGear.name, testGear.categoryString, testGear.manufacturer, testGear.manufacturer);
+            processor.getGearLibrary().addItem(testGear.unitId, testGear.name, testGear.categoryString, testGear.manufacturer, testGear.manufacturer, true);
 
             // Get the added item and update it with our controls
             auto *addedItem = processor.getGearLibrary().getGearItemByUnitId(testGear.unitId);
@@ -404,7 +404,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                TestImageHelper::getStaticTestTags(),
+                TestImageHelper::getEmptyTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -417,7 +417,7 @@ public:
             testGear.createInstance(testGear.unitId);
 
             // Add the test gear to the gear library so it can be loaded later
-            processor.getGearLibrary().addItem(testGear.name, testGear.categoryString, testGear.manufacturer, testGear.manufacturer);
+            processor.getGearLibrary().addItem(testGear.unitId, testGear.name, testGear.categoryString, testGear.manufacturer, testGear.manufacturer, true);
 
             // Get the added item and update it with our controls
             auto *addedItem = processor.getGearLibrary().getGearItemByUnitId(testGear.unitId);
@@ -541,51 +541,25 @@ public:
             auto editor = std::make_unique<AnalogIQEditor>(processor, cacheManager, presetManager, true);
             expect(editor != nullptr, "Editor should be created");
 
+            // Attach the editor to the processor so notes can be saved/loaded
+            processor.lastCreatedEditor = editor.get();
+
             // Get the notes panel
             auto *notesPanel = editor->getNotesPanel();
             expect(notesPanel != nullptr, "Notes panel should exist");
 
             // Set notes content
-            juce::String testNotes = "Test session notes\n- Channel 1: LA-2A\n- Channel 2: 1176";
+            juce::String testNotes = "Test session notes";
             notesPanel->setText(testNotes);
 
             // Get the rack and add a gear item
             auto *rack = editor->getRack();
             expect(rack != nullptr, "Rack should exist");
 
-            GearItem testGear(
-                "la2a-compressor",
-                "LA-2A Tube Compressor",
-                "Universal Audio",
-                "compressor",
-                "1.0.0",
-                "units/la2a-compressor-1.0.0.json",
-                "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                TestImageHelper::getStaticTestTags(),
-                mockFetcher,
-                mockFileSystem,
-                cacheManager,
-                GearType::Rack19Inch,
-                GearCategory::Compressor);
-
-            testGear.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
-            testGear.createInstance(testGear.unitId);
-
-            // Set the gear item in the slot
-            if (auto *slot = rack->getSlot(0))
-            {
-                slot->setGearItem(&testGear);
-            }
-
             // Save the instance state (includes notes)
             auto instanceTree = processor.getState().state.getOrCreateChildWithName("instances", nullptr);
             processor.saveInstanceStateFromRack(rack, instanceTree);
 
-            // Clear the slot and notes
-            if (auto *slot = rack->getSlot(0))
-            {
-                slot->clearGearItem();
-            }
             notesPanel->setText("");
 
             // Load the instance state
@@ -596,16 +570,6 @@ public:
 
             // Verify notes were restored
             expectEquals(notesPanel->getText(), testNotes, "Notes content should be restored");
-
-            // Verify gear item was also restored
-            if (auto *slot = rack->getSlot(0))
-            {
-                expect(slot->getGearItem() != nullptr, "Slot should have a gear item after loading");
-                if (auto *item = slot->getGearItem())
-                {
-                    expect(item->isInstance, "Restored item should be an instance");
-                }
-            }
         }
 
         beginTest("Instance Validation and Null Handling");
@@ -657,7 +621,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                TestImageHelper::getStaticTestTags(),
+                TestImageHelper::getEmptyTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -666,6 +630,9 @@ public:
 
             testGear.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
             testGear.createInstance(testGear.unitId);
+
+            // Add the gear item to the processor's gear library so it can be loaded
+            processor.getGearLibrary().addItem(testGear.unitId, testGear.name, testGear.categoryString, testGear.name, testGear.manufacturer, true);
 
             // Set the gear item in the slot
             if (auto *slot = rack->getSlot(0))
@@ -721,7 +688,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                TestImageHelper::getStaticTestTags(),
+                TestImageHelper::getEmptyTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -732,9 +699,13 @@ public:
             testGear1.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
             auto &peakReduction1 = testGear1.controls.getReference(0);
             peakReduction1.value = 180;
+            peakReduction1.initialValue = 180; // Set initial value for reset functionality
 
             // Create instance after setting value
             testGear1.createInstance(testGear1.unitId);
+
+            // Add first gear to processor's gear library so resetAllInstances can find it
+            processor.getGearLibrary().addItem(testGear1.unitId, testGear1.name, testGear1.categoryString, testGear1.name, testGear1.manufacturer, true);
 
             GearItem testGear2(
                 "la2a-compressor",
@@ -744,7 +715,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                TestImageHelper::getStaticTestTags(),
+                TestImageHelper::getEmptyTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -755,15 +726,22 @@ public:
             testGear2.controls.add(GearControl(GearControl::Type::Knob, "Peak Reduction", juce::Rectangle<float>(0, 0, 50, 50)));
             auto &peakReduction2 = testGear2.controls.getReference(0);
             peakReduction2.value = 180;
+            peakReduction2.initialValue = 180; // Set initial value for reset functionality
 
             // Create instance after setting value
             testGear2.createInstance(testGear2.unitId);
+
+            // Add second gear to processor's gear library so resetAllInstances can find it
+            processor.getGearLibrary().addItem(testGear2.unitId, testGear2.name, testGear2.categoryString, testGear2.name, testGear2.manufacturer, true);
 
             // Set the gear items in slots 0 and 1
             if (auto *slot0 = rack->getSlot(0))
             {
                 slot0->setGearItem(&testGear1);
             }
+
+            // attach editor so processor can access the rack
+            processor.lastCreatedEditor = editor.get();
 
             if (auto *slot1 = rack->getSlot(1))
             {

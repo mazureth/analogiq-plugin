@@ -392,8 +392,8 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                     auto gearItem = gearLibrary->getGearItemByUnitId(sourceUnitId);
                     if (gearItem != nullptr)
                     {
-                        // Create a new instance from the source gear
-                        auto *item = new GearItem(*gearItem);
+                        // Create a new instance from the source gear using proper copy constructor
+                        auto *item = new GearItem(*gearItem, networkFetcher, *fileSystem, *cacheManager);
 
                         // Set the gear item in the slot (this automatically creates an instance)
                         if (auto *slot = rack->getSlot(i))

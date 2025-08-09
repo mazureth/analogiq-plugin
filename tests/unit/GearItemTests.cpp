@@ -97,7 +97,7 @@ public:
         beginTest("Construction");
         {
             setUpMocks(mockFetcher);
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -157,7 +157,7 @@ public:
         beginTest("Property Assignment");
         {
             setUpMocks(mockFetcher);
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             GearItem item("la2a-compressor",
@@ -196,7 +196,7 @@ public:
         beginTest("Instance Creation");
         {
             setUpMocks(mockFetcher);
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             GearItem item("la2a-compressor",
@@ -226,7 +226,7 @@ public:
         beginTest("Instance Checking");
         {
             setUpMocks(mockFetcher);
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             GearItem item("la2a-compressor",

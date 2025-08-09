@@ -166,7 +166,7 @@ public:
                 expect(gearLibrary != nullptr, "Gear library should be accessible");
 
                 // Create test gear items using the library
-                const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+                const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
                 juce::Array<GearControl> controls;
 
                 auto testEQ = std::make_unique<GearItem>(
@@ -243,8 +243,9 @@ public:
 
                 auto &presetManagerRef = editor->getPresetManager();
 
-                // Note: Not adding items to gear library to avoid triggering image loads
-                // The preset loading should work by finding items by unitId/name matching
+                // Add gear items to gear library so preset loading can find them
+                gearLibrary->addItem("test-eq", "Test EQ", "equalizer", "A test equalizer", "Test Manufacturer", true);
+                gearLibrary->addItem("test-compressor", "Test Compressor", "compressor", "A test compressor", "Test Manufacturer", true);
 
                 // Test loading preset
                 expect(presetManagerRef.loadPreset("Integration Test Preset", rack, gearLibrary),
@@ -380,7 +381,7 @@ public:
                 expect(!hasGearItems, "Rack should start empty");
 
                 // Create and save a preset
-                const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+                const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
                 juce::Array<GearControl> controls;
 
                 auto testGear = std::make_unique<GearItem>(
@@ -433,8 +434,8 @@ public:
                 }
                 expect(!hasGearItems, "Rack should be empty after clearing");
 
-                // Note: Not adding items to gear library to avoid triggering image loads
-                // The preset loading should work by finding items by unitId/name matching
+                // Add gear item to gear library so preset loading can find it
+                gearLibrary->addItem("test-gear", "Test Gear", "misc", "A test gear item", "Test Manufacturer", true);
 
                 // Load the preset
                 expect(presetManagerRef.loadPreset("State Test Preset", rack, gearLibrary),

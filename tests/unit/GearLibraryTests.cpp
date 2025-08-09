@@ -138,7 +138,7 @@ public:
             // Verify image can be loaded on demand
             if (library.getItems().size() > 0)
             {
-                auto &item = const_cast<GearItem&>(library.getItems().getReference(0));
+                auto &item = const_cast<GearItem &>(library.getItems().getReference(0));
 
                 // Explicitly load image for this test
                 item.loadImage();
@@ -157,7 +157,7 @@ public:
 
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.loadLibrary();
-            library.addItem("Test Gear 2", "EQ", "A test gear item", "Test Co 2");
+            library.addItem("test-gear-2", "Test Gear 2", "equalizer", "A test gear item", "Test Co 2", true);
             expectEquals(library.getItems().size(), 2, "Library should have exactly one item after adding");
             expectEquals(library.getItems()[0].name, juce::String("LA-2A Tube Compressor"), "Default Item name should match");
             expectEquals(library.getItems()[0].manufacturer, juce::String("Universal Audio"), "Default Manufacturer should match");
@@ -175,7 +175,7 @@ public:
 
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.loadLibrary();
-            library.addItem("Test Gear", "Preamp", "A test gear item", "Test Co");
+            library.addItem("test-gear", "Test Gear", "preamp", "A test gear item", "Test Co", true);
             auto *item = library.getGearItem(1);
             expect(item != nullptr);
             expectEquals(item->categoryString, juce::String("preamp"), "Retrieved item name should match");
@@ -233,8 +233,8 @@ public:
             library.loadLibrary();
 
             // Add some test items
-            library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
-            library.addItem("Test Compressor", "compressor", "Test description", "Test Manufacturer");
+            library.addItem("test-eq", "Test EQ", "equalizer", "Test description", "Test Manufacturer", true);
+            library.addItem("test-compressor", "Test Compressor", "compressor", "Test description", "Test Manufacturer", true);
 
             // Get the items to access their unit IDs
             const auto &items = library.getItems();
@@ -260,8 +260,8 @@ public:
             library.loadLibrary();
 
             // Add some test items
-            library.addItem("Test EQ", "equalizer", "Test description", "Test Manufacturer");
-            library.addItem("Test Compressor", "compressor", "Test description", "Test Manufacturer");
+            library.addItem("test-eq-2", "Test EQ", "equalizer", "Test description", "Test Manufacturer", true);
+            library.addItem("test-compressor-2", "Test Compressor", "compressor", "Test description", "Test Manufacturer", true);
 
             // Get the items to access their unit IDs
             const auto &items = library.getItems();

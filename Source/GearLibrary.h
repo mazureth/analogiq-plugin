@@ -149,12 +149,14 @@ public:
     /**
      * @brief Adds a new gear item to the library.
      *
+     * @param unitId The unique identifier for the gear item
      * @param name The name of the gear item
      * @param category The category of the gear item
      * @param description The description of the gear item
      * @param manufacturer The manufacturer of the gear item
+     * @param bypassUI If true, skips UI updates (useful for testing or batch operations)
      */
-    void addItem(const juce::String &name, const juce::String &category, const juce::String &description, const juce::String &manufacturer);
+    void addItem(const juce::String &unitId, const juce::String &name, const juce::String &category, const juce::String &description, const juce::String &manufacturer, bool bypassUI = false);
 
     /**
      * @brief Constructs a full URL from a relative path.

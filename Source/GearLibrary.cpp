@@ -1125,12 +1125,17 @@ void GearLibrary::mouseDrag(const juce::MouseEvent &e)
  *
  * Creates and adds a new gear item with the specified properties.
  *
+ * TODO: The description parameter is currently unused - either remove it from the signature
+ * or add a description field to GearItem and use it in the constructor.
+ *
+ * @param unitId The unique identifier for the gear item
  * @param name The name of the gear item
  * @param category The category of the gear item
- * @param description The description of the gear item
+ * @param description The description of the gear item (currently unused)
  * @param manufacturer The manufacturer of the gear item
+ * @param bypassUI If true, skips UI updates (useful for testing or batch operations)
  */
-void GearLibrary::addItem(const juce::String &name, const juce::String &category, const juce::String &description, const juce::String &manufacturer)
+void GearLibrary::addItem(const juce::String &unitId, const juce::String &name, const juce::String &category, const juce::String &description, const juce::String &manufacturer, bool bypassUI)
 {
     // Create a new GearItem with default controls
     GearCategory gearCategory;
@@ -1150,14 +1155,15 @@ void GearLibrary::addItem(const juce::String &name, const juce::String &category
     else
         gearType = GearType::Rack19Inch;
 
-    // Create an empty array of controls
+    // Create an empty array of controls and tags
     juce::Array<GearControl> controls;
+    juce::StringArray emptyTags;
 
-    // Add the new item to the list
-    gearItems.add(GearItem(name, manufacturer, gearType, gearCategory, 1, "", controls, networkFetcher, fileSystem, cacheManager));
+    // Add the new item to the list using the newer constructor
+    gearItems.add(GearItem(unitId, name, manufacturer, category, "1.0.0", "", "", emptyTags, networkFetcher, fileSystem, cacheManager, gearType, gearCategory, 1, controls));
 
-    // Update the UI
-    if (rootItem != nullptr)
+    // Update the UI (skip if bypassUI is true to avoid creating Images/StringArrays in tests)
+    if (!bypassUI && rootItem != nullptr)
         rootItem->refreshSubItems();
 }
 

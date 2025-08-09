@@ -108,7 +108,7 @@ public:
             setUpMocks(mockFetcher);
             RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -166,7 +166,7 @@ public:
             setUpMocks(mockFetcher);
             RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -221,7 +221,7 @@ public:
             setUpMocks(mockFetcher);
             RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -291,7 +291,7 @@ public:
             RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
             // Test that gear items can be set for preset loading
-            juce::StringArray tags = {"test"};
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             auto &mockFileSystem = ConcreteMockFileSystem::getInstance();

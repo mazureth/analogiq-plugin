@@ -109,7 +109,7 @@ public:
             setUpMocks(mockFetcher);
             Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -170,7 +170,7 @@ public:
             setUpMocks(mockFetcher);
             Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -242,7 +242,7 @@ public:
             setUpMocks(mockFetcher);
             Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
 
-            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -343,7 +343,7 @@ public:
             expect(slot != nullptr, "Slot should exist");
 
             // Create a gear item for testing using the constructor
-            juce::StringArray tags = {"test"};
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             auto gearItem = std::make_unique<GearItem>(

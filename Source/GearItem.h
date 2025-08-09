@@ -377,69 +377,6 @@ public:
         // Image will be loaded on-demand when first accessed
     }
 
-    /**
-     * TODO: Remove this constructor and all references to it. There is no need for
-     * legacy constructors if the app has never been released.
-     *
-     * @brief Legacy constructor for backward compatibility.
-     *
-     * @param nameParam Name of the gear
-     * @param manufacturerParam Manufacturer name
-     * @param typeParam Type of gear
-     * @param categoryParam Category of gear
-     * @param slotSizeParam Size in rack slots
-     * @param imageUrlParam Path to image
-     * @param controlsParam Array of controls
-     * @param networkFetcherParam Reference to network fetcher
-     * @param fileSystemParam Reference to file system
-     * @param cacheManagerParam Reference to cache manager
-     */
-    GearItem(const juce::String &nameParam,
-             const juce::String &manufacturerParam,
-             GearType typeParam,
-             GearCategory categoryParam,
-             int slotSizeParam,
-             const juce::String &imageUrlParam,
-             const juce::Array<GearControl> &controlsParam,
-             INetworkFetcher &networkFetcherParam,
-             IFileSystem &fileSystemParam,
-             CacheManager &cacheManagerParam)
-        : unitId(nameParam.toLowerCase().replaceCharacter(' ', '-')),
-          name(nameParam),
-          manufacturer(manufacturerParam),
-          type(typeParam),
-          category(categoryParam),
-          slotSize(slotSizeParam),
-          version("1.0.0"),
-          schemaPath(""),
-          thumbnailImage(imageUrlParam),
-          categoryString(""),
-          tags(),
-          controls(controlsParam),
-          networkFetcher(networkFetcherParam),
-          fileSystem(fileSystemParam),
-          cacheManager(cacheManagerParam)
-    {
-        // Map category enum to string
-        switch (category)
-        {
-        case GearCategory::EQ:
-            categoryString = "equalizer";
-            break;
-        case GearCategory::Compressor:
-            categoryString = "compressor";
-            break;
-        case GearCategory::Preamp:
-            categoryString = "preamp";
-            break;
-        case GearCategory::Other:
-            categoryString = "other";
-            break;
-        }
-
-        // Image will be loaded on-demand when first accessed
-    }
-
     // Instance management fields
     juce::String instanceId;   ///< Unique identifier for this instance
     bool isInstance = false;   ///< Whether this is an instance of another item

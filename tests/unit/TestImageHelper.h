@@ -72,4 +72,18 @@ public:
         static juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
         return tags;
     }
+
+    /**
+     * @brief Get static empty tags to minimize StringArray creation in tests.
+     *
+     * This returns an empty StringArray to eliminate StringArray leaks
+     * in tests that don't need actual tag data.
+     *
+     * @return Reference to static empty StringArray
+     */
+    static const juce::StringArray &getEmptyTestTags()
+    {
+        static juce::StringArray emptyTags;
+        return emptyTags;
+    }
 };

@@ -15,6 +15,7 @@
 #include "MockNetworkFetcher.h"
 #include "MockFileSystem.h"
 #include "CacheManager.h"
+#include "TestImageHelper.h"
 
 using namespace juce;
 
@@ -57,7 +58,7 @@ public:
             Rack rack(ConcreteMockNetworkFetcher::getInstance(), mockFileSystem, cacheManager, presetManager, &gearLibrary);
 
             // Create test gear items
-            juce::StringArray tags = {"test"};
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             auto testEQ = std::make_unique<GearItem>(
@@ -95,8 +96,8 @@ public:
                 controls);
 
             // Add gear items to the library so they can be found during loading
-            gearLibrary.addItem("Test EQ", "EQ", "Test Equalizer", "Test Manufacturer");
-            gearLibrary.addItem("Test Compressor", "Compressor", "Test Compressor", "Test Manufacturer");
+            gearLibrary.addItem("test-eq", "Test EQ", "EQ", "Test Equalizer", "Test Manufacturer", true);
+            gearLibrary.addItem("test-compressor", "Test Compressor", "Compressor", "Test Compressor", "Test Manufacturer", true);
 
             // Add gear items to rack slots
             if (auto *slot0 = rack.getSlot(0))
@@ -256,3 +257,5 @@ public:
         }
     }
 };
+
+static PresetManagerTests presetManagerTests;
