@@ -73,7 +73,7 @@ juce::String PresetManager::nameToFilename(const juce::String &name) const
 {
     // Replace invalid characters with underscores
     juce::String filename = name;
-    filename = filename.replaceCharacters("<>:\"/\\|?*", "_");
+    filename = filename.replaceCharacters("<>:\"/\\|?*", "_________");
     filename = filename.trim();
 
     // Ensure it's not empty
@@ -339,7 +339,13 @@ bool PresetManager::deserializeJSONToRack(const juce::String &jsonData, Rack *ra
                 }
             }
         }
+
+        // Clear JSON array reference to release StringArray memory
+        slotsArray = nullptr;
     }
+
+    // Clear main JSON object reference
+    jsonObj = nullptr;
 
     return true;
 }

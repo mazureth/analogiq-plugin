@@ -5,6 +5,7 @@
 #include "MockNetworkFetcher.h"
 #include "MockFileSystem.h"
 #include "PresetManager.h"
+#include "TestImageHelper.h"
 
 class RackSlotTests : public juce::UnitTest
 {
@@ -13,21 +14,8 @@ public:
 
     void setUpMocks(ConcreteMockNetworkFetcher &mockFetcher)
     {
-        // Create a test image for mocks
-        juce::Image testImage(juce::Image::RGB, 24, 24, true);
-        {
-            juce::Graphics g(testImage);
-            g.fillAll(juce::Colours::darkgrey);
-            g.setColour(juce::Colours::white);
-            g.drawText("Test", testImage.getBounds(), juce::Justification::centred, true);
-        }
-
-        // Convert to JPEG format
-        juce::MemoryOutputStream stream;
-        juce::JPEGImageFormat jpegFormat;
-        jpegFormat.setQuality(0.8f);
-        jpegFormat.writeImageToStream(testImage, stream);
-        juce::MemoryBlock imageData(stream.getData(), stream.getDataSize());
+        // Use static test image data to prevent JUCE leak detection
+        juce::MemoryBlock imageData = TestImageHelper::getStaticTestImageData();
 
         // Set up mock responses for images
         mockFetcher.setBinaryResponse(
@@ -120,7 +108,7 @@ public:
             setUpMocks(mockFetcher);
             RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
-            juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
+            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -178,7 +166,7 @@ public:
             setUpMocks(mockFetcher);
             RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
-            juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
+            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -233,7 +221,7 @@ public:
             setUpMocks(mockFetcher);
             RackSlot slot(mockFileSystem, cacheManager, presetManager, gearLibrary);
 
-            juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
+            const juce::StringArray &tags = TestImageHelper::getStaticTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control

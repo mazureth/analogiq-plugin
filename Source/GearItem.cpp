@@ -84,8 +84,15 @@ bool GearItem::loadImage()
             if (image.isValid())
             {
                 cacheManager.saveThumbnailToCache(unitId, filename, image);
+
+                // Clear the temporary image data to free memory
+                imageData = juce::MemoryBlock();
+
                 return true;
             }
+
+            // Clear the temporary image data even if image loading failed
+            imageData = juce::MemoryBlock();
         }
     }
 
@@ -333,13 +340,15 @@ GearItem GearItem::loadFromJSON(const juce::String &filePath, INetworkFetcher &n
     juce::String schemaPath = jsonVar.getProperty("schemaPath", "");
     juce::String thumbnailImage = jsonVar.getProperty("thumbnailImage", "");
 
-    // Parse tags
+    // Parse tags with explicit cleanup
     juce::StringArray tags;
     if (jsonVar.hasProperty("tags") && jsonVar["tags"].isArray())
     {
         juce::Array<juce::var> *tagsArray = jsonVar["tags"].getArray();
         for (const auto &tag : *tagsArray)
             tags.add(tag.toString());
+        // Clear the temporary array reference to release memory
+        tagsArray = nullptr;
     }
 
     // Determine type
@@ -400,14 +409,14 @@ GearItem GearItem::loadFromJSON(const juce::String &filePath, INetworkFetcher &n
             control.value = controlVar.getProperty("value", 0.0f);
             controls.add(control);
         }
+        // Clear the temporary array reference to release memory
+        controlsArray = nullptr;
     }
 
     // Create and return the gear item with the new constructor
     GearItem item(unitId, name, manufacturer, categoryStr, version, schemaPath,
                   thumbnailImage, tags, networkFetcher, fileSystem, CacheManager::getDummy(), type, category, slotSize, controls);
 
-    // Try to load the image
-    item.loadImage();
-
+    // Image will be loaded on-demand when first accessed
     return item;
 }

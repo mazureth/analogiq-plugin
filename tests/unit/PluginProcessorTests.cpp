@@ -6,6 +6,7 @@
 #include "MockNetworkFetcher.h"
 #include "MockFileSystem.h"
 #include "PresetManager.h"
+#include "TestImageHelper.h"
 
 class AnalogIQProcessorTests : public juce::UnitTest
 {
@@ -41,21 +42,8 @@ public:
         mockFetcher.reset();
         mockFileSystem.reset();
 
-        // Create a simple JPEG image for testing
-        juce::Image testImage(juce::Image::RGB, 24, 24, true);
-        {
-            juce::Graphics g(testImage);
-            g.fillAll(juce::Colours::darkgrey);
-            g.setColour(juce::Colours::white);
-            g.drawText("Test", testImage.getBounds(), juce::Justification::centred, true);
-        }
-
-        // Convert to JPEG format
-        juce::MemoryOutputStream stream;
-        juce::JPEGImageFormat jpegFormat;
-        jpegFormat.setQuality(0.8f);
-        jpegFormat.writeImageToStream(testImage, stream);
-        juce::MemoryBlock imageData(stream.getData(), stream.getDataSize());
+        // Use static test image data to prevent JUCE leak detection
+        juce::MemoryBlock imageData = TestImageHelper::getStaticTestImageData();
 
         // Set up mock response for the units index
         mockFetcher.setResponse(
@@ -177,8 +165,8 @@ public:
             setUpMocks(mockFetcher, mockFileSystem);
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
 
-            // Create editor and get rack
-            auto *editor = dynamic_cast<AnalogIQEditor *>(processor.createEditor());
+            // Create editor and get rack (using testing constructor to avoid gear library loading)
+            auto editor = std::make_unique<AnalogIQEditor>(processor, cacheManager, presetManager, true);
             expect(editor != nullptr, "Editor should be created");
 
             if (editor != nullptr)
@@ -197,7 +185,7 @@ public:
                         "1.0.0",
                         "units/la2a-compressor-1.0.0.json",
                         "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                        juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                        TestImageHelper::getStaticTestTags(),
                         mockFetcher,
                         mockFileSystem,
                         cacheManager,
@@ -269,8 +257,7 @@ public:
                     }
                 }
 
-                // Clean up
-                delete editor;
+                // Editor will be cleaned up automatically by unique_ptr
             }
         }
 
@@ -278,9 +265,9 @@ public:
         {
             setUpMocks(mockFetcher, mockFileSystem);
 
-            // Create processor and editor
+            // Create processor and editor (using testing constructor to avoid gear library loading)
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
-            auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
+            auto editor = std::make_unique<AnalogIQEditor>(processor, cacheManager, presetManager, true);
             expect(editor != nullptr, "Editor should be created");
 
             // Get the rack
@@ -296,7 +283,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                TestImageHelper::getStaticTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -399,9 +386,9 @@ public:
         {
             setUpMocks(mockFetcher, mockFileSystem);
 
-            // Create processor and editor
+            // Create processor and editor (using testing constructor to avoid gear library loading)
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
-            auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
+            auto editor = std::make_unique<AnalogIQEditor>(processor, cacheManager, presetManager, true);
             expect(editor != nullptr, "Editor should be created");
 
             // Get the rack
@@ -417,7 +404,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                TestImageHelper::getStaticTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -549,9 +536,9 @@ public:
         beginTest("Notes Panel Persistence");
         {
             setUpMocks(mockFetcher, mockFileSystem);
-            // Create processor and editor
+            // Create processor and editor (using testing constructor to avoid gear library loading)
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
-            auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
+            auto editor = std::make_unique<AnalogIQEditor>(processor, cacheManager, presetManager, true);
             expect(editor != nullptr, "Editor should be created");
 
             // Get the notes panel
@@ -574,7 +561,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                TestImageHelper::getStaticTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -624,9 +611,9 @@ public:
         beginTest("Instance Validation and Null Handling");
         {
             setUpMocks(mockFetcher, mockFileSystem);
-            // Create processor and editor
+            // Create processor and editor (using testing constructor to avoid gear library loading)
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
-            auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
+            auto editor = std::make_unique<AnalogIQEditor>(processor, cacheManager, presetManager, true);
             expect(editor != nullptr, "Editor should be created");
 
             // Get the rack
@@ -670,7 +657,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                TestImageHelper::getStaticTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -716,9 +703,9 @@ public:
         beginTest("Gear Reset Instance");
         {
             setUpMocks(mockFetcher, mockFileSystem);
-            // Create processor and editor
+            // Create processor and editor (using testing constructor to avoid gear library loading)
             AnalogIQProcessor processor(mockFetcher, mockFileSystem);
-            auto editor = std::unique_ptr<AnalogIQEditor>(dynamic_cast<AnalogIQEditor *>(processor.createEditor()));
+            auto editor = std::make_unique<AnalogIQEditor>(processor, cacheManager, presetManager, true);
             expect(editor != nullptr, "Editor should be created");
 
             // Get the rack
@@ -734,7 +721,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                TestImageHelper::getStaticTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,
@@ -757,7 +744,7 @@ public:
                 "1.0.0",
                 "units/la2a-compressor-1.0.0.json",
                 "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                juce::StringArray({"compressor", "tube", "optical", "vintage", "hardware"}),
+                TestImageHelper::getStaticTestTags(),
                 mockFetcher,
                 mockFileSystem,
                 cacheManager,

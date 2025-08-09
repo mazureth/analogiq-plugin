@@ -101,6 +101,7 @@ public:
 
                 // Create simple drag image that clearly shows which row is being dragged
                 juce::Image dragImage(juce::Image::ARGB, 200, 40, true);
+
                 juce::Graphics g(dragImage);
                 g.fillAll(juce::Colours::lime.withAlpha(0.8f)); // Brighter color to see the drag image
                 g.setColour(juce::Colours::black);

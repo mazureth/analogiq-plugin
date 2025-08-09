@@ -3,139 +3,145 @@
 #include "TestFixture.h"
 #include "MockNetworkFetcher.h"
 #include "MockFileSystem.h"
+#include "MockStateVerifier.h"
 #include "PresetManager.h"
+#include "TestImageHelper.h"
 
 class GearLibraryTests : public juce::UnitTest
 {
 public:
     GearLibraryTests() : UnitTest("GearLibraryTests") {}
 
+    /**
+     * @brief Set up common mock data for LA-2A compressor tests.
+     *
+     * This helper method sets up all the mock responses needed for
+     * testing the LA-2A compressor gear item.
+     */
+    void setUpLA2AMocks()
+    {
+        auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
+
+        // Set up mock response for the units index
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json",
+            R"({
+                "units": [
+                    {
+                        "unitId": "la2a-compressor",
+                        "name": "LA-2A Tube Compressor",
+                        "manufacturer": "Universal Audio",
+                        "category": "compressor",
+                        "version": "1.0.0",
+                        "schemaPath": "units/la2a-compressor-1.0.0.json",
+                        "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                        "tags": [
+                            "compressor",
+                            "tube",
+                            "optical",
+                            "vintage",
+                            "hardware"
+                        ]
+                    }
+                ]
+            })");
+
+        // Use static test image data to prevent JUCE leak detection
+        juce::MemoryBlock imageData = TestImageHelper::getStaticTestImageData();
+
+        // Set up mock response for the compressor image
+        mockFetcher.setBinaryResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/faceplates/la2a-compressor-1.0.0.jpg",
+            imageData);
+
+        // Set up mock response for the compressor thumbnail
+        mockFetcher.setBinaryResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/thumbnails/la2a-compressor-1.0.0.jpg",
+            imageData);
+
+        // Set up mock response for the compressor knob
+        mockFetcher.setBinaryResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/controls/knobs/bakelite-lg-black.png",
+            imageData);
+
+        // Set up mock response for the compressor schema
+        mockFetcher.setResponse(
+            "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/la2a-compressor-1.0.0.json",
+            R"({
+                "unitId": "la2a-compressor",
+                "name": "LA-2A Tube Compressor",
+                "manufacturer": "Universal Audio",
+                "tags": [
+                    "compressor",
+                    "tube",
+                    "optical",
+                    "vintage",
+                    "hardware"
+                ],
+                "version": "1.0.0",
+                "category": "compressor",
+                "formFactor": "19-inch-rack",
+                "faceplateImage": "assets/faceplates/la2a-compressor-1.0.0.jpg",
+                "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
+                "width": 1900,
+                "height": 525,
+                "controls": [
+                    {
+                        "id": "peak-reduction",
+                        "label": "Peak Reduction",
+                        "type": "knob",
+                        "position": {
+                            "x": 0.68,
+                            "y": 0.44
+                        },
+                        "value": 180,
+                        "startAngle": 40,
+                        "endAngle": 322,
+                        "image": "assets/controls/knobs/bakelite-lg-black.png"
+                    },
+                    {
+                        "id": "gain",
+                        "label": "Gain",
+                        "type": "knob",
+                        "position": {
+                            "x": 0.257,
+                            "y": 0.44
+                        },
+                        "value": 180,
+                        "startAngle": 40,
+                        "endAngle": 322,
+                        "image": "assets/controls/knobs/bakelite-lg-black.png"
+                    }
+                ]
+            })");
+    }
+
     void runTest() override
     {
         TestFixture fixture;
         auto &mockFetcher = ConcreteMockNetworkFetcher::getInstance();
         auto &mockFileSystem = ConcreteMockFileSystem::getInstance();
-        mockFetcher.reset();
-        mockFileSystem.reset();
+
         CacheManager cacheManager(mockFileSystem, "/mock/cache/root");
         PresetManager presetManager(mockFileSystem, cacheManager);
 
         beginTest("Constructor");
         {
-            // Set up mock response for the units index
-            mockFetcher.setResponse(
-                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json",
-                R"({
-                    "units": [
-                        {
-                            "unitId": "la2a-compressor",
-                            "name": "LA-2A Tube Compressor",
-                            "manufacturer": "Universal Audio",
-                            "category": "compressor",
-                            "version": "1.0.0",
-                            "schemaPath": "units/la2a-compressor-1.0.0.json",
-                            "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                            "tags": [
-                                "compressor",
-                                "tube",
-                                "optical",
-                                "vintage",
-                                "hardware"
-                            ]
-                        }
-                    ]
-                })");
-
-            // Create a simple JPEG image for testing
-            juce::Image testImage(juce::Image::RGB, 24, 24, true);
-            {
-                juce::Graphics g(testImage);
-                g.fillAll(juce::Colours::darkgrey);
-                g.setColour(juce::Colours::white);
-                g.drawText("Test", testImage.getBounds(), juce::Justification::centred, true);
-            }
-
-            // Convert to JPEG format
-            juce::MemoryOutputStream stream;
-            juce::JPEGImageFormat jpegFormat;
-            jpegFormat.setQuality(0.8f);
-            jpegFormat.writeImageToStream(testImage, stream);
-            juce::MemoryBlock imageData(stream.getData(), stream.getDataSize());
-
-            // Set up mock response for the compressor image
-            mockFetcher.setBinaryResponse(
-                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/faceplates/la2a-compressor-1.0.0.jpg",
-                imageData);
-
-            // Set up mock response for the compressor thumbnail
-            mockFetcher.setBinaryResponse(
-                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                imageData);
-
-            // Set up mock response for the compressor knob
-            mockFetcher.setBinaryResponse(
-                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/assets/controls/knobs/bakelite-lg-black.png",
-                imageData);
-
-            // Set up mock response for the compressor schema
-            mockFetcher.setResponse(
-                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/la2a-compressor-1.0.0.json",
-                R"({
-                    "unitId": "la2a-compressor",
-                    "name": "LA-2A Tube Compressor",
-                    "manufacturer": "Universal Audio",
-                    "tags": [
-                        "compressor",
-                        "tube",
-                        "optical",
-                        "vintage",
-                        "hardware"
-                    ],
-                    "version": "1.0.0",
-                    "category": "compressor",
-                    "formFactor": "19-inch-rack",
-                    "faceplateImage": "assets/faceplates/la2a-compressor-1.0.0.jpg",
-                    "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                    "width": 1900,
-                    "height": 525,
-                    "controls": [
-                        {
-                            "id": "peak-reduction",
-                            "label": "Peak Reduction",
-                            "type": "knob",
-                            "position": {
-                                "x": 0.68,
-                                "y": 0.44
-                            },
-                            "value": 180,
-                            "startAngle": 40,
-                            "endAngle": 322,
-                            "image": "assets/controls/knobs/bakelite-lg-black.png"
-                        },
-                        {
-                            "id": "gain",
-                            "label": "Gain",
-                            "type": "knob",
-                            "position": {
-                                "x": 0.257,
-                                "y": 0.44
-                            },
-                            "value": 180,
-                            "startAngle": 40,
-                            "endAngle": 322,
-                            "image": "assets/controls/knobs/bakelite-lg-black.png"
-                        }
-                    ]
-                })");
+            // Reset mocks and set up test data
+            MockStateVerifier::resetAndVerify("Constructor");
+            setUpLA2AMocks();
 
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.loadLibrary();
             expectEquals(library.getItems().size(), 1, "Library should have one item after loading");
 
-            // Verify image was loaded
+            // Verify image can be loaded on demand
             if (library.getItems().size() > 0)
             {
-                const auto &item = library.getItems().getReference(0);
+                auto &item = const_cast<GearItem&>(library.getItems().getReference(0));
+
+                // Explicitly load image for this test
+                item.loadImage();
 
                 expect(item.image.isValid(), "Gear item should have a valid image");
                 expectEquals(item.image.getWidth(), 24, "Image width should be 24");
@@ -145,6 +151,10 @@ public:
 
         beginTest("Adding Items");
         {
+            // Reset mocks and set up test data
+            MockStateVerifier::resetAndVerify("Adding Items");
+            setUpLA2AMocks();
+
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.loadLibrary();
             library.addItem("Test Gear 2", "EQ", "A test gear item", "Test Co 2");
@@ -159,6 +169,10 @@ public:
 
         beginTest("Item Retrieval");
         {
+            // Reset mocks and set up test data
+            MockStateVerifier::resetAndVerify("Item Retrieval");
+            setUpLA2AMocks();
+
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.loadLibrary();
             library.addItem("Test Gear", "Preamp", "A test gear item", "Test Co");
@@ -170,6 +184,9 @@ public:
 
         beginTest("URL Construction");
         {
+            // Reset mocks for clean state
+            MockStateVerifier::resetAndVerify("URL Construction");
+
             expectEquals(GearLibrary::getFullUrl("http://example.com"), juce::String("http://example.com"), "Full URLs should remain unchanged");
             expectEquals(GearLibrary::getFullUrl("/absolute/path"), juce::String("/absolute/path"), "Absolute paths should remain unchanged");
             expect(GearLibrary::getFullUrl("assets/image.jpg").contains("assets/"), "Asset URLs should contain assets/");
@@ -178,28 +195,9 @@ public:
 
         beginTest("Loading Library");
         {
-            mockFetcher.setResponse(
-                "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json",
-                R"({
-                    "units": [
-                        {
-                            "unitId": "la2a-compressor",
-                            "name": "LA-2A Tube Compressor",
-                            "manufacturer": "Universal Audio",
-                            "category": "compressor",
-                            "version": "1.0.0",
-                            "schemaPath": "units/la2a-compressor-1.0.0.json",
-                            "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.jpg",
-                            "tags": [
-                                "compressor",
-                                "tube",
-                                "optical",
-                                "vintage",
-                                "hardware"
-                            ]
-                        }
-                    ]
-                })");
+            // Reset mocks and set up test data
+            MockStateVerifier::resetAndVerify("Loading Library");
+            setUpLA2AMocks();
 
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);
             library.loadLibrary();
@@ -210,6 +208,8 @@ public:
 
         beginTest("Loading Library Error");
         {
+            // Reset mocks and set up error condition
+            MockStateVerifier::resetAndVerify("Loading Library Error");
             mockFetcher.setError("https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json");
 
             GearLibrary library(mockFetcher, mockFileSystem, cacheManager, presetManager);

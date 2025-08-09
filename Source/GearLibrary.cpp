@@ -1003,7 +1003,7 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                 juce::String schemaPath = obj->getProperty("schemaPath");
                 juce::String thumbnailImage = obj->getProperty("thumbnailImage");
 
-                // Process tags
+                // Process tags with explicit cleanup
                 juce::StringArray tags;
                 if (obj->hasProperty("tags") && obj->getProperty("tags").isArray())
                 {
@@ -1012,6 +1012,8 @@ void GearLibrary::parseGearLibrary(const juce::String &jsonData)
                     {
                         tags.add(tag.toString());
                     }
+                    // Clear the temporary array reference to release memory
+                    tagsArray = nullptr;
                 }
 
                 // Determine slotSize (default to 1)

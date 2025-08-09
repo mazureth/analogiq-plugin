@@ -206,6 +206,10 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, CacheManager &cache
  */
 AnalogIQEditor::~AnalogIQEditor()
 {
+    // CRITICAL: Clear LookAndFeel reference before destruction to avoid JUCE assertion
+    // This prevents "LookAndFeel object being destroyed while something is still using it"
+    presetsMenuButton.setLookAndFeel(nullptr);
+
     // The unique_ptrs will clean up automatically
 }
 

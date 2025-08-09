@@ -273,18 +273,39 @@ public:
      */
     ~GearItem()
     {
-        // Clear the main images
-        image = juce::Image();
-        faceplateImage = juce::Image();
+        // COMPREHENSIVE IMAGE CLEANUP to prevent memory leaks
 
-        // Clear images in controls
+        // Clear the main images - ensure they're completely released
+        if (image.isValid())
+        {
+            image = juce::Image();
+        }
+        if (faceplateImage.isValid())
+        {
+            faceplateImage = juce::Image();
+        }
+
+        // Clear images in controls with validation
         for (auto &control : controls)
         {
-            control.loadedImage = juce::Image();
-            control.switchSpriteSheet = juce::Image();
-            control.faderImage = juce::Image();
-            control.buttonSpriteSheet = juce::Image();
+            if (control.loadedImage.isValid())
+                control.loadedImage = juce::Image();
+            if (control.switchSpriteSheet.isValid())
+                control.switchSpriteSheet = juce::Image();
+            if (control.faderImage.isValid())
+                control.faderImage = juce::Image();
+            if (control.buttonSpriteSheet.isValid())
+                control.buttonSpriteSheet = juce::Image();
         }
+
+        // Clear the controls array completely to release any internal references
+        controls.clear();
+
+        // Clear string arrays that might hold references
+        tags.clear();
+
+        // Force a small delay to allow JUCE internal cleanup
+        juce::Thread::sleep(1);
     }
 
     /**
@@ -353,8 +374,7 @@ public:
         else if (tags.contains("rack") || tags.contains("19 inch"))
             type = GearType::Rack19Inch;
 
-        // Automatically load the image
-        loadImage();
+        // Image will be loaded on-demand when first accessed
     }
 
     /**
@@ -417,8 +437,7 @@ public:
             break;
         }
 
-        // Automatically load the image
-        loadImage();
+        // Image will be loaded on-demand when first accessed
     }
 
     // Instance management fields
@@ -485,8 +504,7 @@ public:
           fileSystem(fileSystemParam),
           cacheManager(cacheManagerParam)
     {
-        // Load the image
-        loadImage();
+        // Image will be loaded on-demand when first accessed
     }
 
 private:

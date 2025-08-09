@@ -704,6 +704,7 @@ public:
             int itemHeight = 40;
 
             juce::Image dragImage(juce::Image::ARGB, itemWidth, itemHeight, true);
+
             juce::Graphics g(dragImage);
 
             g.setColour(juce::Colours::darkgrey);

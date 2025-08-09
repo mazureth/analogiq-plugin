@@ -4,6 +4,25 @@
 #include <memory>
 
 /**
+ * @brief Recursively clears LookAndFeel from a component and all its children
+ * @param component The component to clear LookAndFeel from
+ */
+inline void clearLookAndFeelRecursive(juce::Component *component)
+{
+    if (component == nullptr)
+        return;
+
+    // Clear this component's LookAndFeel
+    component->setLookAndFeel(nullptr);
+
+    // Recursively clear all children
+    for (int i = 0; i < component->getNumChildComponents(); ++i)
+    {
+        clearLookAndFeelRecursive(component->getChildComponent(i));
+    }
+}
+
+/**
  * @brief RAII wrapper for JUCE AudioProcessorEditor
  *
  * Ensures proper cleanup of editor resources when the wrapper goes out of scope.
@@ -20,6 +39,12 @@ public:
     {
         if (editor != nullptr)
         {
+            // Clear any LookAndFeel references to prevent assertion failures
+            editor->setLookAndFeel(nullptr);
+
+            // Clear LookAndFeel from all child components recursively
+            clearLookAndFeelRecursive(editor);
+
             delete editor;
             editor = nullptr;
         }
@@ -73,6 +98,12 @@ public:
     {
         if (component != nullptr)
         {
+            // Clear any LookAndFeel references to prevent assertion failures
+            component->setLookAndFeel(nullptr);
+
+            // Clear LookAndFeel from all child components recursively
+            clearLookAndFeelRecursive(component);
+
             component->removeAllChildren();
             delete component;
             component = nullptr;
@@ -111,4 +142,95 @@ public:
 
 private:
     juce::Component *component;
+};
+
+/**
+ * @brief RAII wrapper for JUCE Image
+ *
+ * Ensures proper cleanup of image resources when the wrapper goes out of scope.
+ */
+class ScopedImage
+{
+public:
+    explicit ScopedImage(const juce::Image &img = juce::Image()) : image(img) {}
+
+    ~ScopedImage()
+    {
+        // Clear the image to free memory
+        image = juce::Image();
+    }
+
+    // Prevent copying
+    ScopedImage(const ScopedImage &) = delete;
+    ScopedImage &operator=(const ScopedImage &) = delete;
+
+    // Allow moving
+    ScopedImage(ScopedImage &&other) noexcept : image(std::move(other.image))
+    {
+        other.image = juce::Image();
+    }
+
+    ScopedImage &operator=(ScopedImage &&other) noexcept
+    {
+        if (this != &other)
+        {
+            image = std::move(other.image);
+            other.image = juce::Image();
+        }
+        return *this;
+    }
+
+    juce::Image &get() { return image; }
+    const juce::Image &get() const { return image; }
+    juce::Image &operator*() { return image; }
+    const juce::Image &operator*() const { return image; }
+
+private:
+    juce::Image image;
+};
+
+/**
+ * @brief RAII wrapper for JUCE StringArray
+ *
+ * Ensures proper cleanup of string array resources when the wrapper goes out of scope.
+ */
+class ScopedStringArray
+{
+public:
+    explicit ScopedStringArray() = default;
+    explicit ScopedStringArray(const juce::StringArray &arr) : stringArray(arr) {}
+
+    ~ScopedStringArray()
+    {
+        // Clear the array to free memory
+        stringArray.clear();
+    }
+
+    // Prevent copying
+    ScopedStringArray(const ScopedStringArray &) = delete;
+    ScopedStringArray &operator=(const ScopedStringArray &) = delete;
+
+    // Allow moving
+    ScopedStringArray(ScopedStringArray &&other) noexcept : stringArray(std::move(other.stringArray))
+    {
+        other.stringArray.clear();
+    }
+
+    ScopedStringArray &operator=(ScopedStringArray &&other) noexcept
+    {
+        if (this != &other)
+        {
+            stringArray = std::move(other.stringArray);
+            other.stringArray.clear();
+        }
+        return *this;
+    }
+
+    juce::StringArray &get() { return stringArray; }
+    const juce::StringArray &get() const { return stringArray; }
+    juce::StringArray &operator*() { return stringArray; }
+    const juce::StringArray &operator*() const { return stringArray; }
+
+private:
+    juce::StringArray stringArray;
 };
