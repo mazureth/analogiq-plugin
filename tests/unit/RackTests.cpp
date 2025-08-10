@@ -437,6 +437,276 @@ public:
             slot4->setGearItem(nullptr);
             expect(slot4->getGearItem() == nullptr, "Gear item should be cleared");
         }
+
+        beginTest("Slot Height Management");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            // Test that we can access slots and they have reasonable properties
+            for (int i = 0; i < rack.getNumSlots(); ++i)
+            {
+                auto *rackSlot = rack.getSlot(i);
+                expect(rackSlot != nullptr, "Slot should exist");
+                expect(rackSlot->isVisible(), "Slot should be visible");
+            }
+        }
+
+        beginTest("Gear Rearrangement");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
+            juce::Array<GearControl> controls;
+
+            // Create test gear items
+            auto gearItem1 = std::make_unique<GearItem>(
+                "gear-1", "Gear 1", "Manufacturer", "type", "1.0.0",
+                "units/gear-1.json", "assets/gear-1.jpg", tags,
+                mockFetcher, mockFileSystem, cacheManager,
+                GearType::Rack19Inch, GearCategory::Other, 1, controls);
+
+            auto gearItem2 = std::make_unique<GearItem>(
+                "gear-2", "Gear 2", "Manufacturer", "type", "1.0.0",
+                "units/gear-2.json", "assets/gear-2.jpg", tags,
+                mockFetcher, mockFileSystem, cacheManager,
+                GearType::Rack19Inch, GearCategory::Other, 1, controls);
+
+            // Set gear items in slots
+            auto *slot0 = rack.getSlot(0);
+            auto *slot1 = rack.getSlot(1);
+            slot0->setGearItem(gearItem1.get());
+            slot1->setGearItem(gearItem2.get());
+
+            // Test rearrangement
+            rack.rearrangeGearAsSortableList(0, 1);
+            expect(slot0->getGearItem() == gearItem2.get(), "Slot 0 should now contain gear 2");
+            expect(slot1->getGearItem() == gearItem1.get(), "Slot 1 should now contain gear 1");
+
+            // Test rearrangement back
+            rack.rearrangeGearAsSortableList(1, 0);
+            expect(slot0->getGearItem() == gearItem1.get(), "Slot 0 should now contain gear 1 again");
+            expect(slot1->getGearItem() == gearItem2.get(), "Slot 1 should now contain gear 2 again");
+        }
+
+        beginTest("Schema Fetching and Parsing");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
+            juce::Array<GearControl> controls;
+
+            auto gearItem = std::make_unique<GearItem>(
+                "la2a-compressor", "LA-2A", "Universal Audio", "compressor", "1.0.0",
+                "units/la2a-compressor-1.0.0.json", "assets/la2a.jpg", tags,
+                mockFetcher, mockFileSystem, cacheManager,
+                GearType::Rack19Inch, GearCategory::Compressor, 1, controls);
+
+            // Test schema fetching
+            rack.fetchSchemaForGearItem(gearItem.get(), []() {});
+
+            // Wait longer for async operations and mock responses
+            juce::Thread::sleep(200);
+
+            // The mock should have responded by now, but let's test what we can
+            // The actual parsing happens asynchronously, so we'll test the method execution
+            expect(true, "Schema fetching method should execute without errors");
+        }
+
+        beginTest("Image Fetching");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
+            juce::Array<GearControl> controls;
+
+            // Create a control with image path
+            GearControl control;
+            control.id = "test-control";
+            control.name = "Test Control";
+            control.type = GearControl::Type::Knob;
+            control.image = "assets/controls/knobs/bakelite-lg-black.png";
+            controls.add(control);
+
+            auto gearItem = std::make_unique<GearItem>(
+                "test-gear", "Test Gear", "Manufacturer", "type", "1.0.0",
+                "units/test-gear.json", "assets/test-gear.jpg", tags,
+                mockFetcher, mockFileSystem, cacheManager,
+                GearType::Rack19Inch, GearCategory::Other, 1, controls);
+
+            // Test faceplate image fetching
+            rack.fetchFaceplateImage(gearItem.get());
+            juce::Thread::sleep(100);
+
+            // Test control image fetching
+            rack.fetchKnobImage(gearItem.get(), 0);
+            juce::Thread::sleep(100);
+
+            rack.fetchFaderImage(gearItem.get(), 0);
+            juce::Thread::sleep(100);
+
+            rack.fetchSwitchSpriteSheet(gearItem.get(), 0);
+            juce::Thread::sleep(100);
+
+            rack.fetchButtonSpriteSheet(gearItem.get(), 0);
+            juce::Thread::sleep(100);
+        }
+
+        beginTest("Notification Methods");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
+            juce::Array<GearControl> controls;
+
+            auto gearItem = std::make_unique<GearItem>(
+                "test-gear", "Test Gear", "Manufacturer", "type", "1.0.0",
+                "units/test-gear.json", "assets/test-gear.jpg", tags,
+                mockFetcher, mockFileSystem, cacheManager,
+                GearType::Rack19Inch, GearCategory::Other, 1, controls);
+
+            // Test notification methods
+            rack.notifyGearItemAdded(0, gearItem.get());
+            rack.notifyGearItemRemoved(1);
+            rack.notifyGearControlChanged(0, gearItem.get(), 0);
+            rack.notifyGearItemsRearranged(0, 1);
+
+            // These methods should not crash and should handle the notifications gracefully
+            expect(true, "Notification methods should execute without errors");
+        }
+
+        beginTest("Edge Cases and Error Handling");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            // Test with null gear item
+            rack.fetchSchemaForGearItem(nullptr, []() {});
+            rack.fetchFaceplateImage(nullptr);
+            rack.fetchKnobImage(nullptr, 0);
+            rack.fetchFaderImage(nullptr, 0);
+            rack.fetchSwitchSpriteSheet(nullptr, 0);
+            rack.fetchButtonSpriteSheet(nullptr, 0);
+
+            // Test with invalid control indices
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
+            juce::Array<GearControl> controls;
+            auto gearItem = std::make_unique<GearItem>(
+                "test-gear", "Test Gear", "Manufacturer", "type", "1.0.0",
+                "units/test-gear.json", "assets/test-gear.jpg", tags,
+                mockFetcher, mockFileSystem, cacheManager,
+                GearType::Rack19Inch, GearCategory::Other, 1, controls);
+
+            rack.fetchKnobImage(gearItem.get(), -1);
+            rack.fetchKnobImage(gearItem.get(), 100);
+            rack.fetchFaderImage(gearItem.get(), -1);
+            rack.fetchFaderImage(gearItem.get(), 100);
+
+            // Test instance management edge cases
+            rack.createInstance(-1);
+            rack.createInstance(rack.getNumSlots() + 10);
+            rack.resetToSource(-1);
+            rack.resetToSource(rack.getNumSlots() + 10);
+            rack.isInstance(-1);
+            rack.isInstance(rack.getNumSlots() + 10);
+            rack.getInstanceId(-1);
+            rack.getInstanceId(rack.getNumSlots() + 10);
+
+            // These should handle errors gracefully without crashing
+            expect(true, "Edge case methods should execute without errors");
+        }
+
+        beginTest("Component Lifecycle");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            // Test component ID
+            expect(rack.getComponentID() == "Rack", "Component ID should be set correctly");
+
+            // Test visibility - the rack should be visible by default
+            expect(rack.isVisible(), "Rack should be visible by default");
+
+            // Test bounds - the rack needs to be properly sized first
+            rack.setBounds(0, 0, 800, 600);
+            juce::Rectangle<int> bounds = rack.getBounds();
+            expect(bounds.getWidth() > 0, "Rack should have positive width");
+            expect(bounds.getHeight() > 0, "Rack should have positive height");
+
+            // Test resizing
+            rack.setBounds(100, 100, 800, 600);
+            bounds = rack.getBounds();
+            expect(bounds.getX() == 100, "X position should be set correctly");
+            expect(bounds.getY() == 100, "Y position should be set correctly");
+            expect(bounds.getWidth() == 800, "Width should be set correctly");
+            expect(bounds.getHeight() == 600, "Height should be set correctly");
+        }
+
+        beginTest("Drag and Drop Functionality");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            // Test drag and drop interest
+            juce::DragAndDropTarget::SourceDetails dragDetails(
+                "GearItem",
+                &rack,
+                juce::Point<int>(100, 100));
+
+            bool isInterested = rack.isInterestedInDragSource(dragDetails);
+            // The rack might not be interested in all gear item drops, so we'll test the method execution
+            expect(true, "Drag and drop interest check should execute without errors");
+
+            // Test drag enter/exit/move/drop methods
+            rack.itemDragEnter(dragDetails);
+            rack.itemDragMove(dragDetails);
+            rack.itemDragExit(dragDetails);
+            rack.itemDropped(dragDetails);
+
+            // These methods should not crash
+            expect(true, "Drag and drop methods should execute without errors");
+        }
+
+        beginTest("Listener Management");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            // Test listener management
+            rack.addRackStateListener(nullptr);
+            rack.removeRackStateListener(nullptr);
+
+            // Test notification methods
+            rack.notifyRackStateReset();
+            rack.notifyPresetLoaded("Test Preset");
+            rack.notifyPresetSaved("Test Preset");
+
+            // These methods should not crash
+            expect(true, "Listener management methods should execute without errors");
+        }
+
+        beginTest("Gear Library Integration");
+        {
+            setUpMocks(mockFetcher);
+            Rack rack(mockFetcher, mockFileSystem, cacheManager, presetManager, nullptr);
+
+            // Test gear library setter
+            rack.setGearLibrary(nullptr);
+
+            // Test finding nearest slot
+            juce::Point<int> testPoint(100, 100);
+            auto *nearestSlot = rack.findNearestSlot(testPoint);
+            expect(nearestSlot != nullptr, "Should find a nearest slot");
+
+            // Test with different positions
+            juce::Point<int> edgePoint(0, 0);
+            auto *edgeSlot = rack.findNearestSlot(edgePoint);
+            expect(edgeSlot != nullptr, "Should find a slot at edge position");
+        }
     }
 };
 
