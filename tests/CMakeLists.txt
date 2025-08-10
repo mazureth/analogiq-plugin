@@ -21,6 +21,8 @@ add_executable(analogiq_tests
     unit/CacheManagerTests.cpp
     unit/PresetManagerTests.cpp
     unit/PresetIntegrationTests.cpp
+    unit/FileSystemTests.cpp
+    unit/NetworkFetcherTests.cpp
 )
 
 # Set C++ standard
@@ -45,6 +47,7 @@ target_link_libraries(analogiq_tests
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags
     AnalogIQ
+    curl
 )
 
 # Add include directories
