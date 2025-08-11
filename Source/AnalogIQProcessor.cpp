@@ -293,7 +293,7 @@ void AnalogIQProcessor::setStateInformation(const void *data, int sizeInBytes)
 void AnalogIQProcessor::saveInstanceState()
 {
     // Create a child tree for instance state
-    auto instanceTree = state.state.getOrCreateChildWithName("instances", nullptr);
+    auto instanceTree = state.state.getOrCreateChildWithName("instances", &undoManager);
 
     // Clear existing instance data
     instanceTree.removeAllChildren(nullptr);
@@ -322,16 +322,16 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                 // Save state for instances only (all items in rack are now instances)
                 if (item->isInstance && !item->instanceId.isEmpty() && !item->unitId.isEmpty())
                 {
-                    auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), nullptr);
+                    auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), &undoManager);
                     slotTree.setProperty("instanceId", item->instanceId, nullptr);
                     slotTree.setProperty("sourceUnitId", item->sourceUnitId, nullptr);
 
                     // Save control values
-                    auto controlsTree = slotTree.getOrCreateChildWithName("controls", nullptr);
+                    auto controlsTree = slotTree.getOrCreateChildWithName("controls", &undoManager);
                     for (int j = 0; j < item->controls.size(); ++j)
                     {
                         const auto &control = item->controls[j];
-                        auto controlTree = controlsTree.getOrCreateChildWithName("control_" + juce::String(j), nullptr);
+                        auto controlTree = controlsTree.getOrCreateChildWithName("control_" + juce::String(j), &undoManager);
                         controlTree.setProperty("value", control.value, nullptr);
                         controlTree.setProperty("initialValue", control.initialValue, nullptr);
 
@@ -356,7 +356,7 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
     {
         if (auto *notesPanel = editor->getNotesPanel())
         {
-            auto notesTree = instanceTree.getOrCreateChildWithName("notes", nullptr);
+            auto notesTree = instanceTree.getOrCreateChildWithName("notes", &undoManager);
             auto notesContent = notesPanel->getText();
             notesTree.setProperty("content", notesContent, nullptr);
         }
