@@ -1162,6 +1162,8 @@ public:
         expect(item1 != nullptr, "Should find first path test item");
         expect(item3 != nullptr, "Should find third path test item");
     }
+
+    
 };
 
 static GearLibraryTests gearLibraryTests;
