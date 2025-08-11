@@ -35,7 +35,7 @@ COVERAGE_OUTPUT=$(llvm-cov report "$TEST_BINARY" -instr-profile="$MERGED_PROFILE
 echo "$COVERAGE_OUTPUT"
 
 # Step 6: Check overall coverage and fail if below threshold
-TOTAL_LINE_COVERAGE=$(echo "$COVERAGE_OUTPUT" | awk '/TOTAL/ { print $(13) }' | tr -d '%')
+TOTAL_LINE_COVERAGE=$(echo "$COVERAGE_OUTPUT" | awk '/TOTAL/ { print $(10) }' | tr -d '%')
 if (( $(echo "$TOTAL_LINE_COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
   echo "❌ Coverage $TOTAL_LINE_COVERAGE% is below threshold of $COVERAGE_THRESHOLD%"
   exit 1

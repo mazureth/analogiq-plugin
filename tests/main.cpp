@@ -17,8 +17,10 @@ int main(int argc, char *argv[])
     juce::StringArray testsToRun;
     testsToRun.add("CacheManagerTests");
     testsToRun.add("DraggableListBoxTests");
+    testsToRun.add("FileSystemTests");
     testsToRun.add("GearItemTests");
     testsToRun.add("GearLibraryTests");
+    testsToRun.add("NetworkFetcherTests");
     testsToRun.add("NotesPanelTests");
     testsToRun.add("AnalogIQEditorTests");
     testsToRun.add("AnalogIQProcessorTests");
