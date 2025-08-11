@@ -116,7 +116,8 @@ private:
         
         expectEquals(model->getNumRows(), 3, "Should have 3 rows after adding items");
         
-        // Test selection within bounds
+        // Update content and test selection within bounds
+        listBox.updateContent();
         listBox.selectRow(1);
         expectEquals(listBox.getSelectedRow(), 1, "Should select valid row");
         
@@ -146,6 +147,7 @@ private:
         
         DraggableListBox listBox("FunctionTest", model.get());
         listBox.setSize(200, 100);
+        listBox.updateContent();
         
         // Test row selection methods
         listBox.selectRow(0);
