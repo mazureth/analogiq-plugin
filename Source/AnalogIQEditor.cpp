@@ -92,11 +92,11 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     debugSaveButton.onClick = [this, &processor]()
     {
         // Simulate the full getStateInformation process
-        processor.saveInstanceState();
-
-        // Create a dummy MemoryBlock to capture the XML
         juce::MemoryBlock destData;
-        processor.getStateInformation(destData);
+        processor.getStateInformation(destData); // This will call saveInstanceState internally
+
+        // Log the result
+        std::cout << "[Debug] State saved, data size: " << destData.getSize() << " bytes" << std::endl;
     };
     addAndMakeVisible(debugSaveButton);
 

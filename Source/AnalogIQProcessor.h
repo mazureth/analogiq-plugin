@@ -268,5 +268,13 @@ private:
     std::unique_ptr<PresetManager> presetManager;
     std::unique_ptr<GearLibrary> gearLibrary;
 
+    // Logging infrastructure
+    void logToFile(const juce::String &message);
+    juce::File logFile;
+    juce::String getLogTimestamp();
+    void initializeLogging();
+    void logStateTreeStructure(const juce::ValueTree &tree, const juce::String &prefix);
+    void logXmlContent(const juce::XmlElement &xml, const juce::String &prefix);
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogIQProcessor)
 };
