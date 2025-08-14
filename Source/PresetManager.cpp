@@ -319,13 +319,14 @@ bool PresetManager::deserializeJSONToRack(const juce::String &jsonData, Rack *ra
                                 rack->fetchSchemaForGearItem(newItem, [newItem, savedControls]()
                                                              {
                                     // Apply saved control values after schema parsing
+                                    // Note: initialValue is preserved from schema, not restored from saved state
                                     for (const auto& saved : savedControls)
                                     {
                                         if (saved.index >= 0 && saved.index < newItem->controls.size())
                                         {
                                             auto &control = newItem->controls.getReference(saved.index);
                                             control.value = saved.value;
-                                            control.initialValue = saved.initialValue;
+                                            // Don't restore initialValue - keep the schema default
 
                                             if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
                                             {

@@ -719,6 +719,7 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                                     rack->fetchSchemaForGearItem(loadedItem, [savedControls, loadedItem]()
                                                                  {
                                 // Apply saved control values after schema parsing (following PresetManager pattern)
+                                // Note: initialValue is preserved from schema, not restored from saved state
                                 // Validate loadedItem is still valid
                                 if (loadedItem != nullptr && savedControls.size() > 0)
                                 {
@@ -728,7 +729,7 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                                         {
                                             auto &control = loadedItem->controls.getReference(saved.index);
                                             control.value = saved.value;
-                                            control.initialValue = saved.initialValue;
+                                            // Don't restore initialValue - keep the schema default
 
                                             if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
                                             {

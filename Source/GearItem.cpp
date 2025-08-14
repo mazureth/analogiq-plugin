@@ -173,11 +173,8 @@ void GearItem::createInstance(const juce::String &sourceUnitId)
     }
     else
     {
-        // For new instances, set initial values to current values
-        for (auto &control : controls)
-        {
-            control.initialValue = control.value;
-        }
+        // For new instances, preserve the initial values from schema
+        // Don't overwrite initialValue - it should remain as the schema default
     }
 }
 

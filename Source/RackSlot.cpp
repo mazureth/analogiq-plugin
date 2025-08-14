@@ -1064,8 +1064,15 @@ void RackSlot::mouseDrag(const juce::MouseEvent &e)
  *
  * @param e The mouse event details
  */
-void RackSlot::mouseUp(const juce::MouseEvent &)
+void RackSlot::mouseUp(const juce::MouseEvent &e)
 {
+    // Support both Ctrl/Cmd + Click and Alt/Option + Click for reset
+    if (e.mods.isCtrlDown() || e.mods.isCommandDown() || e.mods.isAltDown())
+    {
+        resetControlToDefault(e);
+    }
+
+    // Handle normal mouse up operations (drag completion)
     if (isDragging)
     {
         isDragging = false;
@@ -1073,14 +1080,7 @@ void RackSlot::mouseUp(const juce::MouseEvent &)
     activeControl = nullptr;
 }
 
-/**
- * @brief Handles mouse double-click events on the rack slot.
- *
- * Resets controls to their default values when double-clicked.
- *
- * @param e The mouse event details
- */
-void RackSlot::mouseDoubleClick(const juce::MouseEvent &e)
+void RackSlot::resetControlToDefault(const juce::MouseEvent &e)
 {
     if (gearItem == nullptr || !gearItem->faceplateImage.isValid())
         return;
@@ -1092,20 +1092,22 @@ void RackSlot::mouseDoubleClick(const juce::MouseEvent &e)
     // Find control at mouse position
     if (auto *control = findControlAtPosition(e.position, faceplateArea))
     {
-        // Double-click resets control to default value
+        // Reset control to default value
         switch (control->type)
         {
         case GearControl::Type::Switch:
-            control->currentIndex = 0;
+            control->currentIndex = (int)control->initialValue; // Reset to schema default
+            control->value = control->initialValue;             // Keep value in sync
             break;
         case GearControl::Type::Button:
-            control->value = 0.0f;
+            control->value = control->initialValue;      // Reset to schema default
+            control->currentIndex = (int)control->value; // Keep currentIndex in sync
             break;
         case GearControl::Type::Fader:
-            control->value = control->initialValue;
+            control->value = control->initialValue; // Reset to schema default
             break;
         case GearControl::Type::Knob:
-            control->value = control->initialValue;
+            control->value = control->initialValue; // Reset to schema default
             break;
         }
         repaint();

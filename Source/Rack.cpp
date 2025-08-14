@@ -674,9 +674,9 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item, std::func
             {
                 // Get switch-specific properties
                 control.orientation = controlVar.getProperty("orientation", "vertical").toString();
-                control.currentIndex = controlVar.getProperty("currentIndex", 0);
-                control.value = (float)control.currentIndex; // Set value based on currentIndex
-                control.initialValue = control.value;        // Store initial value
+                control.currentIndex = controlVar.getProperty("currentIndex", 0);        // Primary state: which option is selected
+                control.value = (float)controlVar.getProperty("currentIndex", 0);        // Derived: float representation of currentIndex
+                control.initialValue = (float)controlVar.getProperty("currentIndex", 0); // Schema default: which option should be selected by default
                 control.image = controlVar.getProperty("image", "").toString();
 
                 // Parse options array
@@ -727,7 +727,7 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item, std::func
                 control.orientation = controlVar.getProperty("orientation", "vertical").toString();
                 control.length = controlVar.getProperty("length", 100);
                 control.value = controlVar.getProperty("value", 0.0f);
-                control.initialValue = control.value; // Store initial value
+                control.initialValue = controlVar.getProperty("value", 0.0f); // Store schema default value
                 control.image = controlVar.getProperty("image", "").toString();
 
                 // Add control to item before fetching image
@@ -785,8 +785,8 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item, std::func
             {
                 // Get button-specific properties
                 control.momentary = controlVar.getProperty("momentary", false);
-                control.value = controlVar.getProperty("value", 0.0f);
-                control.initialValue = control.value; // Store initial value
+                control.value = controlVar.getProperty("value", 0.0f);        // Primary state: button on/off value
+                control.initialValue = controlVar.getProperty("value", 0.0f); // Schema default: button default state
                 control.image = controlVar.getProperty("image", "").toString();
 
                 // Parse options array for button states
@@ -817,7 +817,7 @@ void Rack::parseSchema(const juce::String &schemaData, GearItem *item, std::func
                     }
                 }
 
-                // Set currentIndex based on value
+                // Set currentIndex based on value (derived from primary state)
                 if (control.momentary)
                 {
                     control.currentIndex = control.value > 0.5f ? 1 : 0;
