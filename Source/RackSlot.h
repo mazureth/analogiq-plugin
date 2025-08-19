@@ -114,13 +114,6 @@ public:
      */
     void mouseUp(const juce::MouseEvent &e) override;
 
-    /**
-     * @brief Handles mouse double-click events on the rack slot.
-     *
-     * @param e The mouse event details
-     */
-    void mouseDoubleClick(const juce::MouseEvent &e) override;
-
     // DragAndDropTarget implementation - still used for library drops
     /**
      * @brief Checks if the slot is interested in a drag source.
@@ -292,6 +285,13 @@ private:
      * @return Pointer to the control at the position, or nullptr if none found
      */
     GearControl *findControlAtPosition(const juce::Point<float> &position, const juce::Rectangle<int> &faceplateArea);
+
+    /**
+     * @brief Resets a control to its default value.
+     *
+     * @param e The mouse event that triggered the reset
+     */
+    void resetControlToDefault(const juce::MouseEvent &e);
 
     /**
      * @brief Handles interaction with a switch control.

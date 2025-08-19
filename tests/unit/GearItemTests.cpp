@@ -4,6 +4,7 @@
 #include "MockNetworkFetcher.h"
 #include "MockFileSystem.h"
 #include "PresetManager.h"
+#include "TestImageHelper.h"
 
 class GearItemTests : public juce::UnitTest
 {
@@ -12,21 +13,8 @@ public:
 
     void setUpMocks(ConcreteMockNetworkFetcher &mockFetcher)
     {
-        // Create a test image for mocks
-        juce::Image testImage(juce::Image::RGB, 24, 24, true);
-        {
-            juce::Graphics g(testImage);
-            g.fillAll(juce::Colours::darkgrey);
-            g.setColour(juce::Colours::white);
-            g.drawText("Test", testImage.getBounds(), juce::Justification::centred, true);
-        }
-
-        // Convert to JPEG format
-        juce::MemoryOutputStream stream;
-        juce::JPEGImageFormat jpegFormat;
-        jpegFormat.setQuality(0.8f);
-        jpegFormat.writeImageToStream(testImage, stream);
-        juce::MemoryBlock imageData(stream.getData(), stream.getDataSize());
+        // Use static test image data to prevent JUCE leak detection
+        juce::MemoryBlock imageData = TestImageHelper::getStaticTestImageData();
 
         // Set up mock responses for images
         mockFetcher.setBinaryResponse(
@@ -109,7 +97,7 @@ public:
         beginTest("Construction");
         {
             setUpMocks(mockFetcher);
-            juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             // Create Peak Reduction control
@@ -169,7 +157,7 @@ public:
         beginTest("Property Assignment");
         {
             setUpMocks(mockFetcher);
-            juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             GearItem item("la2a-compressor",
@@ -208,7 +196,7 @@ public:
         beginTest("Instance Creation");
         {
             setUpMocks(mockFetcher);
-            juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             GearItem item("la2a-compressor",
@@ -238,7 +226,7 @@ public:
         beginTest("Instance Checking");
         {
             setUpMocks(mockFetcher);
-            juce::StringArray tags = {"compressor", "tube", "optical", "vintage", "hardware"};
+            const juce::StringArray &tags = TestImageHelper::getEmptyTestTags();
             juce::Array<GearControl> controls;
 
             GearItem item("la2a-compressor",

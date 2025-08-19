@@ -273,18 +273,39 @@ public:
      */
     ~GearItem()
     {
-        // Clear the main images
-        image = juce::Image();
-        faceplateImage = juce::Image();
+        // COMPREHENSIVE IMAGE CLEANUP to prevent memory leaks
 
-        // Clear images in controls
+        // Clear the main images - ensure they're completely released
+        if (image.isValid())
+        {
+            image = juce::Image();
+        }
+        if (faceplateImage.isValid())
+        {
+            faceplateImage = juce::Image();
+        }
+
+        // Clear images in controls with validation
         for (auto &control : controls)
         {
-            control.loadedImage = juce::Image();
-            control.switchSpriteSheet = juce::Image();
-            control.faderImage = juce::Image();
-            control.buttonSpriteSheet = juce::Image();
+            if (control.loadedImage.isValid())
+                control.loadedImage = juce::Image();
+            if (control.switchSpriteSheet.isValid())
+                control.switchSpriteSheet = juce::Image();
+            if (control.faderImage.isValid())
+                control.faderImage = juce::Image();
+            if (control.buttonSpriteSheet.isValid())
+                control.buttonSpriteSheet = juce::Image();
         }
+
+        // Clear the controls array completely to release any internal references
+        controls.clear();
+
+        // Clear string arrays that might hold references
+        tags.clear();
+
+        // Force a small delay to allow JUCE internal cleanup
+        juce::Thread::sleep(1);
     }
 
     /**
@@ -353,72 +374,7 @@ public:
         else if (tags.contains("rack") || tags.contains("19 inch"))
             type = GearType::Rack19Inch;
 
-        // Automatically load the image
-        loadImage();
-    }
-
-    /**
-     * TODO: Remove this constructor and all references to it. There is no need for
-     * legacy constructors if the app has never been released.
-     *
-     * @brief Legacy constructor for backward compatibility.
-     *
-     * @param nameParam Name of the gear
-     * @param manufacturerParam Manufacturer name
-     * @param typeParam Type of gear
-     * @param categoryParam Category of gear
-     * @param slotSizeParam Size in rack slots
-     * @param imageUrlParam Path to image
-     * @param controlsParam Array of controls
-     * @param networkFetcherParam Reference to network fetcher
-     * @param fileSystemParam Reference to file system
-     * @param cacheManagerParam Reference to cache manager
-     */
-    GearItem(const juce::String &nameParam,
-             const juce::String &manufacturerParam,
-             GearType typeParam,
-             GearCategory categoryParam,
-             int slotSizeParam,
-             const juce::String &imageUrlParam,
-             const juce::Array<GearControl> &controlsParam,
-             INetworkFetcher &networkFetcherParam,
-             IFileSystem &fileSystemParam,
-             CacheManager &cacheManagerParam)
-        : unitId(nameParam.toLowerCase().replaceCharacter(' ', '-')),
-          name(nameParam),
-          manufacturer(manufacturerParam),
-          type(typeParam),
-          category(categoryParam),
-          slotSize(slotSizeParam),
-          version("1.0.0"),
-          schemaPath(""),
-          thumbnailImage(imageUrlParam),
-          categoryString(""),
-          tags(),
-          controls(controlsParam),
-          networkFetcher(networkFetcherParam),
-          fileSystem(fileSystemParam),
-          cacheManager(cacheManagerParam)
-    {
-        // Map category enum to string
-        switch (category)
-        {
-        case GearCategory::EQ:
-            categoryString = "equalizer";
-            break;
-        case GearCategory::Compressor:
-            categoryString = "compressor";
-            break;
-        case GearCategory::Preamp:
-            categoryString = "preamp";
-            break;
-        case GearCategory::Other:
-            categoryString = "other";
-            break;
-        }
-
-        // Automatically load the image
-        loadImage();
+        // Image will be loaded on-demand when first accessed
     }
 
     // Instance management fields
@@ -485,8 +441,7 @@ public:
           fileSystem(fileSystemParam),
           cacheManager(cacheManagerParam)
     {
-        // Load the image
-        loadImage();
+        // Image will be loaded on-demand when first accessed
     }
 
 private:

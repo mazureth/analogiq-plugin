@@ -92,11 +92,11 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     debugSaveButton.onClick = [this, &processor]()
     {
         // Simulate the full getStateInformation process
-        processor.saveInstanceState();
-
-        // Create a dummy MemoryBlock to capture the XML
         juce::MemoryBlock destData;
-        processor.getStateInformation(destData);
+        processor.getStateInformation(destData); // This will call saveInstanceState internally
+
+        // Log the result
+        std::cout << "[Debug] State saved, data size: " << destData.getSize() << " bytes" << std::endl;
     };
     addAndMakeVisible(debugSaveButton);
 
@@ -206,6 +206,13 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, CacheManager &cache
  */
 AnalogIQEditor::~AnalogIQEditor()
 {
+    // Notify the processor that we're being destroyed so it can clear stored references
+    processor.clearRackReference();
+
+    // CRITICAL: Clear LookAndFeel reference before destruction to avoid JUCE assertion
+    // This prevents "LookAndFeel object being destroyed while something is still using it"
+    presetsMenuButton.setLookAndFeel(nullptr);
+
     // The unique_ptrs will clean up automatically
 }
 

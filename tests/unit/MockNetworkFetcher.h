@@ -93,6 +93,73 @@ public:
     }
 
     /**
+     * @brief Get the number of responses configured.
+     *
+     * @return Number of configured responses
+     */
+    size_t getResponseCount() const
+    {
+        return responses.size();
+    }
+
+    /**
+     * @brief Get the number of binary responses configured.
+     *
+     * @return Number of configured binary responses
+     */
+    size_t getBinaryResponseCount() const
+    {
+        return binaryResponses.size();
+    }
+
+    /**
+     * @brief Get the number of error URLs configured.
+     *
+     * @return Number of configured error URLs
+     */
+    size_t getErrorCount() const
+    {
+        return errors.size();
+    }
+
+    /**
+     * @brief Get the number of requested URLs.
+     *
+     * @return Number of requested URLs
+     */
+    size_t getRequestedUrlCount() const
+    {
+        return requestedUrls.size();
+    }
+
+    /**
+     * @brief Check if the mock is in a clean state.
+     *
+     * @return true if no responses, errors, or requests are configured
+     */
+    bool isClean() const
+    {
+        return responses.empty() && binaryResponses.empty() &&
+               errors.empty() && requestedUrls.empty();
+    }
+
+    /**
+     * @brief Get a summary of the mock state.
+     *
+     * @return String containing state information
+     */
+    juce::String getState() const
+    {
+        juce::String state = "MockNetworkFetcher State:\n";
+        state += "  Responses: " + juce::String(responses.size()) + "\n";
+        state += "  Binary Responses: " + juce::String(binaryResponses.size()) + "\n";
+        state += "  Errors: " + juce::String(errors.size()) + "\n";
+        state += "  Requested URLs: " + juce::String(requestedUrls.size()) + "\n";
+        state += "  Has State: " + juce::String(isClean() ? "No" : "Yes") + "\n";
+        return state;
+    }
+
+    /**
      * @brief Implementation of INetworkFetcher::fetchJsonBlocking.
      *
      * @param url The URL to fetch

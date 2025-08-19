@@ -1,0 +1,124 @@
+name: Test Coverage Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  test-coverage:
+    runs-on: ubuntu-latest
+    name: Run Tests and Check Coverage
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang llvm llvm-dev
+          # Install additional dependencies if needed
+          sudo apt-get install -y cmake build-essential
+
+      - name: Setup Build Directory
+        run: |
+          mkdir -p build
+          cd build
+          find . -name "*.gcda" -delete || true
+
+      - name: Configure Build
+        run: |
+          cd build
+          cmake .. -DANALOGIQ_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="--coverage"
+
+      - name: Build Tests
+        run: |
+          cd build
+          cmake --build . --target analogiq_tests
+
+      - name: Run Tests and Generate Coverage
+        run: |
+          cd build
+          LLVM_PROFILE_FILE="../default.profraw" ./tests/analogiq_tests
+          cd ..
+          llvm-profdata merge -sparse "default.profraw" -o "default.profdata"
+
+      - name: Generate Coverage Report
+        run: |
+          COVERAGE_OUTPUT=$(llvm-cov report "build/tests/analogiq_tests" -instr-profile="default.profdata" -ignore-filename-regex=".*(_deps|tests).*" || true)
+          echo "$COVERAGE_OUTPUT"
+          
+          # Extract total coverage percentage
+          TOTAL_LINE_COVERAGE=$(echo "$COVERAGE_OUTPUT" | awk '/TOTAL/ { print $(13) }' | tr -d '%')
+          echo "TOTAL_COVERAGE=$TOTAL_LINE_COVERAGE" >> $GITHUB_ENV
+          
+          # Read coverage threshold from file (matching run_tests.sh)
+          COVERAGE_THRESHOLD=$(cat COVERAGE_THRESHOLD)
+          echo "COVERAGE_THRESHOLD=$COVERAGE_THRESHOLD" >> $GITHUB_ENV
+          
+          if (( $(echo "$TOTAL_LINE_COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
+            echo "❌ Coverage $TOTAL_LINE_COVERAGE% is below threshold of $COVERAGE_THRESHOLD%"
+            echo "COVERAGE_FAILED=true" >> $GITHUB_ENV
+          else
+            echo "✅ Coverage $TOTAL_LINE_COVERAGE% meets threshold of $COVERAGE_THRESHOLD%"
+            echo "COVERAGE_FAILED=false" >> $GITHUB_ENV
+          fi
+
+      - name: Generate HTML Coverage Report
+        run: |
+          llvm-cov show "build/tests/analogiq_tests" \
+            -instr-profile="default.profdata" \
+            -format=html -output-dir="coverage_html" \
+            -ignore-filename-regex=".*(_deps|tests).*"
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage_html/
+          retention-days: 30
+
+      - name: Comment Coverage Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const coverage = '${{ env.TOTAL_COVERAGE }}';
+            const threshold = '${{ env.COVERAGE_THRESHOLD }}';
+            const failed = '${{ env.COVERAGE_FAILED }}' === 'true';
+            
+            const comment = `## 📊 Test Coverage Report
+            
+            **Coverage:** ${coverage}%
+            **Threshold:** ${threshold}%
+            **Status:** ${failed ? '❌ Below Threshold' : '✅ Above Threshold'}
+            
+            ${failed ? '⚠️ This PR cannot be merged until coverage meets the threshold.' : '✅ Coverage requirements met.'}
+            
+            📄 [View detailed coverage report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts)`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+      - name: Fail if Coverage Below Threshold
+        if: env.COVERAGE_FAILED == 'true'
+        run: |
+          echo "❌ Coverage check failed. PR cannot be merged."
+          echo "Current coverage: ${{ env.TOTAL_COVERAGE }}%"
+          echo "Required threshold: ${{ env.COVERAGE_THRESHOLD }}%"
+          echo "Please add more tests to improve coverage before merging."
+          exit 1
+
+      - name: Success Message
+        if: env.COVERAGE_FAILED == 'false'
+        run: |
+          echo "✅ Coverage check passed!"
+          echo "Current coverage: ${{ env.TOTAL_COVERAGE }}%"
+          echo "Required threshold: ${{ env.COVERAGE_THRESHOLD }}%" 

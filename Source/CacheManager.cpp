@@ -299,7 +299,12 @@ juce::Image CacheManager::loadFaceplateFromCache(const juce::String &unitId, con
             if (imageData.getSize() > 0)
             {
                 juce::MemoryInputStream stream(imageData, false);
-                return juce::ImageFileFormat::loadFrom(stream);
+                juce::Image result = juce::ImageFileFormat::loadFrom(stream);
+
+                // Clear the memory block to free resources
+                imageData = juce::MemoryBlock();
+
+                return result;
             }
         }
 
@@ -322,7 +327,12 @@ juce::Image CacheManager::loadThumbnailFromCache(const juce::String &unitId, con
         if (imageData.getSize() > 0)
         {
             juce::MemoryInputStream stream(imageData, false);
-            return juce::ImageFileFormat::loadFrom(stream);
+            juce::Image result = juce::ImageFileFormat::loadFrom(stream);
+
+            // Clear the memory block to free resources
+            imageData = juce::MemoryBlock();
+
+            return result;
         }
 
         return juce::Image();
@@ -344,7 +354,12 @@ juce::Image CacheManager::loadControlAssetFromCache(const juce::String &assetPat
         if (imageData.getSize() > 0)
         {
             juce::MemoryInputStream stream(imageData, false);
-            return juce::ImageFileFormat::loadFrom(stream);
+            juce::Image result = juce::ImageFileFormat::loadFrom(stream);
+
+            // Clear the memory block to free resources
+            imageData = juce::MemoryBlock();
+
+            return result;
         }
 
         return juce::Image();
