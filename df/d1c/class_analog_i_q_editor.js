@@ -16,6 +16,7 @@ var class_analog_i_q_editor =
     [ "handleSavePreset", "df/d1c/class_analog_i_q_editor.html#af818f178f4f5594e7d01203b603c6b8e", null ],
     [ "hasUnsavedChanges", "df/d1c/class_analog_i_q_editor.html#a9e01472bf63dbad56460317e7531d7d0", null ],
     [ "markAsModified", "df/d1c/class_analog_i_q_editor.html#a006955b2cdaac571bd9daae48d3fc480", null ],
+    [ "notifyDestruction", "df/d1c/class_analog_i_q_editor.html#a67eb18cf457425056515f2fac87d8e91", null ],
     [ "operator=", "df/d1c/class_analog_i_q_editor.html#ae4243e1e7ef5e3fccc6a2388279bf3b2", null ],
     [ "paint", "df/d1c/class_analog_i_q_editor.html#ac6b5e63604b3ae1dbc22df50a088b300", null ],
     [ "performLoadPreset", "df/d1c/class_analog_i_q_editor.html#ab50f2ecc6e1a81dd51b913e3fc7be961", null ],

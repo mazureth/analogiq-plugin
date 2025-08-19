@@ -5,5 +5,6 @@ var searchData=
   ['lasterrormessage_2',['lastErrorMessage',['../d6/d6a/class_preset_manager.html#ac12f0584a9c1c1b009f712dbeebe00a7',1,'PresetManager']]],
   ['length_3',['length',['../dc/d76/class_gear_control.html#a5a5fd3f4907b9f45ea74ca9dce060e3a',1,'GearControl']]],
   ['library_5fpath_4',['LIBRARY_PATH',['../d6/d6b/namespace_remote_resources.html#ab365246fb518d5984c657f923b7637be',1,'RemoteResources']]],
-  ['loadedimage_5',['loadedImage',['../dc/d76/class_gear_control.html#adfa526484a1a8e236e40352e870e00bd',1,'GearControl']]]
+  ['loadedimage_5',['loadedImage',['../dc/d76/class_gear_control.html#adfa526484a1a8e236e40352e870e00bd',1,'GearControl']]],
+  ['logfile_6',['logFile',['../d5/d18/class_analog_i_q_processor.html#a889d948b189fa683b381e6e974882523',1,'AnalogIQProcessor']]]
 ];

@@ -106,8 +106,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8d1bbe60ebad2e4e83363ca2bd7d87ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="memitem:a67ce93108650922d223610aeba7b1c65" id="r_a67ce93108650922d223610aeba7b1c65"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67ce93108650922d223610aeba7b1c65">GearItem</a> (const juce::String &amp;unitIdParam, const juce::String &amp;nameParam, const juce::String &amp;manufacturerParam, const juce::String &amp;categoryParam, const juce::String &amp;versionParam, const juce::String &amp;schemaPathParam, const juce::String &amp;thumbnailImageParam, const juce::StringArray &amp;tagsParam, <a class="el" href="../../d0/dbe/class_i_network_fetcher.html">INetworkFetcher</a> &amp;networkFetcherParam, <a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;fileSystemParam, <a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;cacheManagerParam, <a class="el" href="../../d2/d9a/_gear_item_8h.html#a77e0c5e3b198c001abd1e74890a16771">GearType</a> typeParam=<a class="el" href="../../d2/d9a/_gear_item_8h.html#a77e0c5e3b198c001abd1e74890a16771a6311ae17c1ee52b36e68aaf4ad066387">GearType::Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h.html#a7399b7fdb7d0d7011f384db9a47267dd">GearCategory</a> gearCategoryParam=<a class="el" href="../../d2/d9a/_gear_item_8h.html#a7399b7fdb7d0d7011f384db9a47267dda6311ae17c1ee52b36e68aaf4ad066387">GearCategory::Other</a>, int slotSizeParam=1, const juce::Array&lt; <a class="el" href="../../dc/d76/class_gear_control.html">GearControl</a> &gt; &amp;controlsParam={})</td></tr>
 <tr class="memdesc:a67ce93108650922d223610aeba7b1c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with all parameters.  <br /></td></tr>
-<tr class="memitem:a7f3a7b30d0e2dda8289765167a816f21" id="r_a7f3a7b30d0e2dda8289765167a816f21"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f3a7b30d0e2dda8289765167a816f21">GearItem</a> (const juce::String &amp;nameParam, const juce::String &amp;manufacturerParam, <a class="el" href="../../d2/d9a/_gear_item_8h.html#a77e0c5e3b198c001abd1e74890a16771">GearType</a> typeParam, <a class="el" href="../../d2/d9a/_gear_item_8h.html#a7399b7fdb7d0d7011f384db9a47267dd">GearCategory</a> categoryParam, int slotSizeParam, const juce::String &amp;imageUrlParam, const juce::Array&lt; <a class="el" href="../../dc/d76/class_gear_control.html">GearControl</a> &gt; &amp;controlsParam, <a class="el" href="../../d0/dbe/class_i_network_fetcher.html">INetworkFetcher</a> &amp;networkFetcherParam, <a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;fileSystemParam, <a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;cacheManagerParam)</td></tr>
-<tr class="memdesc:a7f3a7b30d0e2dda8289765167a816f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy constructor for backward compatibility.  <br /></td></tr>
 <tr class="memitem:a2f69a11aa4bf61bcb84b1b7113651e20" id="r_a2f69a11aa4bf61bcb84b1b7113651e20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f69a11aa4bf61bcb84b1b7113651e20">createInstance</a> (const juce::String &amp;<a class="el" href="#a2c5336f0e8d1dcd39dcdc6d5f847f46b">sourceUnitId</a>)</td></tr>
 <tr class="memdesc:a2f69a11aa4bf61bcb84b1b7113651e20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new instance of the gear item.  <br /></td></tr>
 <tr class="memitem:a19b4b97fb948b3f32dcfadc6fd42e88a" id="r_a19b4b97fb948b3f32dcfadc6fd42e88a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19b4b97fb948b3f32dcfadc6fd42e88a">resetToSource</a> ()</td></tr>
@@ -167,7 +165,7 @@ Private Attributes</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00240">240</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad224edf639f38f9a1eec5664ce80dceb" name="ad224edf639f38f9a1eec5664ce80dceb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad224edf639f38f9a1eec5664ce80dceb">&#9670;&#160;</a></span>GearItem() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad224edf639f38f9a1eec5664ce80dceb">&#9670;&#160;</a></span>GearItem() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -194,9 +192,9 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">248</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00495">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00439">category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00444">categoryString</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00494">fileSystem</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">isInstance</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00437">manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00436">name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00493">networkFetcher</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00029">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00442">schemaPath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">slotSize</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00427">sourceUnitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00445">tags</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00443">thumbnailImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00438">type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00435">unitId</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00441">version</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00450">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00395">category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00400">categoryString</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00405">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">fileSystem</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00382">isInstance</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00393">manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00392">name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00448">networkFetcher</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00029">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00398">schemaPath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00396">slotSize</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00383">sourceUnitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00401">tags</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00399">thumbnailImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00394">type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00391">unitId</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00397">version</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>.</p>
 
 </div>
 </div>
@@ -228,12 +226,12 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00274">274</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00448">faceplateImage</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00446">image</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00405">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00404">faceplateImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00402">image</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00401">tags</a>.</p>
 
 </div>
 </div>
 <a id="a67ce93108650922d223610aeba7b1c65" name="a67ce93108650922d223610aeba7b1c65"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a67ce93108650922d223610aeba7b1c65">&#9670;&#160;</a></span>GearItem() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a67ce93108650922d223610aeba7b1c65">&#9670;&#160;</a></span>GearItem() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -346,105 +344,14 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00309">309</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00330">330</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
 <p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00029">Other</a>.</p>
 
 </div>
 </div>
-<a id="a7f3a7b30d0e2dda8289765167a816f21" name="a7f3a7b30d0e2dda8289765167a816f21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7f3a7b30d0e2dda8289765167a816f21">&#9670;&#160;</a></span>GearItem() <span class="overload">[3/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">GearItem::GearItem </td>
-          <td>(</td>
-          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>nameParam</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>manufacturerParam</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d2/d9a/_gear_item_8h.html#a77e0c5e3b198c001abd1e74890a16771">GearType</a></td>          <td class="paramname"><span class="paramname"><em>typeParam</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d2/d9a/_gear_item_8h.html#a7399b7fdb7d0d7011f384db9a47267dd">GearCategory</a></td>          <td class="paramname"><span class="paramname"><em>categoryParam</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>slotSizeParam</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>imageUrlParam</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const juce::Array&lt; <a class="el" href="../../dc/d76/class_gear_control.html">GearControl</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>controlsParam</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d0/dbe/class_i_network_fetcher.html">INetworkFetcher</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>networkFetcherParam</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d6/d20/class_i_file_system.html">IFileSystem</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fileSystemParam</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cacheManagerParam</em></span>&#160;)</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Legacy constructor for backward compatibility. </p>
-<p>TODO: Remove this constructor and all references to it. There is no need for legacy constructors if the app has never been released.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">nameParam</td><td>Name of the gear </td></tr>
-    <tr><td class="paramname">manufacturerParam</td><td>Manufacturer name </td></tr>
-    <tr><td class="paramname">typeParam</td><td>Type of gear </td></tr>
-    <tr><td class="paramname">categoryParam</td><td>Category of gear </td></tr>
-    <tr><td class="paramname">slotSizeParam</td><td>Size in rack slots </td></tr>
-    <tr><td class="paramname">imageUrlParam</td><td>Path to image </td></tr>
-    <tr><td class="paramname">controlsParam</td><td>Array of controls </td></tr>
-    <tr><td class="paramname">networkFetcherParam</td><td>Reference to network fetcher </td></tr>
-    <tr><td class="paramname">fileSystemParam</td><td>Reference to file system </td></tr>
-    <tr><td class="paramname">cacheManagerParam</td><td>Reference to cache manager </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">377</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
-
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00495">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00439">category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00444">categoryString</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00041">Compressor</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00040">EQ</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00494">fileSystem</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00437">manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00436">name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00493">networkFetcher</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00043">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00042">Preamp</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00442">schemaPath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">slotSize</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00445">tags</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00443">thumbnailImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00438">type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00435">unitId</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00441">version</a>.</p>
-
-</div>
-</div>
 <a id="afe16073b0871af2cde7f3000fefeca0a" name="afe16073b0871af2cde7f3000fefeca0a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe16073b0871af2cde7f3000fefeca0a">&#9670;&#160;</a></span>GearItem() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#afe16073b0871af2cde7f3000fefeca0a">&#9670;&#160;</a></span>GearItem() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -492,9 +399,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">466</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">422</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00495">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00439">category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00444">categoryString</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00448">faceplateImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00494">fileSystem</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00446">image</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00425">instanceId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">isInstance</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00437">manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00436">name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00493">networkFetcher</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00442">schemaPath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">slotSize</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00427">sourceUnitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00445">tags</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00443">thumbnailImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00438">type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00435">unitId</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00441">version</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00450">cacheManager</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00395">category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00400">categoryString</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00405">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00404">faceplateImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">fileSystem</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00402">image</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00381">instanceId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00382">isInstance</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00393">manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00392">name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00448">networkFetcher</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00398">schemaPath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00396">slotSize</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00383">sourceUnitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00401">tags</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00399">thumbnailImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00394">type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00391">unitId</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00397">version</a>.</p>
 
 </div>
 </div>
@@ -523,9 +430,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00147">147</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00154">154</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00425">instanceId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">isInstance</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00427">sourceUnitId</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00405">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00381">instanceId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00382">isInstance</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00383">sourceUnitId</a>.</p>
 
 </div>
 </div>
@@ -556,9 +463,9 @@ Private Attributes</h2></td></tr>
 <p>Generates a colored placeholder image based on the gear category, with the first letter of the gear name displayed.</p>
 <dl class="section return"><dt>Returns</dt><dd>true if placeholder was successfully created </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00104">104</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00111">111</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00439">category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00041">Compressor</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00040">EQ</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00446">image</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00436">name</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00042">Preamp</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00395">category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00041">Compressor</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00040">EQ</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00402">image</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00392">name</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00042">Preamp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>.</p>
 
@@ -587,9 +494,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00432">432</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00388">388</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">isInstance</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00427">sourceUnitId</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00435">unitId</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00382">isInstance</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00383">sourceUnitId</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00391">unitId</a>.</p>
 
 </div>
 </div>
@@ -637,9 +544,9 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="../../dd/dee/class_gear_item.html" title="Class representing a piece of audio gear.">GearItem</a> instance with the loaded data </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">315</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">319</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00439">category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00041">Compressor</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00040">EQ</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00080">GearControl::Fader</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00494">fileSystem</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00862">CacheManager::getDummy()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00437">manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00436">name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00493">networkFetcher</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00029">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00042">Preamp</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00027">Rack19Inch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00442">schemaPath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00026">Series500</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">slotSize</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00445">tags</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00443">thumbnailImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00438">type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00435">unitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00028">UserCreated</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00206">GearControl::value</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00441">version</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00395">category</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00041">Compressor</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00405">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00040">EQ</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00080">GearControl::Fader</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">fileSystem</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../df/dbf/_cache_manager_8cpp_source.html#l00877">CacheManager::getDummy()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00393">manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00392">name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00448">networkFetcher</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00029">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00042">Preamp</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00027">Rack19Inch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00398">schemaPath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00026">Series500</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00396">slotSize</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00401">tags</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00399">thumbnailImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00394">type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00391">unitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00028">UserCreated</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00206">GearControl::value</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00397">version</a>.</p>
 
 </div>
 </div>
@@ -664,9 +571,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">23</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00495">cacheManager</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00104">createPlaceholderImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00494">fileSystem</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00165">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00446">image</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00493">networkFetcher</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00443">thumbnailImage</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00435">unitId</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00450">cacheManager</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00111">createPlaceholderImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">fileSystem</a>, <a class="el" href="../../de/da8/_gear_library_8h_source.html#l00167">GearLibrary::getFullUrl()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00402">image</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00448">networkFetcher</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00399">thumbnailImage</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00391">unitId</a>.</p>
 
 </div>
 </div>
@@ -688,9 +593,9 @@ Private Attributes</h2></td></tr>
 <p>Resets an instance back to its source state. </p>
 <p>Restores all control values to their initial values and clears instance-specific data. Only has effect if the item is currently an instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00183">183</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00187">187</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">controls</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">isInstance</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00405">controls</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00382">isInstance</a>.</p>
 
 </div>
 </div>
@@ -718,9 +623,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">210</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">214</a> of file <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html">GearItem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00444">categoryString</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00080">GearControl::Fader</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00494">fileSystem</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00425">instanceId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">isInstance</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00437">manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00436">name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00029">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00027">Rack19Inch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00442">schemaPath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00026">Series500</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">slotSize</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00427">sourceUnitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00445">tags</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00443">thumbnailImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00438">type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00435">unitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00028">UserCreated</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00441">version</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00400">categoryString</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00405">controls</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00080">GearControl::Fader</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">fileSystem</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00381">instanceId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00382">isInstance</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00393">manufacturer</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00392">name</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00029">Other</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00027">Rack19Inch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00398">schemaPath</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00026">Series500</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00396">slotSize</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00383">sourceUnitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00401">tags</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00399">thumbnailImage</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00394">type</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00391">unitId</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00028">UserCreated</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00397">version</a>.</p>
 
 </div>
 </div>
@@ -745,9 +650,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00495">495</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00450">450</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>.</p>
 
 </div>
 </div>
@@ -763,9 +668,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00439">439</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00395">395</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00104">createPlaceholderImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00111">createPlaceholderImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>.</p>
 
 </div>
 </div>
@@ -781,9 +686,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00444">444</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00400">400</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00186">GearLibrary::shouldShowItem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00186">GearLibrary::shouldShowItem()</a>.</p>
 
 </div>
 </div>
@@ -799,9 +704,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">449</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00405">405</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00147">createInstance()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01813">Rack::fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01337">Rack::fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01100">Rack::fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01575">Rack::fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">Rack::parseSchema()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00183">resetToSource()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00274">~GearItem()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00052">Rack::~Rack()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00154">createInstance()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01813">Rack::fetchButtonSpriteSheet()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01337">Rack::fetchFaderImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01100">Rack::fetchKnobImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l01575">Rack::fetchSwitchSpriteSheet()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">Rack::parseSchema()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00187">resetToSource()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00274">~GearItem()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00052">Rack::~Rack()</a>.</p>
 
 </div>
 </div>
@@ -817,9 +722,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00448">448</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00404">404</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">Rack::fetchFaceplateImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">Rack::getSlotHeight()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00274">~GearItem()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00052">Rack::~Rack()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">Rack::fetchFaceplateImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00095">Rack::getSlotHeight()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00274">~GearItem()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00052">Rack::~Rack()</a>.</p>
 
 </div>
 </div>
@@ -835,7 +740,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00447">447</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00403">403</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">Rack::fetchFaceplateImage()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00571">Rack::parseSchema()</a>.</p>
 
@@ -861,9 +766,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00494">494</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00449">449</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>
@@ -879,9 +784,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00446">446</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00402">402</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00104">createPlaceholderImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00274">~GearItem()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00052">Rack::~Rack()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00111">createPlaceholderImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00274">~GearItem()</a>, and <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00052">Rack::~Rack()</a>.</p>
 
 </div>
 </div>
@@ -899,9 +804,9 @@ Private Attributes</h2></td></tr>
 
 <p>Unique identifier for this instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00425">425</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00381">381</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00147">createInstance()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00154">createInstance()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>
@@ -919,9 +824,9 @@ Private Attributes</h2></td></tr>
 
 <p>Whether this is an instance of another item. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00426">426</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00382">382</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00147">createInstance()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00432">isInstanceOf()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00183">resetToSource()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00154">createInstance()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00388">isInstanceOf()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00187">resetToSource()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>
@@ -937,9 +842,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00437">437</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00393">393</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00186">GearLibrary::shouldShowItem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00186">GearLibrary::shouldShowItem()</a>.</p>
 
 </div>
 </div>
@@ -955,9 +860,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00436">436</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00392">392</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00104">createPlaceholderImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00186">GearLibrary::shouldShowItem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00111">createPlaceholderImage()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00186">GearLibrary::shouldShowItem()</a>.</p>
 
 </div>
 </div>
@@ -981,9 +886,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00493">493</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00448">448</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>.</p>
 
 </div>
 </div>
@@ -999,9 +904,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00442">442</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00398">398</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00450">Rack::fetchSchemaForGearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00450">Rack::fetchSchemaForGearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>
@@ -1017,9 +922,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00440">440</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00396">396</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>
@@ -1037,9 +942,9 @@ Private Attributes</h2></td></tr>
 
 <p>The unitId of the source item if this is an instance. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00427">427</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00383">383</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00147">createInstance()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00432">isInstanceOf()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00154">createInstance()</a>, <a class="el" href="../../d6/d59/_preset_manager_8cpp_source.html#l00208">PresetManager::deserializeJSONToRack()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00388">isInstanceOf()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>
@@ -1055,9 +960,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00445">445</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00401">401</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>, and <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00186">GearLibrary::shouldShowItem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>, <a class="el" href="../../d9/da8/_gear_library_8cpp_source.html#l00186">GearLibrary::shouldShowItem()</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00274">~GearItem()</a>.</p>
 
 </div>
 </div>
@@ -1073,9 +978,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00443">443</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00399">399</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>
@@ -1091,9 +996,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00438">438</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00394">394</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>
@@ -1109,9 +1014,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00435">435</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00391">391</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">Rack::fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00450">Rack::fetchSchemaForGearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00432">isInstanceOf()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">Rack::itemDropped()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00862">Rack::fetchFaceplateImage()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00450">Rack::fetchSchemaForGearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00388">isInstanceOf()</a>, <a class="el" href="../../d0/d7a/_rack_8cpp_source.html#l00259">Rack::itemDropped()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00023">loadImage()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>
@@ -1127,9 +1032,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00441">441</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00397">397</a> of file <a class="el" href="../../d2/d9a/_gear_item_8h_source.html">GearItem.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00466">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00377">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00315">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00210">saveToJSON()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00248">GearItem()</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00422">GearItem()</a>, <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00319">loadFromJSON()</a>, and <a class="el" href="../../d9/de3/_gear_item_8cpp_source.html#l00214">saveToJSON()</a>.</p>
 
 </div>
 </div>

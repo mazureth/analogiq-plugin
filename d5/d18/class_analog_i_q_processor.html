@@ -170,9 +170,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae5ca394b208dcf866db3a0f88f38d20b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads the state of all gear instances from a rack.  <br /></td></tr>
 <tr class="memitem:ad1163d9f3ca078c4c9b8aaab53f981ad" id="r_ad1163d9f3ca078c4c9b8aaab53f981ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad1163d9f3ca078c4c9b8aaab53f981ad">resetAllInstances</a> ()</td></tr>
 <tr class="memdesc:ad1163d9f3ca078c4c9b8aaab53f981ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets all gear instances to their default state.  <br /></td></tr>
+<tr class="memitem:a4ca8ca2eb94909eb5903076e6eb5618d" id="r_a4ca8ca2eb94909eb5903076e6eb5618d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ca8ca2eb94909eb5903076e6eb5618d">clearRackReference</a> ()</td></tr>
+<tr class="memdesc:a4ca8ca2eb94909eb5903076e6eb5618d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the stored rack reference when the editor is destroyed. This prevents using a dangling pointer for fallback operations.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
+<tr class="memitem:a49f4f550f29af92aedecb3fdda5dc837" id="r_a49f4f550f29af92aedecb3fdda5dc837"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49f4f550f29af92aedecb3fdda5dc837">logToFile</a> (const juce::String &amp;message)</td></tr>
+<tr class="memdesc:a49f4f550f29af92aedecb3fdda5dc837"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a message to the log file.  <br /></td></tr>
+<tr class="memitem:a1f314caf0892e6496c4f0eb1e811f313" id="r_a1f314caf0892e6496c4f0eb1e811f313"><td class="memItemLeft" align="right" valign="top">juce::String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f314caf0892e6496c4f0eb1e811f313">getLogTimestamp</a> ()</td></tr>
+<tr class="memdesc:a1f314caf0892e6496c4f0eb1e811f313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a formatted timestamp for logging.  <br /></td></tr>
+<tr class="memitem:ae9f1bdc26d412a7bf45d4e9b76bd7a11" id="r_ae9f1bdc26d412a7bf45d4e9b76bd7a11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae9f1bdc26d412a7bf45d4e9b76bd7a11">initializeLogging</a> ()</td></tr>
+<tr class="memdesc:ae9f1bdc26d412a7bf45d4e9b76bd7a11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the logging system.  <br /></td></tr>
+<tr class="memitem:a13a356c5328646892d7d4f3337de06e4" id="r_a13a356c5328646892d7d4f3337de06e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13a356c5328646892d7d4f3337de06e4">logStateTreeStructure</a> (const juce::ValueTree &amp;tree, const juce::String &amp;prefix)</td></tr>
+<tr class="memdesc:a13a356c5328646892d7d4f3337de06e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logs the structure of a ValueTree for debugging.  <br /></td></tr>
+<tr class="memitem:ab8f586c65c0a8043a90001d557ffd6ca" id="r_ab8f586c65c0a8043a90001d557ffd6ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab8f586c65c0a8043a90001d557ffd6ca">logXmlContent</a> (const juce::XmlElement &amp;xml, const juce::String &amp;prefix)</td></tr>
+<tr class="memdesc:ab8f586c65c0a8043a90001d557ffd6ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logs the content of an XML element for debugging.  <br /></td></tr>
 <tr class="memitem:ab5b7b81a0a4951a6cec4c60f2245c7c7" id="r_ab5b7b81a0a4951a6cec4c60f2245c7c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab5b7b81a0a4951a6cec4c60f2245c7c7">AnalogIQProcessor</a> (const <a class="el" href="../../d5/d18/class_analog_i_q_processor.html">AnalogIQProcessor</a> &amp;)=delete</td></tr>
 <tr class="memitem:ade260c46698ba18c43dfe00f33f7594f" id="r_ade260c46698ba18c43dfe00f33f7594f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/d18/class_analog_i_q_processor.html">AnalogIQProcessor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade260c46698ba18c43dfe00f33f7594f">operator=</a> (const <a class="el" href="../../d5/d18/class_analog_i_q_processor.html">AnalogIQProcessor</a> &amp;)=delete</td></tr>
 </table><table class="memberdecls">
@@ -192,6 +204,7 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:aac5d9b49bc6af4c2e6f9c9c1dbdaaafd" id="r_aac5d9b49bc6af4c2e6f9c9c1dbdaaafd"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="../../d4/d9f/class_cache_manager.html">CacheManager</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac5d9b49bc6af4c2e6f9c9c1dbdaaafd">cacheManager</a></td></tr>
 <tr class="memitem:af221fcdbf9ffb072c2901364c76d8b31" id="r_af221fcdbf9ffb072c2901364c76d8b31"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="../../d6/d6a/class_preset_manager.html">PresetManager</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af221fcdbf9ffb072c2901364c76d8b31">presetManager</a></td></tr>
 <tr class="memitem:aab43dbc379ec92ae4978d5f0095fa1ae" id="r_aab43dbc379ec92ae4978d5f0095fa1ae"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="../../d5/d8c/class_gear_library.html">GearLibrary</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab43dbc379ec92ae4978d5f0095fa1ae">gearLibrary</a></td></tr>
+<tr class="memitem:a889d948b189fa683b381e6e974882523" id="r_a889d948b189fa683b381e6e974882523"><td class="memItemLeft" align="right" valign="top">juce::File&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a889d948b189fa683b381e6e974882523">logFile</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -241,7 +254,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00024">24</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00266">fileSystem</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00265">networkFetcher</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00261">state</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00262">undoManager</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00272">fileSystem</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00271">networkFetcher</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00267">state</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00268">undoManager</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="#ab5b7b81a0a4951a6cec4c60f2245c7c7">AnalogIQProcessor()</a>.</p>
 
@@ -272,7 +285,7 @@ Friends</h2></td></tr>
 
 <p>Destructor for <a class="el" href="../../d5/d18/class_analog_i_q_processor.html" title="Main audio processor for the AnalogIQ plugin.">AnalogIQProcessor</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00040">40</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00042">42</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -330,7 +343,7 @@ Friends</h2></td></tr>
 <p>Checks if the plugin accepts MIDI input. </p>
 <dl class="section return"><dt>Returns</dt><dd>false as this plugin does not process MIDI </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00059">59</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00199">199</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -372,7 +385,30 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00141">141</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00281">281</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a4ca8ca2eb94909eb5903076e6eb5618d" name="a4ca8ca2eb94909eb5903076e6eb5618d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ca8ca2eb94909eb5903076e6eb5618d">&#9670;&#160;</a></span>clearRackReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AnalogIQProcessor::clearRackReference </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears the stored rack reference when the editor is destroyed. This prevents using a dangling pointer for fallback operations. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00816">816</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00270">rack</a>.</p>
 
 </div>
 </div>
@@ -402,9 +438,9 @@ Friends</h2></td></tr>
 <p>Creates the plugin's editor. </p>
 <dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="../../df/d1c/class_analog_i_q_editor.html" title="Main editor interface for the AnalogIQ plugin.">AnalogIQEditor</a> instance </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00214">214</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00354">354</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00267">cacheManager</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00266">fileSystem</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00269">gearLibrary</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00263">lastCreatedEditor</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00489">loadInstanceState()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00268">presetManager</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00264">rack</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00273">cacheManager</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00272">fileSystem</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00275">gearLibrary</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00269">lastCreatedEditor</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00774">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00274">presetManager</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00270">rack</a>.</p>
 
 </div>
 </div>
@@ -427,11 +463,11 @@ Friends</h2></td></tr>
 <p>In a real plugin host, this is managed by JUCE. For testing purposes, we return the last created editor.</p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to the active editor, or nullptr if none exists </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00246">246</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00389">389</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00263">lastCreatedEditor</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00269">lastCreatedEditor</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00489">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00372">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00506">resetAllInstances()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00293">saveInstanceState()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00311">saveInstanceStateFromRack()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00774">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00656">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00791">resetAllInstances()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00477">saveInstanceState()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00534">saveInstanceStateFromRack()</a>.</p>
 
 </div>
 </div>
@@ -463,7 +499,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00214">214</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00267">cacheManager</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00273">cacheManager</a>.</p>
 
 </div>
 </div>
@@ -493,7 +529,7 @@ Friends</h2></td></tr>
 <p>Gets the current program index. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 as this plugin has no program support </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00109">109</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00249">249</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -525,7 +561,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00207">207</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00266">fileSystem</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00272">fileSystem</a>.</p>
 
 </div>
 </div>
@@ -557,7 +593,38 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00228">228</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00269">gearLibrary</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00275">gearLibrary</a>.</p>
+
+</div>
+</div>
+<a id="a1f314caf0892e6496c4f0eb1e811f313" name="a1f314caf0892e6496c4f0eb1e811f313"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f314caf0892e6496c4f0eb1e811f313">&#9670;&#160;</a></span>getLogTimestamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">juce::String AnalogIQProcessor::getLogTimestamp </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets a formatted timestamp for logging. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00149">149</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>.</p>
 
 </div>
 </div>
@@ -589,7 +656,7 @@ Friends</h2></td></tr>
 <dd>
 The plugin name as defined in JucePlugin_Name </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00049">49</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00189">189</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -621,7 +688,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00200">200</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00265">networkFetcher</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00271">networkFetcher</a>.</p>
 
 </div>
 </div>
@@ -651,7 +718,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 <p>Gets the number of programs. </p>
 <dl class="section return"><dt>Returns</dt><dd>1 as this plugin has no program support </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00099">99</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00239">239</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -683,7 +750,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00221">221</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00268">presetManager</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00274">presetManager</a>.</p>
 
 </div>
 </div>
@@ -726,7 +793,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Empty string as this plugin has no program support </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00130">130</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00270">270</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -758,9 +825,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00193">193</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00261">state</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00267">state</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00256">getStateInformation()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00275">setStateInformation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00399">getStateInformation()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00459">setStateInformation()</a>.</p>
 
 </div>
 </div>
@@ -795,9 +862,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00256">256</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00399">399</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00193">getState()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00293">saveInstanceState()</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00193">getState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00158">logStateTreeStructure()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00172">logXmlContent()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00477">saveInstanceState()</a>.</p>
 
 </div>
 </div>
@@ -827,7 +894,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 <p>Gets the tail length in seconds. </p>
 <dl class="section return"><dt>Returns</dt><dd>0.0 as this plugin has no tail </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00089">89</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00229">229</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -857,7 +924,38 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 <p>Checks if the plugin has an editor. </p>
 <dl class="section return"><dt>Returns</dt><dd>true as this plugin has an editor </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00204">204</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00344">344</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae9f1bdc26d412a7bf45d4e9b76bd7a11" name="ae9f1bdc26d412a7bf45d4e9b76bd7a11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9f1bdc26d412a7bf45d4e9b76bd7a11">&#9670;&#160;</a></span>initializeLogging()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AnalogIQProcessor::initializeLogging </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes the logging system. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00049">49</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00279">logFile</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>.</p>
 
 </div>
 </div>
@@ -900,7 +998,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the layout is supported (mono or stereo) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00170">170</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00310">310</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -930,7 +1028,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 <p>Checks if the plugin is a MIDI effect. </p>
 <dl class="section return"><dt>Returns</dt><dd>false as this is not a MIDI effect </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00079">79</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00219">219</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -951,11 +1049,11 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p>Loads the state of all gear instances. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00489">489</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00774">774</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00246">getActiveEditor()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00489">loadInstanceState()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00264">rack</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00389">getActiveEditor()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00774">loadInstanceState()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00270">rack</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00214">createEditor()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00489">loadInstanceState()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00354">createEditor()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00774">loadInstanceState()</a>.</p>
 
 </div>
 </div>
@@ -984,9 +1082,116 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 </dl>
 <p>Restores the state of each gear instance in the rack from the plugin's state tree, including control values and settings. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00372">372</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00656">656</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00269">gearLibrary</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00246">getActiveEditor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00264">rack</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00261">state</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00273">cacheManager</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00272">fileSystem</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00275">gearLibrary</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00389">getActiveEditor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00271">networkFetcher</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00270">rack</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00267">state</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>.</p>
+
+</div>
+</div>
+<a id="a13a356c5328646892d7d4f3337de06e4" name="a13a356c5328646892d7d4f3337de06e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13a356c5328646892d7d4f3337de06e4">&#9670;&#160;</a></span>logStateTreeStructure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AnalogIQProcessor::logStateTreeStructure </td>
+          <td>(</td>
+          <td class="paramtype">const juce::ValueTree &amp;</td>          <td class="paramname"><span class="paramname"><em>tree</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>prefix</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logs the structure of a ValueTree for debugging. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00158">158</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00158">logStateTreeStructure()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00399">getStateInformation()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00158">logStateTreeStructure()</a>.</p>
+
+</div>
+</div>
+<a id="a49f4f550f29af92aedecb3fdda5dc837" name="a49f4f550f29af92aedecb3fdda5dc837"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49f4f550f29af92aedecb3fdda5dc837">&#9670;&#160;</a></span>logToFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AnalogIQProcessor::logToFile </td>
+          <td>(</td>
+          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>message</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes a message to the log file. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">92</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00149">getLogTimestamp()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00279">logFile</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00816">clearRackReference()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00354">createEditor()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00399">getStateInformation()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00049">initializeLogging()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00158">logStateTreeStructure()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00172">logXmlContent()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00791">resetAllInstances()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00477">saveInstanceState()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00534">saveInstanceStateFromRack()</a>.</p>
+
+</div>
+</div>
+<a id="ab8f586c65c0a8043a90001d557ffd6ca" name="ab8f586c65c0a8043a90001d557ffd6ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8f586c65c0a8043a90001d557ffd6ca">&#9670;&#160;</a></span>logXmlContent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AnalogIQProcessor::logXmlContent </td>
+          <td>(</td>
+          <td class="paramtype">const juce::XmlElement &amp;</td>          <td class="paramname"><span class="paramname"><em>xml</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const juce::String &amp;</td>          <td class="paramname"><span class="paramname"><em>prefix</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logs the content of an XML element for debugging. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00172">172</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00172">logXmlContent()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00399">getStateInformation()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00172">logXmlContent()</a>.</p>
 
 </div>
 </div>
@@ -1053,7 +1258,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00152">152</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00292">292</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -1095,7 +1300,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00187">187</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00327">327</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -1125,7 +1330,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 <p>Checks if the plugin produces MIDI output. </p>
 <dl class="section return"><dt>Returns</dt><dd>false as this plugin does not produce MIDI </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00069">69</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00209">209</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -1154,7 +1359,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p>Releases resources used by the processor. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00160">160</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00300">300</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -1176,9 +1381,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 <p>Resets all gear instances to their default state. </p>
 <p>Calls <a class="el" href="#ad1163d9f3ca078c4c9b8aaab53f981ad" title="Resets all gear instances to their default state.">resetAllInstances()</a> on the rack to restore all gear instances to their default settings. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00506">506</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00791">791</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00246">getActiveEditor()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00264">rack</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00389">getActiveEditor()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00270">rack</a>.</p>
 
 </div>
 </div>
@@ -1200,11 +1405,11 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 <p>Saves the current state of all gear instances. </p>
 <p>Saves the state of each gear instance in the rack, including control values and settings, to the plugin's state tree. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00293">293</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00477">477</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00246">getActiveEditor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00264">rack</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00311">saveInstanceStateFromRack()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00261">state</a>.</p>
+<p class="reference">References <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00389">getActiveEditor()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00270">rack</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00534">saveInstanceStateFromRack()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00267">state</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00268">undoManager</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00256">getStateInformation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00399">getStateInformation()</a>.</p>
 
 </div>
 </div>
@@ -1236,11 +1441,11 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00311">311</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00534">534</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00246">getActiveEditor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00264">rack</a>, and <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00079">GearControl::Button</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00389">getActiveEditor()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00270">rack</a>, <a class="el" href="../../d2/d9a/_gear_item_8h_source.html#l00081">GearControl::Switch</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00268">undoManager</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00293">saveInstanceState()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00477">saveInstanceState()</a>.</p>
 
 </div>
 </div>
@@ -1276,7 +1481,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00119">119</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00259">259</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
 </div>
 </div>
@@ -1316,9 +1521,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00275">275</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00459">459</a> of file <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html">AnalogIQProcessor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00193">getState()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00261">state</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00193">getState()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00267">state</a>.</p>
 
 </div>
 </div>
@@ -1345,7 +1550,7 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00032">32</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00032">AnalogIQProcessorTests</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00266">fileSystem</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00265">networkFetcher</a>.</p>
+<p class="reference">References <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00032">AnalogIQProcessorTests</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00272">fileSystem</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00271">networkFetcher</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00032">AnalogIQProcessorTests</a>.</p>
 
@@ -1372,9 +1577,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00267">267</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00273">273</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00214">createEditor()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00214">getCacheManager()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00354">createEditor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00214">getCacheManager()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00656">loadInstanceState()</a>.</p>
 
 </div>
 </div>
@@ -1398,9 +1603,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00266">266</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00272">272</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00024">AnalogIQProcessor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00032">AnalogIQProcessorTests</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00214">createEditor()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00207">getFileSystem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00024">AnalogIQProcessor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00032">AnalogIQProcessorTests</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00354">createEditor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00207">getFileSystem()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00656">loadInstanceState()</a>.</p>
 
 </div>
 </div>
@@ -1424,9 +1629,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00269">269</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00275">275</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00214">createEditor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00228">getGearLibrary()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00372">loadInstanceState()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00354">createEditor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00228">getGearLibrary()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00656">loadInstanceState()</a>.</p>
 
 </div>
 </div>
@@ -1452,9 +1657,35 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p>Pointer to the last created editor (for testing) </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00263">263</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00269">269</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00214">createEditor()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00246">getActiveEditor()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00354">createEditor()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00389">getActiveEditor()</a>.</p>
+
+</div>
+</div>
+<a id="a889d948b189fa683b381e6e974882523" name="a889d948b189fa683b381e6e974882523"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a889d948b189fa683b381e6e974882523">&#9670;&#160;</a></span>logFile</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">juce::File AnalogIQProcessor::logFile</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00279">279</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00049">initializeLogging()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00092">logToFile()</a>.</p>
 
 </div>
 </div>
@@ -1480,9 +1711,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p>Reference to the network fetcher for making HTTP requests. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00265">265</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00271">271</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00024">AnalogIQProcessor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00032">AnalogIQProcessorTests</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00200">getNetworkFetcher()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00024">AnalogIQProcessor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00032">AnalogIQProcessorTests</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00200">getNetworkFetcher()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00656">loadInstanceState()</a>.</p>
 
 </div>
 </div>
@@ -1506,9 +1737,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00268">268</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00274">274</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00214">createEditor()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00221">getPresetManager()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00354">createEditor()</a>, and <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00221">getPresetManager()</a>.</p>
 
 </div>
 </div>
@@ -1534,9 +1765,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p>Pointer to the rack (for testing) </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00264">264</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00270">270</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00214">createEditor()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00489">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00372">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00506">resetAllInstances()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00293">saveInstanceState()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00311">saveInstanceStateFromRack()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00816">clearRackReference()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00354">createEditor()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00774">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00656">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00791">resetAllInstances()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00477">saveInstanceState()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00534">saveInstanceStateFromRack()</a>.</p>
 
 </div>
 </div>
@@ -1562,9 +1793,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p>The processor's state tree. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00261">261</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00267">267</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00024">AnalogIQProcessor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00193">getState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00372">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00293">saveInstanceState()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00275">setStateInformation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00024">AnalogIQProcessor()</a>, <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00193">getState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00656">loadInstanceState()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00477">saveInstanceState()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00459">setStateInformation()</a>.</p>
 
 </div>
 </div>
@@ -1590,9 +1821,9 @@ The plugin name as defined in JucePlugin_Name </dd></dl>
 
 <p>Undo manager for state changes. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00262">262</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html#l00268">268</a> of file <a class="el" href="../../d9/d6c/_analog_i_q_processor_8h_source.html">AnalogIQProcessor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00024">AnalogIQProcessor()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00024">AnalogIQProcessor()</a>, <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00477">saveInstanceState()</a>, and <a class="el" href="../../df/dae/_analog_i_q_processor_8cpp_source.html#l00534">saveInstanceStateFromRack()</a>.</p>
 
 </div>
 </div>

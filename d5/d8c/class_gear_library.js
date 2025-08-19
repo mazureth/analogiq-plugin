@@ -3,7 +3,7 @@ var class_gear_library =
     [ "GearLibrary", "d5/d8c/class_gear_library.html#a9657ffa799c31c85824ff701cccce8e0", null ],
     [ "~GearLibrary", "d5/d8c/class_gear_library.html#a335f5b491cfe88aaa3532c4bc98b96ef", null ],
     [ "GearLibrary", "d5/d8c/class_gear_library.html#a8847365d71a3c1fb7d960e4db32e0cd0", null ],
-    [ "addItem", "d5/d8c/class_gear_library.html#a828b7ebaed113c09e531af6b86fd6d77", null ],
+    [ "addItem", "d5/d8c/class_gear_library.html#af10ec4b45c51cfcf6df072534657bb3c", null ],
     [ "buttonClicked", "d5/d8c/class_gear_library.html#a516672016359784bafda2f25f3770d84", null ],
     [ "clearFavorites", "d5/d8c/class_gear_library.html#a69f6cffdaf797497995dd0232bf23600", null ],
     [ "clearRecentlyUsed", "d5/d8c/class_gear_library.html#a5618f10ac4c618f1aff7169e262d212c", null ],

@@ -160,64 +160,65 @@ $(function(){initNavTree('d7/d31/_draggable_list_box_8h_source.html','../../',''
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                <span class="comment">// Create simple drag image that clearly shows which row is being dragged</span></div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                juce::Image dragImage(juce::Image::ARGB, 200, 40, <span class="keyword">true</span>);</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                juce::Graphics g(dragImage);</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                g.fillAll(juce::Colours::lime.withAlpha(0.8f)); <span class="comment">// Brighter color to see the drag image</span></div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                g.setColour(juce::Colours::black);</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                <span class="comment">// Show more info in the drag image for debugging</span></div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                <span class="keywordflow">if</span> (rowToDrag &lt; getModel()-&gt;getNumRows())</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                {</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                    juce::String itemText = <span class="stringliteral">&quot;Row &quot;</span> + juce::String(rowToDrag);</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                    g.drawText(itemText,</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                               dragImage.getBounds().reduced(2),</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                               juce::Justification::centred,</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                               <span class="keyword">true</span>);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                }</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="comment">// Start the actual drag operation with a bright visible image</span></div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                dndContainer-&gt;startDragging(dragData, <span class="keyword">this</span>, juce::ScaledImage(dragImage), <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            }</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            {</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                <span class="comment">// Show component hierarchy for debugging</span></div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                juce::Component *parent = getParentComponent();</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                <span class="keywordflow">while</span> (parent != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                {</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                    parent = parent-&gt;getParentComponent();</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                }</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            }</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        }</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="comment">// Always let the base class handle the event too</span></div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        ListBox::mouseDrag(e);</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                juce::Graphics g(dragImage);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                g.fillAll(juce::Colours::lime.withAlpha(0.8f)); <span class="comment">// Brighter color to see the drag image</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                g.setColour(juce::Colours::black);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                <span class="comment">// Show more info in the drag image for debugging</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                <span class="keywordflow">if</span> (rowToDrag &lt; getModel()-&gt;getNumRows())</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                    juce::String itemText = <span class="stringliteral">&quot;Row &quot;</span> + juce::String(rowToDrag);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                    g.drawText(itemText,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                               dragImage.getBounds().reduced(2),</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                               juce::Justification::centred,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                               <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                <span class="comment">// Start the actual drag operation with a bright visible image</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                dndContainer-&gt;startDragging(dragData, <span class="keyword">this</span>, juce::ScaledImage(dragImage), <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                <span class="comment">// Show component hierarchy for debugging</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                juce::Component *parent = getParentComponent();</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                <span class="keywordflow">while</span> (parent != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                    parent = parent-&gt;getParentComponent();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            }</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="comment">// Always let the base class handle the event too</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        ListBox::mouseDrag(e);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    }</div>
 </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span></div>
-<div class="foldopen" id="foldopen00143" data-start="{" data-end="}">
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="../../d6/d30/class_draggable_list_box.html#a8ac86db89a740fff843f2a2e5bd61d92">  143</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="../../d6/d30/class_draggable_list_box.html#a8ac86db89a740fff843f2a2e5bd61d92">mouseUp</a>(<span class="keyword">const</span> juce::MouseEvent &amp;e)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="comment">// Reset drag state</span></div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#ac1c8ded13aa92a0d8fe3f71011359cb8">isDragging</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#a15e2e9227ebb1b618394ae0c2ca5bfae">draggedRow</a> = -1;</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="comment">// Let the base class handle the event</span></div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        ListBox::mouseUp(e);</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span></div>
+<div class="foldopen" id="foldopen00144" data-start="{" data-end="}">
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="../../d6/d30/class_draggable_list_box.html#a8ac86db89a740fff843f2a2e5bd61d92">  144</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="../../d6/d30/class_draggable_list_box.html#a8ac86db89a740fff843f2a2e5bd61d92">mouseUp</a>(<span class="keyword">const</span> juce::MouseEvent &amp;e)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="comment">// Reset drag state</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#ac1c8ded13aa92a0d8fe3f71011359cb8">isDragging</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#a15e2e9227ebb1b618394ae0c2ca5bfae">draggedRow</a> = -1;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="comment">// Let the base class handle the event</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        ListBox::mouseUp(e);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    }</div>
 </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="../../d6/d30/class_draggable_list_box.html#ac1c8ded13aa92a0d8fe3f71011359cb8">  154</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#ac1c8ded13aa92a0d8fe3f71011359cb8">isDragging</a> = <span class="keyword">false</span>;            </div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="../../d6/d30/class_draggable_list_box.html#a15e2e9227ebb1b618394ae0c2ca5bfae">  155</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#a15e2e9227ebb1b618394ae0c2ca5bfae">draggedRow</a> = -1;                </div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="../../d6/d30/class_draggable_list_box.html#afb1c27c19109d9f5c3e535faa7da56ae">  156</a></span>    juce::Point&lt;int&gt; <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#afb1c27c19109d9f5c3e535faa7da56ae">dragStartPosition</a>; </div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>};</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="../../d6/d30/class_draggable_list_box.html#ac1c8ded13aa92a0d8fe3f71011359cb8">  155</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#ac1c8ded13aa92a0d8fe3f71011359cb8">isDragging</a> = <span class="keyword">false</span>;            </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="../../d6/d30/class_draggable_list_box.html#a15e2e9227ebb1b618394ae0c2ca5bfae">  156</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#a15e2e9227ebb1b618394ae0c2ca5bfae">draggedRow</a> = -1;                </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="../../d6/d30/class_draggable_list_box.html#afb1c27c19109d9f5c3e535faa7da56ae">  157</a></span>    juce::Point&lt;int&gt; <a class="code hl_variable" href="../../d6/d30/class_draggable_list_box.html#afb1c27c19109d9f5c3e535faa7da56ae">dragStartPosition</a>; </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>};</div>
 </div>
-<div class="ttc" id="aclass_draggable_list_box_html_a15e2e9227ebb1b618394ae0c2ca5bfae"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#a15e2e9227ebb1b618394ae0c2ca5bfae">DraggableListBox::draggedRow</a></div><div class="ttdeci">int draggedRow</div><div class="ttdoc">The index of the row being dragged.</div><div class="ttdef"><b>Definition</b> <a href="#l00155">DraggableListBox.h:155</a></div></div>
+<div class="ttc" id="aclass_draggable_list_box_html_a15e2e9227ebb1b618394ae0c2ca5bfae"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#a15e2e9227ebb1b618394ae0c2ca5bfae">DraggableListBox::draggedRow</a></div><div class="ttdeci">int draggedRow</div><div class="ttdoc">The index of the row being dragged.</div><div class="ttdef"><b>Definition</b> <a href="#l00156">DraggableListBox.h:156</a></div></div>
 <div class="ttc" id="aclass_draggable_list_box_html_a26aa332ad50a9ba1991023ea20ce3834"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#a26aa332ad50a9ba1991023ea20ce3834">DraggableListBox::mouseDown</a></div><div class="ttdeci">void mouseDown(const juce::MouseEvent &amp;e) override</div><div class="ttdoc">Handles mouse down events.</div><div class="ttdef"><b>Definition</b> <a href="#l00053">DraggableListBox.h:53</a></div></div>
-<div class="ttc" id="aclass_draggable_list_box_html_a8ac86db89a740fff843f2a2e5bd61d92"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#a8ac86db89a740fff843f2a2e5bd61d92">DraggableListBox::mouseUp</a></div><div class="ttdeci">void mouseUp(const juce::MouseEvent &amp;e) override</div><div class="ttdoc">Handles mouse up events.</div><div class="ttdef"><b>Definition</b> <a href="#l00143">DraggableListBox.h:143</a></div></div>
+<div class="ttc" id="aclass_draggable_list_box_html_a8ac86db89a740fff843f2a2e5bd61d92"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#a8ac86db89a740fff843f2a2e5bd61d92">DraggableListBox::mouseUp</a></div><div class="ttdeci">void mouseUp(const juce::MouseEvent &amp;e) override</div><div class="ttdoc">Handles mouse up events.</div><div class="ttdef"><b>Definition</b> <a href="#l00144">DraggableListBox.h:144</a></div></div>
 <div class="ttc" id="aclass_draggable_list_box_html_aafd67fa6bb588af621d095c98a85617f"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#aafd67fa6bb588af621d095c98a85617f">DraggableListBox::mouseDrag</a></div><div class="ttdeci">void mouseDrag(const juce::MouseEvent &amp;e) override</div><div class="ttdoc">Handles mouse drag events.</div><div class="ttdef"><b>Definition</b> <a href="#l00080">DraggableListBox.h:80</a></div></div>
-<div class="ttc" id="aclass_draggable_list_box_html_ac1c8ded13aa92a0d8fe3f71011359cb8"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#ac1c8ded13aa92a0d8fe3f71011359cb8">DraggableListBox::isDragging</a></div><div class="ttdeci">bool isDragging</div><div class="ttdoc">Whether a drag operation is in progress.</div><div class="ttdef"><b>Definition</b> <a href="#l00154">DraggableListBox.h:154</a></div></div>
+<div class="ttc" id="aclass_draggable_list_box_html_ac1c8ded13aa92a0d8fe3f71011359cb8"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#ac1c8ded13aa92a0d8fe3f71011359cb8">DraggableListBox::isDragging</a></div><div class="ttdeci">bool isDragging</div><div class="ttdoc">Whether a drag operation is in progress.</div><div class="ttdef"><b>Definition</b> <a href="#l00155">DraggableListBox.h:155</a></div></div>
 <div class="ttc" id="aclass_draggable_list_box_html_ae2919ad973996ff6ae6f02e8153b3fbb"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#ae2919ad973996ff6ae6f02e8153b3fbb">DraggableListBox::DraggableListBox</a></div><div class="ttdeci">DraggableListBox(const juce::String &amp;name, juce::ListBoxModel *model)</div><div class="ttdoc">Constructs a new DraggableListBox.</div><div class="ttdef"><b>Definition</b> <a href="#l00032">DraggableListBox.h:32</a></div></div>
-<div class="ttc" id="aclass_draggable_list_box_html_afb1c27c19109d9f5c3e535faa7da56ae"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#afb1c27c19109d9f5c3e535faa7da56ae">DraggableListBox::dragStartPosition</a></div><div class="ttdeci">juce::Point&lt; int &gt; dragStartPosition</div><div class="ttdoc">The starting position of the drag operation.</div><div class="ttdef"><b>Definition</b> <a href="#l00156">DraggableListBox.h:156</a></div></div>
+<div class="ttc" id="aclass_draggable_list_box_html_afb1c27c19109d9f5c3e535faa7da56ae"><div class="ttname"><a href="../../d6/d30/class_draggable_list_box.html#afb1c27c19109d9f5c3e535faa7da56ae">DraggableListBox::dragStartPosition</a></div><div class="ttdeci">juce::Point&lt; int &gt; dragStartPosition</div><div class="ttdoc">The starting position of the drag operation.</div><div class="ttdef"><b>Definition</b> <a href="#l00157">DraggableListBox.h:157</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

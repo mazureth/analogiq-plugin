@@ -3,7 +3,6 @@ var class_gear_item =
     [ "GearItem", "dd/dee/class_gear_item.html#ad224edf639f38f9a1eec5664ce80dceb", null ],
     [ "~GearItem", "dd/dee/class_gear_item.html#a8d1bbe60ebad2e4e83363ca2bd7d87ba", null ],
     [ "GearItem", "dd/dee/class_gear_item.html#a67ce93108650922d223610aeba7b1c65", null ],
-    [ "GearItem", "dd/dee/class_gear_item.html#a7f3a7b30d0e2dda8289765167a816f21", null ],
     [ "GearItem", "dd/dee/class_gear_item.html#afe16073b0871af2cde7f3000fefeca0a", null ],
     [ "createInstance", "dd/dee/class_gear_item.html#a2f69a11aa4bf61bcb84b1b7113651e20", null ],
     [ "createPlaceholderImage", "dd/dee/class_gear_item.html#a108b7a8405950b4eea1ee1a275c9c5a0", null ],

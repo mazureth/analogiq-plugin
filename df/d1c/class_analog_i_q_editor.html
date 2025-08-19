@@ -131,6 +131,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a0a2f16e82841e0522c731be41b7fa978"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a reference to the preset manager.  <br /></td></tr>
 <tr class="memitem:a370222e5b38a8d5ed1503c37d3bd90a7" id="r_a370222e5b38a8d5ed1503c37d3bd90a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d9/dc5/class_notes_panel.html">NotesPanel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a370222e5b38a8d5ed1503c37d3bd90a7">getNotesPanel</a> () const</td></tr>
 <tr class="memdesc:a370222e5b38a8d5ed1503c37d3bd90a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a pointer to the notes panel component.  <br /></td></tr>
+<tr class="memitem:a67eb18cf457425056515f2fac87d8e91" id="r_a67eb18cf457425056515f2fac87d8e91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67eb18cf457425056515f2fac87d8e91">notifyDestruction</a> ()</td></tr>
+<tr class="memdesc:a67eb18cf457425056515f2fac87d8e91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies the processor that this editor is being destroyed. This allows the processor to clear any stored references to prevent dangling pointers.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -248,7 +250,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">27</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00176">cacheManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00175">fileSystem</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00234">flatMenuLookAndFeel</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00178">gearLibrary</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00079">getRack()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00181">mainTabs</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00219">menuBarContainer</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">notesPanel</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00186">presetsMenuButton</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00174">processor</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">rack</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00255">showPresetMenu()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">cacheManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00181">fileSystem</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00240">flatMenuLookAndFeel</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00184">gearLibrary</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00079">getRack()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00187">mainTabs</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00225">menuBarContainer</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00189">notesPanel</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00192">presetsMenuButton</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00180">processor</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00188">rack</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00262">showPresetMenu()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="#a02432a0502e82fc7103d96b4030a16bf">AnalogIQEditor()</a>.</p>
 
@@ -306,7 +308,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">136</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00176">cacheManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00175">fileSystem</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00234">flatMenuLookAndFeel</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00178">gearLibrary</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00086">getGearLibrary()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00181">mainTabs</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00219">menuBarContainer</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">notesPanel</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00186">presetsMenuButton</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00174">processor</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">rack</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00255">showPresetMenu()</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">cacheManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00181">fileSystem</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00240">flatMenuLookAndFeel</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00184">gearLibrary</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00086">getGearLibrary()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00187">mainTabs</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00225">menuBarContainer</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00189">notesPanel</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00192">presetsMenuButton</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00180">processor</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00188">rack</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00262">showPresetMenu()</a>.</p>
 
 </div>
 </div>
@@ -337,6 +339,8 @@ Private Attributes</h2></td></tr>
 <p>Cleans up all components through unique_ptr automatic destruction. </p>
 
 <p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00207">207</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00192">presetsMenuButton</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00180">processor</a>.</p>
 
 </div>
 </div>
@@ -393,11 +397,11 @@ Private Attributes</h2></td></tr>
 
 <p>Clears the modified state. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00626">626</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00633">633</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00195">isModified</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00201">isModified</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00514">handleSavePreset()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00634">performLoadPreset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00521">handleSavePreset()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00641">performLoadPreset()</a>.</p>
 
 </div>
 </div>
@@ -429,7 +433,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00086">86</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00178">gearLibrary</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00184">gearLibrary</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>.</p>
 
@@ -463,7 +467,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00100">100</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">notesPanel</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00189">notesPanel</a>.</p>
 
 </div>
 </div>
@@ -495,7 +499,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00093">93</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>.</p>
 
 </div>
 </div>
@@ -527,7 +531,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00079">79</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">rack</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00188">rack</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>.</p>
 
@@ -564,11 +568,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00580">580</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00587">587</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00196">currentPresetName</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00202">currentPresetName</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00442">showDeletePresetDialog()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00449">showDeletePresetDialog()</a>.</p>
 
 </div>
 </div>
@@ -603,11 +607,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00537">537</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00544">544</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00634">performLoadPreset()</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">rack</a>.</p>
+<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00641">performLoadPreset()</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00188">rack</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00385">showLoadPresetDialog()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00255">showPresetMenu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00392">showLoadPresetDialog()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00262">showPresetMenu()</a>.</p>
 
 </div>
 </div>
@@ -642,11 +646,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00514">514</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00521">521</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00626">clearModifiedState()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00196">currentPresetName</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">rack</a>.</p>
+<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00633">clearModifiedState()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00202">currentPresetName</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00188">rack</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00305">showSavePresetDialog()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00312">showSavePresetDialog()</a>.</p>
 
 </div>
 </div>
@@ -676,9 +680,9 @@ Private Attributes</h2></td></tr>
 <p>Checks if the current rack state has unsaved changes. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if there are unsaved changes, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00613">613</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00620">620</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00195">isModified</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00201">isModified</a>.</p>
 
 </div>
 </div>
@@ -707,9 +711,28 @@ Private Attributes</h2></td></tr>
 
 <p>Marks the current state as having unsaved changes. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00618">618</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00625">625</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00195">isModified</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00201">isModified</a>.</p>
+
+</div>
+</div>
+<a id="a67eb18cf457425056515f2fac87d8e91" name="a67eb18cf457425056515f2fac87d8e91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67eb18cf457425056515f2fac87d8e91">&#9670;&#160;</a></span>notifyDestruction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AnalogIQEditor::notifyDestruction </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notifies the processor that this editor is being destroyed. This allows the processor to clear any stored references to prevent dangling pointers. </p>
 
 </div>
 </div>
@@ -776,7 +799,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00219">219</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00226">226</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
 </div>
 </div>
@@ -811,11 +834,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00634">634</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00641">641</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00626">clearModifiedState()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00196">currentPresetName</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00178">gearLibrary</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">rack</a>.</p>
+<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00633">clearModifiedState()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00202">currentPresetName</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00184">gearLibrary</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00188">rack</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00537">handleLoadPreset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00544">handleLoadPreset()</a>.</p>
 
 </div>
 </div>
@@ -844,7 +867,7 @@ Private Attributes</h2></td></tr>
 
 <p>Refreshes the preset menu with current preset list. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00606">606</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00613">613</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
 </div>
 </div>
@@ -874,9 +897,9 @@ Private Attributes</h2></td></tr>
 <p>Handles resizing of the <a class="el" href="../../df/d1c/class_analog_i_q_editor.html" title="Main editor interface for the AnalogIQ plugin.">AnalogIQEditor</a> component. </p>
 <p>Arranges the menu bar at the top, gear library on the left side (1/4 width), and the tabbed interface (rack and notes) in the remaining space. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00230">230</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00237">237</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00178">gearLibrary</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00181">mainTabs</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00219">menuBarContainer</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00186">presetsMenuButton</a>.</p>
+<p class="reference">References <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00184">gearLibrary</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00187">mainTabs</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00225">menuBarContainer</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00192">presetsMenuButton</a>.</p>
 
 </div>
 </div>
@@ -905,11 +928,11 @@ Private Attributes</h2></td></tr>
 
 <p>Shows a dialog to delete a preset. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00442">442</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00449">449</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00580">handleDeletePreset()</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>.</p>
+<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00587">handleDeletePreset()</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00255">showPresetMenu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00262">showPresetMenu()</a>.</p>
 
 </div>
 </div>
@@ -938,11 +961,11 @@ Private Attributes</h2></td></tr>
 
 <p>Shows a dialog to load a preset. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00385">385</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00392">392</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00537">handleLoadPreset()</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>.</p>
+<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00544">handleLoadPreset()</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00255">showPresetMenu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00262">showPresetMenu()</a>.</p>
 
 </div>
 </div>
@@ -971,9 +994,9 @@ Private Attributes</h2></td></tr>
 
 <p>Shows the presets popup menu. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00255">255</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00262">262</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00537">handleLoadPreset()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00186">presetsMenuButton</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00442">showDeletePresetDialog()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00385">showLoadPresetDialog()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00305">showSavePresetDialog()</a>.</p>
+<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00544">handleLoadPreset()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00192">presetsMenuButton</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00449">showDeletePresetDialog()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00392">showLoadPresetDialog()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00312">showSavePresetDialog()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>.</p>
 
@@ -1004,11 +1027,11 @@ Private Attributes</h2></td></tr>
 
 <p>Shows a dialog to save a new preset. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00305">305</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00312">312</a> of file <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html">AnalogIQEditor.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00514">handleSavePreset()</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">presetManager</a>.</p>
+<p class="reference">References <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00521">handleSavePreset()</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">presetManager</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00255">showPresetMenu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00262">showPresetMenu()</a>.</p>
 
 </div>
 </div>
@@ -1033,7 +1056,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00176">176</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">182</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>.</p>
 
@@ -1061,9 +1084,9 @@ Private Attributes</h2></td></tr>
 
 <p>Name of the currently loaded preset, if any. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00196">196</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00202">202</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00580">handleDeletePreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00514">handleSavePreset()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00634">performLoadPreset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00587">handleDeletePreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00521">handleSavePreset()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00641">performLoadPreset()</a>.</p>
 
 </div>
 </div>
@@ -1087,7 +1110,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00175">175</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00181">181</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>.</p>
 
@@ -1115,7 +1138,7 @@ Private Attributes</h2></td></tr>
 
 <p>Custom look and feel for menu buttons. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00234">234</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00240">240</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>.</p>
 
@@ -1141,9 +1164,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00178">178</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00184">184</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00086">getGearLibrary()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00634">performLoadPreset()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00230">resized()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00086">getGearLibrary()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00641">performLoadPreset()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00237">resized()</a>.</p>
 
 </div>
 </div>
@@ -1169,9 +1192,9 @@ Private Attributes</h2></td></tr>
 
 <p>Tracks if the current state has unsaved changes. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00195">195</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00201">201</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00626">clearModifiedState()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00613">hasUnsavedChanges()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00618">markAsModified()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00633">clearModifiedState()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00620">hasUnsavedChanges()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00625">markAsModified()</a>.</p>
 
 </div>
 </div>
@@ -1197,9 +1220,9 @@ Private Attributes</h2></td></tr>
 
 <p>Main tabbed interface. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00181">181</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00187">187</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00230">resized()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00237">resized()</a>.</p>
 
 </div>
 </div>
@@ -1225,9 +1248,9 @@ Private Attributes</h2></td></tr>
 
 <p>Container for the menu bar. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00219">219</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00225">225</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00230">resized()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00237">resized()</a>.</p>
 
 </div>
 </div>
@@ -1253,7 +1276,7 @@ Private Attributes</h2></td></tr>
 
 <p>Notes panel component. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">183</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00189">189</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, and <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00100">getNotesPanel()</a>.</p>
 
@@ -1279,9 +1302,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00177">177</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00183">183</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00093">getPresetManager()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00580">handleDeletePreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00514">handleSavePreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00634">performLoadPreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00442">showDeletePresetDialog()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00385">showLoadPresetDialog()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00255">showPresetMenu()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00305">showSavePresetDialog()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00093">getPresetManager()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00587">handleDeletePreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00521">handleSavePreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00641">performLoadPreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00449">showDeletePresetDialog()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00392">showLoadPresetDialog()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00262">showPresetMenu()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00312">showSavePresetDialog()</a>.</p>
 
 </div>
 </div>
@@ -1307,9 +1330,9 @@ Private Attributes</h2></td></tr>
 
 <p>Menu button for preset operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00186">186</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00192">192</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00230">resized()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00255">showPresetMenu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00237">resized()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00262">showPresetMenu()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00207">~AnalogIQEditor()</a>.</p>
 
 </div>
 </div>
@@ -1333,9 +1356,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00174">174</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00180">180</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00207">~AnalogIQEditor()</a>.</p>
 
 </div>
 </div>
@@ -1361,9 +1384,9 @@ Private Attributes</h2></td></tr>
 
 <p><a class="el" href="../../d0/dc7/class_rack.html" title="A component that manages a virtual rack of audio gear items.">Rack</a> component. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00182">182</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00188">188</a> of file <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html">AnalogIQEditor.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00079">getRack()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00537">handleLoadPreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00514">handleSavePreset()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00634">performLoadPreset()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00136">AnalogIQEditor()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00027">AnalogIQEditor()</a>, <a class="el" href="../../de/d7a/_analog_i_q_editor_8h_source.html#l00079">getRack()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00544">handleLoadPreset()</a>, <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00521">handleSavePreset()</a>, and <a class="el" href="../../d8/da8/_analog_i_q_editor_8cpp_source.html#l00641">performLoadPreset()</a>.</p>
 
 </div>
 </div>
