@@ -355,9 +355,12 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
     auto *editor = new AnalogIQEditor(*this, *fileSystem, *cacheManager, *presetManager, *gearLibrary);
     lastCreatedEditor = editor;
+
+    // Store a reference to the rack for fallback operations when editor is not available
     if (auto *rackEditor = dynamic_cast<AnalogIQEditor *>(editor))
     {
         rack = rackEditor->getRack();
+        logToFile("Stored rack reference for fallback operations");
 
         // Load instance state after the editor is created and gear library is loaded
         // We'll defer this to after the gear library is ready
@@ -509,16 +512,18 @@ void AnalogIQProcessor::saveInstanceState()
     {
         logToFile("Editor is NOT available (getActiveEditor() returned null)");
 
-        // Check if we have a stored rack reference
+        // Check if we have a stored rack reference for fallback operations
         if (rack != nullptr)
         {
             logToFile("Using stored rack reference as fallback");
             logToFile("Stored rack slots: " + juce::String(rack->getNumSlots()));
+            logToFile("WARNING: Using fallback rack reference - this may be stale if editor was destroyed");
             saveInstanceStateFromRack(rack, instanceTree);
         }
         else
         {
             logToFile("ERROR: No rack available - cannot save instance state");
+            logToFile("This will result in an empty state being saved");
         }
     }
 
@@ -795,11 +800,23 @@ void AnalogIQProcessor::resetAllInstances()
         }
     }
 
-    // If no editor is available (e.g. in tests), try to get the rack directly
+    // If no editor is available, try to use the stored rack reference as fallback
     if (rack != nullptr)
     {
+        logToFile("Using stored rack reference for resetAllInstances fallback");
+        logToFile("WARNING: Using fallback rack reference - this may be stale if editor was destroyed");
         rack->resetAllInstances();
     }
+    else
+    {
+        logToFile("ERROR: No rack available for resetAllInstances - operation failed");
+    }
+}
+
+void AnalogIQProcessor::clearRackReference()
+{
+    logToFile("Clearing stored rack reference to prevent dangling pointer usage");
+    rack = nullptr;
 }
 
 /**

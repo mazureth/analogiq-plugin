@@ -257,6 +257,12 @@ public:
      */
     void resetAllInstances();
 
+    /**
+     * @brief Clears the stored rack reference when the editor is destroyed.
+     * This prevents using a dangling pointer for fallback operations.
+     */
+    void clearRackReference();
+
 private:
     juce::AudioProcessorValueTreeState state;                ///< The processor's state tree
     juce::UndoManager undoManager;                           ///< Undo manager for state changes

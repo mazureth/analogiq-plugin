@@ -99,6 +99,12 @@ public:
      */
     NotesPanel *getNotesPanel() const { return notesPanel.get(); }
 
+    /**
+     * @brief Notifies the processor that this editor is being destroyed.
+     * This allows the processor to clear any stored references to prevent dangling pointers.
+     */
+    void notifyDestruction();
+
 private:
     /**
      * @brief Shows the presets popup menu.

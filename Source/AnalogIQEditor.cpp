@@ -206,6 +206,9 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, CacheManager &cache
  */
 AnalogIQEditor::~AnalogIQEditor()
 {
+    // Notify the processor that we're being destroyed so it can clear stored references
+    processor.clearRackReference();
+
     // CRITICAL: Clear LookAndFeel reference before destruction to avoid JUCE assertion
     // This prevents "LookAndFeel object being destroyed while something is still using it"
     presetsMenuButton.setLookAndFeel(nullptr);
