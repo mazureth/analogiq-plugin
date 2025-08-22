@@ -5,6 +5,7 @@ set(SHARED_SOURCES
     INetworkFetcher.h
     IRackStateListener.h
     ICacheManager.h
+    IPresetManager.h
     GearControl.h
     GearControl.cpp
 )

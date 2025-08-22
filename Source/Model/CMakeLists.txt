@@ -7,6 +7,8 @@ set(MODEL_SOURCES
     NetworkFetcher.cpp
     CacheManager.h
     CacheManager.cpp
+    PresetManager.h
+    PresetManager.cpp
     # Additional model sources will be added here
 )
 

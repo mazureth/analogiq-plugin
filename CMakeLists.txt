@@ -89,6 +89,7 @@ target_sources(AnalogIQ PRIVATE
     Source/Model/FileSystem.cpp
     Source/Model/NetworkFetcher.cpp
     Source/Model/CacheManager.cpp
+    Source/Model/PresetManager.cpp
     Source/Model/AnalogIQProcessor.cpp
     # Additional sources will be added as MVC components are implemented
 )

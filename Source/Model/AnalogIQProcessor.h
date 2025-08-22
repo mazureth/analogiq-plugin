@@ -5,6 +5,7 @@
 #include "../Shared/INetworkFetcher.h"
 #include "../Shared/IRackStateListener.h"
 #include "../Shared/ICacheManager.h"
+#include "../Shared/IPresetManager.h"
 
 // Forward declarations
 class CacheManager;
@@ -65,7 +66,7 @@ public:
     INetworkFetcher *getNetworkFetcher() const { return networkFetcher; }
     IFileSystem *getFileSystem() const { return fileSystem; }
     CacheManager *getCacheManager() const { return cacheManager.get(); }
-    PresetManager *getPresetManager() const { return nullptr; } // Will be implemented
+    PresetManager *getPresetManager() const { return presetManager.get(); }
     GearLibrary *getGearLibrary() const { return nullptr; }     // Will be implemented
 
     // Testing support
@@ -87,7 +88,7 @@ private:
     IFileSystem *fileSystem;
     // These will be implemented as we add the other Model components
     std::unique_ptr<CacheManager> cacheManager;
-    // std::unique_ptr<PresetManager> presetManager;
+    std::unique_ptr<PresetManager> presetManager;
     // std::unique_ptr<GearLibrary> gearLibrary;
 
     // Logging infrastructure
