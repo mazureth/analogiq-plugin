@@ -74,21 +74,23 @@ juce_add_plugin(AnalogIQ
 # Set C++ standard to 17
 target_compile_features(AnalogIQ PRIVATE cxx_std_17)
 
-# Add source files
+# Add include directories for MVC architecture
+target_include_directories(AnalogIQ PRIVATE
+    Source
+    Source/Shared
+    Source/Model
+    Source/View
+    Source/Controller
+)
+
+# Add source files - MVC architecture will be added here as components are implemented
 target_sources(AnalogIQ PRIVATE
-    Source/AnalogIQProcessor.cpp
-    Source/AnalogIQProcessor.h
-    Source/AnalogIQEditor.cpp
-    Source/AnalogIQEditor.h
-    Source/GearLibrary.cpp
-    Source/GearItem.cpp
-    Source/Rack.cpp
-    Source/RackSlot.cpp
-    Source/NotesPanel.cpp
-    Source/NotesPanel.h
-    Source/NetworkFetcher.cpp
-    Source/NetworkFetcher.h
-    Source/INetworkFetcher.h
+    # Model layer sources
+    Source/Model/FileSystem.cpp
+    Source/Model/NetworkFetcher.cpp
+    Source/Model/CacheManager.cpp
+    Source/Model/AnalogIQProcessor.cpp
+    # Additional sources will be added as MVC components are implemented
 )
 
 # Set up JUCE dependencies

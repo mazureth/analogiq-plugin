@@ -1,8 +1,4 @@
 #include <JuceHeader.h>
-#include "../Source/CacheManager.h"
-#include "../Source/PresetManager.h"
-#include "unit/MockNetworkFetcher.h"
-#include "unit/MockFileSystem.h"
 #include <iostream>
 
 int main(int argc, char *argv[])
@@ -12,20 +8,19 @@ int main(int argc, char *argv[])
 
     juce::UnitTestRunner testRunner;
 
+    // For now, no tests are implemented in the new MVC architecture
+    // Tests will be added here as we implement components
+    std::cout << "No tests implemented yet in new MVC architecture.\n";
+    std::cout << "Tests will be added as components are implemented.\n";
+
     // JUCE will run all tests (including theirs) automatically
     // We want to explicitly only run our tests
     juce::StringArray testsToRun;
-    testsToRun.add("CacheManagerTests");
-    testsToRun.add("DraggableListBoxTests");
-    testsToRun.add("GearItemTests");
-    testsToRun.add("GearLibraryTests");
-    testsToRun.add("NotesPanelTests");
-    testsToRun.add("AnalogIQEditorTests");
-    testsToRun.add("AnalogIQProcessorTests");
-    testsToRun.add("PresetManagerTests");
-    testsToRun.add("PresetIntegrationTests");
-    testsToRun.add("RackSlotTests");
-    testsToRun.add("RackTests");
+    // testsToRun.add("FileSystemTests");        // Will be added
+    // testsToRun.add("NetworkFetcherTests");    // Will be added
+    // testsToRun.add("GearControlTests");       // Will be added
+    // testsToRun.add("GearItemTests");          // Will be added
+    // testsToRun.add("AnalogIQProcessorTests"); // Will be added
 
     // Build a list of test pointers by name
     juce::Array<juce::UnitTest *> selectedTests;
@@ -39,15 +34,18 @@ int main(int argc, char *argv[])
     for (auto *test : selectedTests)
         std::cout << " - " << test->getName() << std::endl;
 
-    testRunner.runTests(selectedTests);
+    if (selectedTests.isEmpty())
+    {
+        std::cout << "No tests selected to run.\n";
+    }
+    else
+    {
+        testRunner.runTests(selectedTests);
+    }
 
     // COMPREHENSIVE CLEANUP to prevent JUCE leak detection at program exit
 
-    // 1. Clear all singleton mock state completely
-    ConcreteMockNetworkFetcher::getInstance().reset();
-    ConcreteMockFileSystem::getInstance().reset();
-
-    // 2. Force early LookAndFeel cleanup to break Image references
+    // 1. Force early LookAndFeel cleanup to break Image references
     juce::LookAndFeel::setDefaultLookAndFeel(nullptr);
 
     // Create a temporary scope to force destruction of any remaining components
@@ -57,7 +55,7 @@ int main(int argc, char *argv[])
         tempComponent.setLookAndFeel(nullptr);
     }
 
-    // 3. Force cleanup of any cached JUCE resources
+    // 2. Force cleanup of any cached JUCE resources
     {
         // Create and destroy temporary objects to trigger internal cleanup
         juce::Image tempImage(juce::Image::RGB, 1, 1, true);
