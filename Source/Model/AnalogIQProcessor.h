@@ -67,7 +67,7 @@ public:
     IFileSystem *getFileSystem() const { return fileSystem; }
     CacheManager *getCacheManager() const { return cacheManager.get(); }
     PresetManager *getPresetManager() const { return presetManager.get(); }
-    GearLibrary *getGearLibrary() const { return nullptr; }     // Will be implemented
+    GearLibrary *getGearLibrary() const { return gearLibrary.get(); }
 
     // Testing support
     friend class AnalogIQProcessorTests;
@@ -89,7 +89,7 @@ private:
     // These will be implemented as we add the other Model components
     std::unique_ptr<CacheManager> cacheManager;
     std::unique_ptr<PresetManager> presetManager;
-    // std::unique_ptr<GearLibrary> gearLibrary;
+    std::unique_ptr<GearLibrary> gearLibrary;
 
     // Logging infrastructure
     void initializeLogging();

@@ -9,6 +9,10 @@ set(MODEL_SOURCES
     CacheManager.cpp
     PresetManager.h
     PresetManager.cpp
+    GearItem.h
+    GearItem.cpp
+    GearLibrary.h
+    GearLibrary.cpp
     # Additional model sources will be added here
 )
 

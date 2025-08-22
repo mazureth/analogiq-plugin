@@ -90,6 +90,8 @@ target_sources(AnalogIQ PRIVATE
     Source/Model/NetworkFetcher.cpp
     Source/Model/CacheManager.cpp
     Source/Model/PresetManager.cpp
+    Source/Model/GearItem.cpp
+    Source/Model/GearLibrary.cpp
     Source/Model/AnalogIQProcessor.cpp
     # Additional sources will be added as MVC components are implemented
 )
@@ -101,7 +103,7 @@ target_compile_definitions(AnalogIQ
     JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
-# Link with JUCE modules
+# Link with JUCE modules and our libraries
 target_link_libraries(AnalogIQ
     PRIVATE
         juce::juce_audio_basics
@@ -116,6 +118,7 @@ target_link_libraries(AnalogIQ
         juce::juce_graphics
         juce::juce_gui_basics
         juce::juce_gui_extra
+        AnalogIQShared
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
