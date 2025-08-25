@@ -8,23 +8,23 @@
 class CacheManager : public ICacheManager
 {
 public:
-    explicit CacheManager(IFileSystem& fileSystem);
+    explicit CacheManager(IFileSystem &fileSystem);
     ~CacheManager() override;
 
     // ICacheManager implementation
-    bool isCached(const juce::String& assetId) override;
-    juce::String getCachedPath(const juce::String& assetId) override;
-    bool addToCache(const juce::String& assetId, const juce::MemoryBlock& data) override;
-    bool addToCache(const juce::String& assetId, const juce::Image& image) override;
-    bool removeFromCache(const juce::String& assetId) override;
+    bool isCached(const juce::String &assetId) override;
+    juce::String getCachedPath(const juce::String &assetId) override;
+    bool addToCache(const juce::String &assetId, const juce::MemoryBlock &data) override;
+    bool addToCache(const juce::String &assetId, const juce::Image &image) override;
+    bool removeFromCache(const juce::String &assetId) override;
     void clearCache() override;
     juce::int64 getCacheSize() override;
     juce::int64 getMaxCacheSize() override;
     void setMaxCacheSize(juce::int64 maxSize) override;
 
-    bool validateCachedAsset(const juce::String& assetId) override;
-    juce::Time getAssetTimestamp(const juce::String& assetId) override;
-    bool isAssetExpired(const juce::String& assetId, juce::int64 maxAgeSeconds) override;
+    bool validateCachedAsset(const juce::String &assetId) override;
+    juce::Time getAssetTimestamp(const juce::String &assetId) override;
+    bool isAssetExpired(const juce::String &assetId, juce::int64 maxAgeSeconds) override;
 
     void optimizeCache() override;
     void removeExpiredAssets(juce::int64 maxAgeSeconds) override;
@@ -32,7 +32,7 @@ public:
 
     int getCachedAssetCount() override;
     juce::StringArray getCachedAssetIds() override;
-    juce::int64 getAssetSize(const juce::String& assetId) override;
+    juce::int64 getAssetSize(const juce::String &assetId) override;
 
 private:
     struct CacheEntry
@@ -45,7 +45,7 @@ private:
         juce::Time lastAccessed;
     };
 
-    IFileSystem& fileSystem;
+    IFileSystem &fileSystem;
     juce::String cacheRootDir;
     juce::int64 maxCacheSize;
     juce::int64 currentCacheSize;
@@ -53,10 +53,10 @@ private:
 
     // Helper methods
     void initializeCacheDirectory();
-    juce::String generateAssetPath(const juce::String& assetId);
-    void updateAccessCount(const juce::String& assetId);
+    juce::String generateAssetPath(const juce::String &assetId);
+    void updateAccessCount(const juce::String &assetId);
     void loadCacheIndex();
     void saveCacheIndex();
     void cleanupCache();
-    juce::String hashAssetId(const juce::String& assetId);
+    juce::String hashAssetId(const juce::String &assetId);
 };

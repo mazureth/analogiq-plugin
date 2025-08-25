@@ -3,73 +3,19 @@
 #include <juce_graphics/juce_graphics.h>
 
 GearItem::GearItem()
-    : unitId("")
-    , name("")
-    , manufacturer("")
-    , version("1.0")
-    , description("")
-    , type(GearType::Other)
-    , category(GearCategory::Other)
-    , categoryString("")
-    , schemaPath("")
-    , thumbnailImage()
-    , faceplateImage()
-    , controls()
-    , tags()
-    , isInstance(false)
-    , instanceId("")
-    , sourceUnitId("")
-    , fileSystem(nullptr)
-    , networkFetcher(nullptr)
-    , cacheManager(nullptr)
+    : unitId(""), name(""), manufacturer(""), version("1.0"), description(""), type(GearType::Other), category(GearCategory::Other), categoryString(""), schemaPath(""), thumbnailImage(), faceplateImage(), controls(), tags(), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(nullptr), networkFetcher(nullptr), cacheManager(nullptr)
 {
     initializeDefaults();
 }
 
-GearItem::GearItem(const juce::String& id, const juce::String& gearName, const juce::String& maker)
-    : unitId(id)
-    , name(gearName)
-    , manufacturer(maker)
-    , version("1.0")
-    , description("")
-    , type(GearType::Other)
-    , category(GearCategory::Other)
-    , categoryString("")
-    , schemaPath("")
-    , thumbnailImage()
-    , faceplateImage()
-    , controls()
-    , tags()
-    , isInstance(false)
-    , instanceId("")
-    , sourceUnitId("")
-    , fileSystem(nullptr)
-    , networkFetcher(nullptr)
-    , cacheManager(nullptr)
+GearItem::GearItem(const juce::String &id, const juce::String &gearName, const juce::String &maker)
+    : unitId(id), name(gearName), manufacturer(maker), version("1.0"), description(""), type(GearType::Other), category(GearCategory::Other), categoryString(""), schemaPath(""), thumbnailImage(), faceplateImage(), controls(), tags(), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(nullptr), networkFetcher(nullptr), cacheManager(nullptr)
 {
     initializeDefaults();
 }
 
-GearItem::GearItem(const GearItem& other)
-    : unitId(other.unitId)
-    , name(other.name)
-    , manufacturer(other.manufacturer)
-    , version(other.version)
-    , description(other.description)
-    , type(other.type)
-    , category(other.category)
-    , categoryString(other.categoryString)
-    , schemaPath(other.schemaPath)
-    , thumbnailImage(other.thumbnailImage)
-    , faceplateImage(other.faceplateImage)
-    , controls(other.controls)
-    , tags(other.tags)
-    , isInstance(other.isInstance)
-    , instanceId(other.instanceId)
-    , sourceUnitId(other.sourceUnitId)
-    , fileSystem(other.fileSystem)
-    , networkFetcher(other.networkFetcher)
-    , cacheManager(other.cacheManager)
+GearItem::GearItem(const GearItem &other)
+    : unitId(other.unitId), name(other.name), manufacturer(other.manufacturer), version(other.version), description(other.description), type(other.type), category(other.category), categoryString(other.categoryString), schemaPath(other.schemaPath), thumbnailImage(other.thumbnailImage), faceplateImage(other.faceplateImage), controls(other.controls), tags(other.tags), isInstance(other.isInstance), instanceId(other.instanceId), sourceUnitId(other.sourceUnitId), fileSystem(other.fileSystem), networkFetcher(other.networkFetcher), cacheManager(other.cacheManager)
 {
     copyImages(other);
 }
@@ -79,7 +25,7 @@ GearItem::~GearItem()
     clearImages();
 }
 
-GearItem& GearItem::operator=(const GearItem& other)
+GearItem &GearItem::operator=(const GearItem &other)
 {
     if (this != &other)
     {
@@ -100,7 +46,7 @@ GearItem& GearItem::operator=(const GearItem& other)
         fileSystem = other.fileSystem;
         networkFetcher = other.networkFetcher;
         cacheManager = other.cacheManager;
-        
+
         copyImages(other);
     }
     return *this;
@@ -112,14 +58,14 @@ void GearItem::initializeDefaults()
     {
         categoryString = getCategoryString();
     }
-    
+
     if (schemaPath.isEmpty())
     {
         schemaPath = "schemas/default.json";
     }
 }
 
-void GearItem::copyImages(const GearItem& other)
+void GearItem::copyImages(const GearItem &other)
 {
     thumbnailImage = other.thumbnailImage;
     faceplateImage = other.faceplateImage;
@@ -133,18 +79,19 @@ void GearItem::clearImages()
 
 bool GearItem::loadImage()
 {
-    if (!fileSystem) return false;
-    
+    if (!fileSystem)
+        return false;
+
     // Try to load thumbnail first
-    auto thumbnailPath = fileSystem->joinPath(fileSystem->getCacheRootDirectory(), 
-                                            "thumbnails/" + unitId + ".png");
+    auto thumbnailPath = fileSystem->joinPath(fileSystem->getCacheRootDirectory(),
+                                              "thumbnails/" + unitId + ".png");
     if (fileSystem->fileExists(thumbnailPath))
     {
         auto imageData = fileSystem->readBinaryFile(thumbnailPath);
         thumbnailImage = juce::ImageCache::getFromMemory(imageData.getData(), imageData.getSize());
         return true;
     }
-    
+
     // If no thumbnail, create placeholder
     createPlaceholderImage();
     return false;
@@ -157,7 +104,7 @@ void GearItem::createPlaceholderImage()
     juce::Graphics g(thumbnailImage);
     g.setColour(getCategoryColor());
     g.fillAll();
-    
+
     g.setColour(juce::Colours::white);
     g.setFont(12.0f);
     g.drawText(name, 0, 0, 64, 64, juce::Justification::centred, true);
@@ -167,11 +114,15 @@ juce::Colour GearItem::getCategoryColor() const
 {
     switch (category)
     {
-        case GearCategory::EQ: return juce::Colours::blue;
-        case GearCategory::Compressor: return juce::Colours::red;
-        case GearCategory::Preamp: return juce::Colours::green;
-        case GearCategory::Other:
-        default: return juce::Colours::grey;
+    case GearCategory::EQ:
+        return juce::Colours::blue;
+    case GearCategory::Compressor:
+        return juce::Colours::red;
+    case GearCategory::Preamp:
+        return juce::Colours::green;
+    case GearCategory::Other:
+    default:
+        return juce::Colours::grey;
     }
 }
 
@@ -187,8 +138,9 @@ GearItem GearItem::createInstance() const
 
 void GearItem::resetToSource()
 {
-    if (!isInstance || sourceUnitId.isEmpty()) return;
-    
+    if (!isInstance || sourceUnitId.isEmpty())
+        return;
+
     // Reset to source values
     unitId = sourceUnitId;
     isInstance = false;
@@ -196,15 +148,16 @@ void GearItem::resetToSource()
     sourceUnitId = "";
 }
 
-bool GearItem::isInstanceOf(const GearItem& source) const
+bool GearItem::isInstanceOf(const GearItem &source) const
 {
     return isInstance && sourceUnitId == source.unitId;
 }
 
-bool GearItem::saveToFile(const juce::String& filePath) const
+bool GearItem::saveToFile(const juce::String &filePath) const
 {
-    if (!fileSystem) return false;
-    
+    if (!fileSystem)
+        return false;
+
     // Create a simple JSON-like format for now
     juce::String content = "{\n";
     content += "  \"unitId\": \"" + unitId + "\",\n";
@@ -220,19 +173,20 @@ bool GearItem::saveToFile(const juce::String& filePath) const
     content += "  \"instanceId\": \"" + instanceId + "\",\n";
     content += "  \"sourceUnitId\": \"" + sourceUnitId + "\"\n";
     content += "}";
-    
+
     return fileSystem->writeFile(filePath, content);
 }
 
-bool GearItem::loadFromFile(const juce::String& filePath)
+bool GearItem::loadFromFile(const juce::String &filePath)
 {
-    if (!fileSystem || !fileSystem->fileExists(filePath)) return false;
-    
+    if (!fileSystem || !fileSystem->fileExists(filePath))
+        return false;
+
     auto content = fileSystem->readFile(filePath);
     // Simple parsing - in production would use proper JSON parser
     auto lines = juce::StringArray::fromLines(content);
-    
-    for (auto& line : lines)
+
+    for (auto &line : lines)
     {
         line = line.trim();
         if (line.startsWith("\"unitId\":"))
@@ -260,16 +214,16 @@ bool GearItem::loadFromFile(const juce::String& filePath)
         else if (line.startsWith("\"sourceUnitId\":"))
             sourceUnitId = line.substring(16).trim().removeCharacters("\",");
     }
-    
+
     return true;
 }
 
-void GearItem::addControl(const GearControl& control)
+void GearItem::addControl(const GearControl &control)
 {
     controls.add(control);
 }
 
-GearControl* GearItem::getControl(int index)
+GearControl *GearItem::getControl(int index)
 {
     if (index >= 0 && index < controls.size())
         return &controls.getReference(index);
@@ -283,7 +237,7 @@ int GearItem::getNumControls() const
 
 void GearItem::resetAllControls()
 {
-    for (auto& control : controls)
+    for (auto &control : controls)
     {
         control.resetToDefault();
     }
@@ -298,11 +252,15 @@ juce::String GearItem::getTypeString() const
 {
     switch (type)
     {
-        case GearType::Series500: return "Series 500";
-        case GearType::Rack19Inch: return "19\" Rack";
-        case GearType::UserCreated: return "User Created";
-        case GearType::Other:
-        default: return "Other";
+    case GearType::Series500:
+        return "Series 500";
+    case GearType::Rack19Inch:
+        return "19\" Rack";
+    case GearType::UserCreated:
+        return "User Created";
+    case GearType::Other:
+    default:
+        return "Other";
     }
 }
 
@@ -310,15 +268,19 @@ juce::String GearItem::getCategoryString() const
 {
     switch (category)
     {
-        case GearCategory::EQ: return "EQ";
-        case GearCategory::Compressor: return "Compressor";
-        case GearCategory::Preamp: return "Preamp";
-        case GearCategory::Other:
-        default: return "Other";
+    case GearCategory::EQ:
+        return "EQ";
+    case GearCategory::Compressor:
+        return "Compressor";
+    case GearCategory::Preamp:
+        return "Preamp";
+    case GearCategory::Other:
+    default:
+        return "Other";
     }
 }
 
-void GearItem::setTypeFromString(const juce::String& typeStr)
+void GearItem::setTypeFromString(const juce::String &typeStr)
 {
     if (typeStr.containsIgnoreCase("500") || typeStr.containsIgnoreCase("series"))
         type = GearType::Series500;
@@ -330,7 +292,7 @@ void GearItem::setTypeFromString(const juce::String& typeStr)
         type = GearType::Other;
 }
 
-void GearItem::setCategoryFromString(const juce::String& categoryStr)
+void GearItem::setCategoryFromString(const juce::String &categoryStr)
 {
     if (categoryStr.containsIgnoreCase("eq") || categoryStr.containsIgnoreCase("equalizer"))
         category = GearCategory::EQ;

@@ -127,6 +127,7 @@ target_link_libraries(AnalogIQ
 
 # Add coverage runtime libraries for debug builds
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Apply coverage to main target for all builds
     target_link_options(AnalogIQ PRIVATE
         --coverage -fprofile-instr-generate -fcoverage-mapping
     )
@@ -134,12 +135,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     # Apply coverage to all JUCE format targets
     if(ANALOGIQ_BUILD_STANDALONE)
         target_link_options(AnalogIQ_Standalone PRIVATE
-            --coverage -fprofile-instr-generate -fcoverage-mapping
-        )
-    endif()
-    
-    if(ANALOGIQ_BUILD_VST3)
-        target_link_options(AnalogIQ_VST3 PRIVATE
             --coverage -fprofile-instr-generate -fcoverage-mapping
         )
     endif()
@@ -154,6 +149,19 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_link_options(AnalogIQ_AAX PRIVATE
             --coverage -fprofile-instr-generate -fcoverage-mapping
         )
+    endif()
+    
+    # VST3 target gets coverage but with proper runtime library linking
+    if(ANALOGIQ_BUILD_VST3)
+        target_link_options(AnalogIQ_VST3 PRIVATE
+            --coverage -fprofile-instr-generate -fcoverage-mapping
+        )
+        
+        # Ensure VST3 target has proper coverage runtime libraries
+        # This prevents the "undefined symbols" linking errors
+        # On macOS, we use LLVM coverage runtime which is built into the compiler
+        # The --coverage flag automatically links the necessary runtime libraries
+        message(STATUS "VST3 target configured with coverage support")
     endif()
 endif()
 

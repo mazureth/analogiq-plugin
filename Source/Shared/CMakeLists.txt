@@ -23,3 +23,5 @@ target_include_directories(AnalogIQShared
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+# Coverage is handled at the main target level for VST3 builds
