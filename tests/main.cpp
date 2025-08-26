@@ -8,10 +8,8 @@ int main(int argc, char *argv[])
 
     juce::UnitTestRunner testRunner;
 
-    // For now, no tests are implemented in the new MVC architecture
-    // Tests will be added here as we implement components
-    std::cout << "No tests implemented yet in new MVC architecture.\n";
-    std::cout << "Tests will be added as components are implemented.\n";
+    // Tests are now being implemented in the new MVC architecture
+    std::cout << "Running tests for new MVC architecture components.\n";
 
     // JUCE will run all tests (including theirs) automatically
     // We want to explicitly only run our tests
