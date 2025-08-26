@@ -1,7 +1,11 @@
 # Controller layer CMakeLists.txt
 
 set(CONTROLLER_SOURCES
-    # Controller sources will be added here as they're implemented
+    MainController.h
+    MainController.cpp
+    GearLibraryController.h
+    GearLibraryController.cpp
+    # Additional controller sources will be added here
 )
 
 # Create controller library target
@@ -20,4 +24,8 @@ target_link_libraries(AnalogIQController
 target_include_directories(AnalogIQController
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../Shared
+        ${CMAKE_CURRENT_SOURCE_DIR}/../Model
+        ${CMAKE_CURRENT_SOURCE_DIR}/../View
+        ${CMAKE_BINARY_DIR}/AnalogIQ_artefacts/JuceLibraryCode
 )
