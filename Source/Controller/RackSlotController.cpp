@@ -45,13 +45,22 @@ bool RackSlotController::insertGear(GearItem *gearItem)
         return false;
     }
 
-    // For now, just log the operation
-    // This will be enhanced when we implement the full slot integration
-    std::cout << "[RackSlotController] Inserting gear '" << gearItem->name << "' into slot " << getSlotIndex() << std::endl;
-
-    updateSlotState();
-    notifyParentRack();
-    return true;
+    // Insert the gear into the slot
+    rackSlot.setGearItem(gearItem);
+    
+    // Check if the gear was successfully inserted
+    if (rackSlot.getGearItem() == gearItem)
+    {
+        std::cout << "[RackSlotController] Successfully inserted gear '" << gearItem->name << "' into slot " << getSlotIndex() << std::endl;
+        updateSlotState();
+        notifyParentRack();
+        return true;
+    }
+    else
+    {
+        std::cout << "[RackSlotController] Failed to insert gear '" << gearItem->name << "' into slot " << getSlotIndex() << std::endl;
+        return false;
+    }
 }
 
 GearItem *RackSlotController::removeGear()
@@ -59,27 +68,37 @@ GearItem *RackSlotController::removeGear()
     if (isEmpty())
         return nullptr;
 
-    // For now, just log the operation
-    // This will be enhanced when we implement the full slot integration
-    std::cout << "[RackSlotController] Removing gear from slot " << getSlotIndex() << std::endl;
-
-    updateSlotState();
-    notifyParentRack();
-    return nullptr; // For now, return nullptr
+    // Get the gear before removing it
+    GearItem* gearItem = rackSlot.getGearItem();
+    
+    // Remove the gear from the slot
+    rackSlot.clearGearItem();
+    
+    // Check if the gear was successfully removed
+    if (rackSlot.getGearItem() == nullptr)
+    {
+        std::cout << "[RackSlotController] Successfully removed gear from slot " << getSlotIndex() << std::endl;
+        updateSlotState();
+        notifyParentRack();
+        return gearItem; // Return the removed gear item
+    }
+    else
+    {
+        std::cout << "[RackSlotController] Failed to remove gear from slot " << getSlotIndex() << std::endl;
+        return nullptr;
+    }
 }
 
 GearItem *RackSlotController::getGear() const
 {
-    // For now, return nullptr
-    // This will be enhanced when we implement the full slot integration
-    return nullptr;
+    // Get the gear from the slot
+    return rackSlot.getGearItem();
 }
 
 bool RackSlotController::isEmpty() const
 {
-    // For now, assume all slots are empty
-    // This will be enhanced when we implement the full slot integration
-    return true;
+    // Check if the slot is empty
+    return rackSlot.isEmpty();
 }
 
 bool RackSlotController::isOccupied() const
