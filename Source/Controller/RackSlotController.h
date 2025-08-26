@@ -63,14 +63,14 @@ public:
      *
      * @return Pointer to the removed gear item, or nullptr if slot was empty
      */
-    GearItem* removeGear();
+    GearItem *removeGear();
 
     /**
      * @brief Gets the gear item currently in the slot.
      *
      * @return Pointer to the gear item, or nullptr if slot is empty
      */
-    GearItem* getGear() const;
+    GearItem *getGear() const;
 
     /**
      * @brief Checks if the slot is empty.

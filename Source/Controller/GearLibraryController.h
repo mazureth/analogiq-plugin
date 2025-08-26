@@ -58,7 +58,7 @@ public:
      * @param searchTerm The search term to use
      * @return Array of matching gear items
      */
-    juce::Array<GearItem*> searchGear(const juce::String &searchTerm);
+    juce::Array<GearItem *> searchGear(const juce::String &searchTerm);
 
     /**
      * @brief Filters gear items by type.
@@ -66,7 +66,7 @@ public:
      * @param gearType The gear type to filter by
      * @return Array of matching gear items
      */
-    juce::Array<GearItem*> filterGearByType(GearItem::GearType gearType);
+    juce::Array<GearItem *> filterGearByType(GearItem::GearType gearType);
 
     /**
      * @brief Filters gear items by category.
@@ -74,7 +74,7 @@ public:
      * @param category The category to filter by
      * @return Array of matching gear items
      */
-    juce::Array<GearItem*> filterGearByCategory(GearItem::GearCategory category);
+    juce::Array<GearItem *> filterGearByCategory(GearItem::GearCategory category);
 
     /**
      * @brief Gets all gear items in a category.
@@ -82,7 +82,7 @@ public:
      * @param categoryName The name of the category
      * @return Array of gear items in the category
      */
-    juce::Array<GearItem*> getGearItemsInCategory(const juce::String &categoryName);
+    juce::Array<GearItem *> getGearItemsInCategory(const juce::String &categoryName);
 
     /**
      * @brief Gets all available gear types.
@@ -135,7 +135,7 @@ public:
      *
      * @return Pointer to the selected gear item, or nullptr if none
      */
-    GearItem* getSelectedGearItem() const;
+    GearItem *getSelectedGearItem() const;
 
     /**
      * @brief Sets the selected gear item.
@@ -149,7 +149,7 @@ public:
      *
      * @return Array of favorite gear items
      */
-    juce::Array<GearItem*> getFavoriteGearItems() const;
+    juce::Array<GearItem *> getFavoriteGearItems() const;
 
     /**
      * @brief Adds a gear item to favorites.
@@ -173,7 +173,7 @@ public:
      * @param maxItems Maximum number of items to return
      * @return Array of recently used gear items
      */
-    juce::Array<GearItem*> getRecentlyUsedGearItems(int maxItems = 10) const;
+    juce::Array<GearItem *> getRecentlyUsedGearItems(int maxItems = 10) const;
 
     /**
      * @brief Marks a gear item as recently used.
@@ -274,8 +274,8 @@ private:
 
     // State tracking
     GearItem *selectedGearItem{nullptr};
-    juce::Array<GearItem*> favoriteGearItems;
-    juce::Array<GearItem*> recentlyUsedGearItems;
+    juce::Array<GearItem *> favoriteGearItems;
+    juce::Array<GearItem *> recentlyUsedGearItems;
     bool isLoadingLibrary{false};
     int loadingProgress{0};
 

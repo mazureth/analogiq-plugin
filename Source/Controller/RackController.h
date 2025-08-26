@@ -91,7 +91,7 @@ public:
      * @param slotIndex The slot index
      * @return Pointer to the gear item, or nullptr if empty
      */
-    GearItem* getGearInSlot(int slotIndex) const;
+    GearItem *getGearInSlot(int slotIndex) const;
 
     /**
      * @brief Checks if a slot is empty.
@@ -245,7 +245,7 @@ public:
      *
      * @return Array of gear items
      */
-    juce::Array<GearItem*> getAllGearInRack() const;
+    juce::Array<GearItem *> getAllGearInRack() const;
 
     /**
      * @brief Gets a list of gear items by type.
@@ -253,7 +253,7 @@ public:
      * @param gearType The gear type to filter by
      * @return Array of matching gear items
      */
-    juce::Array<GearItem*> getGearByType(GearItem::GearType gearType) const;
+    juce::Array<GearItem *> getGearByType(GearItem::GearType gearType) const;
 
     /**
      * @brief Gets a list of gear items by category.
@@ -261,7 +261,7 @@ public:
      * @param category The category to filter by
      * @return Array of matching gear items
      */
-    juce::Array<GearItem*> getGearByCategory(GearItem::GearCategory category) const;
+    juce::Array<GearItem *> getGearByCategory(GearItem::GearCategory category) const;
 
     /**
      * @brief Gets the rack's total power consumption.

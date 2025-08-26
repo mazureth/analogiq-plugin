@@ -48,13 +48,13 @@ bool RackSlotController::insertGear(GearItem *gearItem)
     // For now, just log the operation
     // This will be enhanced when we implement the full slot integration
     std::cout << "[RackSlotController] Inserting gear '" << gearItem->name << "' into slot " << getSlotIndex() << std::endl;
-    
+
     updateSlotState();
     notifyParentRack();
     return true;
 }
 
-GearItem* RackSlotController::removeGear()
+GearItem *RackSlotController::removeGear()
 {
     if (isEmpty())
         return nullptr;
@@ -62,13 +62,13 @@ GearItem* RackSlotController::removeGear()
     // For now, just log the operation
     // This will be enhanced when we implement the full slot integration
     std::cout << "[RackSlotController] Removing gear from slot " << getSlotIndex() << std::endl;
-    
+
     updateSlotState();
     notifyParentRack();
     return nullptr; // For now, return nullptr
 }
 
-GearItem* RackSlotController::getGear() const
+GearItem *RackSlotController::getGear() const
 {
     // For now, return nullptr
     // This will be enhanced when we implement the full slot integration
@@ -117,11 +117,11 @@ bool RackSlotController::resetSlot()
     // For now, just log the operation
     // This will be enhanced when we implement the full slot integration
     std::cout << "[RackSlotController] Resetting slot " << getSlotIndex() << std::endl;
-    
+
     slotState = "empty";
     visualState = "normal";
     removeHighlight();
-    
+
     notifyParentRack();
     return true;
 }
@@ -216,14 +216,14 @@ bool RackSlotController::moveToNextSlot()
 {
     int currentIndex = getSlotIndex();
     int nextIndex = currentIndex + 1;
-    
+
     if (!isValidSlotIndex(nextIndex))
         return false;
 
     // For now, just log the operation
     // This will be enhanced when we implement the full navigation system
     std::cout << "[RackSlotController] Moving gear from slot " << currentIndex << " to slot " << nextIndex << std::endl;
-    
+
     return true;
 }
 
@@ -231,14 +231,14 @@ bool RackSlotController::moveToPreviousSlot()
 {
     int currentIndex = getSlotIndex();
     int prevIndex = currentIndex - 1;
-    
+
     if (!isValidSlotIndex(prevIndex))
         return false;
 
     // For now, just log the operation
     // This will be enhanced when we implement the full navigation system
     std::cout << "[RackSlotController] Moving gear from slot " << currentIndex << " to slot " << prevIndex << std::endl;
-    
+
     return true;
 }
 
@@ -253,7 +253,7 @@ bool RackSlotController::swapWithSlot(int otherSlotIndex)
     // For now, just log the operation
     // This will be enhanced when we implement the full swap system
     std::cout << "[RackSlotController] Swapping gear between slots " << getSlotIndex() << " and " << otherSlotIndex << std::endl;
-    
+
     return true;
 }
 
@@ -264,10 +264,10 @@ bool RackSlotController::handleMouseClick(const juce::MouseEvent &event)
     // For now, just log the operation
     // This will be enhanced when we implement the full event handling system
     std::cout << "[RackSlotController] Mouse click on slot " << getSlotIndex() << std::endl;
-    
+
     // Highlight the slot on click
     highlightSlot();
-    
+
     return true;
 }
 
@@ -276,7 +276,7 @@ bool RackSlotController::handleMouseDoubleClick(const juce::MouseEvent &event)
     // For now, just log the operation
     // This will be enhanced when we implement the full event handling system
     std::cout << "[RackSlotController] Mouse double-click on slot " << getSlotIndex() << std::endl;
-    
+
     return true;
 }
 
@@ -285,7 +285,7 @@ bool RackSlotController::handleRightClick(const juce::MouseEvent &event)
     // For now, just log the operation
     // This will be enhanced when we implement the full event handling system
     std::cout << "[RackSlotController] Right-click on slot " << getSlotIndex() << std::endl;
-    
+
     return true;
 }
 
@@ -294,7 +294,7 @@ bool RackSlotController::handleDragStart(const juce::MouseEvent &event)
     // For now, just log the operation
     // This will be enhanced when we implement the full event handling system
     std::cout << "[RackSlotController] Drag start from slot " << getSlotIndex() << std::endl;
-    
+
     return true;
 }
 
@@ -303,7 +303,7 @@ bool RackSlotController::handleDrop(const juce::MouseEvent &event)
     // For now, just log the operation
     // This will be enhanced when we implement the full event handling system
     std::cout << "[RackSlotController] Drop into slot " << getSlotIndex() << std::endl;
-    
+
     return true;
 }
 

@@ -36,8 +36,8 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
       gearLibrary(&gearLibrary),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
-    // Set component IDs for debugging
-    setComponentID("AnalogIQEditor");
+    // Temporarily disable component IDs to isolate JUCE assertion issues
+    // setComponentID("AnalogIQEditor");
 
     // Create Rack component
     rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), fileSystem, cacheManager, presetManager, gearLibrary);
@@ -45,15 +45,15 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     // Create NotesPanel component
     notesPanel = std::make_unique<NotesPanel>();
 
-    // Set component IDs
-    rack->setComponentID("RackTab");
-    notesPanel->setComponentID("NotesTab");
+    // Temporarily disable component IDs to isolate JUCE assertion issues
+    // rack->setComponentID("RackTab");
+    // notesPanel->setComponentID("NotesTab");
 
     // Set up main window size
     setSize(1200, 800);
 
     // Set up tabs
-    mainTabs.setComponentID("MainTabs");
+    // mainTabs.setComponentID("MainTabs");
 
     // Add Rack and Notes tabs
     mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
@@ -67,8 +67,8 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     // It will be managed separately through the Model layer
 
     // Set up menu bar components
-    menuBarContainer.setComponentID("MenuBarContainer");
-    presetsMenuButton.setComponentID("PresetsMenuButton");
+    // menuBarContainer.setComponentID("MenuBarContainer");
+    // presetsMenuButton.setComponentID("PresetsMenuButton");
 
     // Configure preset menu button with onClick lambda
     presetsMenuButton.setButtonText("Presets");
@@ -142,8 +142,8 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager &cach
       gearLibrary(processor.getGearLibrary()),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
-    // Set component IDs for debugging
-    setComponentID("AnalogIQEditor");
+    // Temporarily disable component IDs to isolate JUCE assertion issues
+    // setComponentID("AnalogIQEditor");
 
     // Create Rack component
     rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, cacheManager, presetManager, *gearLibrary);
@@ -151,9 +151,9 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager &cach
     // Create NotesPanel component
     notesPanel = std::make_unique<NotesPanel>();
 
-    // Set component IDs
-    rack->setComponentID("RackTab");
-    notesPanel->setComponentID("NotesTab");
+    // Temporarily disable component IDs to isolate JUCE assertion issues
+    // rack->setComponentID("RackTab");
+    // notesPanel->setComponentID("NotesTab");
 
     // Set up main window size
     setSize(1200, 800);

@@ -30,7 +30,7 @@ NotesController::NotesController(NotesPanel &notesPanel,
     // Initialize session information
     sessionStartTime = juce::Time::getCurrentTime();
     sessionName = "Session_" + sessionStartTime.formatted("%Y%m%d_%H%M%S");
-    
+
     // Initialize notes content
     currentNotesContent = "";
     isModified = false;
@@ -105,7 +105,7 @@ bool NotesController::saveNotesToFile(const juce::String &filePath)
         // For now, just log the operation
         // This will be enhanced when we implement the full file system integration
         std::cout << "[NotesController] Saving notes to file: " << filePath << std::endl;
-        
+
         clearModifiedState();
         return true;
     }
@@ -125,7 +125,7 @@ bool NotesController::loadNotesFromFile(const juce::String &filePath)
         // For now, just log the operation
         // This will be enhanced when we implement the full file system integration
         std::cout << "[NotesController] Loading notes from file: " << filePath << std::endl;
-        
+
         clearModifiedState();
         return true;
     }
@@ -166,20 +166,20 @@ bool NotesController::loadAutoSavedNotes()
 juce::Array<int> NotesController::searchInNotes(const juce::String &searchTerm, bool caseSensitive)
 {
     juce::Array<int> results;
-    
+
     if (searchTerm.isEmpty() || currentNotesContent.isEmpty())
         return results;
 
     juce::String searchText = caseSensitive ? searchTerm : searchTerm.toLowerCase();
     juce::String contentText = caseSensitive ? currentNotesContent : currentNotesContent.toLowerCase();
-    
+
     int position = 0;
     while ((position = contentText.indexOf(position, searchText)) != -1)
     {
         results.add(position);
         position += searchText.length();
     }
-    
+
     return results;
 }
 
@@ -190,16 +190,16 @@ int NotesController::replaceInNotes(const juce::String &searchTerm, const juce::
 
     auto positions = searchInNotes(searchTerm, caseSensitive);
     int replacementCount = positions.size();
-    
+
     if (replacementCount > 0)
     {
         // For now, just log the operation
         // This will be enhanced when we implement the full replacement system
         std::cout << "[NotesController] Replacing " << replacementCount << " occurrences of '" << searchTerm << "' with '" << replaceTerm << "'" << std::endl;
-        
+
         markNotesAsModified();
     }
-    
+
     return replacementCount;
 }
 
@@ -210,7 +210,7 @@ int NotesController::findNext(const juce::String &searchTerm, int startPosition,
 
     juce::String searchText = caseSensitive ? searchTerm : searchTerm.toLowerCase();
     juce::String contentText = caseSensitive ? currentNotesContent : currentNotesContent.toLowerCase();
-    
+
     int position = contentText.indexOf(startPosition, searchText);
     return position;
 }
@@ -222,7 +222,7 @@ int NotesController::findPrevious(const juce::String &searchTerm, int startPosit
 
     juce::String searchText = caseSensitive ? searchTerm : searchTerm.toLowerCase();
     juce::String contentText = caseSensitive ? currentNotesContent : currentNotesContent.toLowerCase();
-    
+
     // For now, just return -1 as we haven't implemented reverse search yet
     // This will be enhanced when we implement the full search system
     return -1;
@@ -239,7 +239,7 @@ bool NotesController::setSessionName(const juce::String &newSessionName)
 {
     if (newSessionName.trim().isEmpty())
         return false;
-    
+
     sessionName = newSessionName.trim();
     return true;
 }
@@ -269,7 +269,7 @@ bool NotesController::saveNotesToPreset(const juce::String &presetName)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset integration
         std::cout << "[NotesController] Saving notes to preset: " << presetName << std::endl;
-        
+
         clearModifiedState();
         return true;
     }
@@ -286,7 +286,7 @@ bool NotesController::loadNotesFromPreset(const juce::String &presetName)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset integration
         std::cout << "[NotesController] Loading notes from preset: " << presetName << std::endl;
-        
+
         clearModifiedState();
         return true;
     }
@@ -323,7 +323,7 @@ bool NotesController::exportToPlainText(const juce::String &filePath)
         // For now, just log the operation
         // This will be enhanced when we implement the full export system
         std::cout << "[NotesController] Exporting notes to plain text: " << filePath << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -342,7 +342,7 @@ bool NotesController::exportToHTML(const juce::String &filePath)
         // For now, just log the operation
         // This will be enhanced when we implement the full export system
         std::cout << "[NotesController] Exporting notes to HTML: " << filePath << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -361,7 +361,7 @@ bool NotesController::exportToMarkdown(const juce::String &filePath)
         // For now, just log the operation
         // This will be enhanced when we implement the full export system
         std::cout << "[NotesController] Exporting notes to Markdown: " << filePath << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -380,7 +380,7 @@ bool NotesController::importFromPlainText(const juce::String &filePath)
         // For now, just log the operation
         // This will be enhanced when we implement the full import system
         std::cout << "[NotesController] Importing notes from plain text: " << filePath << std::endl;
-        
+
         markNotesAsModified();
         return true;
     }
@@ -400,7 +400,7 @@ bool NotesController::importFromHTML(const juce::String &filePath)
         // For now, just log the operation
         // This will be enhanced when we implement the full import system
         std::cout << "[NotesController] Importing notes from HTML: " << filePath << std::endl;
-        
+
         markNotesAsModified();
         return true;
     }
@@ -420,7 +420,7 @@ bool NotesController::importFromMarkdown(const juce::String &filePath)
         // For now, just log the operation
         // This will be enhanced when we implement the full import system
         std::cout << "[NotesController] Importing notes from Markdown: " << filePath << std::endl;
-        
+
         markNotesAsModified();
         return true;
     }
@@ -506,7 +506,7 @@ int NotesController::countWords(const juce::String &text) const
 {
     if (text.isEmpty())
         return 0;
-    
+
     // Simple word counting - split by whitespace
     juce::StringArray words;
     words.addTokens(text, true);
@@ -517,7 +517,7 @@ int NotesController::countLines(const juce::String &text) const
 {
     if (text.isEmpty())
         return 0;
-    
+
     // Count newline characters and add 1 for the last line
     int lineCount = 1;
     for (int i = 0; i < text.length(); ++i)
@@ -525,6 +525,6 @@ int NotesController::countLines(const juce::String &text) const
         if (text[i] == '\n')
             lineCount++;
     }
-    
+
     return lineCount;
 }

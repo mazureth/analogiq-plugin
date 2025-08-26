@@ -4,6 +4,7 @@
 #include "CacheManager.h"
 #include "PresetManager.h"
 #include "GearLibrary.h"
+#include "../View/AnalogIQEditor.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_core/juce_core.h>
 
@@ -22,8 +23,15 @@ AnalogIQProcessor::AnalogIQProcessor()
     // Initialize logging
     initializeLogging();
 
+    // Create default implementations for dependencies
+    fileSystem = new FileSystem();
+    networkFetcher = new NetworkFetcher();
+    cacheManager = std::make_unique<CacheManager>(*fileSystem);
+    presetManager = std::make_unique<PresetManager>(*fileSystem);
+    gearLibrary = std::make_unique<GearLibrary>(*fileSystem, *cacheManager);
+
     // Log initialization
-    logToFile("AnalogIQProcessor initialized");
+    logToFile("AnalogIQProcessor initialized with default dependencies");
 }
 
 AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &nf, IFileSystem &fs)
@@ -93,14 +101,23 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
     logToFile("createEditor called");
 
-    // For now, return nullptr until we implement the editor
-    // This will be implemented in Phase 2
-    return nullptr;
+    // Create the editor with all necessary dependencies
+    auto editor = new AnalogIQEditor(*this, 
+                                    *fileSystem, 
+                                    *cacheManager, 
+                                    *presetManager, 
+                                    *gearLibrary);
+    
+    // Store reference to the editor for state management
+    lastCreatedEditor = editor;
+    
+    logToFile("Editor created successfully");
+    return editor;
 }
 
 bool AnalogIQProcessor::hasEditor() const
 {
-    return false; // Will be true when editor is implemented
+    return true; // Editor is now implemented
 }
 
 const juce::String AnalogIQProcessor::getName() const
@@ -247,44 +264,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout AnalogIQProcessor::createPar
 
 void AnalogIQProcessor::initializeLogging()
 {
-    try
-    {
-        // Create AnalogIQ directory in user documents
-        auto userDocsDir = juce::File::getSpecialLocation(juce::File::userDocumentsDirectory);
-        auto analogiqDir = userDocsDir.getChildFile("AnalogIQ");
-
-        if (!analogiqDir.exists())
-            analogiqDir.createDirectory();
-
-        logToFile("Logging initialized - Directory: " + analogiqDir.getFullPathName());
-    }
-    catch (const std::exception &e)
-    {
-        // Log to console if file logging fails
-        juce::Logger::writeToLog("Failed to initialize logging: " + juce::String(e.what()));
-    }
+    // Temporarily disable file logging to avoid permission issues
+    // TODO: Re-enable with proper error handling when file system is stable
+    juce::Logger::writeToLog("Logging initialized (file logging disabled)");
 }
 
 void AnalogIQProcessor::logToFile(const juce::String &message)
 {
-    try
-    {
-        auto userDocsDir = juce::File::getSpecialLocation(juce::File::userDocumentsDirectory);
-        auto analogiqDir = userDocsDir.getChildFile("AnalogIQ");
-        auto logFile = analogiqDir.getChildFile("serialization.log");
-
-        auto timestamp = getLogTimestamp();
-        auto logEntry = timestamp + " - " + message + "\n";
-
-        if (logFile.existsAsFile())
-            logFile.appendText(logEntry);
-        else
-            logFile.replaceWithText(logEntry);
-    }
-    catch (...)
-    {
-        // Silently fail if logging fails
-    }
+    // Temporarily disable file logging to avoid permission issues
+    // TODO: Re-enable with proper error handling when file system is stable
+    juce::Logger::writeToLog("LOG: " + message);
 }
 
 juce::String AnalogIQProcessor::getLogTimestamp()

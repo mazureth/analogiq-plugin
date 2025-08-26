@@ -91,8 +91,8 @@ bool MainController::loadPreset(const juce::String &presetName)
     // Check for unsaved changes
     if (hasUnsavedChanges())
     {
-        if (!showConfirmation("Unsaved Changes", 
-                             "You have unsaved changes. Do you want to continue without saving?"))
+        if (!showConfirmation("Unsaved Changes",
+                              "You have unsaved changes. Do you want to continue without saving?"))
         {
             return false;
         }
@@ -116,8 +116,8 @@ bool MainController::loadPreset(const juce::String &presetName)
 bool MainController::deletePreset(const juce::String &presetName)
 {
     // Confirm deletion
-    if (!showConfirmation("Delete Preset", 
-                         "Are you sure you want to delete the preset '" + presetName + "'?"))
+    if (!showConfirmation("Delete Preset",
+                          "Are you sure you want to delete the preset '" + presetName + "'?"))
     {
         return false;
     }
@@ -224,16 +224,17 @@ bool MainController::showConfirmation(const juce::String &title, const juce::Str
     // For now, use a simple confirmation dialog
     // This could be enhanced with more sophisticated confirmation handling
     auto *dialog = new juce::AlertWindow(title, message, juce::AlertWindow::QuestionIcon);
-    
+
     dialog->addButton("OK", 1, juce::KeyPress(juce::KeyPress::returnKey));
     dialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
-    
+
     bool result = false;
-    dialog->enterModalState(true, juce::ModalCallbackFunction::create([&result, dialog](int buttonResult) {
+    dialog->enterModalState(true, juce::ModalCallbackFunction::create([&result, dialog](int buttonResult)
+                                                                      {
         result = (buttonResult == 1);
-        delete dialog;
-    }), true);
-    
+        delete dialog; }),
+                            true);
+
     return result;
 }
 
@@ -316,7 +317,7 @@ bool MainController::validatePresetName(const juce::String &presetName, juce::St
 bool MainController::checkPresetNameConflict(const juce::String &presetName, juce::String &errorMessage)
 {
     auto existingPresets = presetManager.getPresetNames();
-    
+
     for (const auto &existingName : existingPresets)
     {
         if (existingName.equalsIgnoreCase(presetName))

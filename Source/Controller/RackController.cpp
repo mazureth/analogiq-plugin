@@ -44,7 +44,7 @@ bool RackController::addGearToSlot(int slotIndex, GearItem *gearItem)
     // For now, just log the operation
     // This will be enhanced when we implement the full rack integration
     std::cout << "[RackController] Adding gear '" << gearItem->name << "' to slot " << slotIndex << std::endl;
-    
+
     updateModifiedState();
     return true;
 }
@@ -61,7 +61,7 @@ bool RackController::removeGearFromSlot(int slotIndex)
     // For now, just log the operation
     // This will be enhanced when we implement the full rack integration
     std::cout << "[RackController] Removing gear from slot " << slotIndex << std::endl;
-    
+
     updateModifiedState();
     return true;
 }
@@ -81,7 +81,7 @@ bool RackController::moveGearBetweenSlots(int fromSlotIndex, int toSlotIndex)
     // For now, just log the operation
     // This will be enhanced when we implement the full rack integration
     std::cout << "[RackController] Moving gear from slot " << fromSlotIndex << " to slot " << toSlotIndex << std::endl;
-    
+
     updateModifiedState();
     return true;
 }
@@ -97,12 +97,12 @@ bool RackController::swapGearBetweenSlots(int slotIndex1, int slotIndex2)
     // For now, just log the operation
     // This will be enhanced when we implement the full rack integration
     std::cout << "[RackController] Swapping gear between slots " << slotIndex1 << " and " << slotIndex2 << std::endl;
-    
+
     updateModifiedState();
     return true;
 }
 
-GearItem* RackController::getGearInSlot(int slotIndex) const
+GearItem *RackController::getGearInSlot(int slotIndex) const
 {
     if (!isValidSlotIndex(slotIndex))
         return nullptr;
@@ -178,7 +178,7 @@ bool RackController::clearRack()
     // For now, just log the operation
     // This will be enhanced when we implement the full rack integration
     std::cout << "[RackController] Clearing all gear from rack" << std::endl;
-    
+
     updateModifiedState();
     return true;
 }
@@ -188,7 +188,7 @@ bool RackController::resetRack()
     // For now, just log the operation
     // This will be enhanced when we implement the full rack integration
     std::cout << "[RackController] Resetting rack to default state" << std::endl;
-    
+
     updateModifiedState();
     return true;
 }
@@ -213,7 +213,7 @@ bool RackController::handleDropIntoSlot(int slotIndex, const juce::DragAndDropTa
     // For now, just log the operation
     // This will be enhanced when we implement the full drag and drop system
     std::cout << "[RackController] Dropped into slot " << slotIndex << std::endl;
-    
+
     updateModifiedState();
     return true;
 }
@@ -269,7 +269,7 @@ bool RackController::saveRackToPreset(const juce::String &presetName)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset integration
         std::cout << "[RackController] Saving rack state to preset: " << presetName << std::endl;
-        
+
         clearModifiedState();
         return true;
     }
@@ -286,7 +286,7 @@ bool RackController::loadRackFromPreset(const juce::String &presetName)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset integration
         std::cout << "[RackController] Loading rack state from preset: " << presetName << std::endl;
-        
+
         clearModifiedState();
         return true;
     }
@@ -313,25 +313,25 @@ void RackController::clearModifiedState()
 
 // Rack Information
 
-juce::Array<GearItem*> RackController::getAllGearInRack() const
+juce::Array<GearItem *> RackController::getAllGearInRack() const
 {
     // For now, return an empty array
     // This will be enhanced when we implement the full rack integration
-    return juce::Array<GearItem*>();
+    return juce::Array<GearItem *>();
 }
 
-juce::Array<GearItem*> RackController::getGearByType(GearItem::GearType gearType) const
+juce::Array<GearItem *> RackController::getGearByType(GearItem::GearType gearType) const
 {
     // For now, return an empty array
     // This will be enhanced when we implement the full rack integration
-    return juce::Array<GearItem*>();
+    return juce::Array<GearItem *>();
 }
 
-juce::Array<GearItem*> RackController::getGearByCategory(GearItem::GearCategory category) const
+juce::Array<GearItem *> RackController::getGearByCategory(GearItem::GearCategory category) const
 {
     // For now, return an empty array
     // This will be enhanced when we implement the full rack integration
-    return juce::Array<GearItem*>();
+    return juce::Array<GearItem *>();
 }
 
 double RackController::getTotalPowerConsumption() const
@@ -361,11 +361,11 @@ juce::MemoryBlock RackController::serializeRackState() const
     // For now, create a simple serialized state
     // This will be enhanced when we implement the full serialization system
     juce::MemoryBlock state;
-    
+
     // Add a simple header
     juce::String header = "RackState_v1.0";
     state.append(header.toRawUTF8(), header.getNumBytesAsUTF8());
-    
+
     return state;
 }
 
@@ -376,12 +376,12 @@ bool RackController::deserializeRackState(const juce::MemoryBlock &stateData)
     if (stateData.getSize() < 12) // Minimum size for header
         return false;
 
-    juce::String header(static_cast<const char*>(stateData.getData()), 12);
+    juce::String header(static_cast<const char *>(stateData.getData()), 12);
     if (header.startsWith("RackState_v"))
     {
         return true;
     }
-    
+
     return false;
 }
 

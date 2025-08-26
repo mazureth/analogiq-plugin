@@ -93,6 +93,11 @@ target_sources(AnalogIQ PRIVATE
     Source/Model/GearItem.cpp
     Source/Model/GearLibrary.cpp
     Source/Model/AnalogIQProcessor.cpp
+    # View layer sources
+    Source/View/AnalogIQEditor.cpp
+    Source/View/NotesPanel.cpp
+    Source/View/Rack.cpp
+    Source/View/RackSlot.cpp
     # Additional sources will be added as MVC components are implemented
 )
 

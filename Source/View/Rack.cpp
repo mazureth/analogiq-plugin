@@ -35,8 +35,8 @@ Rack::Rack(INetworkFetcher &networkFetcher,
       presetManager(presetManager),
       gearLibrary(gearLibrary)
 {
-    // Set component ID for debugging
-    setComponentID("Rack");
+    // Temporarily disable component ID to isolate JUCE assertion issues
+    // setComponentID("Rack");
 
     // Create the viewport and container
     rackViewport = std::make_unique<juce::Viewport>();

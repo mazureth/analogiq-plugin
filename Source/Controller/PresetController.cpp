@@ -37,8 +37,8 @@ PresetController::PresetController(PresetManager &presetManager,
 // Preset Operations
 
 bool PresetController::savePreset(const juce::String &presetName,
-                                   const juce::String &description,
-                                   const juce::StringArray &tags)
+                                  const juce::String &description,
+                                  const juce::StringArray &tags)
 {
     // Validate the preset name
     juce::String errorMessage;
@@ -59,7 +59,7 @@ bool PresetController::savePreset(const juce::String &presetName,
     {
         // Capture the current state
         juce::MemoryBlock stateData = captureCurrentState();
-        
+
         // For now, just log the operation
         // This will be enhanced when we implement the full preset saving system
         std::cout << "[PresetController] Saving preset: " << presetName << std::endl;
@@ -67,12 +67,12 @@ bool PresetController::savePreset(const juce::String &presetName,
             std::cout << "  Description: " << description << std::endl;
         if (tags.size() > 0)
             std::cout << "  Tags: " << tags.joinIntoString(", ") << std::endl;
-        
+
         // Update state tracking
         currentPresetName = presetName;
         lastSaveTime = juce::Time::getCurrentTime();
         clearModifiedState();
-        
+
         logPresetOperation("Save", presetName, true);
         return true;
     }
@@ -93,12 +93,12 @@ bool PresetController::loadPreset(const juce::String &presetName)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset loading system
         std::cout << "[PresetController] Loading preset: " << presetName << std::endl;
-        
+
         // Update state tracking
         currentPresetName = presetName;
         lastSaveTime = juce::Time::getCurrentTime();
         clearModifiedState();
-        
+
         logPresetOperation("Load", presetName, true);
         return true;
     }
@@ -119,13 +119,13 @@ bool PresetController::deletePreset(const juce::String &presetName)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset deletion system
         std::cout << "[PresetController] Deleting preset: " << presetName << std::endl;
-        
+
         // If this was the current preset, clear the current preset name
         if (currentPresetName == presetName)
         {
             currentPresetName = "";
         }
-        
+
         logPresetOperation("Delete", presetName, true);
         return true;
     }
@@ -161,13 +161,13 @@ bool PresetController::renamePreset(const juce::String &oldName, const juce::Str
         // For now, just log the operation
         // This will be enhanced when we implement the full preset renaming system
         std::cout << "[PresetController] Renaming preset from '" << oldName << "' to '" << newName << "'" << std::endl;
-        
+
         // Update state tracking if this was the current preset
         if (currentPresetName == oldName)
         {
             currentPresetName = newName;
         }
-        
+
         logPresetOperation("Rename", oldName + " -> " + newName, true);
         return true;
     }
@@ -203,7 +203,7 @@ bool PresetController::duplicatePreset(const juce::String &sourcePresetName, con
         // For now, just log the operation
         // This will be enhanced when we implement the full preset duplication system
         std::cout << "[PresetController] Duplicating preset '" << sourcePresetName << "' to '" << newPresetName << "'" << std::endl;
-        
+
         logPresetOperation("Duplicate", sourcePresetName + " -> " + newPresetName, true);
         return true;
     }
@@ -356,7 +356,7 @@ bool PresetController::importPreset(const juce::String &filePath, const juce::St
         std::cout << "[PresetController] Importing preset from: " << filePath << std::endl;
         if (!presetName.isEmpty())
             std::cout << "  Preset name: " << presetName << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -375,7 +375,7 @@ bool PresetController::exportPreset(const juce::String &presetName, const juce::
         // For now, just log the operation
         // This will be enhanced when we implement the full preset export system
         std::cout << "[PresetController] Exporting preset '" << presetName << "' to: " << filePath << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -394,7 +394,7 @@ bool PresetController::exportAllPresets(const juce::String &directoryPath)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset export system
         std::cout << "[PresetController] Exporting all presets to directory: " << directoryPath << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -413,7 +413,7 @@ int PresetController::importPresetsFromDirectory(const juce::String &directoryPa
         // For now, just log the operation
         // This will be enhanced when we implement the full preset import system
         std::cout << "[PresetController] Importing presets from directory: " << directoryPath << std::endl;
-        
+
         return 0; // For now, return 0 as we haven't implemented the actual import
     }
     catch (...)
@@ -434,7 +434,7 @@ bool PresetController::createPresetCategory(const juce::String &categoryName)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset organization system
         std::cout << "[PresetController] Creating preset category: " << categoryName << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -453,7 +453,7 @@ bool PresetController::deletePresetCategory(const juce::String &categoryName)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset organization system
         std::cout << "[PresetController] Deleting preset category: " << categoryName << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -479,7 +479,7 @@ bool PresetController::assignPresetToCategory(const juce::String &presetName, co
         // For now, just log the operation
         // This will be enhanced when we implement the full preset organization system
         std::cout << "[PresetController] Assigning preset '" << presetName << "' to category '" << categoryName << "'" << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -504,7 +504,7 @@ juce::StringArray PresetController::searchPresetsByName(const juce::String &sear
 
     juce::StringArray results;
     auto allPresets = presetManager.getPresetNames();
-    
+
     for (const auto &presetName : allPresets)
     {
         if (presetName.toLowerCase().contains(searchTerm.toLowerCase()))
@@ -512,7 +512,7 @@ juce::StringArray PresetController::searchPresetsByName(const juce::String &sear
             results.add(presetName);
         }
     }
-    
+
     return results;
 }
 
@@ -575,7 +575,7 @@ bool PresetController::createPresetBackup(const juce::String &backupPath)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset backup system
         std::cout << "[PresetController] Creating preset backup to: " << backupPath << std::endl;
-        
+
         lastBackupTime = juce::Time::getCurrentTime();
         return true;
     }
@@ -595,7 +595,7 @@ bool PresetController::restorePresetsFromBackup(const juce::String &backupPath)
         // For now, just log the operation
         // This will be enhanced when we implement the full preset restore system
         std::cout << "[PresetController] Restoring presets from backup: " << backupPath << std::endl;
-        
+
         return true;
     }
     catch (...)
@@ -616,11 +616,11 @@ juce::MemoryBlock PresetController::captureCurrentState() const
     // For now, create a simple state representation
     // This will be enhanced when we implement the full state capture system
     juce::MemoryBlock state;
-    
+
     // Add a simple header
     juce::String header = "PresetState_v1.0";
     state.append(header.toRawUTF8(), header.getNumBytesAsUTF8());
-    
+
     return state;
 }
 
@@ -631,7 +631,7 @@ bool PresetController::restoreState(const juce::MemoryBlock &stateData)
     if (stateData.getSize() < 12) // Minimum size for header
         return false;
 
-    juce::String header(static_cast<const char*>(stateData.getData()), 12);
+    juce::String header(static_cast<const char *>(stateData.getData()), 12);
     if (header.startsWith("PresetState_v"))
     {
         return true;
@@ -647,14 +647,14 @@ juce::String PresetController::generateUniquePresetName(const juce::String &base
 
     juce::String uniqueName = baseName;
     int counter = 1;
-    
+
     juce::String dummyError;
     while (checkPresetNameConflict(uniqueName, dummyError))
     {
         uniqueName = baseName + "_" + juce::String(counter);
         counter++;
     }
-    
+
     return uniqueName;
 }
 
@@ -684,6 +684,6 @@ void PresetController::notifyProcessorOfPresetChange()
 
 void PresetController::logPresetOperation(const juce::String &operation, const juce::String &presetName, bool success) const
 {
-    std::cout << "[PresetController] " << operation << " operation for preset '" << presetName << "' " 
+    std::cout << "[PresetController] " << operation << " operation for preset '" << presetName << "' "
               << (success ? "succeeded" : "failed") << std::endl;
 }
