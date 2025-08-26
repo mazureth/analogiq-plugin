@@ -176,7 +176,7 @@ void MainController::synchronizeState()
 
     // Synchronize the editor state
     // Note: This will be enhanced when the editor has a synchronizeState method
-    
+
     // Synchronize with the processor
     if (processor.hasEditor())
     {
@@ -193,7 +193,7 @@ void MainController::saveApplicationState()
         // This could include window position, recent presets, etc.
         std::cout << "[MainController] Application state saved" << std::endl;
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cout << "[MainController] Failed to save application state: " << e.what() << std::endl;
     }
@@ -207,7 +207,7 @@ void MainController::loadApplicationState()
         // This could include window position, recent presets, etc.
         std::cout << "[MainController] Application state loaded" << std::endl;
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cout << "[MainController] Failed to load application state: " << e.what() << std::endl;
     }
@@ -351,7 +351,7 @@ bool MainController::performPresetSave(const juce::String &presetName)
             return false;
         }
 
-        Rack* rack = editor->getRack();
+        Rack *rack = editor->getRack();
         if (!rack)
         {
             std::cout << "[MainController] No rack available for preset save" << std::endl;
@@ -361,7 +361,7 @@ bool MainController::performPresetSave(const juce::String &presetName)
         // Save the preset using the preset manager
         // We need to get the state from the processor, not from the rack
         bool success = presetManager->savePreset(presetName, processor.getState());
-        
+
         if (success)
         {
             std::cout << "[MainController] Preset '" << presetName << "' saved successfully" << std::endl;
@@ -370,10 +370,10 @@ bool MainController::performPresetSave(const juce::String &presetName)
         {
             std::cout << "[MainController] Failed to save preset '" << presetName << "'" << std::endl;
         }
-        
+
         return success;
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cout << "[MainController] Exception during preset save: " << e.what() << std::endl;
         return false;
@@ -396,7 +396,7 @@ bool MainController::performPresetLoad(const juce::String &presetName)
             return false;
         }
 
-        Rack* rack = editor->getRack();
+        Rack *rack = editor->getRack();
         if (!rack)
         {
             std::cout << "[MainController] No rack available for preset load" << std::endl;
@@ -406,7 +406,7 @@ bool MainController::performPresetLoad(const juce::String &presetName)
         // Load the preset using the preset manager
         // We need to pass the processor state, not the rack
         bool success = presetManager->loadPreset(presetName, processor.getState());
-        
+
         if (success)
         {
             std::cout << "[MainController] Preset '" << presetName << "' loaded successfully" << std::endl;
@@ -417,10 +417,10 @@ bool MainController::performPresetLoad(const juce::String &presetName)
         {
             std::cout << "[MainController] Failed to load preset '" << presetName << "'" << std::endl;
         }
-        
+
         return success;
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cout << "[MainController] Exception during preset load: " << e.what() << std::endl;
         return false;
@@ -438,11 +438,11 @@ bool MainController::performPresetDelete(const juce::String &presetName)
     {
         // Delete the preset using the preset manager
         bool success = presetManager->deletePreset(presetName);
-        
+
         if (success)
         {
             std::cout << "[MainController] Preset '" << presetName << "' deleted successfully" << std::endl;
-            
+
             // If the deleted preset was the current one, clear the current preset name
             if (currentPresetName == presetName)
             {
@@ -453,10 +453,10 @@ bool MainController::performPresetDelete(const juce::String &presetName)
         {
             std::cout << "[MainController] Failed to delete preset '" << presetName << "'" << std::endl;
         }
-        
+
         return success;
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cout << "[MainController] Exception during preset delete: " << e.what() << std::endl;
         return false;

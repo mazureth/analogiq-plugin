@@ -47,7 +47,7 @@ bool RackSlotController::insertGear(GearItem *gearItem)
 
     // Insert the gear into the slot
     rackSlot.setGearItem(gearItem);
-    
+
     // Check if the gear was successfully inserted
     if (rackSlot.getGearItem() == gearItem)
     {
@@ -69,11 +69,11 @@ GearItem *RackSlotController::removeGear()
         return nullptr;
 
     // Get the gear before removing it
-    GearItem* gearItem = rackSlot.getGearItem();
-    
+    GearItem *gearItem = rackSlot.getGearItem();
+
     // Remove the gear from the slot
     rackSlot.clearGearItem();
-    
+
     // Check if the gear was successfully removed
     if (rackSlot.getGearItem() == nullptr)
     {

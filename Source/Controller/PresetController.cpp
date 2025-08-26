@@ -59,7 +59,7 @@ bool PresetController::savePreset(const juce::String &presetName,
     {
         // Save the preset using the preset manager
         bool success = presetManager.savePreset(presetName, processor.getState());
-        
+
         if (success)
         {
             // Update state tracking
@@ -92,7 +92,7 @@ bool PresetController::loadPreset(const juce::String &presetName)
     {
         // Load the preset using the preset manager
         bool success = presetManager.loadPreset(presetName, processor.getState());
-        
+
         if (success)
         {
             // Update state tracking
@@ -125,7 +125,7 @@ bool PresetController::deletePreset(const juce::String &presetName)
     {
         // Delete the preset using the preset manager
         bool success = presetManager.deletePreset(presetName);
-        
+
         if (success)
         {
             // If this was the current preset, clear the current preset name

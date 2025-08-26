@@ -43,7 +43,7 @@ bool RackController::addGearToSlot(int slotIndex, GearItem *gearItem)
 
     // Add the gear to the rack slot using the gear ID
     bool success = rack.addGearToSlot(slotIndex, gearItem->unitId);
-    
+
     if (success)
     {
         std::cout << "[RackController] Successfully added gear '" << gearItem->name << "' to slot " << slotIndex << std::endl;
@@ -68,7 +68,7 @@ bool RackController::removeGearFromSlot(int slotIndex)
 
     // Remove the gear from the rack slot
     bool success = rack.removeGearFromSlot(slotIndex);
-    
+
     if (success)
     {
         std::cout << "[RackController] Successfully removed gear from slot " << slotIndex << std::endl;
@@ -96,7 +96,7 @@ bool RackController::moveGearBetweenSlots(int fromSlotIndex, int toSlotIndex)
 
     // Move the gear between slots
     bool success = rack.moveGearBetweenSlots(fromSlotIndex, toSlotIndex);
-    
+
     if (success)
     {
         std::cout << "[RackController] Successfully moved gear from slot " << fromSlotIndex << " to slot " << toSlotIndex << std::endl;
@@ -122,17 +122,17 @@ bool RackController::swapGearBetweenSlots(int slotIndex1, int slotIndex2)
     // First, get the gear from both slots
     juce::String gear1 = rack.getGearInSlot(slotIndex1);
     juce::String gear2 = rack.getGearInSlot(slotIndex2);
-    
+
     // Clear both slots
     rack.removeGearFromSlot(slotIndex1);
     rack.removeGearFromSlot(slotIndex2);
-    
+
     // Add gear to opposite slots
     bool success1 = rack.addGearToSlot(slotIndex2, gear1);
     bool success2 = rack.addGearToSlot(slotIndex1, gear2);
-    
+
     bool success = success1 && success2;
-    
+
     if (success)
     {
         std::cout << "[RackController] Successfully swapped gear between slots " << slotIndex1 << " and " << slotIndex2 << std::endl;
