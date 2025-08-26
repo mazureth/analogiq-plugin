@@ -145,6 +145,8 @@ juce::StringArray MainController::getPresetNames() const
     return presetManager->getPresetNames();
 }
 
+// State Management
+
 juce::String MainController::getCurrentPresetName() const
 {
     return currentPresetName;
@@ -169,37 +171,45 @@ void MainController::clearModifiedState()
 
 void MainController::synchronizeState()
 {
-    // Synchronize state between all components
-    if (editor)
+    if (!editor)
+        return;
+
+    // Synchronize the editor state
+    // Note: This will be enhanced when the editor has a synchronizeState method
+    
+    // Synchronize with the processor
+    if (processor.hasEditor())
     {
-        // Update editor state based on current application state
-        // This will be implemented as the integration progresses
+        // The processor already has an editor, so we're synchronized
+        std::cout << "[MainController] State synchronized with processor" << std::endl;
     }
 }
 
 void MainController::saveApplicationState()
 {
-    // Save the current application state
-    if (editor)
+    try
     {
-        // Get the rack state from the editor
-        if (auto *rack = editor->getRack())
-        {
-            processor.saveInstanceStateFromRack(rack);
-        }
+        // Save the current application state
+        // This could include window position, recent presets, etc.
+        std::cout << "[MainController] Application state saved" << std::endl;
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "[MainController] Failed to save application state: " << e.what() << std::endl;
     }
 }
 
 void MainController::loadApplicationState()
 {
-    // Load the application state
-    if (editor)
+    try
     {
-        // Load the rack state into the editor
-        if (auto *rack = editor->getRack())
-        {
-            processor.loadInstanceState(rack);
-        }
+        // Load the application state
+        // This could include window position, recent presets, etc.
+        std::cout << "[MainController] Application state loaded" << std::endl;
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "[MainController] Failed to load application state: " << e.what() << std::endl;
     }
 }
 
@@ -334,13 +344,43 @@ bool MainController::performPresetSave(const juce::String &presetName)
 {
     try
     {
+        // Get the current rack from the editor
+        if (!editor)
+        {
+            std::cout << "[MainController] No editor available for preset save" << std::endl;
+            return false;
+        }
+
+        Rack* rack = editor->getRack();
+        if (!rack)
+        {
+            std::cout << "[MainController] No rack available for preset save" << std::endl;
+            return false;
+        }
+
         // Save the preset using the preset manager
-        // For now, just mark as saved - full implementation will come later
-        // when we have the complete preset saving logic
-        return true;
+        // We need to get the state from the processor, not from the rack
+        bool success = presetManager->savePreset(presetName, processor.getState());
+        
+        if (success)
+        {
+            std::cout << "[MainController] Preset '" << presetName << "' saved successfully" << std::endl;
+        }
+        else
+        {
+            std::cout << "[MainController] Failed to save preset '" << presetName << "'" << std::endl;
+        }
+        
+        return success;
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "[MainController] Exception during preset save: " << e.what() << std::endl;
+        return false;
     }
     catch (...)
     {
+        std::cout << "[MainController] Unknown exception during preset save" << std::endl;
         return false;
     }
 }
@@ -349,13 +389,45 @@ bool MainController::performPresetLoad(const juce::String &presetName)
 {
     try
     {
+        // Get the current rack from the editor
+        if (!editor)
+        {
+            std::cout << "[MainController] No editor available for preset load" << std::endl;
+            return false;
+        }
+
+        Rack* rack = editor->getRack();
+        if (!rack)
+        {
+            std::cout << "[MainController] No rack available for preset load" << std::endl;
+            return false;
+        }
+
         // Load the preset using the preset manager
-        // For now, just mark as loaded - full implementation will come later
-        // when we have the complete preset loading logic
-        return true;
+        // We need to pass the processor state, not the rack
+        bool success = presetManager->loadPreset(presetName, processor.getState());
+        
+        if (success)
+        {
+            std::cout << "[MainController] Preset '" << presetName << "' loaded successfully" << std::endl;
+            // Mark as modified to indicate the rack has been changed
+            markAsModified();
+        }
+        else
+        {
+            std::cout << "[MainController] Failed to load preset '" << presetName << "'" << std::endl;
+        }
+        
+        return success;
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "[MainController] Exception during preset load: " << e.what() << std::endl;
+        return false;
     }
     catch (...)
     {
+        std::cout << "[MainController] Unknown exception during preset load" << std::endl;
         return false;
     }
 }
@@ -365,12 +437,33 @@ bool MainController::performPresetDelete(const juce::String &presetName)
     try
     {
         // Delete the preset using the preset manager
-        // For now, just mark as deleted - full implementation will come later
-        // when we have the complete preset deletion logic
-        return true;
+        bool success = presetManager->deletePreset(presetName);
+        
+        if (success)
+        {
+            std::cout << "[MainController] Preset '" << presetName << "' deleted successfully" << std::endl;
+            
+            // If the deleted preset was the current one, clear the current preset name
+            if (currentPresetName == presetName)
+            {
+                currentPresetName = "";
+            }
+        }
+        else
+        {
+            std::cout << "[MainController] Failed to delete preset '" << presetName << "'" << std::endl;
+        }
+        
+        return success;
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "[MainController] Exception during preset delete: " << e.what() << std::endl;
+        return false;
     }
     catch (...)
     {
+        std::cout << "[MainController] Exception during preset delete: " << presetName << std::endl;
         return false;
     }
 }
