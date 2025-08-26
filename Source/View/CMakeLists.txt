@@ -7,6 +7,10 @@ set(VIEW_SOURCES
     AnalogIQEditor.cpp
     NotesPanel.h
     NotesPanel.cpp
+    Rack.h
+    Rack.cpp
+    RackSlot.h
+    RackSlot.cpp
     # Additional view sources will be added here
 )
 

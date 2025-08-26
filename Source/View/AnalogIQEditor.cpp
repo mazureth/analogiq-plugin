@@ -39,14 +39,14 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     // Set component IDs for debugging
     setComponentID("AnalogIQEditor");
 
-    // TODO: Create Rack component when it's implemented
-    // rack = std::make_unique<Rack>(processor.getNetworkFetcher(), fileSystem, cacheManager, presetManager, &gearLibrary);
-    
+    // Create Rack component
+    rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), fileSystem, cacheManager, presetManager, gearLibrary);
+
     // Create NotesPanel component
     notesPanel = std::make_unique<NotesPanel>();
 
     // Set component IDs
-    // rack->setComponentID("RackTab");
+    rack->setComponentID("RackTab");
     notesPanel->setComponentID("NotesTab");
 
     // Set up main window size
@@ -55,8 +55,8 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     // Set up tabs
     mainTabs.setComponentID("MainTabs");
 
-    // Add Notes tab (Rack tab will be added when Rack component is implemented)
-    // mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
+    // Add Rack and Notes tabs
+    mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
     mainTabs.addTab("Notes", juce::Colours::darkgrey, notesPanel.get(), false);
 
     mainTabs.setTabBarDepth(30);
@@ -145,14 +145,14 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager &cach
     // Set component IDs for debugging
     setComponentID("AnalogIQEditor");
 
-    // TODO: Create Rack component when it's implemented
-    // rack = std::make_unique<Rack>(processor.getNetworkFetcher(), fileSystem, cacheManager, presetManager, &gearLibrary);
-    
+    // Create Rack component
+    rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, cacheManager, presetManager, *gearLibrary);
+
     // Create NotesPanel component
     notesPanel = std::make_unique<NotesPanel>();
 
     // Set component IDs
-    // rack->setComponentID("RackTab");
+    rack->setComponentID("RackTab");
     notesPanel->setComponentID("NotesTab");
 
     // Set up main window size
@@ -161,8 +161,8 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager &cach
     // Set up tabs
     mainTabs.setComponentID("MainTabs");
 
-    // Add Notes tab (Rack tab will be added when Rack component is implemented)
-    // mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
+    // Add Rack and Notes tabs
+    mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
     mainTabs.addTab("Notes", juce::Colours::darkgrey, notesPanel.get(), false);
 
     mainTabs.setTabBarDepth(30);
@@ -440,20 +440,20 @@ void AnalogIQEditor::handleLoadPreset(const juce::String &presetName)
     {
         // Simple confirmation dialog
         auto *dialog = new juce::AlertWindow("Unsaved Changes",
-                                            "You have unsaved changes. Do you want to continue without saving?",
-                                            juce::AlertWindow::QuestionIcon);
+                                             "You have unsaved changes. Do you want to continue without saving?",
+                                             juce::AlertWindow::QuestionIcon);
 
         dialog->addButton("Continue", 1, juce::KeyPress(juce::KeyPress::returnKey));
         dialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
 
         dialog->enterModalState(true, juce::ModalCallbackFunction::create([this, dialog, presetName](int result)
-                                                                         {
+                                                                          {
             if (result == 1) // Continue
             {
                 performLoadPreset(presetName);
             }
-            delete dialog;
-        }), true);
+            delete dialog; }),
+                                true);
     }
     else
     {
@@ -479,7 +479,7 @@ void AnalogIQEditor::handleDeletePreset(const juce::String &presetName)
     dialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
 
     dialog->enterModalState(true, juce::ModalCallbackFunction::create([this, dialog, presetName](int result)
-                                                                     {
+                                                                      {
         if (result == 1) // Delete
         {
             // TODO: Implement when we have access to AudioProcessorValueTreeState
@@ -492,8 +492,8 @@ void AnalogIQEditor::handleDeletePreset(const juce::String &presetName)
                 clearModifiedState();
             }
         }
-        delete dialog;
-    }), true);
+        delete dialog; }),
+                            true);
 }
 
 void AnalogIQEditor::refreshPresetMenu()

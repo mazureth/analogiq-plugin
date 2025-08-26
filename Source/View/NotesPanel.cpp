@@ -69,10 +69,10 @@ void NotesPanel::paint(juce::Graphics &g)
 void NotesPanel::resized()
 {
     auto area = getLocalBounds();
-    
+
     // Add a small margin around the editor
     area.reduce(5, 5);
-    
+
     notesEditor.setBounds(area);
 }
 

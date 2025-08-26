@@ -16,10 +16,10 @@
 #include "../Shared/IFileSystem.h"
 #include "../Shared/ICacheManager.h"
 #include "NotesPanel.h"
+#include "Rack.h"
 
 // Forward declarations
 class AnalogIQProcessor;
-class Rack;
 
 /**
  * @brief Main editor interface for the AnalogIQ plugin.
@@ -77,9 +77,9 @@ public:
     /**
      * @brief Gets a pointer to the rack component.
      *
-     * @return Pointer to the Rack component (nullptr until implemented)
+     * @return Pointer to the Rack component
      */
-    Rack *getRack() const { return nullptr; }
+    Rack *getRack() const { return rack.get(); }
 
     /**
      * @brief Gets a pointer to the gear library component.
@@ -188,6 +188,7 @@ private:
 
     // UI Components
     juce::TabbedComponent mainTabs{juce::TabbedButtonBar::TabsAtTop}; ///< Main tabbed interface
+    std::unique_ptr<Rack> rack;                                       ///< Rack component
     std::unique_ptr<NotesPanel> notesPanel;                           ///< Notes panel component
 
     // Menu Bar Components
