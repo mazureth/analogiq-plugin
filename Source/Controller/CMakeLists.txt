@@ -5,6 +5,8 @@ set(CONTROLLER_SOURCES
     MainController.cpp
     GearLibraryController.h
     GearLibraryController.cpp
+    RackController.h
+    RackController.cpp
     # Additional controller sources will be added here
 )
 
