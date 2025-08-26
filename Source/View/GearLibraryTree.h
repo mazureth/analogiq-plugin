@@ -26,7 +26,7 @@ class GearTreeItem;
  * It supports drag and drop operations for moving gear items to the rack.
  */
 class GearLibraryTree : public juce::Component,
-                       public juce::DragAndDropContainer
+                        public juce::DragAndDropContainer
 {
 public:
     /**
@@ -112,12 +112,12 @@ public:
      */
     enum class ItemType
     {
-        Root,           ///< Root node of the tree
-        Category,       ///< Category node
-        Gear,           ///< Individual gear item
-        RecentlyUsed,   ///< Recently used section
-        Favorites,      ///< Favorites section
-        Message         ///< Informational message
+        Root,         ///< Root node of the tree
+        Category,     ///< Category node
+        Gear,         ///< Individual gear item
+        RecentlyUsed, ///< Recently used section
+        Favorites,    ///< Favorites section
+        Message       ///< Informational message
     };
 
     /**

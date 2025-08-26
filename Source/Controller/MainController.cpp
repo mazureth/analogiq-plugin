@@ -21,11 +21,11 @@
  * @param gearLibrary Reference to the gear library
  */
 MainController::MainController(AnalogIQProcessor &processor,
-                               IFileSystem &fileSystem,
-                               ICacheManager &cacheManager,
-                               INetworkFetcher &networkFetcher,
-                               PresetManager &presetManager,
-                               GearLibrary &gearLibrary)
+                               IFileSystem *fileSystem,
+                               ICacheManager *cacheManager,
+                               INetworkFetcher *networkFetcher,
+                               PresetManager *presetManager,
+                               GearLibrary *gearLibrary)
     : processor(processor),
       fileSystem(fileSystem),
       cacheManager(cacheManager),
@@ -142,7 +142,7 @@ bool MainController::deletePreset(const juce::String &presetName)
 
 juce::StringArray MainController::getPresetNames() const
 {
-    return presetManager.getPresetNames();
+    return presetManager->getPresetNames();
 }
 
 juce::String MainController::getCurrentPresetName() const
@@ -316,7 +316,7 @@ bool MainController::validatePresetName(const juce::String &presetName, juce::St
 
 bool MainController::checkPresetNameConflict(const juce::String &presetName, juce::String &errorMessage)
 {
-    auto existingPresets = presetManager.getPresetNames();
+    auto existingPresets = presetManager->getPresetNames();
 
     for (const auto &existingName : existingPresets)
     {

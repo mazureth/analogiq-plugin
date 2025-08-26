@@ -8,186 +8,134 @@
  */
 
 #pragma once
-
-#include <JuceHeader.h>
+#include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_gui_extra/juce_gui_extra.h>
 #include "../Shared/INetworkFetcher.h"
 #include "../Shared/IFileSystem.h"
 #include "../Shared/ICacheManager.h"
 #include "../Model/PresetManager.h"
 #include "../Model/GearLibrary.h"
+#include "RackSlot.h"
+#include <memory>
+#include <vector>
 
-// Forward declarations
-class RackSlot;
-
-/**
- * @class Rack
- * @brief A component that manages a virtual rack of audio gear items.
- *
- * The Rack class provides a visual interface for managing audio gear items in a virtual rack.
- * It handles the layout of gear items, drag-and-drop functionality for adding and rearranging
- * items, and manages the loading and display of gear resources like faceplates and controls.
- */
 class Rack : public juce::Component,
-             public juce::DragAndDropTarget
+             public juce::DragAndDropTarget,
+             public juce::ComponentListener
 {
 public:
-    /**
-     * @brief Constructs a new Rack instance.
-     *
-     * @param networkFetcher Reference to the network fetcher
-     * @param fileSystem Reference to the file system
-     * @param cacheManager Reference to the cache manager
-     * @param presetManager Reference to the preset manager
-     * @param gearLibrary Reference to the gear library
-     */
+    // Constructor
     Rack(INetworkFetcher &networkFetcher,
          IFileSystem &fileSystem,
          ICacheManager &cacheManager,
          PresetManager &presetManager,
          GearLibrary &gearLibrary);
 
-    /**
-     * @brief Destructor for the Rack class.
-     *
-     * Cleans up resources and ensures all images are properly released.
-     */
     ~Rack() override;
 
-    /**
-     * @brief Paints the rack's background.
-     *
-     * @param g The graphics context to paint with
-     */
+    // JUCE Component overrides
     void paint(juce::Graphics &g) override;
-
-    /**
-     * @brief Handles resizing of the rack component.
-     *
-     * Adjusts the layout of the viewport, container, and all rack slots
-     * based on the new dimensions.
-     */
     void resized() override;
 
-    // DragAndDropTarget methods
-    /**
-     * @brief Checks if the rack is interested in a drag source.
-     *
-     * @param dragSourceDetails Details about the drag source
-     * @return true if the rack accepts drops from this source
-     */
+    // Drag and Drop
     bool isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
-
-    /**
-     * @brief Handles when a dragged item enters the rack.
-     *
-     * @param dragSourceDetails Details about the drag source
-     */
     void itemDragEnter(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
-
-    /**
-     * @brief Handles when a dragged item moves over the rack.
-     *
-     * @param dragSourceDetails Details about the drag source and position
-     */
     void itemDragMove(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
-
-    /**
-     * @brief Handles when a dragged item exits the rack.
-     *
-     * @param dragSourceDetails Details about the drag source
-     */
     void itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
-
-    /**
-     * @brief Handles when a dragged item is dropped onto the rack.
-     *
-     * @param dragSourceDetails Details about the drag source and drop position
-     */
     void itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
 
-    /**
-     * @brief Gets the number of slots in the rack.
-     *
-     * @return The number of slots
-     */
-    int getNumSlots() const { return slots.size(); }
+    // Rack management
+    void addRackSlot(int slotIndex);
+    void removeRackSlot(int slotIndex);
+    void clearAllSlots();
+    int getSlotCount() const;
+    RackSlot *getSlot(int slotIndex) const;
 
-    /**
-     * @brief Gets a specific slot by index.
-     *
-     * @param index The index of the slot to get
-     * @return Pointer to the RackSlot, or nullptr if index is invalid
-     */
-    RackSlot *getSlot(int index) const { return (index >= 0 && index < slots.size()) ? slots[index] : nullptr; }
+    // Gear management
+    bool addGearToSlot(int slotIndex, const juce::String &gearId);
+    bool removeGearFromSlot(int slotIndex);
+    bool moveGearBetweenSlots(int fromSlot, int toSlot);
+    juce::String getGearInSlot(int slotIndex) const;
 
+    // State persistence
+    void saveRackState();
+    void loadRackState();
+    juce::ValueTree getRackState() const;
+    void setRackState(const juce::ValueTree &state);
 
+    // Layout management
+    void setSlotLayout(int slotsPerRow, int maxRows);
+    void setSlotSize(int width, int height);
+    void setSlotSpacing(int horizontal, int vertical);
 
-    /**
-     * @class RackContainer
-     * @brief Internal container class for rack slots.
-     *
-     * This class provides a container component that holds all the rack slots
-     * and is managed by the viewport.
-     */
-    class RackContainer : public juce::Component
-    {
-    public:
-        /**
-         * @brief Constructs a new RackContainer.
-         *
-         * Sets the component ID for debugging purposes.
-         */
-        RackContainer() { setComponentID("RackContainer"); }
+    // Visual customization
+    void setBackgroundColor(juce::Colour color);
+    void setSlotBackgroundColor(juce::Colour color);
+    void setSlotBorderColor(juce::Colour color);
+    void setShowSlotNumbers(bool show);
+    void setShowGrid(bool show);
 
-        /**
-         * @brief Paints the container's background.
-         *
-         * @param g The graphics context to paint with
-         */
-        void paint(juce::Graphics &g) override { g.fillAll(juce::Colours::darkgrey); }
+    // Event handling
+    void addRackStateListener(juce::Component *listener);
+    void removeRackStateListener(juce::Component *listener);
 
-        Rack *rack = nullptr; ///< Reference to the parent rack
-    };
+    // Utility methods
+    bool isSlotOccupied(int slotIndex) const;
+    int getFirstEmptySlot() const;
+    int getLastOccupiedSlot() const;
+    void compactSlots(); // Remove gaps between occupied slots
+
+    // Component listener override
+    void componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized) override;
 
 private:
-    // Configuration
-    int numSlots = 16;    ///< Number of slots in the rack
-    int slotSpacing = 10; ///< Spacing between slots in pixels
-
-    // UI Components
-    std::unique_ptr<juce::Viewport> rackViewport; ///< Viewport for scrolling the rack
-    std::unique_ptr<RackContainer> rackContainer; ///< Container for rack slots
-    juce::OwnedArray<RackSlot> slots;             ///< Array of rack slots
-
-    // Reference to the gear library (for drag and drop)
-    GearLibrary &gearLibrary; ///< Reference to the gear library
-
-    // Reference to the network fetcher
-    INetworkFetcher &networkFetcher; ///< Reference to the network fetcher
-
-    // Reference to the file system
+    // Member variables
+    INetworkFetcher &networkFetcher;
     IFileSystem &fileSystem;
-
-    // Reference to the cache manager
     ICacheManager &cacheManager;
-
-    // Reference to the preset manager
     PresetManager &presetManager;
+    GearLibrary &gearLibrary;
 
-    /**
-     * @brief Gets the height of a specific rack slot.
-     *
-     * @param slotIndex The index of the slot to get the height for
-     * @return The height of the slot in pixels
-     */
-    int getSlotHeight(int slotIndex) const;
+    // Rack configuration
+    int slotsPerRow;
+    int maxRows;
+    int slotWidth;
+    int slotHeight;
+    int horizontalSpacing;
+    int verticalSpacing;
 
-    /**
-     * @brief Gets the default height for a slot.
-     *
-     * @return The default slot height in pixels
-     */
-    int getDefaultSlotHeight() const { return 150; } // Default height if not overridden
+    // Visual properties
+    juce::Colour backgroundColor;
+    juce::Colour slotBackgroundColor;
+    juce::Colour slotBorderColor;
+    bool showSlotNumbers;
+    bool showGrid;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Rack)
+    // Rack slots
+    std::vector<std::unique_ptr<RackSlot>> rackSlots;
+
+    // UI components
+    std::unique_ptr<juce::Viewport> viewport;
+    std::unique_ptr<juce::Component> rackContainer;
+
+    // State management
+    juce::ValueTree rackState;
+    juce::Array<juce::Component *> stateListeners;
+
+    // Private helper methods
+    void initializeRack();
+    void layoutSlots();
+    void createSlot(int slotIndex);
+    void updateSlotPositions();
+    void notifyStateChanged();
+
+    // Drag and drop helpers
+    int getSlotIndexFromPosition(juce::Point<int> position) const;
+    bool canDropGearInSlot(int slotIndex, const juce::String &gearId) const;
+
+    // State persistence helpers
+    void serializeRackState();
+    void deserializeRackState();
+
+    // JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Rack)
 };

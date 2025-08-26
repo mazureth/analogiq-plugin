@@ -37,26 +37,26 @@ public:
      * @brief Constructs a new AnalogIQEditor.
      *
      * @param processor Reference to the associated AudioProcessor
-     * @param fileSystem Reference to the file system
-     * @param cacheManager Reference to the cache manager
-     * @param presetManager Reference to the preset manager
-     * @param gearLibrary Reference to the gear library
+     * @param fileSystem Pointer to the file system
+     * @param cacheManager Pointer to the cache manager
+     * @param presetManager Pointer to the preset manager
+     * @param gearLibrary Pointer to the gear library
      */
     AnalogIQEditor(AnalogIQProcessor &processor,
-                   IFileSystem &fileSystem,
-                   ICacheManager &cacheManager,
-                   PresetManager &presetManager,
-                   GearLibrary &gearLibrary);
+                   IFileSystem *fileSystem,
+                   ICacheManager *cacheManager,
+                   PresetManager *presetManager,
+                   GearLibrary *gearLibrary);
 
     /**
      * @brief Constructs a new AnalogIQEditor for testing.
      *
      * @param processor Reference to the associated AudioProcessor
-     * @param cacheManager Reference to the cache manager
-     * @param presetManager Reference to the preset manager
+     * @param cacheManager Pointer to the cache manager
+     * @param presetManager Pointer to the preset manager
      * @param disableAutoLoad Whether to disable auto-loading of the gear library (for testing)
      */
-    AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager &cacheManager, PresetManager &presetManager, bool disableAutoLoad);
+    AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cacheManager, PresetManager *presetManager, bool disableAutoLoad);
 
     /**
      * @brief Destructor for AnalogIQEditor.
@@ -90,11 +90,11 @@ public:
     GearLibrary *getGearLibrary() const { return gearLibrary; }
 
     /**
-     * @brief Gets a reference to the preset manager.
+     * @brief Gets a pointer to the preset manager.
      *
-     * @return Reference to the PresetManager instance
+     * @return Pointer to the PresetManager instance
      */
-    PresetManager &getPresetManager() const { return presetManager; }
+    PresetManager *getPresetManager() const { return presetManager; }
 
     /**
      * @brief Gets a pointer to the notes panel component.
@@ -183,13 +183,13 @@ private:
 private:
     AnalogIQProcessor &processor;
     IFileSystem *fileSystem;
-    ICacheManager &cacheManager;
-    PresetManager &presetManager;
+    ICacheManager *cacheManager;
+    PresetManager *presetManager;
     GearLibrary *gearLibrary;
 
     // UI Components
     juce::TabbedComponent mainTabs{juce::TabbedButtonBar::TabsAtTop}; ///< Main tabbed interface
-    std::unique_ptr<GearLibraryTree> gearLibraryTree;                ///< Gear library tree component
+    std::unique_ptr<GearLibraryTree> gearLibraryTree;                 ///< Gear library tree component
     std::unique_ptr<Rack> rack;                                       ///< Rack component
     std::unique_ptr<NotesPanel> notesPanel;                           ///< Notes panel component
 

@@ -38,18 +38,18 @@ public:
      * @brief Constructs a new MainController.
      *
      * @param processor Reference to the main audio processor
-     * @param fileSystem Reference to the file system service
-     * @param cacheManager Reference to the cache manager
-     * @param networkFetcher Reference to the network fetcher
-     * @param presetManager Reference to the preset manager
-     * @param gearLibrary Reference to the gear library
+     * @param fileSystem Pointer to the file system service
+     * @param cacheManager Pointer to the cache manager
+     * @param networkFetcher Pointer to the network fetcher
+     * @param presetManager Pointer to the preset manager
+     * @param gearLibrary Pointer to the gear library
      */
     MainController(AnalogIQProcessor &processor,
-                   IFileSystem &fileSystem,
-                   ICacheManager &cacheManager,
-                   INetworkFetcher &networkFetcher,
-                   PresetManager &presetManager,
-                   GearLibrary &gearLibrary);
+                   IFileSystem *fileSystem,
+                   ICacheManager *cacheManager,
+                   INetworkFetcher *networkFetcher,
+                   PresetManager *presetManager,
+                   GearLibrary *gearLibrary);
 
     /**
      * @brief Destructor for MainController.
@@ -179,11 +179,11 @@ public:
 private:
     // Core dependencies
     AnalogIQProcessor &processor;
-    IFileSystem &fileSystem;
-    ICacheManager &cacheManager;
-    INetworkFetcher &networkFetcher;
-    PresetManager &presetManager;
-    GearLibrary &gearLibrary;
+    IFileSystem *fileSystem;
+    ICacheManager *cacheManager;
+    INetworkFetcher *networkFetcher;
+    PresetManager *presetManager;
+    GearLibrary *gearLibrary;
 
     // UI Components
     std::unique_ptr<AnalogIQEditor> editor;

@@ -25,23 +25,23 @@
  * @param gearLibrary Reference to the gear library
  */
 AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
-                               IFileSystem &fileSystem,
-                               ICacheManager &cacheManager,
-                               PresetManager &presetManager,
-                               GearLibrary &gearLibrary)
+                               IFileSystem *fileSystem,
+                               ICacheManager *cacheManager,
+                               PresetManager *presetManager,
+                               GearLibrary *gearLibrary)
     : AudioProcessorEditor(&processor),
-      processor(processor),
-      fileSystem(&fileSystem),
-      cacheManager(cacheManager),
-      presetManager(presetManager),
-      gearLibrary(&gearLibrary),
+              processor(processor),
+        fileSystem(fileSystem),
+        cacheManager(cacheManager),
+        presetManager(presetManager),
+        gearLibrary(gearLibrary),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
     // Temporarily disable component IDs to isolate JUCE assertion issues
     // setComponentID("AnalogIQEditor");
 
     // Create Rack component
-    rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), fileSystem, cacheManager, presetManager, gearLibrary);
+    rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, *cacheManager, *presetManager, *gearLibrary);
 
     // Create NotesPanel component
     notesPanel = std::make_unique<NotesPanel>();
@@ -136,7 +136,7 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
  * @param presetManager Reference to the preset manager
  * @param disableAutoLoad Whether to disable auto-loading of the gear library (for testing)
  */
-AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager &cacheManager, PresetManager &presetManager, bool disableAutoLoad)
+AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cacheManager, PresetManager *presetManager, bool disableAutoLoad)
     : AudioProcessorEditor(&processor),
       processor(processor),
       fileSystem(processor.getFileSystem()),
@@ -149,10 +149,10 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager &cach
     // setComponentID("AnalogIQEditor");
 
     // Create GearLibraryTree component (to the left of the rack)
-    gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, cacheManager, presetManager);
+    gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
 
     // Create Rack component
-    rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, cacheManager, presetManager, *gearLibrary);
+    rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, *cacheManager, *presetManager, *gearLibrary);
 
     // Create NotesPanel component
     notesPanel = std::make_unique<NotesPanel>();
@@ -263,11 +263,11 @@ void AnalogIQEditor::resized()
     // Remaining area: Split between Gear Library Tree (left) and Tabs (right)
     // Gear Library Tree takes 1/3 of the width, Tabs take 2/3
     int treeWidth = area.getWidth() / 3;
-    
+
     // Left side: Gear Library Tree
     auto treeArea = area.removeFromLeft(treeWidth);
     gearLibraryTree->setBounds(treeArea);
-    
+
     // Right side: Tabs containing Rack and Notes
     mainTabs.setBounds(area);
 }
@@ -288,7 +288,7 @@ void AnalogIQEditor::showPresetMenu()
                  { showLoadPresetDialog(); });
 
     // Add preset list if any exist
-    auto presetNames = presetManager.getPresetNames();
+    auto presetNames = presetManager->getPresetNames();
 
     if (presetNames.size() > 0)
     {
@@ -369,7 +369,7 @@ void AnalogIQEditor::showSavePresetDialog()
 
 void AnalogIQEditor::showLoadPresetDialog()
 {
-    auto presetNames = presetManager.getPresetNames();
+    auto presetNames = presetManager->getPresetNames();
 
     if (presetNames.size() == 0)
     {
@@ -405,7 +405,7 @@ void AnalogIQEditor::showLoadPresetDialog()
 
 void AnalogIQEditor::showDeletePresetDialog()
 {
-    auto presetNames = presetManager.getPresetNames();
+    auto presetNames = presetManager->getPresetNames();
 
     if (presetNames.size() == 0)
     {

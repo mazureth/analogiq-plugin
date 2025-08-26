@@ -10,157 +10,622 @@
 
 #include "Rack.h"
 #include "RackSlot.h"
-#include "../Model/GearItem.h"
+#include "../Shared/IGearLibrary.h"
+#include "../Shared/ICacheManager.h"
+#include "../Shared/IPresetManager.h"
+#include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_gui_extra/juce_gui_extra.h>
 
-/**
- * @brief Constructs a new Rack instance.
- *
- * Initializes the rack with the specified number of slots and sets up the viewport
- * and container for managing the rack layout.
- *
- * @param networkFetcher Reference to the network fetcher
- * @param fileSystem Reference to the file system
- * @param cacheManager Reference to the cache manager
- * @param presetManager Reference to the preset manager
- * @param gearLibrary Pointer to the gear library
- */
 Rack::Rack(INetworkFetcher &networkFetcher,
            IFileSystem &fileSystem,
            ICacheManager &cacheManager,
            PresetManager &presetManager,
            GearLibrary &gearLibrary)
-    : networkFetcher(networkFetcher),
-      fileSystem(fileSystem),
-      cacheManager(cacheManager),
-      presetManager(presetManager),
-      gearLibrary(gearLibrary)
+    : networkFetcher(networkFetcher), fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary), slotsPerRow(4), maxRows(4), slotWidth(200), slotHeight(150), horizontalSpacing(10), verticalSpacing(10), backgroundColor(juce::Colours::darkgrey), slotBackgroundColor(juce::Colours::lightgrey), slotBorderColor(juce::Colours::black), showSlotNumbers(true), showGrid(true)
 {
-    // Temporarily disable component ID to isolate JUCE assertion issues
-    // setComponentID("Rack");
+    // Initialize the rack
+    initializeRack();
 
-    // Create the viewport and container
-    rackViewport = std::make_unique<juce::Viewport>();
-    rackContainer = std::make_unique<RackContainer>();
-
-    // Set up the container
-    rackContainer->rack = this;
-
-    // Create rack slots
-    for (int i = 0; i < numSlots; ++i)
-    {
-        auto *slot = new RackSlot(fileSystem, cacheManager, presetManager, gearLibrary, i);
-        slots.add(slot);
-        rackContainer->addAndMakeVisible(slot);
-    }
-
-    // Set up the viewport
-    rackViewport->setViewedComponent(rackContainer.get());
-    rackViewport->setScrollBarsShown(true, false); // Vertical scrollbar only
-
-    // Add components to this rack
-    addAndMakeVisible(rackViewport.get());
+    // Set component ID for debugging
+    setComponentID("Rack");
 }
 
-/**
- * @brief Destructor for the Rack class.
- *
- * Cleans up resources and ensures all images are properly released.
- */
 Rack::~Rack()
 {
-    // The unique_ptrs and OwnedArray will clean up automatically
+    // Remove all state listeners
+    stateListeners.clear();
+
+    // Clear all slots
+    clearAllSlots();
 }
 
-/**
- * @brief Paints the rack's background.
- *
- * Fills the background with a dark color to represent the rack chassis.
- *
- * @param g The graphics context to paint with
- */
+void Rack::initializeRack()
+{
+    // Create viewport
+    viewport = std::make_unique<juce::Viewport>();
+    addAndMakeVisible(viewport.get());
+
+    // Create rack container
+    rackContainer = std::make_unique<juce::Component>();
+    rackContainer->setComponentID("RackContainer");
+    viewport->setViewedComponent(rackContainer.get(), false);
+
+    // Create initial slots
+    for (int i = 0; i < slotsPerRow * maxRows; ++i)
+    {
+        createSlot(i);
+    }
+
+    // Layout the slots
+    layoutSlots();
+
+    // Load saved rack state
+    loadRackState();
+}
+
+void Rack::createSlot(int slotIndex)
+{
+    if (slotIndex < 0 || slotIndex >= slotsPerRow * maxRows)
+        return;
+
+    auto slot = std::make_unique<RackSlot>(fileSystem, cacheManager, presetManager, gearLibrary, slotIndex);
+    slot->setComponentID("RackSlot_" + juce::String(slotIndex));
+
+    // Add as component listener to track changes
+    slot->addComponentListener(this);
+
+    rackContainer->addAndMakeVisible(slot.get());
+    rackSlots.push_back(std::move(slot));
+}
+
+void Rack::layoutSlots()
+{
+    if (!rackContainer)
+        return;
+
+    int containerWidth = slotsPerRow * slotWidth + (slotsPerRow - 1) * horizontalSpacing;
+    int containerHeight = maxRows * slotHeight + (maxRows - 1) * verticalSpacing;
+
+    rackContainer->setSize(containerWidth, containerHeight);
+
+    updateSlotPositions();
+}
+
+void Rack::updateSlotPositions()
+{
+    for (size_t i = 0; i < rackSlots.size(); ++i)
+    {
+        if (rackSlots[i])
+        {
+            int row = static_cast<int>(i) / slotsPerRow;
+            int col = static_cast<int>(i) % slotsPerRow;
+
+            int x = col * (slotWidth + horizontalSpacing);
+            int y = row * (slotHeight + verticalSpacing);
+
+            rackSlots[i]->setBounds(x, y, slotWidth, slotHeight);
+        }
+    }
+}
+
 void Rack::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colours::darkgrey);
+    // Fill background
+    g.fillAll(backgroundColor);
+
+    // Draw grid if enabled
+    if (showGrid)
+    {
+        g.setColour(slotBorderColor.withAlpha(0.3f));
+
+        // Draw vertical lines
+        for (int i = 1; i < slotsPerRow; ++i)
+        {
+            int x = i * (slotWidth + horizontalSpacing);
+            g.drawVerticalLine(static_cast<float>(x), 0.0f, static_cast<float>(getHeight()));
+        }
+
+        // Draw horizontal lines
+        for (int i = 1; i < maxRows; ++i)
+        {
+            int y = i * (slotHeight + verticalSpacing);
+            g.drawHorizontalLine(static_cast<float>(y), 0.0f, static_cast<float>(getWidth()));
+        }
+    }
 }
 
-/**
- * @brief Handles resizing of the rack component.
- *
- * Adjusts the layout of the viewport, container, and all rack slots
- * based on the new dimensions.
- */
 void Rack::resized()
 {
-    auto area = getLocalBounds();
-
-    // Position the viewport to fill the entire rack area
-    rackViewport->setBounds(area);
-
-    // Calculate the total height needed for all slots
-    int totalHeight = 0;
-    for (int i = 0; i < slots.size(); ++i)
+    if (viewport)
     {
-        totalHeight += getSlotHeight(i) + slotSpacing;
-    }
-
-    // Remove spacing from the last slot
-    if (totalHeight > 0)
-        totalHeight -= slotSpacing;
-
-    // Set the container size
-    rackContainer->setSize(area.getWidth(), totalHeight);
-
-    // Position each slot
-    int currentY = 0;
-    for (int i = 0; i < slots.size(); ++i)
-    {
-        auto *slot = slots[i];
-        int slotHeight = getSlotHeight(i);
-
-        slot->setBounds(0, currentY, area.getWidth(), slotHeight);
-        currentY += slotHeight + slotSpacing;
+        viewport->setBounds(getLocalBounds());
     }
 }
 
-// DragAndDropTarget methods
+// Drag and Drop Implementation
 bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    // For now, accept all drag sources - this can be refined later
-    return true;
+    // Check if the drag source contains gear data
+    juce::String description = dragSourceDetails.description.toString();
+    return description.startsWith("gear:");
 }
 
 void Rack::itemDragEnter(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    // Visual feedback can be added here later
+    // Highlight the rack to show it's a valid drop target
+    repaint();
 }
 
 void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    // Visual feedback can be added here later
+    // Update visual feedback during drag
+    repaint();
 }
 
 void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    // Visual feedback can be added here later
+    // Remove drag feedback
+    repaint();
 }
 
 void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    // For now, just log the drop - full implementation will come later
-    // when we implement gear item creation and management
-    std::cout << "[Rack] Item dropped at position: " << dragSourceDetails.localPosition.x
-              << ", " << dragSourceDetails.localPosition.y << std::endl;
+    // Extract gear ID from drag description
+    juce::String description = dragSourceDetails.description.toString();
+    juce::String gearId = description.substring(5); // Remove "gear:" prefix
+
+    // Convert drop position to slot index
+    juce::Point<int> dropPos = dragSourceDetails.localPosition;
+    int slotIndex = getSlotIndexFromPosition(dropPos);
+
+    if (slotIndex >= 0 && static_cast<size_t>(slotIndex) < rackSlots.size())
+    {
+        // Check if we can drop the gear in this slot
+        if (canDropGearInSlot(slotIndex, gearId))
+        {
+            addGearToSlot(slotIndex, gearId);
+        }
+    }
+
+    repaint();
 }
 
-/**
- * @brief Gets the height of a specific rack slot.
- *
- * @param slotIndex The index of the slot to get the height for
- * @return The height of the slot in pixels
- */
-int Rack::getSlotHeight(int slotIndex) const
+int Rack::getSlotIndexFromPosition(juce::Point<int> position) const
 {
-    // For now, all slots have the same height
-    // This can be customized later based on gear item requirements
-    return getDefaultSlotHeight();
+    if (!rackContainer)
+        return -1;
+
+    // Convert to container coordinates
+    juce::Point<int> containerPos = rackContainer->getLocalPoint(this, position);
+
+    // Calculate slot index based on position
+    int col = containerPos.x / (slotWidth + horizontalSpacing);
+    int row = containerPos.y / (slotHeight + verticalSpacing);
+
+    if (col >= 0 && col < slotsPerRow && row >= 0 && row < maxRows)
+    {
+        return row * slotsPerRow + col;
+    }
+
+    return -1;
+}
+
+bool Rack::canDropGearInSlot(int slotIndex, const juce::String &gearId) const
+{
+    if (slotIndex < 0 || static_cast<size_t>(slotIndex) >= rackSlots.size())
+        return false;
+
+    // Check if slot is empty
+    if (isSlotOccupied(slotIndex))
+        return false;
+
+    // Check if gear exists in library
+    return gearLibrary.gearItemExists(gearId);
+}
+
+// Rack Management
+void Rack::addRackSlot(int slotIndex)
+{
+    if (slotIndex < 0)
+        return;
+
+    // Ensure we have enough capacity
+    while (rackSlots.size() <= static_cast<size_t>(slotIndex))
+    {
+        createSlot(static_cast<int>(rackSlots.size()));
+    }
+
+    layoutSlots();
+}
+
+void Rack::removeRackSlot(int slotIndex)
+{
+    if (slotIndex < 0 || static_cast<size_t>(slotIndex) >= rackSlots.size())
+        return;
+
+    // Remove gear from slot first
+    removeGearFromSlot(slotIndex);
+
+    // Remove the slot
+    rackSlots.erase(rackSlots.begin() + slotIndex);
+
+    // Update slot indices
+    for (size_t i = static_cast<size_t>(slotIndex); i < rackSlots.size(); ++i)
+    {
+        if (rackSlots[i])
+        {
+            rackSlots[i]->setIndex(static_cast<int>(i));
+        }
+    }
+
+    layoutSlots();
+}
+
+void Rack::clearAllSlots()
+{
+    // Remove all gear from slots
+    for (auto &slot : rackSlots)
+    {
+        if (slot)
+        {
+            slot->clearGearItem();
+        }
+    }
+
+    // Clear the slots array
+    rackSlots.clear();
+}
+
+int Rack::getSlotCount() const
+{
+    return static_cast<int>(rackSlots.size());
+}
+
+RackSlot *Rack::getSlot(int slotIndex) const
+{
+    if (slotIndex >= 0 && static_cast<size_t>(slotIndex) < rackSlots.size())
+    {
+        return rackSlots[static_cast<size_t>(slotIndex)].get();
+    }
+    return nullptr;
+}
+
+// Gear Management
+bool Rack::addGearToSlot(int slotIndex, const juce::String &gearId)
+{
+    if (slotIndex < 0 || static_cast<size_t>(slotIndex) >= rackSlots.size())
+        return false;
+
+    auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
+    if (!slot)
+        return false;
+
+    // Check if slot is already occupied
+    if (isSlotOccupied(slotIndex))
+        return false;
+
+    // Get gear item from library
+    auto gearItem = gearLibrary.getGearItem(gearId);
+    if (!gearItem)
+        return false;
+
+    // Add gear to slot
+    slot->setGearItem(gearItem);
+
+    // Save rack state
+    saveRackState();
+
+    // Notify listeners
+    notifyStateChanged();
+
+    return true;
+}
+
+bool Rack::removeGearFromSlot(int slotIndex)
+{
+    if (slotIndex < 0 || static_cast<size_t>(slotIndex) >= rackSlots.size())
+        return false;
+
+    auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
+    if (!slot)
+        return false;
+
+    slot->clearGearItem();
+
+    // Save rack state
+    saveRackState();
+
+    // Notify listeners
+    notifyStateChanged();
+
+    return true;
+}
+
+bool Rack::moveGearBetweenSlots(int fromSlot, int toSlot)
+{
+    if (fromSlot < 0 || static_cast<size_t>(fromSlot) >= rackSlots.size() ||
+        toSlot < 0 || static_cast<size_t>(toSlot) >= rackSlots.size())
+        return false;
+
+    if (fromSlot == toSlot)
+        return true;
+
+    // Get gear from source slot
+    juce::String gearId = getGearInSlot(fromSlot);
+    if (gearId.isEmpty())
+        return false;
+
+    // Check if destination slot is empty
+    if (isSlotOccupied(toSlot))
+        return false;
+
+    // Remove from source slot
+    if (!removeGearFromSlot(fromSlot))
+        return false;
+
+    // Add to destination slot
+    return addGearToSlot(toSlot, gearId);
+}
+
+juce::String Rack::getGearInSlot(int slotIndex) const
+{
+    if (slotIndex < 0 || static_cast<size_t>(slotIndex) >= rackSlots.size())
+        return "";
+
+    auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
+    if (!slot)
+        return "";
+
+    auto gearItem = slot->getGearItem();
+    if (gearItem)
+        return gearItem->unitId;
+    return "";
+}
+
+// State Persistence
+void Rack::saveRackState()
+{
+    // Create rack state ValueTree
+    rackState = juce::ValueTree("Rack");
+
+    // Save slot configuration
+    rackState.setProperty("slotsPerRow", slotsPerRow, nullptr);
+    rackState.setProperty("maxRows", maxRows, nullptr);
+    rackState.setProperty("slotWidth", slotWidth, nullptr);
+    rackState.setProperty("slotHeight", slotHeight, nullptr);
+
+    // Save gear in each slot
+    for (size_t i = 0; i < rackSlots.size(); ++i)
+    {
+        auto slot = rackSlots[i].get();
+        if (slot && isSlotOccupied(static_cast<int>(i)))
+        {
+            juce::String gearId = getGearInSlot(static_cast<int>(i));
+            if (!gearId.isEmpty())
+            {
+                rackState.setProperty("slot_" + juce::String(static_cast<int>(i)), gearId, nullptr);
+            }
+        }
+    }
+}
+
+void Rack::loadRackState()
+{
+    if (!rackState.isValid())
+        return;
+
+    // Load slot configuration
+    slotsPerRow = rackState.getProperty("slotsPerRow", 4);
+    maxRows = rackState.getProperty("maxRows", 4);
+    slotWidth = rackState.getProperty("slotWidth", 200);
+    slotHeight = rackState.getProperty("slotHeight", 150);
+
+    // Recreate slots if configuration changed
+    if (rackSlots.size() != static_cast<size_t>(slotsPerRow * maxRows))
+    {
+        clearAllSlots();
+        for (int i = 0; i < slotsPerRow * maxRows; ++i)
+        {
+            createSlot(i);
+        }
+    }
+
+    // Load gear into slots
+    for (size_t i = 0; i < rackSlots.size(); ++i)
+    {
+        juce::String gearId = rackState.getProperty("slot_" + juce::String(static_cast<int>(i)), "");
+        if (!gearId.isEmpty())
+        {
+            addGearToSlot(static_cast<int>(i), gearId);
+        }
+    }
+
+    layoutSlots();
+}
+
+juce::ValueTree Rack::getRackState() const
+{
+    return rackState;
+}
+
+void Rack::setRackState(const juce::ValueTree &state)
+{
+    rackState = state;
+    loadRackState();
+}
+
+// Layout Management
+void Rack::setSlotLayout(int newSlotsPerRow, int newMaxRows)
+{
+    if (slotsPerRow != newSlotsPerRow || maxRows != newMaxRows)
+    {
+        slotsPerRow = newSlotsPerRow;
+        maxRows = newMaxRows;
+
+        // Recreate slots
+        clearAllSlots();
+        for (int i = 0; i < slotsPerRow * maxRows; ++i)
+        {
+            createSlot(i);
+        }
+
+        layoutSlots();
+        saveRackState();
+    }
+}
+
+void Rack::setSlotSize(int width, int height)
+{
+    if (slotWidth != width || slotHeight != height)
+    {
+        slotWidth = width;
+        slotHeight = height;
+        layoutSlots();
+        saveRackState();
+    }
+}
+
+void Rack::setSlotSpacing(int horizontal, int vertical)
+{
+    if (horizontalSpacing != horizontal || verticalSpacing != vertical)
+    {
+        horizontalSpacing = horizontal;
+        verticalSpacing = vertical;
+        layoutSlots();
+        saveRackState();
+    }
+}
+
+// Visual Customization
+void Rack::setBackgroundColor(juce::Colour color)
+{
+    backgroundColor = color;
+    repaint();
+}
+
+void Rack::setSlotBackgroundColor(juce::Colour color)
+{
+    slotBackgroundColor = color;
+    repaint();
+}
+
+void Rack::setSlotBorderColor(juce::Colour color)
+{
+    slotBorderColor = color;
+    repaint();
+}
+
+void Rack::setShowSlotNumbers(bool show)
+{
+    showSlotNumbers = show;
+    repaint();
+}
+
+void Rack::setShowGrid(bool show)
+{
+    showGrid = show;
+    repaint();
+}
+
+// Event Handling
+void Rack::addRackStateListener(juce::Component *listener)
+{
+    if (listener && !stateListeners.contains(listener))
+    {
+        stateListeners.add(listener);
+    }
+}
+
+void Rack::removeRackStateListener(juce::Component *listener)
+{
+    stateListeners.removeFirstMatchingValue(listener);
+}
+
+void Rack::notifyStateChanged()
+{
+    // Notify all listeners that rack state has changed
+    for (auto *listener : stateListeners)
+    {
+        if (listener)
+        {
+            listener->repaint();
+        }
+    }
+}
+
+// Utility Methods
+bool Rack::isSlotOccupied(int slotIndex) const
+{
+    if (slotIndex < 0 || static_cast<size_t>(slotIndex) >= rackSlots.size())
+        return false;
+
+    auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
+    if (!slot)
+        return false;
+
+    return !slot->isEmpty();
+}
+
+int Rack::getFirstEmptySlot() const
+{
+    for (size_t i = 0; i < rackSlots.size(); ++i)
+    {
+        if (!isSlotOccupied(static_cast<int>(i)))
+            return static_cast<int>(i);
+    }
+    return -1;
+}
+
+int Rack::getLastOccupiedSlot() const
+{
+    for (int i = static_cast<int>(rackSlots.size()) - 1; i >= 0; --i)
+    {
+        if (isSlotOccupied(i))
+            return i;
+    }
+    return -1;
+}
+
+void Rack::compactSlots()
+{
+    // Find all occupied slots
+    std::vector<int> occupiedSlots;
+    for (size_t i = 0; i < rackSlots.size(); ++i)
+    {
+        if (isSlotOccupied(static_cast<int>(i)))
+        {
+            occupiedSlots.push_back(static_cast<int>(i));
+        }
+    }
+
+    // Sort occupied slots by index
+    std::sort(occupiedSlots.begin(), occupiedSlots.end());
+
+    // Move gear to consecutive slots starting from 0
+    for (size_t i = 0; i < occupiedSlots.size(); ++i)
+    {
+        int currentSlot = occupiedSlots[i];
+        int targetSlot = static_cast<int>(i);
+
+        if (currentSlot != targetSlot)
+        {
+            moveGearBetweenSlots(currentSlot, targetSlot);
+        }
+    }
+}
+
+// Component Listener Override
+void Rack::componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized)
+{
+    // Check if this is one of our rack slots
+    for (auto &slot : rackSlots)
+    {
+        if (slot.get() == &component)
+        {
+            // Slot was moved or resized, update state
+            saveRackState();
+            notifyStateChanged();
+            break;
+        }
+    }
 }

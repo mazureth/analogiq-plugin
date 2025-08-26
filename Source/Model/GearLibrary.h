@@ -98,11 +98,11 @@ private:
         GearItem::GearCategory gearCategory;
     };
 
+    // Member variables
     IFileSystem &fileSystem;
     ICacheManager &cacheManager;
     juce::String libraryRootDir;
-
-    std::unordered_map<juce::String, std::unique_ptr<GearItem>> gearItems;
+    juce::Array<GearItem *> gearItems;
     std::unordered_map<juce::String, GearMetadata> gearMetadata;
     std::unordered_map<juce::String, GearCategory> categories;
 
@@ -110,19 +110,28 @@ private:
     juce::int64 maxStorageSize;
     bool autoBackupEnabled;
 
-    // Helper methods
+    // Private helper methods
     void initializeLibraryDirectory();
-    juce::String generateGearItemPath(const juce::String &gearId);
-    juce::String generateMetadataPath(const juce::String &gearId);
-    juce::String generateCategoryPath(const juce::String &categoryName);
     void loadGearMetadata();
     void saveGearMetadata();
     void loadCategories();
     void saveCategories();
-    bool validateGearItemFile(const juce::String &gearPath);
+    void loadRemoteGearLibrary();
+    void createSampleGearItems();
+    void parseRemoteGearData(const juce::String &jsonData);
+    GearControl::ControlType parseControlType(const juce::String &typeStr);
+    void updateGearMetadata();
+    void updateCategories();
+
+    juce::String generateGearItemPath(const juce::String &gearId);
+    juce::String generateMetadataPath(const juce::String &gearId);
+    juce::String generateCategoryPath(const juce::String &categoryName);
     juce::String sanitizeGearId(const juce::String &gearId);
-    juce::String generateBackupPath();
-    bool createBackupDirectory();
-    void cleanupLibrary();
+
     bool checkStorageLimits();
+
+    // Search and filtering helpers
+    bool shouldShowItem(const GearItem *item, const juce::String &normalizedSearch) const;
+    juce::String normalizeForSearch(const juce::String &text) const;
+    juce::StringArray getIgnoredCharacters() const;
 };

@@ -103,10 +103,10 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 
     // Create the editor with all necessary dependencies
     auto editor = new AnalogIQEditor(*this, 
-                                    *fileSystem, 
-                                    *cacheManager, 
-                                    *presetManager, 
-                                    *gearLibrary);
+                                    fileSystem, 
+                                    cacheManager.get(), 
+                                    presetManager.get(), 
+                                    gearLibrary.get());
     
     // Store reference to the editor for state management
     lastCreatedEditor = editor;

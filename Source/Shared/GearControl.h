@@ -35,13 +35,15 @@ public:
 
     // Constructor
     GearControl();
-    GearControl(ControlType type, const juce::Rectangle<float>& pos, float initialValue = 0.0f);
-    
+    GearControl(ControlType type, const juce::Rectangle<float> &pos, float initialValue = 0.0f);
+    GearControl(const GearControl &other); // Copy constructor
+
     // Destructor with proper cleanup
     ~GearControl();
 
     // Control type and properties
     ControlType type;
+    juce::String name; // Control name for identification
     juce::Rectangle<float> position;
     float currentValue;
     float initialValue;
@@ -78,13 +80,13 @@ public:
     float normalizeValue(float value) const;
     void setValue(float newValue);
     void setIndex(int newIndex);
-    
+
     // Image management
-    void setSwitchSpriteSheet(const juce::Image& image);
-    void setButtonSpriteSheet(const juce::Image& image);
-    void setFaderImage(const juce::Image& image);
-    void setKnobImage(const juce::Image& image);
-    
+    void setSwitchSpriteSheet(const juce::Image &image);
+    void setButtonSpriteSheet(const juce::Image &image);
+    void setFaderImage(const juce::Image &image);
+    void setKnobImage(const juce::Image &image);
+
     // Cleanup
     void clearImages();
 
