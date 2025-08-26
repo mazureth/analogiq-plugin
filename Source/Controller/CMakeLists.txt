@@ -7,6 +7,12 @@ set(CONTROLLER_SOURCES
     GearLibraryController.cpp
     RackController.h
     RackController.cpp
+    RackSlotController.h
+    RackSlotController.cpp
+    NotesController.h
+    NotesController.cpp
+    PresetController.h
+    PresetController.cpp
     # Additional controller sources will be added here
 )
 
