@@ -57,24 +57,24 @@ bool PresetController::savePreset(const juce::String &presetName,
 
     try
     {
-        // Capture the current state
-        juce::MemoryBlock stateData = captureCurrentState();
+        // Save the preset using the preset manager
+        bool success = presetManager.savePreset(presetName, processor.getState());
+        
+        if (success)
+        {
+            // Update state tracking
+            currentPresetName = presetName;
+            lastSaveTime = juce::Time::getCurrentTime();
+            clearModifiedState();
 
-        // For now, just log the operation
-        // This will be enhanced when we implement the full preset saving system
-        std::cout << "[PresetController] Saving preset: " << presetName << std::endl;
-        if (!description.isEmpty())
-            std::cout << "  Description: " << description << std::endl;
-        if (tags.size() > 0)
-            std::cout << "  Tags: " << tags.joinIntoString(", ") << std::endl;
-
-        // Update state tracking
-        currentPresetName = presetName;
-        lastSaveTime = juce::Time::getCurrentTime();
-        clearModifiedState();
-
-        logPresetOperation("Save", presetName, true);
-        return true;
+            logPresetOperation("Save", presetName, true);
+            return true;
+        }
+        else
+        {
+            logPresetOperation("Save", presetName, false);
+            return false;
+        }
     }
     catch (...)
     {
@@ -90,17 +90,24 @@ bool PresetController::loadPreset(const juce::String &presetName)
 
     try
     {
-        // For now, just log the operation
-        // This will be enhanced when we implement the full preset loading system
-        std::cout << "[PresetController] Loading preset: " << presetName << std::endl;
+        // Load the preset using the preset manager
+        bool success = presetManager.loadPreset(presetName, processor.getState());
+        
+        if (success)
+        {
+            // Update state tracking
+            currentPresetName = presetName;
+            lastSaveTime = juce::Time::getCurrentTime();
+            clearModifiedState();
 
-        // Update state tracking
-        currentPresetName = presetName;
-        lastSaveTime = juce::Time::getCurrentTime();
-        clearModifiedState();
-
-        logPresetOperation("Load", presetName, true);
-        return true;
+            logPresetOperation("Load", presetName, true);
+            return true;
+        }
+        else
+        {
+            logPresetOperation("Load", presetName, false);
+            return false;
+        }
     }
     catch (...)
     {
@@ -116,18 +123,25 @@ bool PresetController::deletePreset(const juce::String &presetName)
 
     try
     {
-        // For now, just log the operation
-        // This will be enhanced when we implement the full preset deletion system
-        std::cout << "[PresetController] Deleting preset: " << presetName << std::endl;
-
-        // If this was the current preset, clear the current preset name
-        if (currentPresetName == presetName)
+        // Delete the preset using the preset manager
+        bool success = presetManager.deletePreset(presetName);
+        
+        if (success)
         {
-            currentPresetName = "";
-        }
+            // If this was the current preset, clear the current preset name
+            if (currentPresetName == presetName)
+            {
+                currentPresetName = "";
+            }
 
-        logPresetOperation("Delete", presetName, true);
-        return true;
+            logPresetOperation("Delete", presetName, true);
+            return true;
+        }
+        else
+        {
+            logPresetOperation("Delete", presetName, false);
+            return false;
+        }
     }
     catch (...)
     {

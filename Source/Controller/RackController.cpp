@@ -41,12 +41,20 @@ bool RackController::addGearToSlot(int slotIndex, GearItem *gearItem)
     if (!isSlotEmpty(slotIndex))
         return false;
 
-    // For now, just log the operation
-    // This will be enhanced when we implement the full rack integration
-    std::cout << "[RackController] Adding gear '" << gearItem->name << "' to slot " << slotIndex << std::endl;
-
-    updateModifiedState();
-    return true;
+    // Add the gear to the rack slot using the gear ID
+    bool success = rack.addGearToSlot(slotIndex, gearItem->unitId);
+    
+    if (success)
+    {
+        std::cout << "[RackController] Successfully added gear '" << gearItem->name << "' to slot " << slotIndex << std::endl;
+        updateModifiedState();
+        return true;
+    }
+    else
+    {
+        std::cout << "[RackController] Failed to add gear '" << gearItem->name << "' to slot " << slotIndex << std::endl;
+        return false;
+    }
 }
 
 bool RackController::removeGearFromSlot(int slotIndex)
@@ -58,12 +66,20 @@ bool RackController::removeGearFromSlot(int slotIndex)
     if (isSlotEmpty(slotIndex))
         return false;
 
-    // For now, just log the operation
-    // This will be enhanced when we implement the full rack integration
-    std::cout << "[RackController] Removing gear from slot " << slotIndex << std::endl;
-
-    updateModifiedState();
-    return true;
+    // Remove the gear from the rack slot
+    bool success = rack.removeGearFromSlot(slotIndex);
+    
+    if (success)
+    {
+        std::cout << "[RackController] Successfully removed gear from slot " << slotIndex << std::endl;
+        updateModifiedState();
+        return true;
+    }
+    else
+    {
+        std::cout << "[RackController] Failed to remove gear from slot " << slotIndex << std::endl;
+        return false;
+    }
 }
 
 bool RackController::moveGearBetweenSlots(int fromSlotIndex, int toSlotIndex)
@@ -78,12 +94,20 @@ bool RackController::moveGearBetweenSlots(int fromSlotIndex, int toSlotIndex)
     if (isSlotEmpty(fromSlotIndex) || !isSlotEmpty(toSlotIndex))
         return false;
 
-    // For now, just log the operation
-    // This will be enhanced when we implement the full rack integration
-    std::cout << "[RackController] Moving gear from slot " << fromSlotIndex << " to slot " << toSlotIndex << std::endl;
-
-    updateModifiedState();
-    return true;
+    // Move the gear between slots
+    bool success = rack.moveGearBetweenSlots(fromSlotIndex, toSlotIndex);
+    
+    if (success)
+    {
+        std::cout << "[RackController] Successfully moved gear from slot " << fromSlotIndex << " to slot " << toSlotIndex << std::endl;
+        updateModifiedState();
+        return true;
+    }
+    else
+    {
+        std::cout << "[RackController] Failed to move gear from slot " << fromSlotIndex << " to slot " << toSlotIndex << std::endl;
+        return false;
+    }
 }
 
 bool RackController::swapGearBetweenSlots(int slotIndex1, int slotIndex2)
@@ -94,12 +118,32 @@ bool RackController::swapGearBetweenSlots(int slotIndex1, int slotIndex2)
     if (slotIndex1 == slotIndex2)
         return true; // No swap needed
 
-    // For now, just log the operation
-    // This will be enhanced when we implement the full rack integration
-    std::cout << "[RackController] Swapping gear between slots " << slotIndex1 << " and " << slotIndex2 << std::endl;
-
-    updateModifiedState();
-    return true;
+    // Swap the gear between slots by moving them
+    // First, get the gear from both slots
+    juce::String gear1 = rack.getGearInSlot(slotIndex1);
+    juce::String gear2 = rack.getGearInSlot(slotIndex2);
+    
+    // Clear both slots
+    rack.removeGearFromSlot(slotIndex1);
+    rack.removeGearFromSlot(slotIndex2);
+    
+    // Add gear to opposite slots
+    bool success1 = rack.addGearToSlot(slotIndex2, gear1);
+    bool success2 = rack.addGearToSlot(slotIndex1, gear2);
+    
+    bool success = success1 && success2;
+    
+    if (success)
+    {
+        std::cout << "[RackController] Successfully swapped gear between slots " << slotIndex1 << " and " << slotIndex2 << std::endl;
+        updateModifiedState();
+        return true;
+    }
+    else
+    {
+        std::cout << "[RackController] Failed to swap gear between slots " << slotIndex1 << " and " << slotIndex2 << std::endl;
+        return false;
+    }
 }
 
 GearItem *RackController::getGearInSlot(int slotIndex) const
