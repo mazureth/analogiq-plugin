@@ -10,6 +10,7 @@
 
 #include "AnalogIQEditor.h"
 #include "../Model/AnalogIQProcessor.h"
+#include "GearLibraryTree.h"
 
 /**
  * @brief Constructs a new AnalogIQEditor.
@@ -55,6 +56,9 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     // Set up tabs
     // mainTabs.setComponentID("MainTabs");
 
+    // Add the gear library tree to the main UI (not in tabs)
+    addAndMakeVisible(gearLibraryTree.get());
+
     // Add Rack and Notes tabs
     mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
     mainTabs.addTab("Notes", juce::Colours::darkgrey, notesPanel.get(), false);
@@ -63,8 +67,7 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     mainTabs.setInterceptsMouseClicks(false, true);
     addAndMakeVisible(mainTabs);
 
-    // Note: GearLibrary is not a JUCE Component, so it can't be added to the UI
-    // It will be managed separately through the Model layer
+    // Note: GearLibrary tree is now displayed as a separate component to the left of the rack
 
     // Set up menu bar components
     // menuBarContainer.setComponentID("MenuBarContainer");
@@ -144,6 +147,9 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager &cach
 {
     // Temporarily disable component IDs to isolate JUCE assertion issues
     // setComponentID("AnalogIQEditor");
+
+    // Create GearLibraryTree component (to the left of the rack)
+    gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, cacheManager, presetManager);
 
     // Create Rack component
     rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, cacheManager, presetManager, *gearLibrary);
@@ -254,7 +260,15 @@ void AnalogIQEditor::resized()
     debugLoadButton.setBounds(menuBarArea.removeFromRight(120));
 #endif
 
-    // Remaining area: Tabs containing Rack and Notes
+    // Remaining area: Split between Gear Library Tree (left) and Tabs (right)
+    // Gear Library Tree takes 1/3 of the width, Tabs take 2/3
+    int treeWidth = area.getWidth() / 3;
+    
+    // Left side: Gear Library Tree
+    auto treeArea = area.removeFromLeft(treeWidth);
+    gearLibraryTree->setBounds(treeArea);
+    
+    // Right side: Tabs containing Rack and Notes
     mainTabs.setBounds(area);
 }
 

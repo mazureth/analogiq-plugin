@@ -20,6 +20,7 @@
 
 // Forward declarations
 class AnalogIQProcessor;
+class GearLibraryTree;
 
 /**
  * @brief Main editor interface for the AnalogIQ plugin.
@@ -188,6 +189,7 @@ private:
 
     // UI Components
     juce::TabbedComponent mainTabs{juce::TabbedButtonBar::TabsAtTop}; ///< Main tabbed interface
+    std::unique_ptr<GearLibraryTree> gearLibraryTree;                ///< Gear library tree component
     std::unique_ptr<Rack> rack;                                       ///< Rack component
     std::unique_ptr<NotesPanel> notesPanel;                           ///< Notes panel component
 

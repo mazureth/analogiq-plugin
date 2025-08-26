@@ -95,6 +95,7 @@ target_sources(AnalogIQ PRIVATE
     Source/Model/AnalogIQProcessor.cpp
     # View layer sources
     Source/View/AnalogIQEditor.cpp
+    Source/View/GearLibraryTree.cpp
     Source/View/NotesPanel.cpp
     Source/View/Rack.cpp
     Source/View/RackSlot.cpp

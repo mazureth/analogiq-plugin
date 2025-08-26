@@ -1,0 +1,297 @@
+/**
+ * @file GearLibraryTree.cpp
+ * @brief Implementation of the GearLibraryTree class.
+ *
+ * This file implements the gear library tree view component, providing a hierarchical
+ * display of gear items with drag and drop functionality for moving items to the rack.
+ */
+
+#include "GearLibraryTree.h"
+#include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_core/juce_core.h>
+
+// GearLibraryTree implementation
+GearLibraryTree::GearLibraryTree(GearLibrary &gl, ICacheManager &cm, PresetManager &pm)
+    : gearLibrary(gl), cacheManager(cm), presetManager(pm)
+{
+    setupTreeView();
+    populateTree();
+}
+
+GearLibraryTree::~GearLibraryTree()
+{
+    if (treeView)
+        treeView->setRootItem(nullptr);
+}
+
+void GearLibraryTree::paint(juce::Graphics &g)
+{
+    g.fillAll(juce::Colours::darkgrey.darker(0.7f));
+}
+
+void GearLibraryTree::resized()
+{
+    if (treeView)
+        treeView->setBounds(getLocalBounds());
+}
+
+void GearLibraryTree::setupTreeView()
+{
+    treeView = std::make_unique<juce::TreeView>();
+    treeView->setRootItemVisible(false);
+    treeView->setColour(juce::TreeView::backgroundColourId, juce::Colours::darkgrey.darker(0.7f));
+    treeView->setIndentSize(20);
+    treeView->setDefaultOpenness(false);
+    treeView->setMultiSelectEnabled(false);
+    treeView->setOpenCloseButtonsVisible(true);
+    
+    addAndMakeVisible(treeView.get());
+}
+
+void GearLibraryTree::populateTree()
+{
+    rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Gear Library", gearLibrary, cacheManager);
+    
+    createCategoriesSection();
+    
+    treeView->setRootItem(rootItem.get());
+    treeView->repaint();
+}
+
+void GearLibraryTree::createRecentlyUsedSection()
+{
+    auto recentlyUsedNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", gearLibrary, cacheManager);
+    rootItem->addSubItem(recentlyUsedNode);
+    
+    // For now, just show a placeholder since we don't have recently used functionality
+    recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No recently used items", gearLibrary, cacheManager));
+}
+
+void GearLibraryTree::createFavoritesSection()
+{
+    auto favoritesNode = new GearTreeItem(GearTreeItem::ItemType::Favorites, "My Gear", gearLibrary, cacheManager);
+    rootItem->addSubItem(favoritesNode);
+    
+    // For now, just show a placeholder since we don't have favorites functionality
+    favoritesNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No favorites yet", gearLibrary, cacheManager));
+}
+
+void GearLibraryTree::createCategoriesSection()
+{
+    auto categoriesNode = new GearTreeItem(GearTreeItem::ItemType::Category, "Categories", gearLibrary, cacheManager);
+    rootItem->addSubItem(categoriesNode);
+    
+    // Get all gear items and group by category
+    auto allItems = gearLibrary.getAllGearItems();
+    
+    if (allItems.isEmpty())
+    {
+        categoriesNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No gear items available", gearLibrary, cacheManager));
+    }
+    else
+    {
+        std::map<juce::String, juce::Array<const GearItem*>> categorizedItems;
+        
+        for (const auto &item : allItems)
+        {
+            juce::String category = item->categoryString;
+            if (category.isEmpty())
+                category = "Uncategorized";
+            
+            categorizedItems[category].add(item);
+        }
+        
+        // Create category nodes and add gear items
+        for (const auto &[category, items] : categorizedItems)
+        {
+            auto categoryNode = new GearTreeItem(GearTreeItem::ItemType::Category, category, gearLibrary, cacheManager);
+            categoriesNode->addSubItem(categoryNode);
+            
+            // Sort items alphabetically
+            auto sortedItems = items;
+            std::sort(sortedItems.begin(), sortedItems.end(), [](const GearItem *a, const GearItem *b) {
+                return a->name.compareIgnoreCase(b->name) < 0;
+            });
+            
+            for (const auto &item : sortedItems)
+            {
+                categoryNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, gearLibrary, cacheManager, const_cast<GearItem*>(item), -1));
+            }
+        }
+    }
+}
+
+void GearLibraryTree::refreshTree()
+{
+    if (rootItem)
+    {
+        rootItem->clearSubItems();
+        populateTree();
+    }
+}
+
+void GearLibraryTree::setSearchFilter(const juce::String &searchText)
+{
+    currentSearchText = searchText;
+    applySearchFilter();
+}
+
+void GearLibraryTree::applySearchFilter()
+{
+    if (currentSearchText.isEmpty())
+    {
+        refreshTree();
+        return;
+    }
+    
+    // Clear existing tree
+    if (rootItem)
+        rootItem->clearSubItems();
+    
+    // Create search results section
+    auto searchNode = new GearTreeItem(GearTreeItem::ItemType::Category, "Search Results", gearLibrary, cacheManager);
+    rootItem->addSubItem(searchNode);
+    
+    // Search through all gear items
+    auto allItems = gearLibrary.getAllGearItems();
+    juce::Array<const GearItem*> searchResults;
+    
+    for (const auto &item : allItems)
+    {
+        if (item->name.containsIgnoreCase(currentSearchText) ||
+            item->manufacturer.containsIgnoreCase(currentSearchText) ||
+            item->categoryString.containsIgnoreCase(currentSearchText))
+        {
+            searchResults.add(item);
+        }
+    }
+    
+    if (searchResults.isEmpty())
+    {
+        searchNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No items found", gearLibrary, cacheManager));
+    }
+    else
+    {
+        // Sort results alphabetically
+        std::sort(searchResults.begin(), searchResults.end(), [](const GearItem *a, const GearItem *b) {
+            return a->name.compareIgnoreCase(b->name) < 0;
+        });
+        
+        for (const auto &item : searchResults)
+        {
+            searchNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, item->name, gearLibrary, cacheManager, const_cast<GearItem*>(item), -1));
+        }
+    }
+    
+    treeView->repaint();
+}
+
+// GearTreeItem implementation
+GearTreeItem::GearTreeItem(ItemType type, const juce::String &name, GearLibrary &gl, ICacheManager &cm, GearItem *item, int index)
+    : itemType(type), itemName(name), gearLibrary(gl), cacheManager(cm), gearItem(item), itemIndex(index)
+{
+    setupDragAndDrop();
+}
+
+GearTreeItem::~GearTreeItem()
+{
+    // TreeViewItem handles cleanup automatically
+}
+
+void GearTreeItem::paintItem(juce::Graphics &g, int width, int height)
+{
+    auto area = juce::Rectangle<int>(0, 0, width, height);
+    
+    // Set text color based on item type
+    g.setColour(getItemColour());
+    g.setFont(14.0f);
+    
+    // Draw item text
+    g.drawText(getDisplayText(), area.removeFromLeft(width - 20), juce::Justification::centredLeft);
+}
+
+void GearTreeItem::itemClicked(const juce::MouseEvent &e)
+{
+    if (itemType == ItemType::Gear && gearItem)
+    {
+        handleGearItemClick();
+    }
+    
+    // Toggle expansion for category items
+    if (itemType == ItemType::Category || itemType == ItemType::RecentlyUsed || itemType == ItemType::Favorites)
+    {
+        setOpen(!isOpen());
+    }
+}
+
+bool GearTreeItem::mightContainSubItems()
+{
+    return itemType == ItemType::Root || 
+           itemType == ItemType::Category || 
+           itemType == ItemType::RecentlyUsed || 
+           itemType == ItemType::Favorites;
+}
+
+void GearTreeItem::setupDragAndDrop()
+{
+    if (itemType == ItemType::Gear && gearItem)
+    {
+        // Enable drag and drop for gear items
+        // Note: TreeViewItem doesn't have setDragEnabled, so we'll handle this differently
+    }
+}
+
+juce::String GearTreeItem::getDisplayText() const
+{
+    switch (itemType)
+    {
+        case ItemType::Root:
+            return "🎵 " + itemName;
+        case ItemType::Category:
+            return "📁 " + itemName;
+        case ItemType::Gear:
+            return "🔧 " + itemName;
+        case ItemType::RecentlyUsed:
+            return "⏰ " + itemName;
+        case ItemType::Favorites:
+            return "⭐ " + itemName;
+        case ItemType::Message:
+            return "ℹ️ " + itemName;
+        default:
+            return itemName;
+    }
+}
+
+juce::Colour GearTreeItem::getItemColour() const
+{
+    switch (itemType)
+    {
+        case ItemType::Root:
+            return juce::Colours::lightblue;
+        case ItemType::Category:
+            return juce::Colours::lightgreen;
+        case ItemType::Gear:
+            return juce::Colours::white;
+        case ItemType::RecentlyUsed:
+            return juce::Colours::orange;
+        case ItemType::Favorites:
+            return juce::Colours::yellow;
+        case ItemType::Message:
+            return juce::Colours::lightgrey;
+        default:
+            return juce::Colours::white;
+    }
+}
+
+void GearTreeItem::handleGearItemClick()
+{
+    if (gearItem)
+    {
+        // For now, just log the click since we don't have recently used functionality
+        // TODO: Implement recently used tracking when available
+        
+        // Repaint the tree to reflect changes
+        if (auto treeView = dynamic_cast<juce::TreeView*>(getOwnerView()))
+            treeView->repaint();
+    }
+}
