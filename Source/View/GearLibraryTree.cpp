@@ -33,19 +33,50 @@ GearLibraryTree::~GearLibraryTree()
 
 void GearLibraryTree::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colours::darkgrey.darker(0.7f));
+    // Debug: Draw a visible background to see if the component is being rendered
+    g.fillAll(juce::Colours::red); // Bright red background for debugging
+    
+    // Draw a border to see the component bounds
+    g.setColour(juce::Colours::white);
+    g.drawRect(getLocalBounds(), 2);
+    
+    // Draw some debug text
+    g.setColour(juce::Colours::white);
+    g.setFont(16.0f);
+    g.drawText("GearLibraryTree - Bounds: " + getLocalBounds().toString(), 
+               10, 10, getWidth() - 20, 20, juce::Justification::left);
+    
+    // Draw tree view info
+    if (treeView)
+    {
+        g.drawText("TreeView exists - Root item: " + juce::String(rootItem ? "YES" : "NO"), 
+                   10, 35, getWidth() - 20, 20, juce::Justification::left);
+    }
+    else
+    {
+        g.drawText("TreeView is NULL!", 10, 35, getWidth() - 20, 20, juce::Justification::left);
+    }
 }
 
 void GearLibraryTree::resized()
 {
+    juce::Logger::writeToLog("GearLibraryTree::resized() called with bounds: " + getLocalBounds().toString());
+    
     if (treeView)
+    {
         treeView->setBounds(getLocalBounds());
+        juce::Logger::writeToLog("GearLibraryTree: TreeView bounds set to: " + getLocalBounds().toString());
+    }
+    else
+    {
+        juce::Logger::writeToLog("GearLibraryTree: TreeView is NULL in resized()!");
+    }
 }
 
 void GearLibraryTree::setupTreeView()
 {
     treeView = std::make_unique<juce::TreeView>();
-    treeView->setRootItemVisible(false);
+    treeView->setRootItemVisible(true);
     treeView->setColour(juce::TreeView::backgroundColourId, juce::Colours::darkgrey.darker(0.7f));
     treeView->setIndentSize(20);
     treeView->setDefaultOpenness(false);
@@ -93,7 +124,7 @@ void GearLibraryTree::createRecentlyUsedSection()
 
     // Get recently used items from cache manager
     auto recentlyUsedIds = cacheManager.getRecentlyUsed(ICacheManager::MAX_RECENTLY_USED);
-    
+
     if (recentlyUsedIds.isEmpty())
     {
         recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No recently used items", gearLibrary, cacheManager));
@@ -119,7 +150,7 @@ void GearLibraryTree::createFavoritesSection()
 
     // Get favorites from cache manager
     auto favoriteIds = cacheManager.getFavorites();
-    
+
     if (favoriteIds.isEmpty())
     {
         favoritesNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No favorites yet", gearLibrary, cacheManager));
@@ -219,9 +250,9 @@ void GearLibraryTree::setSearchFilter(const juce::String &searchText)
     applySearchFilter();
 }
 
-void GearLibraryTree::setAdvancedFilters(const juce::String &categoryFilter, 
-                                        const juce::String &manufacturerFilter, 
-                                        const juce::String &gearTypeFilter)
+void GearLibraryTree::setAdvancedFilters(const juce::String &categoryFilter,
+                                         const juce::String &manufacturerFilter,
+                                         const juce::String &gearTypeFilter)
 {
     currentCategoryFilter = categoryFilter;
     currentManufacturerFilter = manufacturerFilter;
@@ -264,22 +295,22 @@ void GearLibraryTree::applySearchFilter()
     {
         // Apply text search filter
         bool matchesSearch = currentSearchText.isEmpty() ||
-                            item->name.containsIgnoreCase(currentSearchText) ||
-                            item->manufacturer.containsIgnoreCase(currentSearchText) ||
-                            item->categoryString.containsIgnoreCase(currentSearchText);
-        
+                             item->name.containsIgnoreCase(currentSearchText) ||
+                             item->manufacturer.containsIgnoreCase(currentSearchText) ||
+                             item->categoryString.containsIgnoreCase(currentSearchText);
+
         // Apply category filter
         bool matchesCategory = currentCategoryFilter.isEmpty() ||
-                              item->categoryString.containsIgnoreCase(currentCategoryFilter);
-        
+                               item->categoryString.containsIgnoreCase(currentCategoryFilter);
+
         // Apply manufacturer filter
         bool matchesManufacturer = currentManufacturerFilter.isEmpty() ||
                                    item->manufacturer.containsIgnoreCase(currentManufacturerFilter);
-        
+
         // Apply gear type filter
         bool matchesGearType = currentGearTypeFilter.isEmpty() ||
                                item->getTypeString().containsIgnoreCase(currentGearTypeFilter);
-        
+
         if (matchesSearch && matchesCategory && matchesManufacturer && matchesGearType)
         {
             searchResults.add(item);
@@ -434,10 +465,10 @@ void GearTreeItem::showContextMenu(const juce::MouseEvent &e)
         return;
 
     juce::PopupMenu menu;
-    
+
     // Check if item is in favorites
     bool isFavorite = cacheManager.isInFavorites(gearItem->unitId);
-    
+
     if (isFavorite)
     {
         menu.addItem(1, "Remove from Favorites");
@@ -446,13 +477,13 @@ void GearTreeItem::showContextMenu(const juce::MouseEvent &e)
     {
         menu.addItem(2, "Add to Favorites");
     }
-    
+
     menu.addSeparator();
     menu.addItem(3, "Remove from Recently Used");
-    
+
     // Show menu and handle selection
     menu.showMenuAsync(juce::PopupMenu::Options(), [this](int result)
-    {
+                       {
         switch (result)
         {
             case 1: // Remove from favorites
@@ -473,9 +504,8 @@ void GearTreeItem::showContextMenu(const juce::MouseEvent &e)
              {
                  tree->refreshTree();
              }
-         }
-     });
- }
+         } });
+}
 
 void GearTreeItem::showGearDetails()
 {
@@ -487,12 +517,17 @@ void GearTreeItem::showGearDetails()
         juce::MessageBoxIconType::InfoIcon,
         "Gear Details: " + gearItem->name,
         "Manufacturer: " + gearItem->manufacturer + "\n"
-        "Category: " + gearItem->categoryString + "\n"
-        "Type: " + gearItem->getTypeString() + "\n"
-        "Version: " + gearItem->version + "\n"
-        "Controls: " + juce::String(gearItem->getNumControls()) + "\n"
-        "Description: " + gearItem->description + "\n"
-        "Tags: " + gearItem->tags.joinIntoString(", "),
-        "OK"
-    );
+                                                    "Category: " +
+            gearItem->categoryString + "\n"
+                                       "Type: " +
+            gearItem->getTypeString() + "\n"
+                                        "Version: " +
+            gearItem->version + "\n"
+                                "Controls: " +
+            juce::String(gearItem->getNumControls()) + "\n"
+                                                       "Description: " +
+            gearItem->description + "\n"
+                                    "Tags: " +
+            gearItem->tags.joinIntoString(", "),
+        "OK");
 }

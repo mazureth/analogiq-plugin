@@ -14,6 +14,13 @@ GearItem::GearItem(const juce::String &id, const juce::String &gearName, const j
     initializeDefaults();
 }
 
+GearItem::GearItem(const juce::String &id, const juce::String &gearName, const juce::String &maker,
+                   IFileSystem *fs, INetworkFetcher *nf, ICacheManager *cm)
+    : unitId(id), name(gearName), manufacturer(maker), version("1.0"), description(""), type(GearType::Other), category(GearCategory::Other), categoryString(""), schemaPath(""), thumbnailImage(), faceplateImage(), controls(), tags(), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(fs), networkFetcher(nf), cacheManager(cm)
+{
+    initializeDefaults();
+}
+
 GearItem::GearItem(const GearItem &other)
     : unitId(other.unitId), name(other.name), manufacturer(other.manufacturer), version(other.version), description(other.description), type(other.type), category(other.category), categoryString(other.categoryString), schemaPath(other.schemaPath), thumbnailImage(other.thumbnailImage), faceplateImage(other.faceplateImage), controls(other.controls), tags(other.tags), isInstance(other.isInstance), instanceId(other.instanceId), sourceUnitId(other.sourceUnitId), fileSystem(other.fileSystem), networkFetcher(other.networkFetcher), cacheManager(other.cacheManager)
 {
@@ -308,4 +315,27 @@ juce::String GearItem::generateInstanceId() const
 {
     auto timestamp = juce::Time::getCurrentTime().toMilliseconds();
     return unitId + "_inst_" + juce::String(timestamp);
+}
+
+GearItem::GearItem(const juce::String &id,
+                   const juce::String &gearName,
+                   const juce::String &maker,
+                   const juce::String &gearCategory,
+                   const juce::String &gearVersion,
+                   const juce::String &gearSchemaPath,
+                   const juce::String &gearThumbnailImage,
+                   const juce::StringArray &gearTags,
+                   GearType gearType,
+                   GearCategory gearCategoryEnum,
+                   int gearSlotSize,
+                   IFileSystem *fs,
+                   INetworkFetcher *nf,
+                   ICacheManager *cm)
+    : unitId(id), name(gearName), manufacturer(maker), version(gearVersion), description(""), type(gearType), category(gearCategoryEnum), categoryString(gearCategory), schemaPath(gearSchemaPath), imageUrl(gearThumbnailImage), schemaUrl(""), dependencies(), compatibilityVersion(""), thumbnailImage(), faceplateImage(), controls(), tags(gearTags), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(fs), networkFetcher(nf), cacheManager(cm)
+{
+    // Create placeholder image if thumbnail is not available
+    if (gearThumbnailImage.isEmpty())
+    {
+        createPlaceholderImage();
+    }
 }

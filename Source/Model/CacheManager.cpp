@@ -9,11 +9,11 @@ CacheManager::CacheManager(IFileSystem &fs)
 {
     initializeCacheDirectory();
     loadCacheIndex();
-    
+
     // Initialize favorites and recently used file paths
     favoritesFilePath = fileSystem.joinPath(cacheRootDir, "favorites.json");
     recentlyUsedFilePath = fileSystem.joinPath(cacheRootDir, "recently_used.json");
-    
+
     // Load favorites and recently used data
     loadFavorites();
     loadRecentlyUsed();
@@ -551,10 +551,10 @@ void CacheManager::addToRecentlyUsedInternal(const juce::String &unitId)
 {
     // Remove if already exists (to move to front)
     recentlyUsed.removeString(unitId);
-    
+
     // Add to end (most recent)
     recentlyUsed.add(unitId);
-    
+
     // Limit size
     while (recentlyUsed.size() > MAX_RECENTLY_USED)
         recentlyUsed.remove(0);

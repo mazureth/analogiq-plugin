@@ -80,9 +80,9 @@ public:
      * @param manufacturerFilter The manufacturer to filter by (empty for all)
      * @param gearTypeFilter The gear type to filter by (empty for all)
      */
-    void setAdvancedFilters(const juce::String &categoryFilter, 
-                           const juce::String &manufacturerFilter, 
-                           const juce::String &gearTypeFilter);
+    void setAdvancedFilters(const juce::String &categoryFilter,
+                            const juce::String &manufacturerFilter,
+                            const juce::String &gearTypeFilter);
 
 private:
     // References to dependencies

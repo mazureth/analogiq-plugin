@@ -73,8 +73,16 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     mainTabs.setInterceptsMouseClicks(false, true);
     addAndMakeVisible(mainTabs);
 
-    // Note: GearLibrary is not a JUCE Component, so it can't be added to the UI
-    // It will be managed separately through the Model layer
+    // Add GearLibraryTree to visible components
+    addAndMakeVisible(gearLibraryTree.get());
+
+    // CRITICAL FIX: Set initial bounds immediately after adding to visible components
+    // This ensures the component is visible even if resized() is never called
+    int initialTreeWidth = getWidth() > 0 ? getWidth() / 3 : 200;          // Default width if getWidth() returns 0
+    gearLibraryTree->setBounds(0, 30, initialTreeWidth, getHeight() - 30); // Position below menu bar
+
+    // CRITICAL FIX: Call resized() to ensure proper layout initialization
+    resized();
 
     // Set up menu bar components
     menuBarContainer.setComponentID("MenuBarContainer");
@@ -134,6 +142,22 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cach
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
     juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree component created successfully");
 
+    // Add GearLibraryTree to visible components
+    addAndMakeVisible(gearLibraryTree.get());
+
+    // CRITICAL FIX: Set initial bounds immediately after adding to visible components
+    // This ensures the component is visible even if resized() is never called
+    int initialTreeWidth = getWidth() > 0 ? getWidth() / 3 : 200;          // Default width if getWidth() returns 0
+    gearLibraryTree->setBounds(0, 30, initialTreeWidth, getHeight() - 30); // Position below menu bar
+
+    // Debug: Log the component hierarchy
+    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree added to visible components");
+    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree parent: " + juce::String(gearLibraryTree->getParentComponent() ? "YES" : "NO"));
+    juce::Logger::writeToLog("AnalogIQEditor: Initial bounds set to: " + gearLibraryTree->getBounds().toString());
+
+    // CRITICAL FIX: Call resized() to ensure proper layout initialization
+    resized();
+
     // Create Rack component
     juce::Logger::writeToLog("AnalogIQEditor: Creating Rack component");
     rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, *cacheManager, *presetManager, *gearLibrary);
@@ -162,8 +186,7 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cach
     mainTabs.setInterceptsMouseClicks(false, true);
     addAndMakeVisible(mainTabs);
 
-    // Note: GearLibrary is not a JUCE Component, so it can't be added to the UI
-    // It will be managed separately through the Model layer
+    // GearLibraryTree is now properly added to the UI with addAndMakeVisible()
 
     // Set up menu bar components
     menuBarContainer.setComponentID("MenuBarContainer");
@@ -254,6 +277,10 @@ void AnalogIQEditor::resized()
     // Left side: Gear Library Tree
     auto treeArea = area.removeFromLeft(treeWidth);
     gearLibraryTree->setBounds(treeArea);
+
+    // Debug: Log the bounds being set
+    juce::Logger::writeToLog("AnalogIQEditor: Tree area bounds: " + treeArea.toString());
+    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree bounds set to: " + gearLibraryTree->getBounds().toString());
 
     // Right side: Tabs containing Rack and Notes
     mainTabs.setBounds(area);

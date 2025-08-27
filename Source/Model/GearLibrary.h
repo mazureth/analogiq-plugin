@@ -84,6 +84,9 @@ public:
     juce::String getRemoteLibraryStatus() const;
     bool isRemoteLibraryAvailable() const;
     juce::Time getLastRemoteSyncTime() const;
+    
+    // Callback for when the library is updated
+    std::function<void()> onLibraryUpdated;
 
 private:
     struct GearCategory
@@ -142,6 +145,11 @@ private:
     void loadRemoteGearLibrary();
     void createSampleGearItems();
     void createCategoriesSection();
+    
+    // Helper methods for remote gear loading
+    bool loadGearFromCache(const juce::String &cachePath);
+    void fetchRemoteGearAsync(const juce::String &remoteUrl);
+    std::unique_ptr<GearItem> parseGearFromJson(const juce::var &gearObject);
 
     // New private helper methods for remote operations
     bool parseRemoteGearLibrary(const juce::String &jsonData);

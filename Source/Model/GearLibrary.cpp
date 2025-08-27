@@ -27,7 +27,7 @@ GearLibrary::GearLibrary(IFileSystem &fs, ICacheManager &cm, INetworkFetcher &nf
         juce::Logger::writeToLog("GearLibrary: loadCategories completed");
 
         juce::Logger::writeToLog("GearLibrary: Calling loadRemoteGearLibrary");
-        loadRemoteGearLibrary(); // Load gear from remote source
+        loadRemoteGearLibrary(); // Load gear from remote source (no fallback items)
         juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary completed");
 
         juce::Logger::writeToLog("GearLibrary: Constructor completed successfully");
@@ -87,37 +87,38 @@ void GearLibrary::initializeLibraryDirectory()
 void GearLibrary::loadRemoteGearLibrary()
 {
     juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary starting");
-    try
-    {
-        // Load gear from remote GitHub repository
-        juce::String remoteUrl = "https://raw.githubusercontent.com/analogiq/gear-library/main/units.json";
-        juce::Logger::writeToLog("GearLibrary: Remote URL: " + remoteUrl);
-        bool success = false;
 
-        // Try to load from cache first
-        juce::Logger::writeToLog("GearLibrary: Checking cache for remote_gear_library");
-        auto cachedData = cacheManager.getCachedPath("remote_gear_library");
-        if (!cachedData.isEmpty())
+    // Load gear from remote GitHub repository
+    juce::String remoteUrl = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json";
+    juce::Logger::writeToLog("GearLibrary: Remote URL: " + remoteUrl);
+
+    // Step 1: Try to load from local cache first
+    juce::Logger::writeToLog("GearLibrary: Checking local cache for remote_gear_library");
+    auto cachedData = cacheManager.getCachedPath("remote_gear_library");
+    if (!cachedData.isEmpty())
+    {
+        juce::Logger::writeToLog("GearLibrary: Found cached data, loading from cache");
+        if (loadGearFromCache(cachedData))
         {
-            juce::Logger::writeToLog("GearLibrary: Found cached data, creating sample items");
-            // For now, we'll create sample items since we don't have the actual cached data
-            createSampleGearItems();
-            return;
+            juce::Logger::writeToLog("GearLibrary: Successfully loaded " + juce::String(gearItems.size()) + " items from cache");
         }
-
-        juce::Logger::writeToLog("GearLibrary: No cached data found, creating sample items");
-        // If not in cache, try to fetch from network
-        // Note: This requires NetworkFetcher to be injected, which we'll add later
-        // For now, we'll create some sample gear items
-        createSampleGearItems();
-        juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary completed successfully");
+        else
+        {
+            juce::Logger::writeToLog("GearLibrary: Failed to load from cache, clearing items");
+            gearItems.clear();
+        }
     }
-    catch (...)
+    else
     {
-        juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary caught exception, creating sample items");
-        // If remote loading fails, create sample items for development
-        createSampleGearItems();
+        juce::Logger::writeToLog("GearLibrary: No cached data found, library will be empty until remote fetch completes");
+        gearItems.clear();
     }
+
+    // Step 2: Async remote fetch to update cache and add new/changed gear
+    juce::Logger::writeToLog("GearLibrary: Starting async remote fetch");
+    fetchRemoteGearAsync(remoteUrl);
+
+    juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary completed");
 }
 
 void GearLibrary::createSampleGearItems()
@@ -288,6 +289,262 @@ void GearLibrary::createCategoriesSection()
 
         juce::Logger::writeToLog("GearLibrary: Default categories created");
     }
+}
+
+// Helper methods for remote gear loading
+bool GearLibrary::loadGearFromCache(const juce::String &cachePath)
+{
+    juce::Logger::writeToLog("GearLibrary: loadGearFromCache starting with path: " + cachePath);
+
+    try
+    {
+        juce::File cacheFile(cachePath);
+        if (!cacheFile.existsAsFile())
+        {
+            juce::Logger::writeToLog("GearLibrary: Cache file does not exist");
+            return false;
+        }
+
+        juce::String jsonContent = cacheFile.loadFileAsString();
+        if (jsonContent.isEmpty())
+        {
+            juce::Logger::writeToLog("GearLibrary: Cache file is empty");
+            return false;
+        }
+
+        auto json = juce::JSON::parse(jsonContent);
+        if (!json.isObject())
+        {
+            juce::Logger::writeToLog("GearLibrary: Cache file does not contain valid JSON object");
+            return false;
+        }
+
+        // Check if we have a "units" array in the new format (matching legacy system)
+        if (!json.hasProperty("units") || !json["units"].isArray())
+        {
+            juce::Logger::writeToLog("GearLibrary: Cache file does not contain a 'units' array");
+            return false;
+        }
+
+        // Clear existing items and load from cache
+        juce::Logger::writeToLog("GearLibrary: Clearing existing gear items");
+        gearItems.clear();
+        juce::Logger::writeToLog("GearLibrary: Getting units array from JSON");
+        auto gearArray = json["units"].getArray();
+        juce::Logger::writeToLog("GearLibrary: Units array size: " + juce::String(gearArray->size()));
+
+        for (auto &gearObject : *gearArray)
+        {
+            juce::Logger::writeToLog("GearLibrary: Processing gear item, isObject: " + juce::String(gearObject.isObject() ? "YES" : "NO") +
+                                     ", isArray: " + juce::String(gearObject.isArray() ? "YES" : "NO") +
+                                     ", isString: " + juce::String(gearObject.isString() ? "YES" : "NO"));
+
+            if (gearObject.isObject())
+            {
+                juce::Logger::writeToLog("GearLibrary: About to call parseGearFromJson");
+                auto gearItem = parseGearFromJson(gearObject);
+                juce::Logger::writeToLog("GearLibrary: parseGearFromJson returned");
+
+                if (gearItem)
+                {
+                    juce::Logger::writeToLog("GearLibrary: Successfully parsed gear item: " + gearItem->unitId);
+                    juce::Logger::writeToLog("GearLibrary: Adding gear item to array");
+                    gearItems.add(gearItem.release());
+                    juce::Logger::writeToLog("GearLibrary: Gear item added successfully");
+                }
+                else
+                {
+                    juce::Logger::writeToLog("GearLibrary: Failed to parse gear item - parseGearFromJson returned nullptr");
+                }
+            }
+            else
+            {
+                juce::Logger::writeToLog("GearLibrary: Gear object is not a valid object");
+            }
+        }
+
+        juce::Logger::writeToLog("GearLibrary: Successfully loaded " + juce::String(gearItems.size()) + " items from cache");
+        return true;
+    }
+    catch (...)
+    {
+        juce::Logger::writeToLog("GearLibrary: Exception while loading from cache");
+        return false;
+    }
+}
+
+void GearLibrary::fetchRemoteGearAsync(const juce::String &remoteUrl)
+{
+    juce::Logger::writeToLog("GearLibrary: fetchRemoteGearAsync starting with URL: " + remoteUrl);
+
+    // Use the injected NetworkFetcher to fetch remote data
+    try
+    {
+        bool success = false;
+        auto jsonData = networkFetcher.fetchRemoteGearLibrary(juce::URL(remoteUrl), success);
+        if (!jsonData.isEmpty())
+        {
+            juce::Logger::writeToLog("GearLibrary: Successfully fetched remote data, size: " + juce::String(jsonData.length()));
+
+            // Parse the remote data
+            auto json = juce::JSON::parse(jsonData);
+            if (!json.isObject())
+            {
+                juce::Logger::writeToLog("GearLibrary: Remote data is not a valid JSON object");
+                return;
+            }
+
+            // Check if we have a "units" array in the new format (matching legacy system)
+            if (!json.hasProperty("units") || !json["units"].isArray())
+            {
+                juce::Logger::writeToLog("GearLibrary: Remote data does not contain a 'units' array");
+                return;
+            }
+
+            auto gearArray = json["units"].getArray();
+            juce::Logger::writeToLog("GearLibrary: Remote data contains " + juce::String(gearArray->size()) + " gear items");
+
+            // Cache the remote data
+            cacheManager.cacheData("remote_gear_library", jsonData);
+
+            // Parse and add new gear items
+            int newItemsCount = 0;
+            for (int i = 0; i < gearArray->size(); ++i)
+            {
+                auto gearObject = gearArray[i];
+                if (auto gearItem = parseGearFromJson(gearObject))
+                {
+                    // Check if this gear item already exists
+                    bool exists = false;
+                    for (auto &existingItem : gearItems)
+                    {
+                        if (existingItem->unitId == gearItem->unitId)
+                        {
+                            exists = true;
+                            break;
+                        }
+                    }
+
+                    if (!exists)
+                    {
+                        gearItems.add(gearItem.release());
+                        newItemsCount++;
+                    }
+                }
+            }
+
+            juce::Logger::writeToLog("GearLibrary: Added " + juce::String(newItemsCount) + " new gear items from remote");
+
+            // Update metadata and categories
+            updateGearMetadata();
+            updateCategories();
+
+            // Notify listeners that the library has been updated
+            // This will trigger a repaint of the UI
+            if (onLibraryUpdated)
+            {
+                onLibraryUpdated();
+            }
+        }
+        else
+        {
+            juce::Logger::writeToLog("GearLibrary: Failed to fetch remote data - empty response");
+        }
+    }
+    catch (...)
+    {
+        juce::Logger::writeToLog("GearLibrary: Exception while fetching remote gear data");
+    }
+}
+
+std::unique_ptr<GearItem> GearLibrary::parseGearFromJson(const juce::var &gearObject)
+{
+    juce::Logger::writeToLog("GearLibrary: parseGearFromJson called");
+
+    if (!gearObject.isObject())
+    {
+        juce::Logger::writeToLog("GearLibrary: gearObject is not an object, returning nullptr");
+        return nullptr;
+    }
+
+    auto obj = gearObject.getDynamicObject();
+    if (!obj)
+    {
+        juce::Logger::writeToLog("GearLibrary: getDynamicObject() returned nullptr");
+        return nullptr;
+    }
+    juce::Logger::writeToLog("GearLibrary: getDynamicObject() succeeded, object has " + juce::String(obj->getProperties().size()) + " properties");
+
+    auto gearItem = std::make_unique<GearItem>();
+    gearItem->setFileSystem(&fileSystem);
+    gearItem->setNetworkFetcher(&networkFetcher);
+    gearItem->setCacheManager(&cacheManager);
+
+    // Extract properties using the new format (copying legacy system exactly)
+    juce::String unitId = obj->getProperty("unitId");
+    juce::String name = obj->getProperty("name");
+    juce::String manufacturer = obj->getProperty("manufacturer");
+    juce::String category = obj->getProperty("category");
+    juce::String version = obj->getProperty("version");
+    juce::String schemaPath = obj->getProperty("schemaPath");
+    juce::String thumbnailImage = obj->getProperty("thumbnailImage");
+
+    // Debug: Log the extracted properties
+    juce::Logger::writeToLog("GearLibrary: Extracted properties - unitId: '" + unitId + "', name: '" + name + "', manufacturer: '" + manufacturer + "', category: '" + category + "'");
+
+    // Process tags with explicit cleanup
+    juce::StringArray tags;
+    if (obj->hasProperty("tags") && obj->getProperty("tags").isArray())
+    {
+        auto tagsArray = obj->getProperty("tags").getArray();
+        for (auto &tag : *tagsArray)
+        {
+            tags.add(tag.toString());
+        }
+        // Clear the temporary array reference to release memory
+        tagsArray = nullptr;
+    }
+
+    // Determine slotSize (default to 1)
+    int slotSize = obj->hasProperty("slotSize") ? static_cast<int>(obj->getProperty("slotSize")) : 1;
+
+    // Create empty controls array (we'll populate this later when loading the full schema)
+    juce::Array<GearControl> controls;
+
+    // Set the properties on our gear item
+    gearItem->unitId = unitId;
+    gearItem->name = name;
+    gearItem->manufacturer = manufacturer;
+    gearItem->categoryString = category;
+    gearItem->version = version;
+    gearItem->schemaPath = schemaPath;
+    gearItem->tags = tags;
+
+    // Map category string to enum (copying legacy system exactly)
+    if (category == "equalizer" || category == "eq")
+        gearItem->category = GearItem::GearCategory::EQ;
+    else if (category == "compressor")
+        gearItem->category = GearItem::GearCategory::Compressor;
+    else if (category == "preamp")
+        gearItem->category = GearItem::GearCategory::Preamp;
+    else
+        gearItem->category = GearItem::GearCategory::Other;
+
+    // Try to determine type from tags (copying legacy system exactly)
+    gearItem->type = GearItem::GearType::Other;
+    if (tags.contains("500 series"))
+        gearItem->type = GearItem::GearType::Series500;
+    else if (tags.contains("rack") || tags.contains("19 inch"))
+        gearItem->type = GearItem::GearType::Rack19Inch;
+
+    // Parse controls if they exist (simplified for now)
+    if (obj->hasProperty("controls") && obj->getProperty("controls").isArray())
+    {
+        // TODO: Implement controls parsing when needed
+        juce::Logger::writeToLog("GearLibrary: Controls found but parsing not yet implemented");
+    }
+
+    return gearItem;
 }
 
 // Additional helper methods that were removed
