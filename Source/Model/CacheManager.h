@@ -16,8 +16,11 @@ public:
     juce::String getCachedPath(const juce::String &assetId) override;
     bool addToCache(const juce::String &assetId, const juce::MemoryBlock &data) override;
     bool addToCache(const juce::String &assetId, const juce::Image &image) override;
+    bool cacheData(const juce::String &assetId, const juce::String &data) override;
+    bool cacheBinaryData(const juce::String &assetId, const juce::MemoryBlock &data) override;
     bool removeFromCache(const juce::String &assetId) override;
     void clearCache() override;
+    void clearCache(const juce::String &assetId) override;
     juce::int64 getCacheSize() override;
     juce::int64 getMaxCacheSize() override;
     void setMaxCacheSize(juce::int64 maxSize) override;

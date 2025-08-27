@@ -28,7 +28,7 @@ AnalogIQProcessor::AnalogIQProcessor()
     networkFetcher = new NetworkFetcher();
     cacheManager = std::make_unique<CacheManager>(*fileSystem);
     presetManager = std::make_unique<PresetManager>(*fileSystem);
-    gearLibrary = std::make_unique<GearLibrary>(*fileSystem, *cacheManager);
+    gearLibrary = std::make_unique<GearLibrary>(*fileSystem, *cacheManager, *networkFetcher);
 
     // Log initialization
     logToFile("AnalogIQProcessor initialized with default dependencies");
@@ -38,7 +38,7 @@ AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &nf, IFileSystem &fs)
     : AudioProcessor(BusesProperties()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
-      state(*this, nullptr, "Parameters", createParameterLayout()), undoManager(std::make_unique<juce::UndoManager>()), lastCreatedEditor(nullptr), storedRackReference(nullptr), networkFetcher(&nf), fileSystem(&fs), cacheManager(std::make_unique<CacheManager>(fs)), presetManager(std::make_unique<PresetManager>(fs)), gearLibrary(std::make_unique<GearLibrary>(fs, *cacheManager))
+      state(*this, nullptr, "Parameters", createParameterLayout()), undoManager(std::make_unique<juce::UndoManager>()), lastCreatedEditor(nullptr), storedRackReference(nullptr), networkFetcher(&nf), fileSystem(&fs), cacheManager(std::make_unique<CacheManager>(fs)), presetManager(std::make_unique<PresetManager>(fs)), gearLibrary(std::make_unique<GearLibrary>(fs, *cacheManager, nf))
 {
     // Initialize logging
     initializeLogging();

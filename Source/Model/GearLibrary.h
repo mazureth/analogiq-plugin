@@ -2,6 +2,7 @@
 #include "../Shared/IGearLibrary.h"
 #include "../Shared/IFileSystem.h"
 #include "../Shared/ICacheManager.h"
+#include "../Shared/INetworkFetcher.h"
 #include "GearItem.h"
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
@@ -10,7 +11,7 @@
 class GearLibrary : public IGearLibrary
 {
 public:
-    explicit GearLibrary(IFileSystem &fileSystem, ICacheManager &cacheManager);
+    explicit GearLibrary(IFileSystem &fileSystem, ICacheManager &cacheManager, INetworkFetcher &networkFetcher);
     ~GearLibrary() override;
 
     // IGearLibrary implementation
@@ -74,6 +75,16 @@ public:
     void setAutoBackupEnabled(bool enabled) override;
     bool isAutoBackupEnabled() const override;
 
+    // New methods for enhanced remote gear library functionality
+    bool refreshRemoteGearLibrary();
+    bool downloadGearImages();
+    bool downloadGearSchemas();
+    bool checkGearCompatibility(const juce::String &gearId);
+    bool updateGearVersions();
+    juce::String getRemoteLibraryStatus() const;
+    bool isRemoteLibraryAvailable() const;
+    juce::Time getLastRemoteSyncTime() const;
+
 private:
     struct GearCategory
     {
@@ -98,13 +109,25 @@ private:
         GearItem::GearCategory gearCategory;
     };
 
+    struct RemoteLibraryInfo
+    {
+        juce::String url;
+        juce::Time lastSyncTime;
+        juce::String lastSyncVersion;
+        bool isAvailable;
+        juce::String lastError;
+        int lastHttpCode;
+    };
+
     // Member variables
     IFileSystem &fileSystem;
     ICacheManager &cacheManager;
+    INetworkFetcher &networkFetcher;
     juce::String libraryRootDir;
     juce::Array<GearItem *> gearItems;
     std::unordered_map<juce::String, GearMetadata> gearMetadata;
     std::unordered_map<juce::String, GearCategory> categories;
+    RemoteLibraryInfo remoteLibraryInfo;
 
     int maxGearItems;
     juce::int64 maxStorageSize;
@@ -118,20 +141,30 @@ private:
     void saveCategories();
     void loadRemoteGearLibrary();
     void createSampleGearItems();
-    void parseRemoteGearData(const juce::String &jsonData);
-    GearControl::ControlType parseControlType(const juce::String &typeStr);
-    void updateGearMetadata();
-    void updateCategories();
-
+    void createCategoriesSection();
+    
+    // New private helper methods for remote operations
+    bool parseRemoteGearLibrary(const juce::String &jsonData);
+    bool downloadGearAsset(const juce::String &gearId, const juce::String &assetUrl, const juce::String &assetType);
+    bool validateRemoteGearData(const juce::var &gearObject);
+    void updateRemoteLibraryStatus(bool available, const juce::String &error = "", int httpCode = 0);
+    bool shouldRefreshRemoteLibrary() const;
+    juce::String getRemoteLibraryUrl() const;
+    void setRemoteLibraryUrl(const juce::String &url);
+    
+    // Additional helper methods that are referenced but not yet implemented
     juce::String generateGearItemPath(const juce::String &gearId);
     juce::String generateMetadataPath(const juce::String &gearId);
     juce::String generateCategoryPath(const juce::String &categoryName);
     juce::String sanitizeGearId(const juce::String &gearId);
-
     bool checkStorageLimits();
-
+    
     // Search and filtering helpers
     bool shouldShowItem(const GearItem *item, const juce::String &normalizedSearch) const;
     juce::String normalizeForSearch(const juce::String &text) const;
     juce::StringArray getIgnoredCharacters() const;
+    
+    // Metadata and category management
+    void updateGearMetadata();
+    void updateCategories();
 };

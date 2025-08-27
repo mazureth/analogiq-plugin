@@ -90,14 +90,13 @@ This document outlines the remaining work required to achieve 100% coverage of A
 - [ ] Add preset search and filtering
 - [ ] Implement preset backup and recovery
 
-### 5. ADVANCED UI FEATURES (40% → 100%)
-**Priority: MEDIUM - Enhanced user experience**
+### 5. FULL UI FEATURES (40% → 100%)
+**Priority: HIGH - Core user experience**
 
 #### 5.1 Gear Control Interface
 - [ ] Implement gear control panels within rack slots
 - [ ] Add real-time parameter adjustment
 - [ ] Implement control value display and editing
-- [ ] Add control automation and MIDI mapping
 - [ ] Implement control presets and recall
 
 #### 5.2 Advanced Rack Interface

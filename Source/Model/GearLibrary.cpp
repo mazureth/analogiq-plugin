@@ -6,8 +6,8 @@
 #include <juce_graphics/juce_graphics.h>
 #include <juce_data_structures/juce_data_structures.h>
 
-GearLibrary::GearLibrary(IFileSystem &fs, ICacheManager &cm)
-    : fileSystem(fs), cacheManager(cm), maxGearItems(1000), maxStorageSize(1 * 1024 * 1024 * 1024) // 1GB default
+GearLibrary::GearLibrary(IFileSystem &fs, ICacheManager &cm, INetworkFetcher &nf)
+    : fileSystem(fs), cacheManager(cm), networkFetcher(nf), maxGearItems(1000), maxStorageSize(1 * 1024 * 1024 * 1024) // 1GB default
       ,
       autoBackupEnabled(true)
 {
@@ -202,121 +202,7 @@ void GearLibrary::createSampleGearItems()
     updateCategories();
 }
 
-void GearLibrary::parseRemoteGearData(const juce::String &jsonData)
-{
-    try
-    {
-        auto json = juce::JSON::parse(jsonData);
-        if (json.isArray())
-        {
-            auto unitsArray = json.getArray();
-            for (auto &unit : *unitsArray)
-            {
-                if (unit.isObject())
-                {
-                    auto gearItem = std::make_unique<GearItem>();
 
-                    // Parse basic properties
-                    gearItem->unitId = unit["id"].toString();
-                    gearItem->name = unit["name"].toString();
-                    gearItem->manufacturer = unit["manufacturer"].toString();
-                    gearItem->description = unit["description"].toString();
-                    gearItem->version = unit["version"].toString();
-
-                    // Parse type and category
-                    auto typeStr = unit["type"].toString();
-                    if (typeStr == "500_series")
-                        gearItem->type = GearItem::GearType::Series500;
-                    else if (typeStr == "rack_19")
-                        gearItem->type = GearItem::GearType::Rack19Inch;
-                    else
-                        gearItem->type = GearItem::GearType::Other;
-
-                    auto categoryStr = unit["category"].toString();
-                    if (categoryStr == "eq")
-                        gearItem->category = GearItem::GearCategory::EQ;
-                    else if (categoryStr == "preamp")
-                        gearItem->category = GearItem::GearCategory::Preamp;
-                    else if (categoryStr == "compressor")
-                        gearItem->category = GearItem::GearCategory::Compressor;
-                    else
-                        gearItem->category = GearItem::GearCategory::Other;
-
-                    gearItem->categoryString = categoryStr;
-
-                    // Parse controls if present
-                    if (unit.hasProperty("controls") && unit["controls"].isArray())
-                    {
-                        auto controlsArray = unit["controls"].getArray();
-                        for (auto &control : *controlsArray)
-                        {
-                            if (control.isObject())
-                            {
-                                GearControl gearControl;
-                                gearControl.name = control["name"].toString();
-                                gearControl.type = parseControlType(control["type"].toString());
-
-                                // Parse position
-                                if (control.hasProperty("position") && control["position"].isObject())
-                                {
-                                    auto pos = control["position"];
-                                    gearControl.position = juce::Rectangle<float>(
-                                        static_cast<float>(pos["x"]),
-                                        static_cast<float>(pos["y"]),
-                                        static_cast<float>(pos["width"]),
-                                        static_cast<float>(pos["height"]));
-                                }
-
-                                // Parse values
-                                gearControl.initialValue = static_cast<float>(control["initialValue"]);
-                                gearControl.currentValue = gearControl.initialValue;
-
-                                // Parse options for switches
-                                if (control.hasProperty("options") && control["options"].isArray())
-                                {
-                                    auto optionsArray = control["options"].getArray();
-                                    for (auto &option : *optionsArray)
-                                    {
-                                        gearControl.options.add(option.toString());
-                                    }
-                                }
-
-                                gearItem->controls.add(gearControl);
-                            }
-                        }
-                    }
-
-                    gearItems.add(gearItem.release());
-                }
-            }
-        }
-
-        // Update metadata and categories
-        updateGearMetadata();
-        updateCategories();
-
-        // Cache the remote data (for now, just mark as cached)
-        // In a real implementation, this would save the data
-    }
-    catch (...)
-    {
-        // If parsing fails, fall back to sample items
-        createSampleGearItems();
-    }
-}
-
-GearControl::ControlType GearLibrary::parseControlType(const juce::String &typeStr)
-{
-    if (typeStr == "knob")
-        return GearControl::ControlType::Knob;
-    if (typeStr == "fader")
-        return GearControl::ControlType::Fader;
-    if (typeStr == "switch")
-        return GearControl::ControlType::Switch;
-    if (typeStr == "button")
-        return GearControl::ControlType::Button;
-    return GearControl::ControlType::Knob; // Default
-}
 
 void GearLibrary::updateGearMetadata()
 {
@@ -374,28 +260,67 @@ void GearLibrary::updateCategories()
     }
 }
 
+void GearLibrary::createCategoriesSection()
+{
+    // Create default categories if none exist
+    if (categories.empty())
+    {
+        juce::Logger::writeToLog("GearLibrary: Creating default categories");
+        
+        // Create EQ category
+        GearCategory eqCategory;
+        eqCategory.name = "EQ";
+        eqCategory.creationTime = juce::Time::getCurrentTime();
+        eqCategory.description = "Equalizers and filters";
+        categories["EQ"] = eqCategory;
+        
+        // Create Compressor category
+        GearCategory compCategory;
+        compCategory.name = "Compressor";
+        compCategory.creationTime = juce::Time::getCurrentTime();
+        compCategory.description = "Dynamic processors and compressors";
+        categories["Compressor"] = compCategory;
+        
+        // Create Preamp category
+        GearCategory preampCategory;
+        preampCategory.name = "Preamp";
+        preampCategory.creationTime = juce::Time::getCurrentTime();
+        preampCategory.description = "Preamplifiers and gain stages";
+        categories["Preamp"] = preampCategory;
+        
+        juce::Logger::writeToLog("GearLibrary: Default categories created");
+    }
+}
+
+// Additional helper methods that were removed
 juce::String GearLibrary::generateGearItemPath(const juce::String &gearId)
 {
-    auto sanitizedId = sanitizeGearId(gearId);
-    return fileSystem.joinPath(libraryRootDir, sanitizedId + ".gear");
+    return fileSystem.joinPath(libraryRootDir, "gear/" + gearId + ".json");
 }
 
 juce::String GearLibrary::generateMetadataPath(const juce::String &gearId)
 {
-    auto sanitizedId = sanitizeGearId(gearId);
-    return fileSystem.joinPath(libraryRootDir, sanitizedId + ".meta");
+    return fileSystem.joinPath(libraryRootDir, "metadata/" + gearId + ".txt");
 }
 
 juce::String GearLibrary::generateCategoryPath(const juce::String &categoryName)
 {
-    return fileSystem.joinPath(libraryRootDir, "categories.txt");
+    return fileSystem.joinPath(libraryRootDir, "categories/" + categoryName + ".txt");
 }
 
 juce::String GearLibrary::sanitizeGearId(const juce::String &gearId)
 {
-    // Remove invalid characters for filenames
-    auto sanitized = gearId.replaceCharacters("<>:\"/\\|?*", "_");
-    return sanitized.trim();
+    // Remove invalid characters for file names
+    juce::String sanitized = gearId;
+    sanitized = sanitized.replaceCharacters("\\/:*?\"<>|", "_");
+    return sanitized;
+}
+
+void GearLibrary::setRemoteLibraryUrl(const juce::String &url)
+{
+    remoteLibraryInfo.url = url;
+    // Clear cache to force refresh on next load
+    cacheManager.clearCache("remote_gear_library");
 }
 
 bool GearLibrary::addGearItem(const GearItem &gearItem)

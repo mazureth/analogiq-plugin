@@ -51,6 +51,12 @@ public:
     GearCategory category;
     juce::String categoryString;
     juce::String schemaPath;
+    
+    // Remote gear library support
+    juce::String imageUrl;
+    juce::String schemaUrl;
+    juce::StringArray dependencies;
+    juce::String compatibilityVersion;
 
     // Image assets
     juce::Image thumbnailImage;

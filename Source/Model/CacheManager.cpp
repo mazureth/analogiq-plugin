@@ -346,3 +346,39 @@ void CacheManager::cleanupCache()
         removeLeastUsedAssets(1);
     }
 }
+
+// Additional methods for remote gear library support
+bool CacheManager::cacheData(const juce::String &assetId, const juce::String &data)
+{
+    if (assetId.isEmpty() || data.isEmpty())
+        return false;
+
+    juce::MemoryBlock dataBlock;
+    dataBlock.append(data.toRawUTF8(), data.getNumBytesAsUTF8());
+    
+    return addToCache(assetId, dataBlock);
+}
+
+bool CacheManager::cacheBinaryData(const juce::String &assetId, const juce::MemoryBlock &data)
+{
+    return addToCache(assetId, data);
+}
+
+void CacheManager::clearCache(const juce::String &assetId)
+{
+    auto it = cacheEntries.find(assetId);
+    if (it != cacheEntries.end())
+    {
+        // Remove the file
+        fileSystem.deleteFile(it->second.filePath);
+        
+        // Update cache size
+        currentCacheSize -= it->second.size;
+        
+        // Remove from entries
+        cacheEntries.erase(it);
+        
+        // Save updated index
+        saveCacheIndex();
+    }
+}
