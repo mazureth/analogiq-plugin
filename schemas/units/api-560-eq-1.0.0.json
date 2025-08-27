@@ -1,0 +1,184 @@
+{
+    "unitId": "api-560-eq",
+    "name": "API 560 10-Band Graphic Equalizer",
+    "manufacturer": "Automated Processes Inc.",
+    "tags": [
+        "API",
+        "500 series",
+        "graphic EQ",
+        "10-band"
+    ],
+    "version": "1.0.0",
+    "category": "equalizer",
+    "formFactor": "500-series",
+    "faceplateImage": "assets/faceplates/api-560-eq-1.0.0.png",
+    "thumbnailImage": "assets/thumbnails/api-560-eq-1.0.0.png",
+    "width": 150,
+    "height": 525,
+    "controls": [
+        {
+            "id": "16k",
+            "label": "16k",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.17
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-white.png"
+        },
+        {
+            "id": "8k",
+            "label": "8k",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.244
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-white.png"
+        },
+        {
+            "id": "4k",
+            "label": "4k",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.316
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-white.png"
+        },
+        {
+            "id": "2k",
+            "label": "2k",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.387
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-white.png"
+        },
+        {
+            "id": "1k",
+            "label": "1k",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.463
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-red.png"
+        },
+        {
+            "id": "500Hz",
+            "label": "500Hz",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.533
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-white.png"
+        },
+        {
+            "id": "250Hz",
+            "label": "250Hz",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.602
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-white.png"
+        },
+        {
+            "id": "125Hz",
+            "label": "125Hz",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.676
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-white.png"
+        },
+        {
+            "id": "63Hz",
+            "label": "63Hz",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.747
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-white.png"
+        },
+        {
+            "id": "31Hz",
+            "label": "31Hz",
+            "type": "fader",
+            "position": {
+                "x": 0.467,
+                "y": 0.819
+            },
+            "value": 0.5,
+            "length": 88,
+            "orientation": "horizontal",
+            "image": "assets/controls/faders/slider-sm-white.png"
+        },
+        {
+            "id": "eq-in",
+            "label": "EQ In",
+            "type": "button",
+            "position": {
+                "x": 0.48,
+                "y": 0.865
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "On",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 20,
+                        "height": 20
+                    },
+                    "label": "On"
+                },
+                {
+                    "value": "Off",
+                    "frame": {
+                        "x": 0,
+                        "y": 20,
+                        "width": 20,
+                        "height": 20
+                    },
+                    "label": "Off"
+                }
+            ],
+            "image": "assets/controls/buttons/button-sm-white.png"
+        }
+    ]
+}

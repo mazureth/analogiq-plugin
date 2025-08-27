@@ -84,9 +84,12 @@ public:
     juce::String getRemoteLibraryStatus() const;
     bool isRemoteLibraryAvailable() const;
     juce::Time getLastRemoteSyncTime() const;
-    
+
     // Callback for when the library is updated
     std::function<void()> onLibraryUpdated;
+
+    // Lazy initialization
+    bool initialized;
 
 private:
     struct GearCategory
@@ -137,6 +140,7 @@ private:
     bool autoBackupEnabled;
 
     // Private helper methods
+    void initializeLazy();
     void initializeLibraryDirectory();
     void loadGearMetadata();
     void saveGearMetadata();
@@ -145,7 +149,7 @@ private:
     void loadRemoteGearLibrary();
     void createSampleGearItems();
     void createCategoriesSection();
-    
+
     // Helper methods for remote gear loading
     bool loadGearFromCache(const juce::String &cachePath);
     void fetchRemoteGearAsync(const juce::String &remoteUrl);
@@ -155,6 +159,8 @@ private:
     bool parseRemoteGearLibrary(const juce::String &jsonData);
     bool downloadGearAsset(const juce::String &gearId, const juce::String &assetUrl, const juce::String &assetType);
     bool validateRemoteGearData(const juce::var &gearObject);
+    bool loadGearThumbnail(GearItem *gearItem);
+    void refreshAllThumbnails();
     void updateRemoteLibraryStatus(bool available, const juce::String &error = "", int httpCode = 0);
     bool shouldRefreshRemoteLibrary() const;
     juce::String getRemoteLibraryUrl() const;

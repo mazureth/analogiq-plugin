@@ -1,0 +1,224 @@
+{
+    "units": [
+        {
+            "unitId": "api-2500",
+            "name": "API 2500 Bus Compressor",
+            "manufacturer": "Automated Processes Inc.",
+            "category": "compressor",
+            "version": "1.0.0",
+            "schemaPath": "units/api-2500-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/api-2500-1.0.0.png",
+            "tags": [
+                "API",
+                "19-inch-rack",
+                "compressor",
+                "bus",
+                "dynamics",
+                "Thrust"
+            ]
+        },
+        {
+            "unitId": "alesis-3630",
+            "name": "Alesis 3630 Dual Compressor",
+            "manufacturer": "Alesis",
+            "category": "compressor",
+            "version": "1.0.0",
+            "schemaPath": "units/alesis-3630-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/alesis-3630-compressor-1.0.0.png",
+            "tags": [
+                "Alesis",
+                "19-inch-rack",
+                "compressor",
+                "dual-mono",
+                "gate",
+                "hardware",
+                "dynamics",
+                "electronic"
+            ]
+        },
+        {
+            "unitId": "black-lion-b172a",
+            "name": "Black Lion Audio B172A Dual Compressor",
+            "manufacturer": "Black Lion Audio",
+            "category": "compressor",
+            "version": "1.0.0",
+            "schemaPath": "units/black-lion-b172a-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/bla-b172a-1.0.0.png",
+            "tags": [
+                "Black Lion Audio",
+                "500 series",
+                "compressor",
+                "1176",
+                "LA-2A",
+                "FET",
+                "optical"
+            ]
+        },
+        {
+            "unitId": "dbx-560a",
+            "name": "DBX 560A 500 Series Compressor",
+            "manufacturer": "DBX Professional",
+            "category": "compressor",
+            "version": "1.0.0",
+            "schemaPath": "units/dbx-560a-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/dbx-560a-1.0.0.png",
+            "tags": [
+                "DBX",
+                "500 series",
+                "compressor",
+                "VCA",
+                "dynamics"
+            ]
+        },
+        {
+            "unitId": "empirical-labs-distressor-el8",
+            "name": "Empirical Labs Distressor EL8",
+            "manufacturer": "Empirical Labs",
+            "category": "compressor",
+            "version": "1.0.0",
+            "schemaPath": "units/empirical-labs-distressor-el8-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/eli-distressor-el8-compressor-1.0.0.png",
+            "tags": [
+                "Empirical Labs",
+                "19-inch-rack",
+                "compressor",
+                "distressor",
+                "dynamics",
+                "distortion"
+            ]
+        },
+        {
+            "unitId": "la2a-compressor",
+            "name": "LA-2A Tube Compressor",
+            "manufacturer": "Universal Audio",
+            "category": "compressor",
+            "version": "1.0.0",
+            "schemaPath": "units/la2a-compressor-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.png",
+            "tags": [
+                "compressor",
+                "tube",
+                "optical",
+                "vintage"
+            ]
+        },
+        {
+            "unitId": "warm-audio-bus-comp",
+            "name": "Warm Audio Bus Comp",
+            "manufacturer": "Warm Audio",
+            "category": "compressor",
+            "version": "1.0.0",
+            "schemaPath": "units/warm-audio-bus-comp-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/warm-bus-comp-1.0.0.png",
+            "tags": [
+                "Warm Audio",
+                "19-inch-rack",
+                "compressor",
+                "bus",
+                "dynamics",
+                "SSL Style"
+            ]
+        },
+        {
+            "unitId": "bbe-sonic-maximizer-882i",
+            "name": "BBE Sonic Maximizer",
+            "manufacturer": "BBE Sound",
+            "category": "enhancer",
+            "version": "1.0.0",
+            "schemaPath": "units/bbe-sonic-maximizer-882i-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/bbe-sonic-maximizer-882i-1.0.0.png",
+            "tags": [
+                "BBE",
+                "19-inch-rack",
+                "enhancer",
+                "maximizer",
+                "hardware",
+                "presence",
+                "air"
+            ]
+        },
+        {
+            "unitId": "api-560-eq",
+            "name": "API 560 10-Band Graphic Equalizer",
+            "manufacturer": "Automated Processes Inc.",
+            "category": "equalizer",
+            "version": "1.0.0",
+            "schemaPath": "units/api-560-eq-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/api-560-eq-1.0.0.png",
+            "tags": [
+                "API",
+                "500 series",
+                "graphic EQ",
+                "10-band"
+            ]
+        },
+        {
+            "unitId": "lindell-pex-500",
+            "name": "Lindell PEX-500 EQ",
+            "manufacturer": "Lindell Audio",
+            "category": "equalizer",
+            "version": "1.0.0",
+            "schemaPath": "units/lindell-pex-500-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/lindell-pex-500-1.0.0.png",
+            "tags": [
+                "Lindell",
+                "500 series",
+                "equalizer",
+                "Pultec",
+                "passive"
+            ]
+        },
+        {
+            "unitId": "maag-eq4",
+            "name": "Maag EQ4 500 Series Equalizer",
+            "manufacturer": "Maag Audio",
+            "category": "equalizer",
+            "version": "1.0.0",
+            "schemaPath": "units/maag-eq4-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/maag-eq4-1.0.0.png",
+            "tags": [
+                "Maag",
+                "500 series",
+                "equalizer",
+                "5-band",
+                "Air band",
+                "Reinhold Maag"
+            ]
+        },
+        {
+            "unitId": "trident-80b-eq",
+            "name": "Trident 80B 500 Series EQ",
+            "manufacturer": "Trident Audio Developments",
+            "category": "equalizer",
+            "version": "1.0.0",
+            "schemaPath": "units/trident-80b-eq-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/trident-80b-eq-1.0.0.png",
+            "tags": [
+                "Trident",
+                "500 series",
+                "equalizer",
+                "4-band",
+                "British EQ"
+            ]
+        },
+        {
+            "unitId": "warm-audio-tube-eq",
+            "name": "Warm Audio Tube EQ",
+            "manufacturer": "Warm Audio",
+            "category": "equalizer",
+            "version": "1.0.0",
+            "schemaPath": "units/warm-audio-tube-eq-1.0.0.json",
+            "thumbnailImage": "assets/thumbnails/warm-tube-eq-1.0.0.png",
+            "tags": [
+                "Warm Audio",
+                "19-inch-rack",
+                "equalizer",
+                "Pultec",
+                "EQP-1A",
+                "passive",
+                "tube",
+                "vintage"
+            ]
+        }
+    ]
+}

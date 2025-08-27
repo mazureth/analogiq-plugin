@@ -6,8 +6,21 @@
 CacheManager::CacheManager(IFileSystem &fs)
     : fileSystem(fs), maxCacheSize(100 * 1024 * 1024) // 100MB default
       ,
-      currentCacheSize(0)
+      currentCacheSize(0), initialized(false)
 {
+    // Lazy initialization - no file system operations during construction
+}
+
+CacheManager::~CacheManager()
+{
+    saveCacheIndex();
+}
+
+void CacheManager::initializeLazy()
+{
+    if (initialized)
+        return;
+
     initializeCacheDirectory();
     loadCacheIndex();
 
@@ -18,11 +31,8 @@ CacheManager::CacheManager(IFileSystem &fs)
     // Load favorites and recently used data
     loadFavorites();
     loadRecentlyUsed();
-}
 
-CacheManager::~CacheManager()
-{
-    saveCacheIndex();
+    initialized = true;
 }
 
 void CacheManager::initializeCacheDirectory()
@@ -32,7 +42,7 @@ void CacheManager::initializeCacheDirectory()
     {
         fileSystem.createDirectory(cacheRootDir);
     }
-    
+
     // Create Assets subfolder for image cache files
     assetsDir = fileSystem.joinPath(cacheRootDir, "Assets");
     if (!fileSystem.directoryExists(assetsDir))
@@ -58,6 +68,7 @@ juce::String CacheManager::generateAssetPath(const juce::String &assetId)
 
 bool CacheManager::isCached(const juce::String &assetId)
 {
+    initializeLazy();
     return cacheEntries.find(assetId) != cacheEntries.end() &&
            fileSystem.fileExists(cacheEntries[assetId].filePath);
 }
@@ -74,6 +85,7 @@ juce::String CacheManager::getCachedPath(const juce::String &assetId)
 
 bool CacheManager::addToCache(const juce::String &assetId, const juce::MemoryBlock &data)
 {
+    initializeLazy();
     if (assetId.isEmpty())
         return false;
 
@@ -109,6 +121,7 @@ bool CacheManager::addToCache(const juce::String &assetId, const juce::MemoryBlo
 
 bool CacheManager::addToCache(const juce::String &assetId, const juce::Image &image)
 {
+    initializeLazy();
     if (assetId.isEmpty() || image.isNull())
         return false;
 
@@ -457,6 +470,7 @@ bool CacheManager::isInFavorites(const juce::String &unitId)
 
 juce::StringArray CacheManager::getFavorites()
 {
+    initializeLazy();
     return favorites;
 }
 
@@ -499,6 +513,7 @@ bool CacheManager::isInRecentlyUsed(const juce::String &unitId)
 
 juce::StringArray CacheManager::getRecentlyUsed(int maxCount)
 {
+    initializeLazy();
     if (maxCount <= 0 || maxCount > MAX_RECENTLY_USED)
         maxCount = MAX_RECENTLY_USED;
 

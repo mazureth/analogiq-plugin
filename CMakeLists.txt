@@ -85,6 +85,8 @@ target_include_directories(AnalogIQ PRIVATE
 
 # Add source files - MVC architecture will be added here as components are implemented
 target_sources(AnalogIQ PRIVATE
+    # Shared sources
+    Source/Shared/RemoteConfig.cpp
     # Model layer sources
     Source/Model/FileSystem.cpp
     Source/Model/NetworkFetcher.cpp

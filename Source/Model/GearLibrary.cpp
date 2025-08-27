@@ -2,6 +2,7 @@
 #include "GearItem.h"
 #include "../Shared/INetworkFetcher.h"
 #include "../Shared/ICacheManager.h"
+#include "../Shared/RemoteConfig.h"
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <juce_data_structures/juce_data_structures.h>
@@ -9,9 +10,23 @@
 GearLibrary::GearLibrary(IFileSystem &fs, ICacheManager &cm, INetworkFetcher &nf)
     : fileSystem(fs), cacheManager(cm), networkFetcher(nf), maxGearItems(1000), maxStorageSize(1 * 1024 * 1024 * 1024) // 1GB default
       ,
-      autoBackupEnabled(true)
+      autoBackupEnabled(true), initialized(false)
 {
-    juce::Logger::writeToLog("GearLibrary: Constructor starting");
+    // Lazy initialization - no file system or network operations during construction
+}
+
+GearLibrary::~GearLibrary()
+{
+    saveGearMetadata();
+    saveCategories();
+}
+
+void GearLibrary::initializeLazy()
+{
+    if (initialized)
+        return;
+
+    juce::Logger::writeToLog("GearLibrary: Lazy initialization starting");
     try
     {
         juce::Logger::writeToLog("GearLibrary: Calling initializeLibraryDirectory");
@@ -30,20 +45,15 @@ GearLibrary::GearLibrary(IFileSystem &fs, ICacheManager &cm, INetworkFetcher &nf
         loadRemoteGearLibrary(); // Load gear from remote source (no fallback items)
         juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary completed");
 
-        juce::Logger::writeToLog("GearLibrary: Constructor completed successfully");
+        juce::Logger::writeToLog("GearLibrary: Lazy initialization completed successfully");
+        initialized = true;
     }
     catch (...)
     {
-        juce::Logger::writeToLog("GearLibrary: Constructor caught exception - continuing with empty library");
+        juce::Logger::writeToLog("GearLibrary: Lazy initialization caught exception - continuing with empty library");
         // If initialization fails, continue with empty library
         // This prevents crashes when file system is not available
     }
-}
-
-GearLibrary::~GearLibrary()
-{
-    saveGearMetadata();
-    saveCategories();
 }
 
 void GearLibrary::initializeLibraryDirectory()
@@ -88,8 +98,8 @@ void GearLibrary::loadRemoteGearLibrary()
 {
     juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary starting");
 
-    // Load gear from remote GitHub repository
-    juce::String remoteUrl = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main/units/index.json";
+    // Load gear from remote GitHub repository using configuration
+    juce::String remoteUrl = RemoteConfig::getGearLibraryIndexUrl();
     juce::Logger::writeToLog("GearLibrary: Remote URL: " + remoteUrl);
 
     // Step 1: Try to load from local cache first
@@ -364,6 +374,10 @@ bool GearLibrary::loadGearFromCache(const juce::String &cachePath)
         }
 
         juce::Logger::writeToLog("GearLibrary: Successfully loaded " + juce::String(gearItems.size()) + " items from cache");
+
+        // Refresh all thumbnails after loading from cache
+        refreshAllThumbnails();
+
         return true;
     }
     catch (...)
@@ -409,9 +423,8 @@ void GearLibrary::fetchRemoteGearAsync(const juce::String &remoteUrl)
 
             // Parse and add new gear items
             int newItemsCount = 0;
-            for (int i = 0; i < gearArray->size(); ++i)
+            for (auto &gearObject : *gearArray)
             {
-                auto gearObject = gearArray[i];
                 if (auto gearItem = parseGearFromJson(gearObject))
                 {
                     // Check if this gear item already exists
@@ -518,6 +531,7 @@ std::unique_ptr<GearItem> GearLibrary::parseGearFromJson(const juce::var &gearOb
     gearItem->categoryString = category;
     gearItem->version = version;
     gearItem->schemaPath = schemaPath;
+    gearItem->imageUrl = thumbnailImage; // Set the imageUrl for thumbnail caching
     gearItem->tags = tags;
 
     // Map category string to enum (copying legacy system exactly)
@@ -542,6 +556,12 @@ std::unique_ptr<GearItem> GearLibrary::parseGearFromJson(const juce::var &gearOb
     {
         // TODO: Implement controls parsing when needed
         juce::Logger::writeToLog("GearLibrary: Controls found but parsing not yet implemented");
+    }
+
+    // Load thumbnail if imageUrl is available
+    if (!gearItem->imageUrl.isEmpty())
+    {
+        loadGearThumbnail(gearItem.get());
     }
 
     return gearItem;
@@ -580,6 +600,7 @@ void GearLibrary::setRemoteLibraryUrl(const juce::String &url)
 
 bool GearLibrary::addGearItem(const GearItem &gearItem)
 {
+    initializeLazy();
     if (gearItem.unitId.isEmpty())
         return false;
 
@@ -686,6 +707,7 @@ bool GearLibrary::gearItemExists(const juce::String &gearId)
 
 juce::Array<GearItem *> GearLibrary::getAllGearItems()
 {
+    initializeLazy();
     return gearItems;
 }
 
@@ -1249,5 +1271,112 @@ void GearLibrary::saveCategories()
     catch (...)
     {
         // If saving fails, continue without saving
+    }
+}
+
+bool GearLibrary::loadGearThumbnail(GearItem *gearItem)
+{
+    juce::Logger::writeToLog("GearLibrary::loadGearThumbnail called for " + gearItem->unitId);
+
+    if (!gearItem || gearItem->imageUrl.isEmpty())
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - gearItem is null or imageUrl is empty");
+        return false;
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - imageUrl: '" + gearItem->imageUrl + "'");
+
+    // Check if thumbnail is already cached
+    if (cacheManager.isCached("thumb_" + gearItem->unitId))
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Found cached thumbnail for " + gearItem->unitId);
+        gearItem->thumbnailImage = cacheManager.getCachedImage("thumb_" + gearItem->unitId);
+        bool success = !gearItem->thumbnailImage.isNull();
+        juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Cached thumbnail load " + juce::String(success ? "SUCCESS" : "FAILED"));
+
+        // If cached thumbnail load failed, clear the cache entry and fetch again
+        if (!success)
+        {
+            juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Cached thumbnail is corrupted, clearing cache entry");
+            cacheManager.clearCache("thumb_" + gearItem->unitId);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - No cached thumbnail, fetching from remote");
+
+    // Convert relative thumbnail path to absolute URL
+    juce::String absoluteThumbnailUrl = RemoteConfig::getThumbnailUrl(gearItem->imageUrl);
+    juce::Logger::writeToLog("GearLibrary: Loading thumbnail from: " + absoluteThumbnailUrl);
+
+    // Try to fetch thumbnail from remote
+    try
+    {
+        juce::URL imageUrl(absoluteThumbnailUrl);
+        bool success = false;
+        auto imageData = networkFetcher.fetchRemoteGearLibrary(imageUrl, success);
+
+        juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Remote fetch " + juce::String(success ? "SUCCESS" : "FAILED") +
+                                 " - Data size: " + juce::String(imageData.getNumBytesAsUTF8()));
+
+        if (success && !imageData.isEmpty())
+        {
+            // Convert to MemoryBlock and cache
+            juce::MemoryBlock imageBlock;
+            imageBlock.append(imageData.toRawUTF8(), imageData.getNumBytesAsUTF8());
+
+            if (cacheManager.cacheBinaryData("thumb_" + gearItem->unitId, imageBlock))
+            {
+                juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Successfully cached binary data");
+                // Load the cached image
+                gearItem->thumbnailImage = cacheManager.getCachedImage("thumb_" + gearItem->unitId);
+                bool finalSuccess = !gearItem->thumbnailImage.isNull();
+                juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Final thumbnail load " + juce::String(finalSuccess ? "SUCCESS" : "FAILED"));
+                return finalSuccess;
+            }
+            else
+            {
+                juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Failed to cache binary data");
+            }
+        }
+    }
+    catch (...)
+    {
+        juce::Logger::writeToLog("GearLibrary: Exception while loading thumbnail for " + gearItem->unitId);
+    }
+
+    // Create placeholder if loading fails
+    juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Creating placeholder image for " + gearItem->unitId);
+    gearItem->createPlaceholderImage();
+    return false;
+}
+
+void GearLibrary::refreshAllThumbnails()
+{
+    juce::Logger::writeToLog("GearLibrary::refreshAllThumbnails - Starting thumbnail refresh for " + juce::String(gearItems.size()) + " items");
+
+    for (auto *gearItem : gearItems)
+    {
+        if (gearItem && !gearItem->imageUrl.isEmpty())
+        {
+            juce::Logger::writeToLog("GearLibrary::refreshAllThumbnails - Refreshing thumbnail for " + gearItem->unitId);
+
+            // Clear any existing cached thumbnail to force a fresh fetch
+            cacheManager.clearCache("thumb_" + gearItem->unitId);
+
+            // Load the thumbnail (this will fetch from remote if not cached)
+            loadGearThumbnail(gearItem);
+        }
+    }
+
+    juce::Logger::writeToLog("GearLibrary::refreshAllThumbnails - Completed thumbnail refresh");
+
+    // Notify listeners that the library has been updated
+    if (onLibraryUpdated)
+    {
+        onLibraryUpdated();
     }
 }

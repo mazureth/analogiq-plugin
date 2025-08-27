@@ -23,17 +23,17 @@ This document outlines the remaining work required to achieve 100% coverage of A
 **Priority: HIGH - Core legacy feature**
 
 #### 1.1 Network Integration
-- [ ] Implement full remote gear library fetching via NetworkFetcher
-- [ ] Add gear library update checking and synchronization
-- [ ] Implement gear item download with progress tracking
-- [ ] Add gear library refresh mechanisms
-- [ ] Handle network failures and offline fallback
+- [x] Implement full remote gear library fetching via NetworkFetcher
+- [x] Add gear library update checking and synchronization
+- [x] Implement gear item download with progress tracking
+- [x] Add gear library refresh mechanisms
+- [x] Handle network failures and offline fallback
 
 #### 1.2 Remote Gear Metadata
-- [ ] Fetch complete gear specifications from remote sources
-- [ ] Download gear images and faceplates
-- [ ] Implement gear compatibility checking
-- [ ] Add gear version management and updates
+- [x] Fetch complete gear specifications from remote sources
+- [x] Download gear images and faceplates
+- [x] Implement gear compatibility checking
+- [x] Add gear version management and updates
 
 ### 2. ADVANCED GEAR LIBRARY FEATURES (30% → 100%) ✅ **COMPLETED**
 **Priority: HIGH - Core legacy feature**
@@ -215,3 +215,26 @@ This document outlines the remaining work required to achieve 100% coverage of A
 The remaining 25% represents the difference between a working foundation and a complete legacy replacement. This work must focus on **functional completeness**, not architectural improvements. The goal is to achieve 100% legacy functionality coverage while maintaining the superior MVC architecture we've built.
 
 **Remember: Architecture is complete. Now we need features.**
+
+## 8. BUILD SYSTEM REFACTORING AND VALIDATION (NEW)
+**Priority: LOW - Infrastructure maintenance**
+
+#### 8.1 Build System Investigation
+- [ ] Investigate and document current CMake structure across Model/View/Controller/Shared folders
+- [ ] Confirm all source files are being compiled through appropriate targets
+- [ ] Identify any missing source file inclusions or duplicate compilation
+- [ ] Document the relationship between main CMakeLists.txt and subdirectory CMakeLists.txt files
+
+#### 8.2 Build System Consolidation
+- [ ] Evaluate whether current multi-target approach is optimal for maintainability
+- [ ] Consider consolidating to single target with proper source organization
+- [ ] Ensure consistent include paths and dependency management
+- [ ] Validate that all necessary files are included in final plugin binary
+
+#### 8.3 Build System Documentation
+- [ ] Document the complete build process and target relationships
+- [ ] Create clear guidelines for adding new source files
+- [ ] Document any special compilation requirements or flags
+- [ ] Ensure build system is maintainable for future developers
+
+**Note**: This section is lower priority and should be addressed after core functionality is complete. The current system works but may benefit from consolidation for long-term maintainability.

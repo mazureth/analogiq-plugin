@@ -3,17 +3,26 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 PresetManager::PresetManager(IFileSystem &fs)
-    : fileSystem(fs), currentPresetName("Default")
+    : fileSystem(fs), currentPresetName("Default"), initialized(false)
 {
-    initializePresetsDirectory();
-    loadPresetMetadata();
-    loadCategories();
+    // Lazy initialization - no file system operations during construction
 }
 
 PresetManager::~PresetManager()
 {
     savePresetMetadata();
     saveCategories();
+}
+
+void PresetManager::initializeLazy()
+{
+    if (initialized) return;
+    
+    initializePresetsDirectory();
+    loadPresetMetadata();
+    loadCategories();
+    
+    initialized = true;
 }
 
 void PresetManager::initializePresetsDirectory()
@@ -51,6 +60,7 @@ juce::String PresetManager::sanitizePresetName(const juce::String &presetName)
 
 bool PresetManager::savePreset(const juce::String &presetName, const juce::AudioProcessorValueTreeState &state)
 {
+    initializeLazy();
     if (presetName.isEmpty())
         return false;
 
@@ -94,6 +104,7 @@ bool PresetManager::savePreset(const juce::String &presetName, const juce::Audio
 
 bool PresetManager::loadPreset(const juce::String &presetName, juce::AudioProcessorValueTreeState &state)
 {
+    initializeLazy();
     if (presetName.isEmpty() || !presetExists(presetName))
         return false;
 
@@ -151,6 +162,7 @@ bool PresetManager::presetExists(const juce::String &presetName)
 
 juce::StringArray PresetManager::getPresetNames()
 {
+    initializeLazy();
     juce::StringArray names;
     for (auto &preset : presetMetadata)
     {

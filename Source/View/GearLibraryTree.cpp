@@ -35,21 +35,21 @@ void GearLibraryTree::paint(juce::Graphics &g)
 {
     // Debug: Draw a visible background to see if the component is being rendered
     g.fillAll(juce::Colours::red); // Bright red background for debugging
-    
+
     // Draw a border to see the component bounds
     g.setColour(juce::Colours::white);
     g.drawRect(getLocalBounds(), 2);
-    
+
     // Draw some debug text
     g.setColour(juce::Colours::white);
     g.setFont(16.0f);
-    g.drawText("GearLibraryTree - Bounds: " + getLocalBounds().toString(), 
+    g.drawText("GearLibraryTree - Bounds: " + getLocalBounds().toString(),
                10, 10, getWidth() - 20, 20, juce::Justification::left);
-    
+
     // Draw tree view info
     if (treeView)
     {
-        g.drawText("TreeView exists - Root item: " + juce::String(rootItem ? "YES" : "NO"), 
+        g.drawText("TreeView exists - Root item: " + juce::String(rootItem ? "YES" : "NO"),
                    10, 35, getWidth() - 20, 20, juce::Justification::left);
     }
     else
@@ -61,7 +61,7 @@ void GearLibraryTree::paint(juce::Graphics &g)
 void GearLibraryTree::resized()
 {
     juce::Logger::writeToLog("GearLibraryTree::resized() called with bounds: " + getLocalBounds().toString());
-    
+
     if (treeView)
     {
         treeView->setBounds(getLocalBounds());
@@ -351,6 +351,47 @@ GearTreeItem::~GearTreeItem()
 void GearTreeItem::paintItem(juce::Graphics &g, int width, int height)
 {
     auto area = juce::Rectangle<int>(0, 0, width, height);
+
+    // For gear items, draw thumbnail if available
+    if (itemType == ItemType::Gear && gearItem)
+    {
+        // Debug: Log thumbnail status
+        juce::Logger::writeToLog("GearTreeItem::paintItem - " + gearItem->name +
+                                 " - thumbnailImage.isNull: " + juce::String(gearItem->thumbnailImage.isNull() ? "YES" : "NO") +
+                                 " - imageUrl: '" + gearItem->imageUrl + "'");
+
+        // Load thumbnail if not already loaded
+        if (gearItem->thumbnailImage.isNull() && !gearItem->imageUrl.isEmpty())
+        {
+            // This should be called asynchronously, but for now we'll do it here
+            // In a real implementation, this would be queued and done in background
+            juce::Logger::writeToLog("GearTreeItem::paintItem - Attempting to load thumbnail for " + gearItem->name);
+        }
+
+        // Draw thumbnail if available
+        if (!gearItem->thumbnailImage.isNull())
+        {
+            juce::Logger::writeToLog("GearTreeItem::paintItem - Drawing thumbnail for " + gearItem->name);
+            int thumbnailSize = height - 4; // Leave 2px margin
+            auto thumbnailArea = juce::Rectangle<int>(2, 2, thumbnailSize, thumbnailSize);
+
+            // Draw thumbnail with rounded corners
+            g.setColour(juce::Colours::darkgrey);
+            g.fillRoundedRectangle(thumbnailArea.toFloat(), 3.0f);
+
+            g.drawImageWithin(gearItem->thumbnailImage,
+                              thumbnailArea.getX(), thumbnailArea.getY(),
+                              thumbnailArea.getWidth(), thumbnailArea.getHeight(),
+                              juce::RectanglePlacement::centred);
+
+            // Adjust text area to account for thumbnail
+            area.removeFromLeft(thumbnailSize + 8); // thumbnail + margin
+        }
+        else
+        {
+            juce::Logger::writeToLog("GearTreeItem::paintItem - No thumbnail available for " + gearItem->name);
+        }
+    }
 
     // Set text color based on item type
     g.setColour(getItemColour());

@@ -1,0 +1,252 @@
+{
+    "unitId": "lindell-pex-500",
+    "name": "Lindell PEX-500 EQ",
+    "manufacturer": "Lindell Audio",
+    "tags": [
+        "Lindell",
+        "500 series",
+        "equalizer",
+        "Pultec",
+        "passive"
+    ],
+    "version": "1.0.0",
+    "category": "equalizer",
+    "formFactor": "500-series",
+    "faceplateImage": "assets/faceplates/lindell-pex-500-1.0.0.png",
+    "thumbnailImage": "assets/thumbnails/lindell-pex-500-1.0.0.png",
+    "width": 150,
+    "height": 525,
+    "controls": [
+        {
+            "id": "hi-atten",
+            "label": "Hi Atten",
+            "type": "knob",
+            "position": {
+                "x": 0.489,
+                "y": 0.127
+            },
+            "value": 30,
+            "startAngle": 30,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/lindell-bakelite-sm-black.png"
+        },
+        {
+            "id": "hi-boost",
+            "label": "Hi Boost",
+            "type": "knob",
+            "position": {
+                "x": 0.448,
+                "y": 0.293
+            },
+            "value": 30,
+            "startAngle": 30,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/lindell-bakelite-sm-black.png"
+        },
+        {
+            "id": "bandwidth",
+            "label": "Bandwidth",
+            "type": "knob",
+            "position": {
+                "x": 0.489,
+                "y": 0.46
+            },
+            "value": 30,
+            "startAngle": 30,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/lindell-bakelite-sm-black.png"
+        },
+        {
+            "id": "low-boost",
+            "label": "Low Boost",
+            "type": "knob",
+            "position": {
+                "x": 0.448,
+                "y": 0.615
+            },
+            "value": 30,
+            "startAngle": 30,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/lindell-bakelite-sm-black.png"
+        },
+        {
+            "id": "low-atten",
+            "label": "Low Atten",
+            "type": "knob",
+            "position": {
+                "x": 0.489,
+                "y": 0.785
+            },
+            "value": 30,
+            "startAngle": 30,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/lindell-bakelite-sm-black.png"
+        },
+        {
+            "id": "hi-atten-freq",
+            "label": "Hi Atten Freq",
+            "type": "switch",
+            "position": {
+                "x": 0.455,
+                "y": 0.165
+            },
+            "options": [
+                {
+                    "value": "10kHz",
+                    "frame": {
+                        "x": 0,
+                        "y": 74,
+                        "width": 37,
+                        "height": 40
+                    },
+                    "label": "10kHz"
+                },
+                {
+                    "value": "15kHz",
+                    "frame": {
+                        "x": 0,
+                        "y": 36,
+                        "width": 37,
+                        "height": 40
+                    },
+                    "label": "15kHz"
+                },
+                {
+                    "value": "20kHz",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 37,
+                        "height": 40
+                    },
+                    "label": "20kHz"
+                }
+            ],
+            "currentIndex": 1,
+            "orientation": "vertical",
+            "image": "assets/controls/switches/3pos-sm-chrome.png"
+        },
+        {
+            "id": "hi-boost-freq",
+            "label": "Hi Boost Freq",
+            "type": "switch",
+            "position": {
+                "x": 0.518,
+                "y": 0.34
+            },
+            "options": [
+                {
+                    "value": "6kHz",
+                    "frame": {
+                        "x": 0,
+                        "y": 74,
+                        "width": 37,
+                        "height": 40
+                    },
+                    "label": "6kHz"
+                },
+                {
+                    "value": "10kHz",
+                    "frame": {
+                        "x": 0,
+                        "y": 37,
+                        "width": 37,
+                        "height": 40
+                    },
+                    "label": "10kHz"
+                },
+                {
+                    "value": "16kHz",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 37,
+                        "height": 40
+                    },
+                    "label": "16kHz"
+                }
+            ],
+            "currentIndex": 1,
+            "orientation": "vertical",
+            "image": "assets/controls/switches/3pos-sm-chrome.png"
+        },
+        {
+            "id": "low-freq",
+            "label": "Low Freq",
+            "type": "switch",
+            "position": {
+                "x": 0.518,
+                "y": 0.66
+            },
+            "options": [
+                {
+                    "value": "30Hz",
+                    "frame": {
+                        "x": 0,
+                        "y": 74,
+                        "width": 37,
+                        "height": 40
+                    },
+                    "label": "30Hz"
+                },
+                {
+                    "value": "60Hz",
+                    "frame": {
+                        "x": 0,
+                        "y": 37,
+                        "width": 37,
+                        "height": 40
+                    },
+                    "label": "60Hz"
+                },
+                {
+                    "value": "100Hz",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 37,
+                        "height": 40
+                    },
+                    "label": "100Hz"
+                }
+            ],
+            "currentIndex": 1,
+            "orientation": "vertical",
+            "image": "assets/controls/switches/3pos-sm-chrome.png"
+        },
+        {
+            "id": "bypass",
+            "label": "Bypass",
+            "type": "button",
+            "position": {
+                "x": 0.452,
+                "y": 0.856
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "Out",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 27,
+                        "height": 27
+                    },
+                    "label": "Out"
+                },
+                {
+                    "value": "In",
+                    "frame": {
+                        "x": 0,
+                        "y": 27,
+                        "width": 27,
+                        "height": 27
+                    },
+                    "label": "In"
+                }
+            ],
+            "image": "assets/controls/buttons/button-round-sm-green.png"
+        }
+    ]
+}

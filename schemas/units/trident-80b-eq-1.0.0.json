@@ -1,0 +1,235 @@
+{
+    "unitId": "trident-80b-eq",
+    "name": "Trident 80B 500 Series EQ",
+    "manufacturer": "Trident Audio Developments",
+    "tags": [
+        "Trident",
+        "500 series",
+        "equalizer",
+        "4-band",
+        "British EQ"
+    ],
+    "version": "1.0.0",
+    "category": "equalizer",
+    "formFactor": "500-series",
+    "faceplateImage": "assets/faceplates/trident-80b-eq-1.0.0.png",
+    "thumbnailImage": "assets/thumbnails/trident-80b-eq-1.0.0.png",
+    "width": 150,
+    "height": 525,
+    "controls": [
+        {
+            "id": "hf-gain",
+            "label": "HF Gain",
+            "type": "knob",
+            "position": {
+                "x": 0.508,
+                "y": 0.167
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/collet-sm-black.png"
+        },
+        {
+            "id": "hmf-gain",
+            "label": "HMF Gain",
+            "type": "knob",
+            "position": {
+                "x": 0.508,
+                "y": 0.36
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/collet-sm-green.png"
+        },
+        {
+            "id": "hmf-freq",
+            "label": "HMF Freq",
+            "type": "knob",
+            "position": {
+                "x": 0.447,
+                "y": 0.263
+            },
+            "value": 180,
+            "startAngle": 45,
+            "endAngle": 315,
+            "image": "assets/controls/knobs/collet-sm-red.png"
+        },
+        {
+            "id": "lmf-gain",
+            "label": "LMF Gain",
+            "type": "knob",
+            "position": {
+                "x": 0.508,
+                "y": 0.545
+            },
+            "value": 180,
+            "startAngle": 45,
+            "endAngle": 315,
+            "image": "assets/controls/knobs/collet-sm-green.png"
+        },
+        {
+            "id": "lmf-freq",
+            "label": "LMF Freq",
+            "type": "knob",
+            "position": {
+                "x": 0.447,
+                "y": 0.452
+            },
+            "value": 180,
+            "startAngle": 45,
+            "endAngle": 315,
+            "image": "assets/controls/knobs/collet-sm-red.png"
+        },
+        {
+            "id": "lf-gain",
+            "label": "LF Gain",
+            "type": "knob",
+            "position": {
+                "x": 0.508,
+                "y": 0.72
+            },
+            "value": 180,
+            "startAngle": 45,
+            "endAngle": 315,
+            "image": "assets/controls/knobs/collet-sm-black.png"
+        },
+        {
+            "id": "hpf",
+            "label": "HPF",
+            "type": "button",
+            "position": {
+                "x": 0.471,
+                "y": 0.598
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "Off",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 29,
+                        "height": 29
+                    },
+                    "label": "Off"
+                },
+                {
+                    "value": "50Hz",
+                    "frame": {
+                        "x": 0,
+                        "y": 29,
+                        "width": 29,
+                        "height": 29
+                    },
+                    "label": "50Hz"
+                }
+            ],
+            "image": "assets/controls/buttons/button-sm-glow.png"
+        },
+        {
+            "id": "low-freq",
+            "label": "Low Freq",
+            "type": "button",
+            "position": {
+                "x": 0.471,
+                "y": 0.689
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "60Hz",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 29,
+                        "height": 29
+                    },
+                    "label": "60Hz"
+                },
+                {
+                    "value": "120Hz",
+                    "frame": {
+                        "x": 0,
+                        "y": 29,
+                        "width": 29,
+                        "height": 29
+                    },
+                    "label": "120Hz"
+                }
+            ],
+            "image": "assets/controls/buttons/button-sm-glow.png"
+        },
+        {
+            "id": "hi-freq",
+            "label": "Hi Freq",
+            "type": "button",
+            "position": {
+                "x": 0.471,
+                "y": 0.14
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "8kHz",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 29,
+                        "height": 29
+                    },
+                    "label": "8kHz"
+                },
+                {
+                    "value": "12kHz",
+                    "frame": {
+                        "x": 0,
+                        "y": 29,
+                        "width": 29,
+                        "height": 29
+                    },
+                    "label": "12kHz"
+                }
+            ],
+            "image": "assets/controls/buttons/button-sm-glow.png"
+        },
+        {
+            "id": "eq-in",
+            "label": "EQ IN",
+            "type": "button",
+            "position": {
+                "x": 0.471,
+                "y": 0.842
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "Out",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 29,
+                        "height": 29
+                    },
+                    "label": "Out"
+                },
+                {
+                    "value": "In",
+                    "frame": {
+                        "x": 0,
+                        "y": 29,
+                        "width": 29,
+                        "height": 29
+                    },
+                    "label": "In"
+                }
+            ],
+            "image": "assets/controls/buttons/button-sm-glow.png"
+        }
+    ]
+}

@@ -83,7 +83,11 @@ private:
     std::unordered_map<juce::String, PresetMetadata> presetMetadata;
     std::unordered_map<juce::String, PresetCategory> categories;
 
+    // Lazy initialization
+    bool initialized;
+
     // Helper methods
+    void initializeLazy();
     void initializePresetsDirectory();
     juce::String generatePresetPath(const juce::String &presetName);
     juce::String generateMetadataPath(const juce::String &presetName);

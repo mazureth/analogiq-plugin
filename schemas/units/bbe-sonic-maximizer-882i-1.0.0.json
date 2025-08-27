@@ -1,0 +1,109 @@
+{
+    "unitId": "bbe-sonic-maximizer-882i",
+    "name": "BBE Sonic Maximizer",
+    "manufacturer": "BBE Sound",
+    "tags": [
+        "BBE",
+        "19-inch-rack",
+        "enhancer",
+        "maximizer",
+        "hardware",
+        "presence",
+        "air"
+    ],
+    "version": "1.0.0",
+    "category": "enhancer",
+    "formFactor": "19-inch-rack",
+    "faceplateImage": "assets/faceplates/bbe-sonic-maximizer-882i-1.0.0.png",
+    "thumbnailImage": "assets/thumbnails/bbe-sonic-maximizer-882i-1.0.0.png",
+    "width": 1900,
+    "height": 175,
+    "controls": [
+        {
+            "id": "lo-contour-left",
+            "label": "Lo Contour Left",
+            "type": "knob",
+            "position": {
+                "x": 0.249,
+                "y": 0.33
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "process-left",
+            "label": "Process Left",
+            "type": "knob",
+            "position": {
+                "x": 0.316,
+                "y": 0.33
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "lo-contour-right",
+            "label": "Lo Contour Right",
+            "type": "knob",
+            "position": {
+                "x": 0.528,
+                "y": 0.33
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "process-right",
+            "label": "Process Right",
+            "type": "knob",
+            "position": {
+                "x": 0.595,
+                "y": 0.33
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "bypass",
+            "label": "Bypass",
+            "type": "button",
+            "position": {
+                "x": 0.408,
+                "y": 0.5
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "In",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 125,
+                        "height": 43
+                    },
+                    "label": "In"
+                },
+                {
+                    "value": "Out",
+                    "frame": {
+                        "x": 0,
+                        "y": 43,
+                        "width": 125,
+                        "height": 43
+                    },
+                    "label": "Out"
+                }
+            ],
+            "image": "assets/controls/buttons/button-bbe-bypass.png"
+        }
+    ]
+}

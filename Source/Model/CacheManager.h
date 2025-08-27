@@ -76,7 +76,11 @@ private:
     juce::StringArray favorites;
     juce::StringArray recentlyUsed;
 
+    // Lazy initialization
+    bool initialized;
+
     // Helper methods
+    void initializeLazy();
     void initializeCacheDirectory();
     juce::String generateAssetPath(const juce::String &assetId);
     void updateAccessCount(const juce::String &assetId);

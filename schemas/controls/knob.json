@@ -1,0 +1,92 @@
+{
+    "$id": "#/definitions/knob",
+    "type": "object",
+    "required": [
+        "id",
+        "label",
+        "type",
+        "position",
+        "value",
+        "startAngle",
+        "endAngle",
+        "image"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "Unique identifier for the knob"
+        },
+        "label": {
+            "type": "string",
+            "description": "Label for the knob"
+        },
+        "type": {
+            "const": "knob"
+        },
+        "position": {
+            "type": "object",
+            "description": "Position of the knob on the faceplate",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "X position of the knob on the faceplate"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "Y position of the knob on the faceplate"
+                }
+            },
+            "required": [
+                "x",
+                "y"
+            ]
+        },
+        "value": {
+            "type": "number",
+            "description": "Current value of the knob, mapped to the angle range"
+        },
+        "startAngle": {
+            "type": "number",
+            "description": "Starting angle in degrees (0-360) where the knob begins its range"
+        },
+        "endAngle": {
+            "type": "number",
+            "description": "Ending angle in degrees (0-360) where the knob ends its range"
+        },
+        "steps": {
+            "type": "array",
+            "description": "Array of rotation degrees (0-360) for stepped knobs",
+            "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 360
+            },
+            "minItems": 1
+        },
+        "currentStepIndex": {
+            "type": "integer",
+            "description": "Index of the current step in the steps array (only used with steps)",
+            "minimum": 0
+        },
+        "image": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "\\.png$",
+            "description": "URI to the knob image"
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "required": [
+                    "steps"
+                ]
+            },
+            "then": {
+                "required": [
+                    "currentStepIndex"
+                ]
+            }
+        }
+    ]
+}

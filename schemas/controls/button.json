@@ -1,0 +1,111 @@
+{
+    "$id": "#/definitions/button",
+    "type": "object",
+    "required": [
+        "id",
+        "label",
+        "type",
+        "position",
+        "momentary",
+        "value",
+        "options",
+        "image"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "Unique identifier for the button"
+        },
+        "label": {
+            "type": "string",
+            "description": "Label for the button"
+        },
+        "type": {
+            "const": "button"
+        },
+        "position": {
+            "type": "object",
+            "description": "Position of the button on the faceplate",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "X position of the button on the faceplate"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "Y position of the button on the faceplate"
+                }
+            },
+            "required": [
+                "x",
+                "y"
+            ]
+        },
+        "momentary": {
+            "type": "boolean",
+            "description": "Whether the button is momentary (returns to off state when released) or latching (stays in pressed state)"
+        },
+        "value": {
+            "type": "number",
+            "description": "The index of the current selected button option (0-based)",
+            "minimum": 0
+        },
+        "options": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "value",
+                    "frame"
+                ],
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "description": "The option value"
+                    },
+                    "frame": {
+                        "type": "object",
+                        "required": [
+                            "x",
+                            "y",
+                            "width",
+                            "height"
+                        ],
+                        "properties": {
+                            "x": {
+                                "type": "integer",
+                                "description": "X position of the sprite frame",
+                                "minimum": 0
+                            },
+                            "y": {
+                                "type": "integer",
+                                "description": "Y position of the sprite frame",
+                                "minimum": 0
+                            },
+                            "width": {
+                                "type": "integer",
+                                "description": "Width of the sprite frame",
+                                "minimum": 1
+                            },
+                            "height": {
+                                "type": "integer",
+                                "description": "Height of the sprite frame",
+                                "minimum": 1
+                            }
+                        }
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "Optional display label for this option"
+                    }
+                }
+            }
+        },
+        "image": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "\\.png$",
+            "description": "URI to the sprite sheet image containing both button states (pressed and released)"
+        }
+    }
+}

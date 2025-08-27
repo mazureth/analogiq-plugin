@@ -18,6 +18,7 @@ public:
     virtual bool addToCache(const juce::String &assetId, const juce::Image &image) = 0;
     virtual bool cacheData(const juce::String &assetId, const juce::String &data) = 0;
     virtual bool cacheBinaryData(const juce::String &assetId, const juce::MemoryBlock &data) = 0;
+    virtual juce::Image getCachedImage(const juce::String &assetId) = 0;
     virtual bool removeFromCache(const juce::String &assetId) = 0;
     virtual void clearCache() = 0;
     virtual void clearCache(const juce::String &assetId) = 0;
@@ -68,6 +69,7 @@ public:
     bool addToCache(const juce::String &, const juce::Image &) override { return false; }
     bool cacheData(const juce::String &, const juce::String &) override { return false; }
     bool cacheBinaryData(const juce::String &, const juce::MemoryBlock &) override { return false; }
+    juce::Image getCachedImage(const juce::String &) override { return juce::Image(); }
     bool removeFromCache(const juce::String &) override { return false; }
     void clearCache() override {}
     void clearCache(const juce::String &) override {}

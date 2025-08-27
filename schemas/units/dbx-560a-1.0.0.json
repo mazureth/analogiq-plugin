@@ -1,0 +1,162 @@
+{
+    "unitId": "dbx-560a",
+    "name": "DBX 560A 500 Series Compressor",
+    "manufacturer": "DBX Professional",
+    "tags": [
+        "DBX",
+        "500 series",
+        "compressor",
+        "VCA",
+        "dynamics"
+    ],
+    "version": "1.0.0",
+    "category": "compressor",
+    "formFactor": "500-series",
+    "faceplateImage": "assets/faceplates/dbx-560a-1.0.0.png",
+    "thumbnailImage": "assets/thumbnails/dbx-560a-1.0.0.png",
+    "width": 150,
+    "height": 525,
+    "controls": [
+        {
+            "id": "threshold",
+            "label": "Threshold",
+            "type": "knob",
+            "position": {
+                "x": 0.461,
+                "y": 0.235
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/rogan-sm-red.png"
+        },
+        {
+            "id": "ratio",
+            "label": "Ratio",
+            "type": "knob",
+            "position": {
+                "x": 0.461,
+                "y": 0.44
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/rogan-sm-blue.png"
+        },
+        {
+            "id": "output",
+            "label": "Output",
+            "type": "knob",
+            "position": {
+                "x": 0.461,
+                "y": 0.65
+            },
+            "value": 180,
+            "startAngle": 45,
+            "endAngle": 315,
+            "image": "assets/controls/knobs/rogan-sm-green.png"
+        },
+        {
+            "id": "bypass",
+            "label": "Bypass",
+            "type": "button",
+            "position": {
+                "x": 0.473,
+                "y": 0.79
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "Out",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 28,
+                        "height": 49
+                    },
+                    "label": "Out"
+                },
+                {
+                    "value": "In",
+                    "frame": {
+                        "x": 0,
+                        "y": 49,
+                        "width": 28,
+                        "height": 49
+                    },
+                    "label": "In"
+                }
+            ],
+            "image": "assets/controls/buttons/button-circle-led-above-sm-black.png"
+        },
+        {
+            "id": "over-easy",
+            "label": "Over-Easy",
+            "type": "button",
+            "position": {
+                "x": 0.449,
+                "y": 0.09
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "Off",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 87,
+                        "height": 69
+                    },
+                    "label": "Off"
+                },
+                {
+                    "value": "On",
+                    "frame": {
+                        "x": 0,
+                        "y": 69,
+                        "width": 87,
+                        "height": 69
+                    },
+                    "label": "On"
+                }
+            ],
+            "image": "assets/controls/buttons/button-dbx-over-easy-led-sm-black.png"
+        },
+        {
+            "id": "level",
+            "label": "Level",
+            "type": "button",
+            "position": {
+                "x": 0.5070,
+                "y": 0.82
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "Input",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 56,
+                        "height": 37
+                    },
+                    "label": "Input"
+                },
+                {
+                    "value": "Output",
+                    "frame": {
+                        "x": 0,
+                        "y": 37,
+                        "width": 56,
+                        "height": 37
+                    },
+                    "label": "Output"
+                }
+            ],
+            "image": "assets/controls/buttons/button-dbx-level-led-sm-black.png"
+        }
+    ]
+}

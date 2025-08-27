@@ -1,0 +1,170 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Analog Gear Unit",
+    "type": "object",
+    "properties": {
+        "unitId": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "manufacturer": {
+            "type": "string",
+            "description": "The company or organization that manufactured the unit"
+        },
+        "tags": {
+            "type": "array",
+            "description": "Additional tags for improved search and categorization",
+            "items": {
+                "type": "string"
+            }
+        },
+        "version": {
+            "type": "string",
+            "description": "Semantic version of the unit schema (e.g., 1.0.0)",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+        },
+        "category": {
+            "type": "string",
+            "description": "Category of the gear",
+            "enum": [
+                "compressor",
+                "equalizer",
+                "enhancer",
+                "preamp",
+                "channel-strip",
+                "mixer",
+                "reverb",
+                "delay",
+                "limiter",
+                "gate",
+                "de-esser",
+                "multi-effects"
+            ]
+        },
+        "formFactor": {
+            "type": "string",
+            "enum": [
+                "500-series",
+                "19-inch-rack",
+                "channel-strip"
+            ]
+        },
+        "faceplateImage": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "\\.png$",
+            "description": "Faceplate image of the unit for use in plugin interfaces"
+        },
+        "thumbnailImage": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "\\.png$",
+            "description": "Thumbnail image of the unit for use in plugin interfaces"
+        },
+        "width": {
+            "type": "integer",
+            "description": "Width of the drawable space in pixels",
+            "minimum": 1
+        },
+        "height": {
+            "type": "integer",
+            "description": "Height of the drawable space in pixels",
+            "minimum": 1
+        },
+        "controls": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "label",
+                    "type",
+                    "position"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "knob",
+                            "switch",
+                            "button",
+                            "fader"
+                        ]
+                    },
+                    "position": {
+                        "type": "object",
+                        "properties": {
+                            "x": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "y": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                            }
+                        },
+                        "required": [
+                            "x",
+                            "y"
+                        ]
+                    },
+                    "image": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URI to the sprite sheet image containing all control states (e.g., pressed/released for buttons, on/off for switches)"
+                    }
+                },
+                "oneOf": [
+                    {
+                        "$ref": "./controls/knob.json"
+                    },
+                    {
+                        "$ref": "./controls/switch.json"
+                    },
+                    {
+                        "$ref": "./controls/button.json"
+                    },
+                    {
+                        "$ref": "./controls/fader.json"
+                    }
+                ]
+            }
+        }
+    },
+    "required": [
+        "unitId",
+        "name",
+        "manufacturer",
+        "version",
+        "category",
+        "faceplateImage",
+        "thumbnailImage",
+        "width",
+        "height",
+        "controls"
+    ],
+    "definitions": {
+        "knob": {
+            "$ref": "./controls/knob.json"
+        },
+        "switch": {
+            "$ref": "./controls/switch.json"
+        },
+        "button": {
+            "$ref": "./controls/button.json"
+        },
+        "fader": {
+            "$ref": "./controls/fader.json"
+        }
+    }
+}
