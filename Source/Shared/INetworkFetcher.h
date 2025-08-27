@@ -13,9 +13,9 @@ class INetworkFetcher
 public:
     // Progress callback type for tracking download progress
     using ProgressCallback = std::function<void(int percentage, juce::int64 bytesDownloaded, juce::int64 totalBytes)>;
-    
+
     // Error callback type for detailed error reporting
-    using ErrorCallback = std::function<void(const juce::String& error, int httpCode)>;
+    using ErrorCallback = std::function<void(const juce::String &error, int httpCode)>;
 
     virtual ~INetworkFetcher() = default;
 
@@ -101,7 +101,7 @@ public:
         success = false;
         return "";
     }
-    
+
     juce::MemoryBlock fetchBinaryBlocking(const juce::URL &, bool &success) override
     {
         success = false;

@@ -202,8 +202,6 @@ void GearLibrary::createSampleGearItems()
     updateCategories();
 }
 
-
-
 void GearLibrary::updateGearMetadata()
 {
     gearMetadata.clear();
@@ -266,28 +264,28 @@ void GearLibrary::createCategoriesSection()
     if (categories.empty())
     {
         juce::Logger::writeToLog("GearLibrary: Creating default categories");
-        
+
         // Create EQ category
         GearCategory eqCategory;
         eqCategory.name = "EQ";
         eqCategory.creationTime = juce::Time::getCurrentTime();
         eqCategory.description = "Equalizers and filters";
         categories["EQ"] = eqCategory;
-        
+
         // Create Compressor category
         GearCategory compCategory;
         compCategory.name = "Compressor";
         compCategory.creationTime = juce::Time::getCurrentTime();
         compCategory.description = "Dynamic processors and compressors";
         categories["Compressor"] = compCategory;
-        
+
         // Create Preamp category
         GearCategory preampCategory;
         preampCategory.name = "Preamp";
         preampCategory.creationTime = juce::Time::getCurrentTime();
         preampCategory.description = "Preamplifiers and gain stages";
         categories["Preamp"] = preampCategory;
-        
+
         juce::Logger::writeToLog("GearLibrary: Default categories created");
     }
 }

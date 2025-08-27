@@ -73,6 +73,17 @@ public:
      */
     void setSearchFilter(const juce::String &searchText);
 
+    /**
+     * @brief Sets advanced filters for the tree view.
+     *
+     * @param categoryFilter The category to filter by (empty for all)
+     * @param manufacturerFilter The manufacturer to filter by (empty for all)
+     * @param gearTypeFilter The gear type to filter by (empty for all)
+     */
+    void setAdvancedFilters(const juce::String &categoryFilter, 
+                           const juce::String &manufacturerFilter, 
+                           const juce::String &gearTypeFilter);
+
 private:
     // References to dependencies
     GearLibrary &gearLibrary;
@@ -83,8 +94,11 @@ private:
     std::unique_ptr<juce::TreeView> treeView;
     std::unique_ptr<GearTreeItem> rootItem;
 
-    // Search functionality
+    // Search and filter functionality
     juce::String currentSearchText;
+    juce::String currentCategoryFilter;
+    juce::String currentManufacturerFilter;
+    juce::String currentGearTypeFilter;
 
     // Helper methods
     void setupTreeView();
@@ -199,6 +213,8 @@ private:
     juce::String getDisplayText() const;
     juce::Colour getItemColour() const;
     void handleGearItemClick();
+    void showContextMenu(const juce::MouseEvent &e);
+    void showGearDetails();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GearTreeItem)
 };

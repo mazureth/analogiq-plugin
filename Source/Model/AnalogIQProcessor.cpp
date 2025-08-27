@@ -102,15 +102,15 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
     logToFile("createEditor called");
 
     // Create the editor with all necessary dependencies
-    auto editor = new AnalogIQEditor(*this, 
-                                    fileSystem, 
-                                    cacheManager.get(), 
-                                    presetManager.get(), 
-                                    gearLibrary.get());
-    
+    auto editor = new AnalogIQEditor(*this,
+                                     fileSystem,
+                                     cacheManager.get(),
+                                     presetManager.get(),
+                                     gearLibrary.get());
+
     // Store reference to the editor for state management
     lastCreatedEditor = editor;
-    
+
     logToFile("Editor created successfully");
     return editor;
 }

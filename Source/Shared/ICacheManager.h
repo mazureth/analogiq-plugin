@@ -5,6 +5,10 @@
 class ICacheManager
 {
 public:
+    // Constants for favorites and recently used
+    static constexpr int MAX_RECENTLY_USED = 20;
+    static constexpr int MAX_FAVORITES = 100;
+
     virtual ~ICacheManager() = default;
 
     // Cache management
@@ -36,6 +40,20 @@ public:
     virtual juce::StringArray getCachedAssetIds() = 0;
     virtual juce::int64 getAssetSize(const juce::String &assetId) = 0;
 
+    // Favorites management
+    virtual bool addToFavorites(const juce::String &unitId) = 0;
+    virtual bool removeFromFavorites(const juce::String &unitId) = 0;
+    virtual bool isInFavorites(const juce::String &unitId) = 0;
+    virtual juce::StringArray getFavorites() = 0;
+    virtual void clearFavorites() = 0;
+
+    // Recently used management
+    virtual bool addToRecentlyUsed(const juce::String &unitId) = 0;
+    virtual bool removeFromRecentlyUsed(const juce::String &unitId) = 0;
+    virtual bool isInRecentlyUsed(const juce::String &unitId) = 0;
+    virtual juce::StringArray getRecentlyUsed(int maxCount = MAX_RECENTLY_USED) = 0;
+    virtual void clearRecentlyUsed() = 0;
+
     // Null Object Pattern implementation
     static ICacheManager &getDummy();
 };
@@ -65,6 +83,20 @@ public:
     int getCachedAssetCount() override { return 0; }
     juce::StringArray getCachedAssetIds() override { return juce::StringArray(); }
     juce::int64 getAssetSize(const juce::String &) override { return 0; }
+
+    // Favorites management
+    bool addToFavorites(const juce::String &) override { return false; }
+    bool removeFromFavorites(const juce::String &) override { return false; }
+    bool isInFavorites(const juce::String &) override { return false; }
+    juce::StringArray getFavorites() override { return juce::StringArray(); }
+    void clearFavorites() override {}
+
+    // Recently used management
+    bool addToRecentlyUsed(const juce::String &) override { return false; }
+    bool removeFromRecentlyUsed(const juce::String &) override { return false; }
+    bool isInRecentlyUsed(const juce::String &) override { return false; }
+    juce::StringArray getRecentlyUsed(int) override { return juce::StringArray(); }
+    void clearRecentlyUsed() override {}
 };
 
 inline ICacheManager &ICacheManager::getDummy()

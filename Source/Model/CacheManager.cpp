@@ -9,6 +9,14 @@ CacheManager::CacheManager(IFileSystem &fs)
 {
     initializeCacheDirectory();
     loadCacheIndex();
+    
+    // Initialize favorites and recently used file paths
+    favoritesFilePath = fileSystem.joinPath(cacheRootDir, "favorites.json");
+    recentlyUsedFilePath = fileSystem.joinPath(cacheRootDir, "recently_used.json");
+    
+    // Load favorites and recently used data
+    loadFavorites();
+    loadRecentlyUsed();
 }
 
 CacheManager::~CacheManager()
@@ -355,7 +363,7 @@ bool CacheManager::cacheData(const juce::String &assetId, const juce::String &da
 
     juce::MemoryBlock dataBlock;
     dataBlock.append(data.toRawUTF8(), data.getNumBytesAsUTF8());
-    
+
     return addToCache(assetId, dataBlock);
 }
 
@@ -371,14 +379,183 @@ void CacheManager::clearCache(const juce::String &assetId)
     {
         // Remove the file
         fileSystem.deleteFile(it->second.filePath);
-        
+
         // Update cache size
         currentCacheSize -= it->second.size;
-        
+
         // Remove from entries
         cacheEntries.erase(it);
-        
+
         // Save updated index
         saveCacheIndex();
     }
+}
+
+// Favorites management implementation
+bool CacheManager::addToFavorites(const juce::String &unitId)
+{
+    if (unitId.isEmpty() || isInFavorites(unitId))
+        return false;
+
+    if (favorites.size() >= MAX_FAVORITES)
+        favorites.remove(0); // Remove oldest favorite
+
+    favorites.add(unitId);
+    saveFavorites();
+    return true;
+}
+
+bool CacheManager::removeFromFavorites(const juce::String &unitId)
+{
+    if (unitId.isEmpty())
+        return false;
+
+    int index = favorites.indexOf(unitId);
+    if (index >= 0)
+    {
+        favorites.remove(index);
+        saveFavorites();
+        return true;
+    }
+    return false;
+}
+
+bool CacheManager::isInFavorites(const juce::String &unitId)
+{
+    return favorites.contains(unitId);
+}
+
+juce::StringArray CacheManager::getFavorites()
+{
+    return favorites;
+}
+
+void CacheManager::clearFavorites()
+{
+    favorites.clear();
+    saveFavorites();
+}
+
+// Recently used management implementation
+bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
+{
+    if (unitId.isEmpty())
+        return false;
+
+    addToRecentlyUsedInternal(unitId);
+    saveRecentlyUsed();
+    return true;
+}
+
+bool CacheManager::removeFromRecentlyUsed(const juce::String &unitId)
+{
+    if (unitId.isEmpty())
+        return false;
+
+    int index = recentlyUsed.indexOf(unitId);
+    if (index >= 0)
+    {
+        recentlyUsed.remove(index);
+        saveRecentlyUsed();
+        return true;
+    }
+    return false;
+}
+
+bool CacheManager::isInRecentlyUsed(const juce::String &unitId)
+{
+    return recentlyUsed.contains(unitId);
+}
+
+juce::StringArray CacheManager::getRecentlyUsed(int maxCount)
+{
+    if (maxCount <= 0 || maxCount > MAX_RECENTLY_USED)
+        maxCount = MAX_RECENTLY_USED;
+
+    juce::StringArray result;
+    int count = 0;
+    for (int i = recentlyUsed.size() - 1; i >= 0 && count < maxCount; --i)
+    {
+        result.add(recentlyUsed[i]);
+        count++;
+    }
+    return result;
+}
+
+void CacheManager::clearRecentlyUsed()
+{
+    recentlyUsed.clear();
+    saveRecentlyUsed();
+}
+
+// Helper methods for favorites and recently used
+void CacheManager::loadFavorites()
+{
+    if (fileSystem.fileExists(favoritesFilePath))
+    {
+        auto content = fileSystem.readFile(favoritesFilePath);
+        if (!content.isEmpty())
+        {
+            auto var = juce::JSON::parse(content);
+            if (var.isArray())
+            {
+                favorites.clear();
+                auto array = var.getArray();
+                for (auto &item : *array)
+                {
+                    if (item.isString())
+                        favorites.add(item.toString());
+                }
+            }
+        }
+    }
+}
+
+void CacheManager::saveFavorites()
+{
+    auto var = juce::var(favorites);
+    auto json = juce::JSON::toString(var);
+    fileSystem.writeFile(favoritesFilePath, json);
+}
+
+void CacheManager::loadRecentlyUsed()
+{
+    if (fileSystem.fileExists(recentlyUsedFilePath))
+    {
+        auto content = fileSystem.readFile(recentlyUsedFilePath);
+        if (!content.isEmpty())
+        {
+            auto var = juce::JSON::parse(content);
+            if (var.isArray())
+            {
+                recentlyUsed.clear();
+                auto array = var.getArray();
+                for (auto &item : *array)
+                {
+                    if (item.isString())
+                        recentlyUsed.add(item.toString());
+                }
+            }
+        }
+    }
+}
+
+void CacheManager::saveRecentlyUsed()
+{
+    auto var = juce::var(recentlyUsed);
+    auto json = juce::JSON::toString(var);
+    fileSystem.writeFile(recentlyUsedFilePath, json);
+}
+
+void CacheManager::addToRecentlyUsedInternal(const juce::String &unitId)
+{
+    // Remove if already exists (to move to front)
+    recentlyUsed.removeString(unitId);
+    
+    // Add to end (most recent)
+    recentlyUsed.add(unitId);
+    
+    // Limit size
+    while (recentlyUsed.size() > MAX_RECENTLY_USED)
+        recentlyUsed.remove(0);
 }

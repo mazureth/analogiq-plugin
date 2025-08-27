@@ -34,12 +34,12 @@ public:
 
     // Constructor
     GearItem();
-    GearItem(const juce::String& unitId, const juce::String& name, const juce::String& manufacturer);
-    GearItem(const GearItem& other);
+    GearItem(const juce::String &unitId, const juce::String &name, const juce::String &manufacturer);
+    GearItem(const GearItem &other);
     ~GearItem();
 
     // Assignment operator
-    GearItem& operator=(const GearItem& other);
+    GearItem &operator=(const GearItem &other);
 
     // Core properties
     juce::String unitId;
@@ -51,7 +51,7 @@ public:
     GearCategory category;
     juce::String categoryString;
     juce::String schemaPath;
-    
+
     // Remote gear library support
     juce::String imageUrl;
     juce::String schemaUrl;
@@ -72,14 +72,14 @@ public:
     juce::String sourceUnitId;
 
     // Dependencies (injected)
-    IFileSystem* fileSystem;
-    INetworkFetcher* networkFetcher;
-    CacheManager* cacheManager;
+    IFileSystem *fileSystem;
+    INetworkFetcher *networkFetcher;
+    CacheManager *cacheManager;
 
     // Core methods
-    void setFileSystem(IFileSystem* fs) { fileSystem = fs; }
-    void setNetworkFetcher(INetworkFetcher* nf) { networkFetcher = nf; }
-    void setCacheManager(CacheManager* cm) { cacheManager = cm; }
+    void setFileSystem(IFileSystem *fs) { fileSystem = fs; }
+    void setNetworkFetcher(INetworkFetcher *nf) { networkFetcher = nf; }
+    void setCacheManager(CacheManager *cm) { cacheManager = cm; }
 
     // Image loading and management
     bool loadImage();
@@ -89,15 +89,15 @@ public:
     // Instance management
     GearItem createInstance() const;
     void resetToSource();
-    bool isInstanceOf(const GearItem& source) const;
+    bool isInstanceOf(const GearItem &source) const;
 
     // JSON serialization
-    bool saveToFile(const juce::String& filePath) const;
-    bool loadFromFile(const juce::String& filePath);
+    bool saveToFile(const juce::String &filePath) const;
+    bool loadFromFile(const juce::String &filePath);
 
     // Control management
-    void addControl(const GearControl& control);
-    GearControl* getControl(int index);
+    void addControl(const GearControl &control);
+    GearControl *getControl(int index);
     int getNumControls() const;
     void resetAllControls();
 
@@ -105,12 +105,12 @@ public:
     static GearItem getDummy();
     juce::String getTypeString() const;
     juce::String getCategoryString() const;
-    void setTypeFromString(const juce::String& typeStr);
-    void setCategoryFromString(const juce::String& categoryStr);
+    void setTypeFromString(const juce::String &typeStr);
+    void setCategoryFromString(const juce::String &categoryStr);
 
 private:
     void initializeDefaults();
-    void copyImages(const GearItem& other);
+    void copyImages(const GearItem &other);
     void clearImages();
     juce::String generateInstanceId() const;
 };

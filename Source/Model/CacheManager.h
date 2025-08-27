@@ -37,6 +37,20 @@ public:
     juce::StringArray getCachedAssetIds() override;
     juce::int64 getAssetSize(const juce::String &assetId) override;
 
+    // Favorites management
+    bool addToFavorites(const juce::String &unitId) override;
+    bool removeFromFavorites(const juce::String &unitId) override;
+    bool isInFavorites(const juce::String &unitId) override;
+    juce::StringArray getFavorites() override;
+    void clearFavorites() override;
+
+    // Recently used management
+    bool addToRecentlyUsed(const juce::String &unitId) override;
+    bool removeFromRecentlyUsed(const juce::String &unitId) override;
+    bool isInRecentlyUsed(const juce::String &unitId) override;
+    juce::StringArray getRecentlyUsed(int maxCount = MAX_RECENTLY_USED) override;
+    void clearRecentlyUsed() override;
+
 private:
     struct CacheEntry
     {
@@ -54,6 +68,12 @@ private:
     juce::int64 currentCacheSize;
     std::unordered_map<juce::String, CacheEntry> cacheEntries;
 
+    // Favorites and recently used storage
+    juce::String favoritesFilePath;
+    juce::String recentlyUsedFilePath;
+    juce::StringArray favorites;
+    juce::StringArray recentlyUsed;
+
     // Helper methods
     void initializeCacheDirectory();
     juce::String generateAssetPath(const juce::String &assetId);
@@ -62,4 +82,11 @@ private:
     void saveCacheIndex();
     void cleanupCache();
     juce::String hashAssetId(const juce::String &assetId);
+
+    // Favorites and recently used helper methods
+    void loadFavorites();
+    void saveFavorites();
+    void loadRecentlyUsed();
+    void saveRecentlyUsed();
+    void addToRecentlyUsedInternal(const juce::String &unitId);
 };

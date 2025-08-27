@@ -142,7 +142,7 @@ private:
     void loadRemoteGearLibrary();
     void createSampleGearItems();
     void createCategoriesSection();
-    
+
     // New private helper methods for remote operations
     bool parseRemoteGearLibrary(const juce::String &jsonData);
     bool downloadGearAsset(const juce::String &gearId, const juce::String &assetUrl, const juce::String &assetType);
@@ -151,19 +151,19 @@ private:
     bool shouldRefreshRemoteLibrary() const;
     juce::String getRemoteLibraryUrl() const;
     void setRemoteLibraryUrl(const juce::String &url);
-    
+
     // Additional helper methods that are referenced but not yet implemented
     juce::String generateGearItemPath(const juce::String &gearId);
     juce::String generateMetadataPath(const juce::String &gearId);
     juce::String generateCategoryPath(const juce::String &categoryName);
     juce::String sanitizeGearId(const juce::String &gearId);
     bool checkStorageLimits();
-    
+
     // Search and filtering helpers
     bool shouldShowItem(const GearItem *item, const juce::String &normalizedSearch) const;
     juce::String normalizeForSearch(const juce::String &text) const;
     juce::StringArray getIgnoredCharacters() const;
-    
+
     // Metadata and category management
     void updateGearMetadata();
     void updateCategories();
