@@ -18,6 +18,7 @@ public:
     bool addToCache(const juce::String &assetId, const juce::Image &image) override;
     bool cacheData(const juce::String &assetId, const juce::String &data) override;
     bool cacheBinaryData(const juce::String &assetId, const juce::MemoryBlock &data) override;
+    juce::Image getCachedImage(const juce::String &assetId) override;
     bool removeFromCache(const juce::String &assetId) override;
     void clearCache() override;
     void clearCache(const juce::String &assetId) override;
@@ -64,6 +65,7 @@ private:
 
     IFileSystem &fileSystem;
     juce::String cacheRootDir;
+    juce::String assetsDir;
     juce::int64 maxCacheSize;
     juce::int64 currentCacheSize;
     std::unordered_map<juce::String, CacheEntry> cacheEntries;

@@ -1,6 +1,7 @@
 #include "CacheManager.h"
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
+#include <juce_gui_basics/juce_gui_basics.h>
 
 CacheManager::CacheManager(IFileSystem &fs)
     : fileSystem(fs), maxCacheSize(100 * 1024 * 1024) // 100MB default
@@ -31,6 +32,13 @@ void CacheManager::initializeCacheDirectory()
     {
         fileSystem.createDirectory(cacheRootDir);
     }
+    
+    // Create Assets subfolder for image cache files
+    assetsDir = fileSystem.joinPath(cacheRootDir, "Assets");
+    if (!fileSystem.directoryExists(assetsDir))
+    {
+        fileSystem.createDirectory(assetsDir);
+    }
 }
 
 juce::String CacheManager::hashAssetId(const juce::String &assetId)
@@ -45,7 +53,7 @@ juce::String CacheManager::hashAssetId(const juce::String &assetId)
 juce::String CacheManager::generateAssetPath(const juce::String &assetId)
 {
     auto hash = hashAssetId(assetId);
-    return fileSystem.joinPath(cacheRootDir, hash + ".cache");
+    return fileSystem.joinPath(assetsDir, hash + ".cache");
 }
 
 bool CacheManager::isCached(const juce::String &assetId)
@@ -370,6 +378,28 @@ bool CacheManager::cacheData(const juce::String &assetId, const juce::String &da
 bool CacheManager::cacheBinaryData(const juce::String &assetId, const juce::MemoryBlock &data)
 {
     return addToCache(assetId, data);
+}
+
+juce::Image CacheManager::getCachedImage(const juce::String &assetId)
+{
+    auto it = cacheEntries.find(assetId);
+    if (it == cacheEntries.end())
+        return juce::Image();
+
+    try
+    {
+        juce::File imageFile(it->second.filePath);
+        if (!imageFile.existsAsFile())
+            return juce::Image();
+
+        // Load image from file
+        juce::Image image = juce::ImageFileFormat::loadFrom(imageFile);
+        return image;
+    }
+    catch (...)
+    {
+        return juce::Image();
+    }
 }
 
 void CacheManager::clearCache(const juce::String &assetId)
