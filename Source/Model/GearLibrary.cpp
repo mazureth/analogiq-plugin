@@ -11,15 +11,30 @@ GearLibrary::GearLibrary(IFileSystem &fs, ICacheManager &cm)
       ,
       autoBackupEnabled(true)
 {
+    juce::Logger::writeToLog("GearLibrary: Constructor starting");
     try
     {
+        juce::Logger::writeToLog("GearLibrary: Calling initializeLibraryDirectory");
         initializeLibraryDirectory();
+        juce::Logger::writeToLog("GearLibrary: initializeLibraryDirectory completed");
+
+        juce::Logger::writeToLog("GearLibrary: Calling loadGearMetadata");
         loadGearMetadata();
+        juce::Logger::writeToLog("GearLibrary: loadGearMetadata completed");
+
+        juce::Logger::writeToLog("GearLibrary: Calling loadCategories");
         loadCategories();
+        juce::Logger::writeToLog("GearLibrary: loadCategories completed");
+
+        juce::Logger::writeToLog("GearLibrary: Calling loadRemoteGearLibrary");
         loadRemoteGearLibrary(); // Load gear from remote source
+        juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary completed");
+
+        juce::Logger::writeToLog("GearLibrary: Constructor completed successfully");
     }
     catch (...)
     {
+        juce::Logger::writeToLog("GearLibrary: Constructor caught exception - continuing with empty library");
         // If initialization fails, continue with empty library
         // This prevents crashes when file system is not available
     }
@@ -33,20 +48,37 @@ GearLibrary::~GearLibrary()
 
 void GearLibrary::initializeLibraryDirectory()
 {
+    juce::Logger::writeToLog("GearLibrary: initializeLibraryDirectory starting");
     try
     {
+        juce::Logger::writeToLog("GearLibrary: Getting cache root directory");
         libraryRootDir = fileSystem.joinPath(fileSystem.getCacheRootDirectory(), "GearLibrary");
+        juce::Logger::writeToLog("GearLibrary: Library root dir set to: " + libraryRootDir);
+
+        juce::Logger::writeToLog("GearLibrary: Checking if directory exists");
         if (!fileSystem.directoryExists(libraryRootDir))
         {
+            juce::Logger::writeToLog("GearLibrary: Directory doesn't exist, creating it");
             if (!fileSystem.createDirectory(libraryRootDir))
             {
+                juce::Logger::writeToLog("GearLibrary: Failed to create directory, using fallback path");
                 // If we can't create the directory, use a fallback path
                 libraryRootDir = "/tmp/analogiq_gear_library";
             }
+            else
+            {
+                juce::Logger::writeToLog("GearLibrary: Directory created successfully");
+            }
         }
+        else
+        {
+            juce::Logger::writeToLog("GearLibrary: Directory already exists");
+        }
+        juce::Logger::writeToLog("GearLibrary: initializeLibraryDirectory completed successfully");
     }
     catch (...)
     {
+        juce::Logger::writeToLog("GearLibrary: initializeLibraryDirectory caught exception, using fallback path");
         // Use fallback path if anything goes wrong
         libraryRootDir = "/tmp/analogiq_gear_library";
     }
@@ -54,28 +86,35 @@ void GearLibrary::initializeLibraryDirectory()
 
 void GearLibrary::loadRemoteGearLibrary()
 {
+    juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary starting");
     try
     {
         // Load gear from remote GitHub repository
         juce::String remoteUrl = "https://raw.githubusercontent.com/analogiq/gear-library/main/units.json";
+        juce::Logger::writeToLog("GearLibrary: Remote URL: " + remoteUrl);
         bool success = false;
 
         // Try to load from cache first
+        juce::Logger::writeToLog("GearLibrary: Checking cache for remote_gear_library");
         auto cachedData = cacheManager.getCachedPath("remote_gear_library");
         if (!cachedData.isEmpty())
         {
+            juce::Logger::writeToLog("GearLibrary: Found cached data, creating sample items");
             // For now, we'll create sample items since we don't have the actual cached data
             createSampleGearItems();
             return;
         }
 
+        juce::Logger::writeToLog("GearLibrary: No cached data found, creating sample items");
         // If not in cache, try to fetch from network
         // Note: This requires NetworkFetcher to be injected, which we'll add later
         // For now, we'll create some sample gear items
         createSampleGearItems();
+        juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary completed successfully");
     }
     catch (...)
     {
+        juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary caught exception, creating sample items");
         // If remote loading fails, create sample items for development
         createSampleGearItems();
     }
@@ -83,10 +122,12 @@ void GearLibrary::loadRemoteGearLibrary()
 
 void GearLibrary::createSampleGearItems()
 {
+    juce::Logger::writeToLog("GearLibrary: createSampleGearItems starting");
     // Create sample gear items for development and testing
     // These will be replaced by real remote data when NetworkFetcher is integrated
 
     // Sample EQ
+    juce::Logger::writeToLog("GearLibrary: Creating sample EQ item");
     auto eq = std::make_unique<GearItem>();
     eq->unitId = "eq_500_series";
     eq->name = "500 Series EQ";
@@ -106,7 +147,9 @@ void GearLibrary::createSampleGearItems()
     eqControl.initialValue = 0.5f;
     eq->controls.add(eqControl);
 
+    juce::Logger::writeToLog("GearLibrary: Adding EQ item to gearItems array");
     gearItems.add(eq.release());
+    juce::Logger::writeToLog("GearLibrary: EQ item added successfully");
 
     // Sample Preamp
     auto preamp = std::make_unique<GearItem>();

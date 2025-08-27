@@ -27,7 +27,12 @@ bool FileSystem::writeFile(const juce::String &path, const juce::String &content
 
     try
     {
-        juce::File file(path);
+        // Ensure we have an absolute path for JUCE File constructor
+        juce::String absolutePath = normalizePath(path);
+        if (absolutePath.isEmpty())
+            return false;
+            
+        juce::File file(absolutePath);
         return file.replaceWithText(content);
     }
     catch (...)
@@ -43,7 +48,12 @@ bool FileSystem::writeFile(const juce::String &path, const juce::MemoryBlock &da
 
     try
     {
-        juce::File file(path);
+        // Ensure we have an absolute path for JUCE File constructor
+        juce::String absolutePath = normalizePath(path);
+        if (absolutePath.isEmpty())
+            return false;
+            
+        juce::File file(absolutePath);
         return file.replaceWithData(data.getData(), data.getSize());
     }
     catch (...)
@@ -59,7 +69,12 @@ juce::String FileSystem::readFile(const juce::String &path)
 
     try
     {
-        juce::File file(path);
+        // Ensure we have an absolute path for JUCE File constructor
+        juce::String absolutePath = normalizePath(path);
+        if (absolutePath.isEmpty())
+            return juce::String();
+            
+        juce::File file(absolutePath);
         if (file.existsAsFile())
             return file.loadFileAsString();
     }
@@ -77,7 +92,12 @@ juce::MemoryBlock FileSystem::readBinaryFile(const juce::String &path)
 
     try
     {
-        juce::File file(path);
+        // Ensure we have an absolute path for JUCE File constructor
+        juce::String absolutePath = normalizePath(path);
+        if (absolutePath.isEmpty())
+            return juce::MemoryBlock();
+            
+        juce::File file(absolutePath);
         if (file.existsAsFile())
         {
             juce::MemoryBlock block;
@@ -99,7 +119,12 @@ bool FileSystem::fileExists(const juce::String &path)
 
     try
     {
-        juce::File file(path);
+        // Ensure we have an absolute path for JUCE File constructor
+        juce::String absolutePath = normalizePath(path);
+        if (absolutePath.isEmpty())
+            return false;
+            
+        juce::File file(absolutePath);
         bool exists = file.existsAsFile();
 
         // Special handling for JPEG files to prevent JUCE assertions
@@ -201,7 +226,12 @@ bool FileSystem::deleteFile(const juce::String &path)
 
     try
     {
-        juce::File file(path);
+        // Ensure we have an absolute path for JUCE File constructor
+        juce::String absolutePath = normalizePath(path);
+        if (absolutePath.isEmpty())
+            return false;
+            
+        juce::File file(absolutePath);
         return file.deleteFile();
     }
     catch (...)
@@ -236,8 +266,14 @@ bool FileSystem::moveFile(const juce::String &sourcePath, const juce::String &de
 
     try
     {
-        juce::File sourceFile(sourcePath);
-        juce::File destFile(destPath);
+        // Ensure we have absolute paths for JUCE File constructors
+        juce::String absoluteSourcePath = normalizePath(sourcePath);
+        juce::String absoluteDestPath = normalizePath(destPath);
+        if (absoluteSourcePath.isEmpty() || absoluteDestPath.isEmpty())
+            return false;
+            
+        juce::File sourceFile(absoluteSourcePath);
+        juce::File destFile(absoluteDestPath);
         return sourceFile.moveFileTo(destFile);
     }
     catch (...)
@@ -291,16 +327,12 @@ juce::String FileSystem::getFileName(const juce::String &path)
 
     try
     {
-        // Handle relative paths manually to avoid JUCE issues
-        if (path.startsWith("./") || path.startsWith("../"))
-        {
-            int lastSlash = path.lastIndexOfChar('/');
-            if (lastSlash >= 0)
-                return path.substring(lastSlash + 1);
-            return path;
-        }
+        // Ensure we have an absolute path for JUCE File constructor
+        juce::String absolutePath = normalizePath(path);
+        if (absolutePath.isEmpty())
+            return juce::String();
 
-        juce::File file(path);
+        juce::File file(absolutePath);
         return file.getFileName();
     }
     catch (...)
@@ -316,7 +348,12 @@ juce::String FileSystem::getParentDirectory(const juce::String &path)
 
     try
     {
-        juce::File file(path);
+        // Ensure we have an absolute path for JUCE File constructor
+        juce::String absolutePath = normalizePath(path);
+        if (absolutePath.isEmpty())
+            return juce::String();
+            
+        juce::File file(absolutePath);
         juce::File parent = file.getParentDirectory();
         return parent.getFullPathName();
     }
@@ -335,8 +372,14 @@ juce::String FileSystem::joinPath(const juce::String &path1, const juce::String 
 
     try
     {
-        juce::File file1(path1);
-        juce::File file2(path2);
+        // Ensure we have absolute paths for JUCE File constructors
+        juce::String absolutePath1 = normalizePath(path1);
+        juce::String absolutePath2 = normalizePath(path2);
+        if (absolutePath1.isEmpty() || absolutePath2.isEmpty())
+            return path1 + "/" + path2;
+            
+        juce::File file1(absolutePath1);
+        juce::File file2(absolutePath2);
         return file1.getChildFile(file2.getFileName()).getFullPathName();
     }
     catch (...)
@@ -352,7 +395,12 @@ bool FileSystem::isAbsolutePath(const juce::String &path)
 
     try
     {
-        juce::File file(path);
+        // Ensure we have an absolute path for JUCE File constructor
+        juce::String absolutePath = normalizePath(path);
+        if (absolutePath.isEmpty())
+            return false;
+            
+        juce::File file(absolutePath);
         return juce::File::isAbsolutePath(path);
     }
     catch (...)
@@ -368,12 +416,28 @@ juce::String FileSystem::normalizePath(const juce::String &path)
 
     try
     {
-        juce::File file(path);
-        return file.getFullPathName();
+        // For relative paths, resolve against current working directory
+        if (path.startsWith("./") || path.startsWith("../") || !path.startsWith("/"))
+        {
+            juce::File cwd = juce::File::getCurrentWorkingDirectory();
+            return cwd.getChildFile(path).getFullPathName();
+        }
+        
+        // For absolute paths, just return as-is
+        return path;
     }
     catch (...)
     {
-        return path;
+        // Fallback: try to make it absolute if possible
+        try
+        {
+            juce::File cwd = juce::File::getCurrentWorkingDirectory();
+            return cwd.getChildFile(path).getFullPathName();
+        }
+        catch (...)
+        {
+            return path;
+        }
     }
 }
 

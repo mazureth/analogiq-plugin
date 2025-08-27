@@ -34,12 +34,12 @@ RackSlot::RackSlot(IFileSystem &fileSystem,
       presetManager(presetManager),
       gearLibrary(gearLibrary)
 {
-    // Temporarily disable component ID to isolate JUCE assertion issues
-    // setComponentID("RackSlot_" + juce::String(index));
+
+    setComponentID("RackSlot_" + juce::String(index));
 
     // Set up navigation buttons
-    upButton.setButtonText("↑");
-    downButton.setButtonText("↓");
+    upButton.setButtonText("Up");
+    downButton.setButtonText("Down");
 
     // Add button listeners
     upButton.addListener(this);

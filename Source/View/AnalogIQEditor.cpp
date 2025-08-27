@@ -30,34 +30,40 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
                                PresetManager *presetManager,
                                GearLibrary *gearLibrary)
     : AudioProcessorEditor(&processor),
-              processor(processor),
-        fileSystem(fileSystem),
-        cacheManager(cacheManager),
-        presetManager(presetManager),
-        gearLibrary(gearLibrary),
+      processor(processor),
+      fileSystem(fileSystem),
+      cacheManager(cacheManager),
+      presetManager(presetManager),
+      gearLibrary(gearLibrary),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
-    // Temporarily disable component IDs to isolate JUCE assertion issues
-    // setComponentID("AnalogIQEditor");
+    juce::Logger::writeToLog("AnalogIQEditor: Constructor 2 starting");
+    setComponentID("AnalogIQEditor");
+
+    // Create GearLibraryTree component (to the left of the rack)
+    juce::Logger::writeToLog("AnalogIQEditor: Creating GearLibraryTree component");
+    gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
+    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree component created successfully");
 
     // Create Rack component
+    juce::Logger::writeToLog("AnalogIQEditor: Creating Rack component");
     rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, *cacheManager, *presetManager, *gearLibrary);
+    juce::Logger::writeToLog("AnalogIQEditor: Rack component created successfully");
 
     // Create NotesPanel component
+    juce::Logger::writeToLog("AnalogIQEditor: Creating NotesPanel component");
     notesPanel = std::make_unique<NotesPanel>();
+    juce::Logger::writeToLog("AnalogIQEditor: NotesPanel component created successfully");
 
-    // Temporarily disable component IDs to isolate JUCE assertion issues
-    // rack->setComponentID("RackTab");
-    // notesPanel->setComponentID("NotesTab");
+    // Set component IDs for Rack and Notes tabs
+    rack->setComponentID("RackTab");
+    notesPanel->setComponentID("NotesTab");
 
     // Set up main window size
     setSize(1200, 800);
 
     // Set up tabs
-    // mainTabs.setComponentID("MainTabs");
-
-    // Add the gear library tree to the main UI (not in tabs)
-    addAndMakeVisible(gearLibraryTree.get());
+    mainTabs.setComponentID("MainTabs");
 
     // Add Rack and Notes tabs
     mainTabs.addTab("Rack", juce::Colours::darkgrey, rack.get(), false);
@@ -67,11 +73,12 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     mainTabs.setInterceptsMouseClicks(false, true);
     addAndMakeVisible(mainTabs);
 
-    // Note: GearLibrary tree is now displayed as a separate component to the left of the rack
+    // Note: GearLibrary is not a JUCE Component, so it can't be added to the UI
+    // It will be managed separately through the Model layer
 
     // Set up menu bar components
-    // menuBarContainer.setComponentID("MenuBarContainer");
-    // presetsMenuButton.setComponentID("PresetsMenuButton");
+    menuBarContainer.setComponentID("MenuBarContainer");
+    presetsMenuButton.setComponentID("PresetsMenuButton");
 
     // Configure preset menu button with onClick lambda
     presetsMenuButton.setButtonText("Presets");
@@ -88,32 +95,6 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     // Add menu bar components to the editor
     addAndMakeVisible(menuBarContainer);
     addAndMakeVisible(presetsMenuButton);
-
-#ifdef JUCE_DEBUG
-    // Add debug buttons for testing state saving/loading
-    debugSaveButton.setButtonText("Debug: Save State");
-    debugSaveButton.onClick = [this, &processor]()
-    {
-        // Simulate the full getStateInformation process
-        juce::MemoryBlock destData;
-        processor.getStateInformation(destData); // This will call saveInstanceState internally
-
-        // Log the result
-        std::cout << "[Debug] State saved, data size: " << destData.getSize() << " bytes" << std::endl;
-    };
-    addAndMakeVisible(debugSaveButton);
-
-    debugLoadButton.setButtonText("Debug: Load State");
-    debugLoadButton.onClick = [this, &processor]()
-    {
-        // TODO: Implement when Rack component is available
-        // if (auto *rack = getRack())
-        // {
-        //     processor.loadInstanceState(rack);
-        // }
-    };
-    addAndMakeVisible(debugLoadButton);
-#endif
 
     // Set up menu bar styling
     menuBarContainer.setOpaque(true);
@@ -145,21 +126,27 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cach
       gearLibrary(processor.getGearLibrary()),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
-    // Temporarily disable component IDs to isolate JUCE assertion issues
-    // setComponentID("AnalogIQEditor");
+    juce::Logger::writeToLog("AnalogIQEditor: Constructor 1 starting");
+    setComponentID("AnalogIQEditor");
 
     // Create GearLibraryTree component (to the left of the rack)
+    juce::Logger::writeToLog("AnalogIQEditor: Creating GearLibraryTree component");
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
+    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree component created successfully");
 
     // Create Rack component
+    juce::Logger::writeToLog("AnalogIQEditor: Creating Rack component");
     rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, *cacheManager, *presetManager, *gearLibrary);
+    juce::Logger::writeToLog("AnalogIQEditor: Rack component created successfully");
 
     // Create NotesPanel component
+    juce::Logger::writeToLog("AnalogIQEditor: Creating NotesPanel component");
     notesPanel = std::make_unique<NotesPanel>();
+    juce::Logger::writeToLog("AnalogIQEditor: NotesPanel component created successfully");
 
-    // Temporarily disable component IDs to isolate JUCE assertion issues
-    // rack->setComponentID("RackTab");
-    // notesPanel->setComponentID("NotesTab");
+    // Set component IDs for Rack and Notes tabs
+    rack->setComponentID("RackTab");
+    notesPanel->setComponentID("NotesTab");
 
     // Set up main window size
     setSize(1200, 800);

@@ -14,8 +14,15 @@
 GearLibraryTree::GearLibraryTree(GearLibrary &gl, ICacheManager &cm, PresetManager &pm)
     : gearLibrary(gl), cacheManager(cm), presetManager(pm)
 {
+    juce::Logger::writeToLog("GearLibraryTree: Constructor starting");
+    juce::Logger::writeToLog("GearLibraryTree: Calling setupTreeView");
     setupTreeView();
+    juce::Logger::writeToLog("GearLibraryTree: setupTreeView completed");
+
+    juce::Logger::writeToLog("GearLibraryTree: Calling populateTree");
     populateTree();
+    juce::Logger::writeToLog("GearLibraryTree: populateTree completed");
+    juce::Logger::writeToLog("GearLibraryTree: Constructor completed successfully");
 }
 
 GearLibraryTree::~GearLibraryTree()
@@ -50,12 +57,25 @@ void GearLibraryTree::setupTreeView()
 
 void GearLibraryTree::populateTree()
 {
+    juce::Logger::writeToLog("GearLibraryTree: populateTree starting");
+
+    juce::Logger::writeToLog("GearLibraryTree: Creating root item");
     rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Gear Library", gearLibrary, cacheManager);
+    juce::Logger::writeToLog("GearLibraryTree: Root item created successfully");
 
+    juce::Logger::writeToLog("GearLibraryTree: Calling createCategoriesSection");
     createCategoriesSection();
+    juce::Logger::writeToLog("GearLibraryTree: createCategoriesSection completed");
 
+    juce::Logger::writeToLog("GearLibraryTree: Setting root item in tree view");
     treeView->setRootItem(rootItem.get());
+    juce::Logger::writeToLog("GearLibraryTree: Root item set successfully");
+
+    juce::Logger::writeToLog("GearLibraryTree: Calling repaint on tree view");
     treeView->repaint();
+    juce::Logger::writeToLog("GearLibraryTree: Repaint completed");
+
+    juce::Logger::writeToLog("GearLibraryTree: populateTree completed successfully");
 }
 
 void GearLibraryTree::createRecentlyUsedSection()
@@ -78,17 +98,27 @@ void GearLibraryTree::createFavoritesSection()
 
 void GearLibraryTree::createCategoriesSection()
 {
+    juce::Logger::writeToLog("GearLibraryTree: createCategoriesSection starting");
+
+    juce::Logger::writeToLog("GearLibraryTree: Creating categories node");
     auto categoriesNode = new GearTreeItem(GearTreeItem::ItemType::Category, "Categories", gearLibrary, cacheManager);
+    juce::Logger::writeToLog("GearLibraryTree: Categories node created successfully");
+
+    // Add categories node to root item
     rootItem->addSubItem(categoriesNode);
+    juce::Logger::writeToLog("GearLibraryTree: Categories node added to root item");
 
     // Get all gear items and group by category
     juce::Array<GearItem *> allItems;
     try
     {
+        juce::Logger::writeToLog("GearLibraryTree: Calling gearLibrary.getAllGearItems()");
         allItems = gearLibrary.getAllGearItems();
+        juce::Logger::writeToLog("GearLibraryTree: getAllGearItems() returned " + juce::String(allItems.size()) + " items");
     }
     catch (...)
     {
+        juce::Logger::writeToLog("GearLibraryTree: Exception caught in getAllGearItems(), showing error message");
         // If getting gear items fails, show an error message
         categoriesNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "Error loading gear items", gearLibrary, cacheManager));
         return;
@@ -96,10 +126,12 @@ void GearLibraryTree::createCategoriesSection()
 
     if (allItems.isEmpty())
     {
+        juce::Logger::writeToLog("GearLibraryTree: No gear items found, showing placeholder message");
         categoriesNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No gear items available", gearLibrary, cacheManager));
     }
     else
     {
+        juce::Logger::writeToLog("GearLibraryTree: Processing " + juce::String(allItems.size()) + " gear items");
         std::map<juce::String, juce::Array<const GearItem *>> categorizedItems;
 
         for (const auto &item : allItems)
@@ -265,17 +297,17 @@ juce::String GearTreeItem::getDisplayText() const
     switch (itemType)
     {
     case ItemType::Root:
-        return "🎵 " + itemName;
+        return "[ROOT] " + itemName;
     case ItemType::Category:
-        return "📁 " + itemName;
+        return "[DIR] " + itemName;
     case ItemType::Gear:
-        return "🔧 " + itemName;
+        return "[GEAR] " + itemName;
     case ItemType::RecentlyUsed:
-        return "⏰ " + itemName;
+        return "[RECENT] " + itemName;
     case ItemType::Favorites:
-        return "⭐ " + itemName;
+        return "[FAV] " + itemName;
     case ItemType::Message:
-        return "ℹ️ " + itemName;
+        return "[INFO] " + itemName;
     default:
         return itemName;
     }
