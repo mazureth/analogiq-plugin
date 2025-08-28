@@ -64,9 +64,9 @@ public:
     void setRackState(const juce::ValueTree &state);
 
     // Layout management
-    void setSlotLayout(int slotsPerRow, int maxRows);
+    void setSlotLayout(int numSlots);
     void setSlotSize(int width, int height);
-    void setSlotSpacing(int horizontal, int vertical);
+    void setSlotSpacing(int spacing);
 
     // Visual customization
     void setBackgroundColor(juce::Colour color);
@@ -84,6 +84,8 @@ public:
     int getFirstEmptySlot() const;
     int getLastOccupiedSlot() const;
     void compactSlots(); // Remove gaps between occupied slots
+    int getSlotHeight(int slotIndex) const; // Get dynamic height for slot
+    int getDefaultSlotHeight() const; // Get default slot height
 
     // Component listener override
     void componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized) override;
@@ -97,12 +99,10 @@ private:
     GearLibrary &gearLibrary;
 
     // Rack configuration
-    int slotsPerRow;
-    int maxRows;
+    int numSlots;
     int slotWidth;
     int slotHeight;
-    int horizontalSpacing;
-    int verticalSpacing;
+    int slotSpacing;
 
     // Visual properties
     juce::Colour backgroundColor;

@@ -21,7 +21,7 @@ Rack::Rack(INetworkFetcher &networkFetcher,
            ICacheManager &cacheManager,
            PresetManager &presetManager,
            GearLibrary &gearLibrary)
-    : networkFetcher(networkFetcher), fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary), slotsPerRow(4), maxRows(4), slotWidth(200), slotHeight(150), horizontalSpacing(10), verticalSpacing(10), backgroundColor(juce::Colours::darkgrey), slotBackgroundColor(juce::Colours::lightgrey), slotBorderColor(juce::Colours::black), showSlotNumbers(true), showGrid(true)
+    : networkFetcher(networkFetcher), fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary), numSlots(16), slotWidth(200), slotHeight(150), slotSpacing(10), backgroundColor(juce::Colours::darkgrey), slotBackgroundColor(juce::Colours::lightgrey), slotBorderColor(juce::Colours::black), showSlotNumbers(true), showGrid(false)
 {
     // Initialize the rack
     initializeRack();
@@ -51,7 +51,7 @@ void Rack::initializeRack()
     viewport->setViewedComponent(rackContainer.get(), false);
 
     // Create initial slots
-    for (int i = 0; i < slotsPerRow * maxRows; ++i)
+    for (int i = 0; i < numSlots; ++i)
     {
         createSlot(i);
     }
@@ -63,9 +63,51 @@ void Rack::initializeRack()
     loadRackState();
 }
 
+int Rack::getSlotHeight(int slotIndex) const
+{
+    if (slotIndex < 0 || slotIndex >= static_cast<int>(rackSlots.size()))
+        return getDefaultSlotHeight();
+
+    auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
+    if (slot == nullptr || slot->isEmpty())
+        return getDefaultSlotHeight();
+
+    // If the slot has a gear item with a faceplate image, use the image's height plus padding
+    auto gearItem = slot->getGearItem();
+    if (gearItem != nullptr && gearItem->faceplateImage.isValid())
+    {
+        // Calculate a reasonable height based on the faceplate image
+        // Use aspect ratio of the image, but constrained to reasonable bounds
+        int imageHeight = gearItem->faceplateImage.getHeight();
+        int imageWidth = gearItem->faceplateImage.getWidth();
+
+        if (imageHeight > 0 && imageWidth > 0)
+        {
+            // Calculate what the height would be if the width matched the slot width
+            // Add extra padding for controls and slot UI elements
+            int effectiveSlotWidth = getWidth() - (2 * slotSpacing);
+            int scaledHeight = (imageHeight * effectiveSlotWidth) / imageWidth;
+
+            // Add padding for slot UI elements (buttons, labels, etc.)
+            int paddedHeight = scaledHeight + 40; // 20px padding top and bottom
+
+            // Constrain to reasonable bounds
+            return juce::jlimit(100, 400, paddedHeight);
+        }
+    }
+
+    // Default height if no special considerations apply
+    return getDefaultSlotHeight();
+}
+
+int Rack::getDefaultSlotHeight() const
+{
+    return 150; // Default height if not overridden
+}
+
 void Rack::createSlot(int slotIndex)
 {
-    if (slotIndex < 0 || slotIndex >= slotsPerRow * maxRows)
+    if (slotIndex < 0 || slotIndex >= numSlots)
         return;
 
     auto slot = std::make_unique<RackSlot>(fileSystem, cacheManager, presetManager, gearLibrary, slotIndex);
@@ -83,27 +125,43 @@ void Rack::layoutSlots()
     if (!rackContainer)
         return;
 
-    int containerWidth = slotsPerRow * slotWidth + (slotsPerRow - 1) * horizontalSpacing;
-    int containerHeight = maxRows * slotHeight + (maxRows - 1) * verticalSpacing;
+    // Use full available width for container
+    int containerWidth = getWidth();
+    
+    // Calculate total height needed for all slots with their dynamic heights
+    int totalHeight = slotSpacing; // Start with top spacing
+    for (int i = 0; i < numSlots; ++i)
+    {
+        totalHeight += getSlotHeight(i) + slotSpacing;
+    }
 
-    rackContainer->setSize(containerWidth, containerHeight);
+    // Size the container to fit all slots with spacing
+    rackContainer->setSize(containerWidth, totalHeight);
 
     updateSlotPositions();
 }
 
 void Rack::updateSlotPositions()
 {
+    // Calculate the slot width based on container width minus margins
+    int effectiveSlotWidth = getWidth() - (2 * slotSpacing);
+    
+    // Position the slots within the container in a single vertical column
+    int currentY = slotSpacing;
     for (size_t i = 0; i < rackSlots.size(); ++i)
     {
         if (rackSlots[i])
         {
-            int row = static_cast<int>(i) / slotsPerRow;
-            int col = static_cast<int>(i) % slotsPerRow;
-
-            int x = col * (slotWidth + horizontalSpacing);
-            int y = row * (slotHeight + verticalSpacing);
-
-            rackSlots[i]->setBounds(x, y, slotWidth, slotHeight);
+            int slotHeight = getSlotHeight(static_cast<int>(i));
+            
+            rackSlots[i]->setBounds(
+                slotSpacing,           // Left margin
+                currentY,              // Current Y position
+                effectiveSlotWidth,    // Full width minus margins
+                slotHeight             // Dynamic height for this slot
+            );
+            
+            currentY += slotHeight + slotSpacing;
         }
     }
 }
@@ -112,26 +170,8 @@ void Rack::paint(juce::Graphics &g)
 {
     // Fill background
     g.fillAll(backgroundColor);
-
-    // Draw grid if enabled
-    if (showGrid)
-    {
-        g.setColour(slotBorderColor.withAlpha(0.3f));
-
-        // Draw vertical lines
-        for (int i = 1; i < slotsPerRow; ++i)
-        {
-            int x = i * (slotWidth + horizontalSpacing);
-            g.drawVerticalLine(static_cast<float>(x), 0.0f, static_cast<float>(getHeight()));
-        }
-
-        // Draw horizontal lines
-        for (int i = 1; i < maxRows; ++i)
-        {
-            int y = i * (slotHeight + verticalSpacing);
-            g.drawHorizontalLine(static_cast<float>(y), 0.0f, static_cast<float>(getWidth()));
-        }
-    }
+    
+    // No grid drawing needed for single-column vertical layout
 }
 
 void Rack::resized()
@@ -198,13 +238,23 @@ int Rack::getSlotIndexFromPosition(juce::Point<int> position) const
     // Convert to container coordinates
     juce::Point<int> containerPos = rackContainer->getLocalPoint(this, position);
 
-    // Calculate slot index based on position
-    int col = containerPos.x / (slotWidth + horizontalSpacing);
-    int row = containerPos.y / (slotHeight + verticalSpacing);
-
-    if (col >= 0 && col < slotsPerRow && row >= 0 && row < maxRows)
+    // For vertical layout, find slot based on Y position
+    int currentY = slotSpacing;
+    for (int i = 0; i < static_cast<int>(rackSlots.size()); ++i)
     {
-        return row * slotsPerRow + col;
+        int slotHeight = getSlotHeight(i);
+        int slotBottom = currentY + slotHeight;
+        
+        if (containerPos.y >= currentY && containerPos.y < slotBottom)
+        {
+            // Check if X position is within slot bounds
+            if (containerPos.x >= slotSpacing && containerPos.x < (getWidth() - slotSpacing))
+            {
+                return i;
+            }
+        }
+        
+        currentY = slotBottom + slotSpacing;
     }
 
     return -1;
@@ -389,8 +439,7 @@ void Rack::saveRackState()
     rackState = juce::ValueTree("Rack");
 
     // Save slot configuration
-    rackState.setProperty("slotsPerRow", slotsPerRow, nullptr);
-    rackState.setProperty("maxRows", maxRows, nullptr);
+    rackState.setProperty("numSlots", numSlots, nullptr);
     rackState.setProperty("slotWidth", slotWidth, nullptr);
     rackState.setProperty("slotHeight", slotHeight, nullptr);
 
@@ -415,16 +464,15 @@ void Rack::loadRackState()
         return;
 
     // Load slot configuration
-    slotsPerRow = rackState.getProperty("slotsPerRow", 4);
-    maxRows = rackState.getProperty("maxRows", 4);
+    numSlots = rackState.getProperty("numSlots", 16);
     slotWidth = rackState.getProperty("slotWidth", 200);
     slotHeight = rackState.getProperty("slotHeight", 150);
 
     // Recreate slots if configuration changed
-    if (rackSlots.size() != static_cast<size_t>(slotsPerRow * maxRows))
+    if (rackSlots.size() != static_cast<size_t>(numSlots))
     {
         clearAllSlots();
-        for (int i = 0; i < slotsPerRow * maxRows; ++i)
+        for (int i = 0; i < numSlots; ++i)
         {
             createSlot(i);
         }
@@ -455,16 +503,15 @@ void Rack::setRackState(const juce::ValueTree &state)
 }
 
 // Layout Management
-void Rack::setSlotLayout(int newSlotsPerRow, int newMaxRows)
+void Rack::setSlotLayout(int newNumSlots)
 {
-    if (slotsPerRow != newSlotsPerRow || maxRows != newMaxRows)
+    if (numSlots != newNumSlots)
     {
-        slotsPerRow = newSlotsPerRow;
-        maxRows = newMaxRows;
+        numSlots = newNumSlots;
 
         // Recreate slots
         clearAllSlots();
-        for (int i = 0; i < slotsPerRow * maxRows; ++i)
+        for (int i = 0; i < numSlots; ++i)
         {
             createSlot(i);
         }
@@ -485,12 +532,11 @@ void Rack::setSlotSize(int width, int height)
     }
 }
 
-void Rack::setSlotSpacing(int horizontal, int vertical)
+void Rack::setSlotSpacing(int spacing)
 {
-    if (horizontalSpacing != horizontal || verticalSpacing != vertical)
+    if (slotSpacing != spacing)
     {
-        horizontalSpacing = horizontal;
-        verticalSpacing = vertical;
+        slotSpacing = spacing;
         layoutSlots();
         saveRackState();
     }
