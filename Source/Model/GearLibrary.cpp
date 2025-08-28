@@ -1325,18 +1325,16 @@ bool GearLibrary::loadGearThumbnail(GearItem *gearItem)
     {
         juce::URL imageUrl(absoluteThumbnailUrl);
         bool success = false;
-        auto imageData = networkFetcher.fetchRemoteGearLibrary(imageUrl, success);
+        auto imageData = networkFetcher.fetchGearImage(imageUrl, success);
 
         juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Remote fetch " + juce::String(success ? "SUCCESS" : "FAILED") +
-                                 " - Data size: " + juce::String(imageData.getNumBytesAsUTF8()));
+                                 " - Data size: " + juce::String(imageData.getSize()));
 
-        if (success && !imageData.isEmpty())
+        if (success && imageData.getSize() > 0)
         {
-            // Convert to MemoryBlock and cache
-            juce::MemoryBlock imageBlock;
-            imageBlock.append(imageData.toRawUTF8(), imageData.getNumBytesAsUTF8());
+            // imageData is already a MemoryBlock, no conversion needed
 
-            if (cacheManager.cacheBinaryData("thumb_" + gearItem->unitId, imageBlock))
+            if (cacheManager.cacheBinaryData("thumb_" + gearItem->unitId, imageData))
             {
                 juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Successfully cached binary data");
                 // Load the cached image
