@@ -12,10 +12,13 @@ This document outlines the remaining work required to achieve 100% coverage of A
 - **Priority #3**: Complete Drag-and-Drop System 🔄 **IN PROGRESS** (60% → 100%)
 - **Priority #4**: Full State Persistence (70% → 100%)
 - **Priority #5**: Full UI Features (40% → 100%)
-- **Priority #6**: Comprehensive Testing (20% → 100%)
+- **Priority #6**: Async Network Operations and Performance Optimization 🔄 **NEW PRIORITY** (0% → 100%)
+- **Priority #7**: Comprehensive Testing (20% → 100%)
+- **Priority #8**: Error Handling and Recovery (50% → 100%)
+- **Priority #9**: Build System Refactoring (0% → 100%)
 
-**Overall Progress**: 90% Complete (up from 85%)
-**Remaining Work**: 10% (down from 15%)
+**Overall Progress**: 85% Complete (down from 90% due to new priority item)
+**Remaining Work**: 15% (up from 10%)
 
 ## REMAINING WORK CATEGORIES
 
@@ -122,46 +125,97 @@ This document outlines the remaining work required to achieve 100% coverage of A
 - [ ] Add user-defined layouts and arrangements
 - [ ] Implement accessibility features
 
-### 6. COMPREHENSIVE TESTING (20% → 100%)
+### 6. ASYNC NETWORK OPERATIONS AND PERFORMANCE OPTIMIZATION (NEW)
+**Priority: HIGH - User experience and performance**
+
+#### 6.1 Eliminate Blocking Network Calls
+- [ ] Convert synchronous network operations to async using `juce::MessageManager::callAsync()`
+- [ ] Implement non-blocking gear library initialization
+- [ ] Move network operations to background threads
+- [ ] Add loading states and progress indicators
+- [ ] Implement progressive loading (cached data first, then remote updates)
+
+#### 6.2 Network Layer Optimization
+- [ ] Reduce network timeout from 10s to 2-3s
+- [ ] Implement progressive timeout strategy
+- [ ] Add network health checks before making requests
+- [ ] Implement retry logic with exponential backoff
+- [ ] Add offline-first architecture with sync when online
+
+#### 6.3 UI Responsiveness Improvements
+- [ ] Show cached data immediately during plugin load
+- [ ] Implement skeleton UI for loading states
+- [ ] Add background sync with user notifications
+- [ ] Implement progressive gear library population
+- [ ] Add loading spinners and progress bars
+
+### 7. COMPREHENSIVE TESTING (20% → 100%)
 **Priority: MEDIUM - Quality assurance**
 
-#### 6.1 Unit Testing
+#### 7.1 Unit Testing
 - [ ] Write tests for all Model components
 - [ ] Write tests for all View components
 - [ ] Write tests for all Controller components
 - [ ] Implement mock systems for testing
 - [ ] Add test coverage reporting
+- [ ] **Update tests to handle async operations and mock network layer**
 
-#### 6.2 Integration Testing
+#### 7.2 Integration Testing
 - [ ] Test complete MVC workflow
 - [ ] Test preset save/load cycles
 - [ ] Test gear library operations
 - [ ] Test rack operations and state persistence
 - [ ] Test error handling and recovery
+- [ ] **Test async network operations and loading states**
 
-#### 6.3 Performance Testing
+#### 7.3 Performance Testing
 - [ ] Test with large gear libraries
 - [ ] Test memory usage and leaks
 - [ ] Test startup and shutdown performance
 - [ ] Test UI responsiveness
 - [ ] Test VST3 compatibility and stability
+- [ ] **Test plugin loading time (target: <1 second)**
+- [ ] **Test network operation performance and timeouts**
 
-### 7. ERROR HANDLING AND RECOVERY (50% → 100%)
+### 8. ERROR HANDLING AND RECOVERY (50% → 100%)
 **Priority: MEDIUM - Stability**
 
-#### 7.1 Comprehensive Error Handling
+#### 8.1 Comprehensive Error Handling
 - [ ] Implement error handling for all operations
 - [ ] Add user-friendly error messages
 - [ ] Implement error recovery mechanisms
 - [ ] Add error logging and reporting
 - [ ] Implement graceful degradation
 
-#### 7.2 Data Validation
+#### 8.2 Data Validation
 - [ ] Add input validation for all user inputs
 - [ ] Implement data integrity checking
 - [ ] Add validation for gear library data
 - [ ] Implement preset validation
 - [ ] Add rack state validation
+
+## 9. BUILD SYSTEM REFACTORING AND VALIDATION (NEW)
+**Priority: LOW - Infrastructure maintenance**
+
+#### 9.1 Build System Investigation
+- [ ] Investigate and document current CMake structure across Model/View/Controller/Shared folders
+- [ ] Confirm all source files are being compiled through appropriate targets
+- [ ] Identify any missing source file inclusions or duplicate compilation
+- [ ] Document the relationship between main CMakeLists.txt and subdirectory CMakeLists.txt files
+
+#### 9.2 Build System Consolidation
+- [ ] Evaluate whether current multi-target approach is optimal for maintainability
+- [ ] Consider consolidating to single target with proper source organization
+- [ ] Ensure consistent include paths and dependency management
+- [ ] Validate that all necessary files are included in final plugin binary
+
+#### 9.3 Build System Documentation
+- [ ] Document the complete build process and target relationships
+- [ ] Create clear guidelines for adding new source files
+- [ ] Document any special compilation requirements or flags
+- [ ] Ensure build system is maintainable for future developers
+
+**Note**: This section is lower priority and should be addressed after core functionality is complete. The current system works but may benefit from consolidation for long-term maintainability.
 
 ## IMPLEMENTATION PRIORITY ORDER
 
@@ -215,26 +269,3 @@ This document outlines the remaining work required to achieve 100% coverage of A
 The remaining 25% represents the difference between a working foundation and a complete legacy replacement. This work must focus on **functional completeness**, not architectural improvements. The goal is to achieve 100% legacy functionality coverage while maintaining the superior MVC architecture we've built.
 
 **Remember: Architecture is complete. Now we need features.**
-
-## 8. BUILD SYSTEM REFACTORING AND VALIDATION (NEW)
-**Priority: LOW - Infrastructure maintenance**
-
-#### 8.1 Build System Investigation
-- [ ] Investigate and document current CMake structure across Model/View/Controller/Shared folders
-- [ ] Confirm all source files are being compiled through appropriate targets
-- [ ] Identify any missing source file inclusions or duplicate compilation
-- [ ] Document the relationship between main CMakeLists.txt and subdirectory CMakeLists.txt files
-
-#### 8.2 Build System Consolidation
-- [ ] Evaluate whether current multi-target approach is optimal for maintainability
-- [ ] Consider consolidating to single target with proper source organization
-- [ ] Ensure consistent include paths and dependency management
-- [ ] Validate that all necessary files are included in final plugin binary
-
-#### 8.3 Build System Documentation
-- [ ] Document the complete build process and target relationships
-- [ ] Create clear guidelines for adding new source files
-- [ ] Document any special compilation requirements or flags
-- [ ] Ensure build system is maintainable for future developers
-
-**Note**: This section is lower priority and should be addressed after core functionality is complete. The current system works but may benefit from consolidation for long-term maintainability.
