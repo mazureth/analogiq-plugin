@@ -132,19 +132,23 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     addAndMakeVisible(debugLoadButton);
 
     debugClearCacheButton.setButtonText("Clear All Cache");
-    debugClearCacheButton.onClick = [this]() { clearAllCache(); };
+    debugClearCacheButton.onClick = [this]()
+    { clearAllCache(); };
     addAndMakeVisible(debugClearCacheButton);
 
     debugClearGearButton.setButtonText("Clear Gear Cache");
-    debugClearGearButton.onClick = [this]() { clearGearLibraryCache(); };
+    debugClearGearButton.onClick = [this]()
+    { clearGearLibraryCache(); };
     addAndMakeVisible(debugClearGearButton);
 
     debugClearPresetsButton.setButtonText("Clear Presets");
-    debugClearPresetsButton.onClick = [this]() { clearPresetCache(); };
+    debugClearPresetsButton.onClick = [this]()
+    { clearPresetCache(); };
     addAndMakeVisible(debugClearPresetsButton);
 
     debugFreshInstallButton.setButtonText("Fresh Install");
-    debugFreshInstallButton.onClick = [this]() { simulateFreshInstall(); };
+    debugFreshInstallButton.onClick = [this]()
+    { simulateFreshInstall(); };
     addAndMakeVisible(debugFreshInstallButton);
 #endif
 
@@ -604,12 +608,12 @@ void AnalogIQEditor::clearAllCache()
     {
         cacheManager->clearCache();
         juce::Logger::writeToLog("[Debug] All cache cleared");
-        
+
         // Show confirmation dialog
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
-                                              "Cache Cleared",
-                                              "All cache data has been cleared.\n\nThis simulates a fresh install.",
-                                              "OK");
+                                               "Cache Cleared",
+                                               "All cache data has been cleared.\n\nThis simulates a fresh install.",
+                                               "OK");
     }
 }
 
@@ -621,68 +625,167 @@ void AnalogIQEditor::clearGearLibraryCache()
         // This would need to be implemented in CacheManager to clear specific cache types
         cacheManager->clearCache();
         juce::Logger::writeToLog("[Debug] Gear library cache cleared");
-        
+
         // Show confirmation dialog
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
-                                              "Gear Cache Cleared",
-                                              "Gear library cache has been cleared.",
-                                              "OK");
+                                               "Gear Cache Cleared",
+                                               "Gear library cache has been cleared.",
+                                               "OK");
     }
 }
 
 void AnalogIQEditor::clearPresetCache()
 {
-    if (presetManager)
+    if (!fileSystem)
     {
-        // Clear all presets
-        // This would need to be implemented in PresetManager
-        juce::Logger::writeToLog("[Debug] Preset cache cleared");
-        
-        // Show confirmation dialog
-        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
-                                              "Presets Cleared",
-                                              "All presets have been cleared.",
-                                              "OK");
+        juce::Logger::writeToLog("[Debug] Error: FileSystem not available for preset clearing");
+        return;
     }
+
+    juce::Logger::writeToLog("[Debug] Starting preset cache clearing...");
+
+    // Clear preset metadata files
+    juce::String cacheRoot = fileSystem->getCacheRootDirectory();
+    juce::String presetsDir = fileSystem->joinPath(cacheRoot, "Presets");
+    
+    if (fileSystem->directoryExists(presetsDir))
+    {
+        // Remove preset metadata files
+        juce::StringArray presetFiles = fileSystem->getFiles(presetsDir);
+        int deletedCount = 0;
+        
+        for (auto &file : presetFiles)
+        {
+            juce::String filePath = fileSystem->joinPath(presetsDir, file);
+            if (fileSystem->deleteFile(filePath))
+            {
+                deletedCount++;
+                juce::Logger::writeToLog("[Debug] Deleted preset file: " + file);
+            }
+            else
+            {
+                juce::Logger::writeToLog("[Debug] Failed to delete preset file: " + file);
+            }
+        }
+        
+        juce::Logger::writeToLog("[Debug] Preset cache cleared: " + juce::String(deletedCount) + " files deleted");
+    }
+    else
+    {
+        juce::Logger::writeToLog("[Debug] Presets directory does not exist");
+    }
+
+    // Reset UI state
+    currentPresetName = "";
+    clearModifiedState();
+
+    // Show confirmation dialog
+    juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                           "Presets Cleared",
+                                           "All preset files have been cleared from disk.\n\n"
+                                           "The plugin will now behave as if no presets were ever saved.",
+                                           "OK");
 }
 
 void AnalogIQEditor::simulateFreshInstall()
 {
-    // Clear all cache
+    if (!fileSystem)
+    {
+        juce::Logger::writeToLog("[Debug] Error: FileSystem not available for fresh install");
+        return;
+    }
+
+    juce::Logger::writeToLog("[Debug] Starting fresh install simulation...");
+
+    // 1. Clear all asset cache
     if (cacheManager)
     {
         cacheManager->clearCache();
+        juce::Logger::writeToLog("[Debug] Asset cache cleared");
     }
+
+    // 2. Clear user preference files
+    juce::String cacheRoot = fileSystem->getCacheRootDirectory();
     
-    // Clear gear library
+    // Remove favorites.json
+    juce::String favoritesPath = fileSystem->joinPath(cacheRoot, "favorites.json");
+    if (fileSystem->fileExists(favoritesPath))
+    {
+        if (fileSystem->deleteFile(favoritesPath))
+            juce::Logger::writeToLog("[Debug] favorites.json deleted");
+        else
+            juce::Logger::writeToLog("[Debug] Failed to delete favorites.json");
+    }
+
+    // Remove recently_used.json
+    juce::String recentlyUsedPath = fileSystem->joinPath(cacheRoot, "recently_used.json");
+    if (fileSystem->fileExists(recentlyUsedPath))
+    {
+        if (fileSystem->deleteFile(recentlyUsedPath))
+            juce::Logger::writeToLog("[Debug] recently_used.json deleted");
+        else
+            juce::Logger::writeToLog("[Debug] Failed to delete recently_used.json");
+    }
+
+    // 3. Clear gear library metadata files
+    juce::String gearLibraryDir = fileSystem->joinPath(cacheRoot, "GearLibrary");
+    if (fileSystem->directoryExists(gearLibraryDir))
+    {
+        // Remove gear library metadata files
+        juce::StringArray gearFiles = fileSystem->getFiles(gearLibraryDir);
+        for (auto &file : gearFiles)
+        {
+            juce::String filePath = fileSystem->joinPath(gearLibraryDir, file);
+            if (fileSystem->deleteFile(filePath))
+                juce::Logger::writeToLog("[Debug] Deleted gear library file: " + file);
+            else
+                juce::Logger::writeToLog("[Debug] Failed to delete gear library file: " + file);
+        }
+    }
+
+    // 4. Clear preset metadata files
+    juce::String presetsDir = fileSystem->joinPath(cacheRoot, "Presets");
+    if (fileSystem->directoryExists(presetsDir))
+    {
+        // Remove preset metadata files
+        juce::StringArray presetFiles = fileSystem->getFiles(presetsDir);
+        for (auto &file : presetFiles)
+        {
+            juce::String filePath = fileSystem->joinPath(presetsDir, file);
+            if (fileSystem->deleteFile(filePath))
+                juce::Logger::writeToLog("[Debug] Deleted preset file: " + file);
+            else
+                juce::Logger::writeToLog("[Debug] Failed to delete preset file: " + file);
+        }
+    }
+
+    // 5. Clear gear library in memory
     if (gearLibrary)
     {
         gearLibrary->clearAllGearItems();
+        juce::Logger::writeToLog("[Debug] Gear library memory cleared");
     }
-    
-    // Clear presets
-    if (presetManager)
-    {
-        // This would need to be implemented in PresetManager
-        juce::Logger::writeToLog("[Debug] All presets cleared");
-    }
-    
-    // Reset UI state
+
+    // 6. Reset UI state
     currentPresetName = "";
     clearModifiedState();
-    
-    // Refresh the gear library tree
+    juce::Logger::writeToLog("[Debug] UI state reset");
+
+    // 7. Refresh the gear library tree
     if (gearLibraryTree)
     {
         gearLibraryTree->repaint();
+        juce::Logger::writeToLog("[Debug] Gear library tree refreshed");
     }
-    
-    juce::Logger::writeToLog("[Debug] Fresh install simulation completed");
-    
+
+    juce::Logger::writeToLog("[Debug] Fresh install simulation completed successfully");
+
     // Show confirmation dialog
     juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
-                                          "Fresh Install Simulated",
-                                          "Plugin has been reset to fresh install state.\n\nAll cache, gear items, and presets have been cleared.",
-                                          "OK");
+                                           "Fresh Install Simulated",
+                                           "Plugin has been reset to fresh install state.\n\n"
+                                           "All cache, user preferences, gear items, and presets have been cleared.\n\n"
+                                           "The plugin will now behave as if it was just installed for the first time.",
+                                           "OK");
 }
 #endif

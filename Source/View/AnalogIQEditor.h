@@ -220,10 +220,10 @@ private:
 
 #ifdef JUCE_DEBUG
     // Debug Components
-    juce::TextButton debugSaveButton{"DebugSaveButton"}; ///< Debug button for manual state save
-    juce::TextButton debugLoadButton{"DebugLoadButton"}; ///< Debug button for manual state load
-    juce::TextButton debugClearCacheButton{"DebugClearCacheButton"}; ///< Debug button for clearing all cache
-    juce::TextButton debugClearGearButton{"DebugClearGearButton"}; ///< Debug button for clearing gear library cache
+    juce::TextButton debugSaveButton{"DebugSaveButton"};                 ///< Debug button for manual state save
+    juce::TextButton debugLoadButton{"DebugLoadButton"};                 ///< Debug button for manual state load
+    juce::TextButton debugClearCacheButton{"DebugClearCacheButton"};     ///< Debug button for clearing all cache
+    juce::TextButton debugClearGearButton{"DebugClearGearButton"};       ///< Debug button for clearing gear library cache
     juce::TextButton debugClearPresetsButton{"DebugClearPresetsButton"}; ///< Debug button for clearing presets
     juce::TextButton debugFreshInstallButton{"DebugFreshInstallButton"}; ///< Debug button for simulating fresh install
 #endif
