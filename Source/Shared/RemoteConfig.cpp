@@ -26,10 +26,9 @@ juce::String RemoteConfig::getSchemaUrl(const juce::String &schemaPath)
 
 juce::String RemoteConfig::getThumbnailUrl(const juce::String &thumbnailPath)
 {
-    if (thumbnailPath.startsWith("/"))
-        return makeAbsoluteUrl(THUMBNAILS_BASE_URL, thumbnailPath);
-    else
-        return makeAbsoluteUrl(THUMBNAILS_BASE_URL, thumbnailPath);
+    // The thumbnailPath from JSON is already relative to THUMBNAILS_BASE_URL
+    // So we pass it directly to makeAbsoluteUrl
+    return makeAbsoluteUrl(THUMBNAILS_BASE_URL, thumbnailPath);
 }
 
 bool RemoteConfig::isValidUrl(const juce::String &url)

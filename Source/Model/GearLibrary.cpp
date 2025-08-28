@@ -1317,6 +1317,8 @@ bool GearLibrary::loadGearThumbnail(GearItem *gearItem)
     // Convert relative thumbnail path to absolute URL
     juce::String absoluteThumbnailUrl = RemoteConfig::getThumbnailUrl(gearItem->imageUrl);
     juce::Logger::writeToLog("GearLibrary: Loading thumbnail from: " + absoluteThumbnailUrl);
+    juce::Logger::writeToLog("GearLibrary: Original imageUrl: '" + gearItem->imageUrl + "'");
+    juce::Logger::writeToLog("GearLibrary: Constructed absolute URL: '" + absoluteThumbnailUrl + "'");
 
     // Try to fetch thumbnail from remote
     try
