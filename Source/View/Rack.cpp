@@ -56,8 +56,8 @@ void Rack::initializeRack()
         createSlot(i);
     }
 
-    // Layout the slots
-    layoutSlots();
+    // Don't layout slots yet - wait for resized() to be called
+    // This ensures the Rack component has proper dimensions
 
     // Load saved rack state
     loadRackState();
@@ -128,6 +128,10 @@ void Rack::layoutSlots()
     // Use full available width for container
     int containerWidth = getWidth();
 
+    // Safety check - don't layout if we don't have a valid width yet
+    if (containerWidth <= 0)
+        return;
+
     // Calculate total height needed for all slots with their dynamic heights
     int totalHeight = slotSpacing; // Start with top spacing
     for (int i = 0; i < numSlots; ++i)
@@ -179,6 +183,12 @@ void Rack::resized()
     if (viewport)
     {
         viewport->setBounds(getLocalBounds());
+    }
+
+    // Now that we have proper dimensions, layout the slots
+    if (rackContainer && getWidth() > 0)
+    {
+        layoutSlots();
     }
 }
 
