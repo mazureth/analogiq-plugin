@@ -736,6 +736,12 @@ void GearLibrary::clearAllGearItems()
     saveCategories();
 }
 
+void GearLibrary::resetInitialization()
+{
+    initialized = false;
+    juce::Logger::writeToLog("GearLibrary: Initialization flag reset to false");
+}
+
 bool GearLibrary::createGearCategory(const juce::String &categoryName)
 {
     if (categoryName.isEmpty() || categories.find(categoryName) != categories.end())

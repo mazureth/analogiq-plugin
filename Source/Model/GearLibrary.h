@@ -90,6 +90,7 @@ public:
 
     // Lazy initialization
     bool initialized;
+    void resetInitialization();
 
 private:
     struct GearCategory

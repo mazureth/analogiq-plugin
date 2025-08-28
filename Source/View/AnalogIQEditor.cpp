@@ -647,13 +647,13 @@ void AnalogIQEditor::clearPresetCache()
     // Clear preset metadata files
     juce::String cacheRoot = fileSystem->getCacheRootDirectory();
     juce::String presetsDir = fileSystem->joinPath(cacheRoot, "Presets");
-    
+
     if (fileSystem->directoryExists(presetsDir))
     {
         // Remove preset metadata files
         juce::StringArray presetFiles = fileSystem->getFiles(presetsDir);
         int deletedCount = 0;
-        
+
         for (auto &file : presetFiles)
         {
             juce::String filePath = fileSystem->joinPath(presetsDir, file);
@@ -667,7 +667,7 @@ void AnalogIQEditor::clearPresetCache()
                 juce::Logger::writeToLog("[Debug] Failed to delete preset file: " + file);
             }
         }
-        
+
         juce::Logger::writeToLog("[Debug] Preset cache cleared: " + juce::String(deletedCount) + " files deleted");
     }
     else
@@ -706,7 +706,7 @@ void AnalogIQEditor::simulateFreshInstall()
 
     // 2. Clear user preference files
     juce::String cacheRoot = fileSystem->getCacheRootDirectory();
-    
+
     // Remove favorites.json
     juce::String favoritesPath = fileSystem->joinPath(cacheRoot, "favorites.json");
     if (fileSystem->fileExists(favoritesPath))
@@ -759,11 +759,13 @@ void AnalogIQEditor::simulateFreshInstall()
         }
     }
 
-    // 5. Clear gear library in memory
+    // 5. Clear gear library in memory and reset initialization flag
     if (gearLibrary)
     {
         gearLibrary->clearAllGearItems();
-        juce::Logger::writeToLog("[Debug] Gear library memory cleared");
+        // Reset the initialized flag to prevent automatic re-population
+        gearLibrary->resetInitialization();
+        juce::Logger::writeToLog("[Debug] Gear library memory cleared and initialization reset");
     }
 
     // 6. Reset UI state
