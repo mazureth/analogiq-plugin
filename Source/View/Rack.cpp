@@ -127,7 +127,7 @@ void Rack::layoutSlots()
 
     // Use full available width for container
     int containerWidth = getWidth();
-    
+
     // Calculate total height needed for all slots with their dynamic heights
     int totalHeight = slotSpacing; // Start with top spacing
     for (int i = 0; i < numSlots; ++i)
@@ -145,7 +145,7 @@ void Rack::updateSlotPositions()
 {
     // Calculate the slot width based on container width minus margins
     int effectiveSlotWidth = getWidth() - (2 * slotSpacing);
-    
+
     // Position the slots within the container in a single vertical column
     int currentY = slotSpacing;
     for (size_t i = 0; i < rackSlots.size(); ++i)
@@ -153,14 +153,14 @@ void Rack::updateSlotPositions()
         if (rackSlots[i])
         {
             int slotHeight = getSlotHeight(static_cast<int>(i));
-            
+
             rackSlots[i]->setBounds(
-                slotSpacing,           // Left margin
-                currentY,              // Current Y position
-                effectiveSlotWidth,    // Full width minus margins
-                slotHeight             // Dynamic height for this slot
+                slotSpacing,        // Left margin
+                currentY,           // Current Y position
+                effectiveSlotWidth, // Full width minus margins
+                slotHeight          // Dynamic height for this slot
             );
-            
+
             currentY += slotHeight + slotSpacing;
         }
     }
@@ -170,7 +170,7 @@ void Rack::paint(juce::Graphics &g)
 {
     // Fill background
     g.fillAll(backgroundColor);
-    
+
     // No grid drawing needed for single-column vertical layout
 }
 
@@ -244,7 +244,7 @@ int Rack::getSlotIndexFromPosition(juce::Point<int> position) const
     {
         int slotHeight = getSlotHeight(i);
         int slotBottom = currentY + slotHeight;
-        
+
         if (containerPos.y >= currentY && containerPos.y < slotBottom)
         {
             // Check if X position is within slot bounds
@@ -253,7 +253,7 @@ int Rack::getSlotIndexFromPosition(juce::Point<int> position) const
                 return i;
             }
         }
-        
+
         currentY = slotBottom + slotSpacing;
     }
 

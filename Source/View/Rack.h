@@ -83,9 +83,9 @@ public:
     bool isSlotOccupied(int slotIndex) const;
     int getFirstEmptySlot() const;
     int getLastOccupiedSlot() const;
-    void compactSlots(); // Remove gaps between occupied slots
+    void compactSlots();                    // Remove gaps between occupied slots
     int getSlotHeight(int slotIndex) const; // Get dynamic height for slot
-    int getDefaultSlotHeight() const; // Get default slot height
+    int getDefaultSlotHeight() const;       // Get default slot height
 
     // Component listener override
     void componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized) override;
