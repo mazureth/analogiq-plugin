@@ -180,6 +180,28 @@ private:
      */
     void clearModifiedState();
 
+#ifdef JUCE_DEBUG
+    /**
+     * @brief Clears all cache data (simulates fresh install).
+     */
+    void clearAllCache();
+
+    /**
+     * @brief Clears only gear library cache.
+     */
+    void clearGearLibraryCache();
+
+    /**
+     * @brief Clears only preset cache.
+     */
+    void clearPresetCache();
+
+    /**
+     * @brief Simulates a complete fresh install by clearing all data.
+     */
+    void simulateFreshInstall();
+#endif
+
 private:
     AnalogIQProcessor &processor;
     IFileSystem *fileSystem;
@@ -200,6 +222,10 @@ private:
     // Debug Components
     juce::TextButton debugSaveButton{"DebugSaveButton"}; ///< Debug button for manual state save
     juce::TextButton debugLoadButton{"DebugLoadButton"}; ///< Debug button for manual state load
+    juce::TextButton debugClearCacheButton{"DebugClearCacheButton"}; ///< Debug button for clearing all cache
+    juce::TextButton debugClearGearButton{"DebugClearGearButton"}; ///< Debug button for clearing gear library cache
+    juce::TextButton debugClearPresetsButton{"DebugClearPresetsButton"}; ///< Debug button for clearing presets
+    juce::TextButton debugFreshInstallButton{"DebugFreshInstallButton"}; ///< Debug button for simulating fresh install
 #endif
 
     // State tracking

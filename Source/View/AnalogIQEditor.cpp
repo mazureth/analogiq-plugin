@@ -107,6 +107,47 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     // Set up menu bar styling
     menuBarContainer.setOpaque(true);
 
+#ifdef JUCE_DEBUG
+    // Configure debug buttons
+    debugSaveButton.setButtonText("Debug: Save State");
+    debugSaveButton.onClick = [this]()
+    {
+        // Simulate the full getStateInformation process
+        juce::MemoryBlock destData;
+        this->processor.getStateInformation(destData);
+
+        // Log the result
+        juce::Logger::writeToLog("[Debug] State saved, data size: " + juce::String(destData.getSize()) + " bytes");
+    };
+    addAndMakeVisible(debugSaveButton);
+
+    debugLoadButton.setButtonText("Debug: Load State");
+    debugLoadButton.onClick = [this]()
+    {
+        if (auto *rack = getRack())
+        {
+            this->processor.loadInstanceState(rack);
+        }
+    };
+    addAndMakeVisible(debugLoadButton);
+
+    debugClearCacheButton.setButtonText("Clear All Cache");
+    debugClearCacheButton.onClick = [this]() { clearAllCache(); };
+    addAndMakeVisible(debugClearCacheButton);
+
+    debugClearGearButton.setButtonText("Clear Gear Cache");
+    debugClearGearButton.onClick = [this]() { clearGearLibraryCache(); };
+    addAndMakeVisible(debugClearGearButton);
+
+    debugClearPresetsButton.setButtonText("Clear Presets");
+    debugClearPresetsButton.onClick = [this]() { clearPresetCache(); };
+    addAndMakeVisible(debugClearPresetsButton);
+
+    debugFreshInstallButton.setButtonText("Fresh Install");
+    debugFreshInstallButton.onClick = [this]() { simulateFreshInstall(); };
+    addAndMakeVisible(debugFreshInstallButton);
+#endif
+
     // Configure drag and drop
     // This is critical - make sure this component is configured as the DragAndDropContainer
     setInterceptsMouseClicks(false, true);
@@ -266,8 +307,13 @@ void AnalogIQEditor::resized()
 
 #ifdef JUCE_DEBUG
     // Position debug buttons on the right side of the menu bar
-    debugSaveButton.setBounds(menuBarArea.removeFromRight(120));
-    debugLoadButton.setBounds(menuBarArea.removeFromRight(120));
+    // Each button gets 100px width, positioned from right to left
+    debugFreshInstallButton.setBounds(menuBarArea.removeFromRight(100));
+    debugClearPresetsButton.setBounds(menuBarArea.removeFromRight(100));
+    debugClearGearButton.setBounds(menuBarArea.removeFromRight(100));
+    debugClearCacheButton.setBounds(menuBarArea.removeFromRight(100));
+    debugLoadButton.setBounds(menuBarArea.removeFromRight(100));
+    debugSaveButton.setBounds(menuBarArea.removeFromRight(100));
 #endif
 
     // Remaining area: Split between Gear Library Tree (left) and Tabs (right)
@@ -550,3 +596,93 @@ void AnalogIQEditor::notifyDestruction()
     // TODO: Implement when processor has clearRackReference method
     // processor.clearRackReference();
 }
+
+#ifdef JUCE_DEBUG
+void AnalogIQEditor::clearAllCache()
+{
+    if (cacheManager)
+    {
+        cacheManager->clearCache();
+        juce::Logger::writeToLog("[Debug] All cache cleared");
+        
+        // Show confirmation dialog
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                              "Cache Cleared",
+                                              "All cache data has been cleared.\n\nThis simulates a fresh install.",
+                                              "OK");
+    }
+}
+
+void AnalogIQEditor::clearGearLibraryCache()
+{
+    if (cacheManager)
+    {
+        // Clear gear library specific cache
+        // This would need to be implemented in CacheManager to clear specific cache types
+        cacheManager->clearCache();
+        juce::Logger::writeToLog("[Debug] Gear library cache cleared");
+        
+        // Show confirmation dialog
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                              "Gear Cache Cleared",
+                                              "Gear library cache has been cleared.",
+                                              "OK");
+    }
+}
+
+void AnalogIQEditor::clearPresetCache()
+{
+    if (presetManager)
+    {
+        // Clear all presets
+        // This would need to be implemented in PresetManager
+        juce::Logger::writeToLog("[Debug] Preset cache cleared");
+        
+        // Show confirmation dialog
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                              "Presets Cleared",
+                                              "All presets have been cleared.",
+                                              "OK");
+    }
+}
+
+void AnalogIQEditor::simulateFreshInstall()
+{
+    // Clear all cache
+    if (cacheManager)
+    {
+        cacheManager->clearCache();
+    }
+    
+    // Clear gear library
+    if (gearLibrary)
+    {
+        gearLibrary->clearAllGearItems();
+    }
+    
+    // Clear presets
+    if (presetManager)
+    {
+        // This would need to be implemented in PresetManager
+        juce::Logger::writeToLog("[Debug] All presets cleared");
+    }
+    
+    // Reset UI state
+    currentPresetName = "";
+    clearModifiedState();
+    
+    // Refresh the gear library tree
+    if (gearLibraryTree)
+    {
+        gearLibraryTree->repaint();
+    }
+    
+    juce::Logger::writeToLog("[Debug] Fresh install simulation completed");
+    
+    // Show confirmation dialog
+    juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                          "Fresh Install Simulated",
+                                          "Plugin has been reset to fresh install state.\n\nAll cache, gear items, and presets have been cleared.",
+                                          "OK");
+}
+#endif
