@@ -46,6 +46,7 @@ public:
 
     // Rack management
     void addRackSlot(int slotIndex);
+    void insertRackSlot(int slotIndex);
     void removeRackSlot(int slotIndex);
     void clearAllSlots();
     int getSlotCount() const;

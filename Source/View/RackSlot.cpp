@@ -9,6 +9,7 @@
  */
 
 #include "RackSlot.h"
+#include "Rack.h"
 #include "../Model/GearItem.h"
 
 /**
@@ -240,15 +241,15 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
 
     // Extract gear ID from drag description
     juce::String description = dragSourceDetails.description.toString();
-    
+
     // Check if this is a gear item drop
     if (description.startsWith("gear:"))
     {
         juce::String gearId = description.substring(5); // Remove "gear:" prefix
-        
+
         // Get the gear item from the library
         GearItem *gearItem = gearLibrary.getGearItem(gearId);
-        
+
         if (gearItem)
         {
             // Check if slot is empty
@@ -256,19 +257,43 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
             {
                 // Add to recently used
                 cacheManager.addToRecentlyUsed(gearId);
-                
+
                 // Set the gear item in this slot
                 setGearItem(gearItem);
-                
+
                 // Log successful drop
                 juce::Logger::writeToLog("[RackSlot " + juce::String(index) + "] Gear item '" + gearItem->name + "' dropped successfully");
             }
             else
             {
-                // Slot is occupied - show error
-                juce::Logger::writeToLog("[RackSlot " + juce::String(index) + "] Cannot drop gear - slot is occupied");
-                
-                // Show error dialog
+                // Slot is occupied - delegate to parent Rack for insertion logic
+                juce::Logger::writeToLog("[RackSlot " + juce::String(index) + "] Slot is occupied, delegating to parent Rack for insertion");
+
+                // Find the parent Rack component and delegate the drop
+                juce::Component *parent = getParentComponent();
+                while (parent != nullptr)
+                {
+                    // Check if parent is a Rack (by class type, not just ID)
+                    if (parent->getComponentID() == "Rack" || dynamic_cast<Rack *>(parent) != nullptr)
+                    {
+                        // Convert the drop position to parent coordinates
+                        juce::DragAndDropTarget::SourceDetails parentDetails = dragSourceDetails;
+                        parentDetails.localPosition = parent->getLocalPoint(this, dragSourceDetails.localPosition);
+
+                        // Delegate to parent's itemDropped method
+                        if (auto *rackTarget = dynamic_cast<juce::DragAndDropTarget *>(parent))
+                        {
+                            juce::Logger::writeToLog("[RackSlot " + juce::String(index) + "] Found parent Rack, delegating drop");
+                            rackTarget->itemDropped(parentDetails);
+                        }
+                        return;
+                    }
+                    juce::Logger::writeToLog("[RackSlot " + juce::String(index) + "] Checking parent: " + parent->getComponentID());
+                    parent = parent->getParentComponent();
+                }
+
+                // If no parent Rack found, show error
+                juce::Logger::writeToLog("[RackSlot " + juce::String(index) + "] No parent Rack found, showing error");
                 juce::AlertWindow::showMessageBoxAsync(
                     juce::MessageBoxIconType::WarningIcon,
                     "Slot Occupied",
