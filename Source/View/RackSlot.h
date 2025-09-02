@@ -15,6 +15,7 @@
 #include "../Shared/ICacheManager.h"
 #include "../Model/PresetManager.h"
 #include "../Model/GearLibrary.h"
+#include "../Shared/GearControl.h"
 
 // Forward declarations
 class Rack;
@@ -181,6 +182,28 @@ public:
      */
     void clearGearItem();
 
+    // Faceplate scaling and control rendering
+    /**
+     * @brief Gets the current faceplate scale for this slot.
+     *
+     * @return The current scale factor (1.0 = original size)
+     */
+    float getCurrentFaceplateScale() const { return currentFaceplateScale; }
+
+    /**
+     * @brief Calculates the optimal faceplate scale for this slot.
+     *
+     * @return The calculated scale factor
+     */
+    float calculateOptimalFaceplateScale() const;
+
+    /**
+     * @brief Draws all controls for the gear item with proper scaling.
+     *
+     * @param g The graphics context to paint with
+     */
+    void drawControls(juce::Graphics &g);
+
     /**
      * @brief Checks if the slot is empty.
      *
@@ -194,6 +217,13 @@ public:
      * @return The index of this slot
      */
     int getSlotIndex() const { return index; }
+
+private:
+    // Helper methods for drawing individual control types
+    void drawButtonControl(juce::Graphics &g, const GearControl &control);
+    void drawFaderControl(juce::Graphics &g, const GearControl &control);
+    void drawSwitchControl(juce::Graphics &g, const GearControl &control);
+    void drawKnobControl(juce::Graphics &g, const GearControl &control);
 
 private:
     // Slot information
@@ -214,6 +244,9 @@ private:
 
     // Drag and drop state
     bool isDragOver = false; ///< Whether a drag operation is currently over this slot
+
+    // Faceplate scaling
+    float currentFaceplateScale = 1.0f; ///< Current scale factor for faceplate and controls
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RackSlot)
 };

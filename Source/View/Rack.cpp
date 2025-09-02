@@ -195,46 +195,95 @@ void Rack::resized()
 // Drag and Drop Implementation
 bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
+    juce::Logger::writeToLog("Rack: isInterestedInDragSource called");
+    juce::Logger::writeToLog("Rack: Drag description: '" + dragSourceDetails.description.toString() + "'");
+    juce::Logger::writeToLog("Rack: Source component: " + (dragSourceDetails.sourceComponent ? dragSourceDetails.sourceComponent->getComponentID() : "null"));
+
     // Check if the drag source contains gear data
     juce::String description = dragSourceDetails.description.toString();
-    return description.startsWith("gear:");
+    bool interested = description.startsWith("gear:");
+
+    juce::Logger::writeToLog("Rack: Interested in drag source: " + juce::String(interested ? "YES" : "NO"));
+    return interested;
 }
 
 void Rack::itemDragEnter(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
+    juce::Logger::writeToLog("Rack: itemDragEnter called");
+    juce::Logger::writeToLog("Rack: Drag description: '" + dragSourceDetails.description.toString() + "'");
+
     // Highlight the rack to show it's a valid drop target
     repaint();
 }
 
 void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
+    juce::Logger::writeToLog("Rack: itemDragMove called at position: " + dragSourceDetails.localPosition.toString());
+
     // Update visual feedback during drag
     repaint();
 }
 
 void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
+    juce::Logger::writeToLog("Rack: itemDragExit called");
+
     // Remove drag feedback
     repaint();
 }
 
 void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
+    juce::Logger::writeToLog("Rack: itemDropped called");
+    juce::Logger::writeToLog("Rack: Drop position: " + dragSourceDetails.localPosition.toString());
+    juce::Logger::writeToLog("Rack: Drag description: '" + dragSourceDetails.description.toString() + "'");
+    juce::Logger::writeToLog("Rack: Source component: " + (dragSourceDetails.sourceComponent ? dragSourceDetails.sourceComponent->getComponentID() : "null"));
+
     // Extract gear ID from drag description
     juce::String description = dragSourceDetails.description.toString();
-    juce::String gearId = description.substring(5); // Remove "gear:" prefix
+    juce::Logger::writeToLog("Rack: Full description: '" + description + "'");
 
-    // Convert drop position to slot index
-    juce::Point<int> dropPos = dragSourceDetails.localPosition;
-    int slotIndex = getSlotIndexFromPosition(dropPos);
-
-    if (slotIndex >= 0 && static_cast<size_t>(slotIndex) < rackSlots.size())
+    if (description.startsWith("gear:"))
     {
-        // Check if we can drop the gear in this slot
-        if (canDropGearInSlot(slotIndex, gearId))
+        juce::String gearId = description.substring(5); // Remove "gear:" prefix
+        juce::Logger::writeToLog("Rack: Extracted gear ID: '" + gearId + "'");
+
+        // Convert drop position to slot index
+        juce::Point<int> dropPos = dragSourceDetails.localPosition;
+        int slotIndex = getSlotIndexFromPosition(dropPos);
+        juce::Logger::writeToLog("Rack: Calculated slot index: " + juce::String(slotIndex));
+
+        if (slotIndex >= 0 && static_cast<size_t>(slotIndex) < rackSlots.size())
         {
-            addGearToSlot(slotIndex, gearId);
+            juce::Logger::writeToLog("Rack: Slot index is valid");
+
+            // Check if we can drop the gear in this slot
+            if (canDropGearInSlot(slotIndex, gearId))
+            {
+                juce::Logger::writeToLog("Rack: Can drop gear in slot, calling addGearToSlot");
+                bool success = addGearToSlot(slotIndex, gearId);
+                juce::Logger::writeToLog("Rack: addGearToSlot result: " + juce::String(success ? "SUCCESS" : "FAILED"));
+
+                if (success)
+                {
+                    // Add to recently used
+                    cacheManager.addToRecentlyUsed(gearId);
+                    juce::Logger::writeToLog("Rack: Added gear to recently used: " + gearId);
+                }
+            }
+            else
+            {
+                juce::Logger::writeToLog("Rack: Cannot drop gear in slot");
+            }
         }
+        else
+        {
+            juce::Logger::writeToLog("Rack: Invalid slot index: " + juce::String(slotIndex));
+        }
+    }
+    else
+    {
+        juce::Logger::writeToLog("Rack: Description does not start with 'gear:', ignoring drop");
     }
 
     repaint();
@@ -242,11 +291,17 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceD
 
 int Rack::getSlotIndexFromPosition(juce::Point<int> position) const
 {
+    juce::Logger::writeToLog("Rack: getSlotIndexFromPosition called with position: " + position.toString());
+
     if (!rackContainer)
+    {
+        juce::Logger::writeToLog("Rack: No rack container, returning -1");
         return -1;
+    }
 
     // Convert to container coordinates
     juce::Point<int> containerPos = rackContainer->getLocalPoint(this, position);
+    juce::Logger::writeToLog("Rack: Container position: " + containerPos.toString());
 
     // For vertical layout, find slot based on Y position
     int currentY = slotSpacing;
@@ -255,32 +310,53 @@ int Rack::getSlotIndexFromPosition(juce::Point<int> position) const
         int slotHeight = getSlotHeight(i);
         int slotBottom = currentY + slotHeight;
 
+        juce::Logger::writeToLog("Rack: Checking slot " + juce::String(i) + " - Y range: " + juce::String(currentY) + " to " + juce::String(slotBottom));
+
         if (containerPos.y >= currentY && containerPos.y < slotBottom)
         {
+            juce::Logger::writeToLog("Rack: Y position matches slot " + juce::String(i));
+
             // Check if X position is within slot bounds
             if (containerPos.x >= slotSpacing && containerPos.x < (getWidth() - slotSpacing))
             {
+                juce::Logger::writeToLog("Rack: X position also matches, returning slot " + juce::String(i));
                 return i;
+            }
+            else
+            {
+                juce::Logger::writeToLog("Rack: X position outside slot bounds: " + juce::String(containerPos.x) + " (range: " + juce::String(slotSpacing) + " to " + juce::String(getWidth() - slotSpacing) + ")");
             }
         }
 
         currentY = slotBottom + slotSpacing;
     }
 
+    juce::Logger::writeToLog("Rack: No slot found, returning -1");
     return -1;
 }
 
 bool Rack::canDropGearInSlot(int slotIndex, const juce::String &gearId) const
 {
+    juce::Logger::writeToLog("Rack: canDropGearInSlot called for slot " + juce::String(slotIndex) + " and gear ID: '" + gearId + "'");
+
     if (slotIndex < 0 || static_cast<size_t>(slotIndex) >= rackSlots.size())
+    {
+        juce::Logger::writeToLog("Rack: Invalid slot index: " + juce::String(slotIndex));
         return false;
+    }
 
     // Check if slot is empty
     if (isSlotOccupied(slotIndex))
+    {
+        juce::Logger::writeToLog("Rack: Slot " + juce::String(slotIndex) + " is occupied");
         return false;
+    }
 
     // Check if gear exists in library
-    return gearLibrary.gearItemExists(gearId);
+    bool gearExists = gearLibrary.gearItemExists(gearId);
+    juce::Logger::writeToLog("Rack: Gear exists in library: " + juce::String(gearExists ? "YES" : "NO"));
+
+    return gearExists;
 }
 
 // Rack Management

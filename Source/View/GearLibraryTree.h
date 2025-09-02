@@ -25,8 +25,7 @@ class GearTreeItem;
  * including categories, favorites, recently used items, and individual gear items.
  * It supports drag and drop operations for moving gear items to the rack.
  */
-class GearLibraryTree : public juce::Component,
-                        public juce::DragAndDropContainer
+class GearLibraryTree : public juce::Component, public juce::DragAndDropContainer
 {
 public:
     /**
@@ -88,6 +87,8 @@ private:
     // References to dependencies
     GearLibrary &gearLibrary;
     ICacheManager &cacheManager;
+
+    // Use standard JUCE TreeView - drag and drop will be handled at TreeViewItem level
     PresetManager &presetManager;
 
     // Tree view components

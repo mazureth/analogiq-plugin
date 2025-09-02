@@ -33,19 +33,6 @@ GearLibraryTree::~GearLibraryTree()
 
 void GearLibraryTree::paint(juce::Graphics &g)
 {
-    // Debug: Draw a visible background to see if the component is being rendered
-    g.fillAll(juce::Colours::red); // Bright red background for debugging
-
-    // Draw a border to see the component bounds
-    g.setColour(juce::Colours::white);
-    g.drawRect(getLocalBounds(), 2);
-
-    // Draw some debug text
-    g.setColour(juce::Colours::white);
-    g.setFont(16.0f);
-    g.drawText("GearLibraryTree - Bounds: " + getLocalBounds().toString(),
-               10, 10, getWidth() - 20, 20, juce::Justification::left);
-
     // Draw tree view info
     if (treeView)
     {
@@ -75,6 +62,7 @@ void GearLibraryTree::resized()
 
 void GearLibraryTree::setupTreeView()
 {
+    // Create standard JUCE TreeView - drag and drop will be handled at TreeViewItem level
     treeView = std::make_unique<juce::TreeView>();
     treeView->setRootItemVisible(true);
     treeView->setColour(juce::TreeView::backgroundColourId, juce::Colours::darkgrey.darker(0.7f));
@@ -116,6 +104,8 @@ void GearLibraryTree::populateTree()
 
     juce::Logger::writeToLog("GearLibraryTree: populateTree completed successfully");
 }
+
+// Drag and drop is now handled at the TreeViewItem level in GearTreeItem::itemClicked()
 
 void GearLibraryTree::createRecentlyUsedSection()
 {
@@ -336,6 +326,8 @@ void GearLibraryTree::applySearchFilter()
     treeView->repaint();
 }
 
+// Mouse event handling for drag and drop
+
 // GearTreeItem implementation
 GearTreeItem::GearTreeItem(ItemType type, const juce::String &name, GearLibrary &gl, ICacheManager &cm, GearItem *item, int index)
     : itemType(type), itemName(name), gearLibrary(gl), cacheManager(cm), gearItem(item), itemIndex(index)
@@ -355,23 +347,9 @@ void GearTreeItem::paintItem(juce::Graphics &g, int width, int height)
     // For gear items, draw thumbnail if available
     if (itemType == ItemType::Gear && gearItem)
     {
-        // Debug: Log thumbnail status
-        juce::Logger::writeToLog("GearTreeItem::paintItem - " + gearItem->name +
-                                 " - thumbnailImage.isNull: " + juce::String(gearItem->thumbnailImage.isNull() ? "YES" : "NO") +
-                                 " - imageUrl: '" + gearItem->imageUrl + "'");
-
-        // Load thumbnail if not already loaded
-        if (gearItem->thumbnailImage.isNull() && !gearItem->imageUrl.isEmpty())
-        {
-            // This should be called asynchronously, but for now we'll do it here
-            // In a real implementation, this would be queued and done in background
-            juce::Logger::writeToLog("GearTreeItem::paintItem - Attempting to load thumbnail for " + gearItem->name);
-        }
-
         // Draw thumbnail if available
         if (!gearItem->thumbnailImage.isNull())
         {
-            juce::Logger::writeToLog("GearTreeItem::paintItem - Drawing thumbnail for " + gearItem->name);
             int thumbnailSize = height - 4; // Leave 2px margin
             auto thumbnailArea = juce::Rectangle<int>(2, 2, thumbnailSize, thumbnailSize);
 
@@ -387,10 +365,6 @@ void GearTreeItem::paintItem(juce::Graphics &g, int width, int height)
             // Adjust text area to account for thumbnail
             area.removeFromLeft(thumbnailSize + 8); // thumbnail + margin
         }
-        else
-        {
-            juce::Logger::writeToLog("GearTreeItem::paintItem - No thumbnail available for " + gearItem->name);
-        }
     }
 
     // Set text color based on item type
@@ -403,8 +377,12 @@ void GearTreeItem::paintItem(juce::Graphics &g, int width, int height)
 
 void GearTreeItem::itemClicked(const juce::MouseEvent &e)
 {
+    juce::Logger::writeToLog("GearTreeItem::itemClicked called for item: " + itemName + " (type: " + juce::String(static_cast<int>(itemType)) + ")");
+
     if (itemType == ItemType::Gear && gearItem)
     {
+        juce::Logger::writeToLog("GearTreeItem: Handling gear item click for: " + gearItem->name);
+
         if (e.mods.isRightButtonDown())
         {
             showContextMenu(e);
@@ -413,9 +391,76 @@ void GearTreeItem::itemClicked(const juce::MouseEvent &e)
         {
             showGearDetails();
         }
-        else
+        else if (e.mods.isLeftButtonDown())
         {
-            handleGearItemClick();
+            // Handle single left click - this is where we initiate drag and drop
+            juce::Logger::writeToLog("GearTreeItem: Single left click on gear item, initiating drag");
+
+            // Find the parent drag container
+            juce::Component *comp = getOwnerView();
+            if (comp == nullptr)
+            {
+                juce::Logger::writeToLog("GearTreeItem: ERROR - No owner view found");
+                return;
+            }
+
+            juce::DragAndDropContainer *container = juce::DragAndDropContainer::findParentDragContainerFor(comp);
+            if (container == nullptr)
+            {
+                juce::Logger::writeToLog("GearTreeItem: ERROR - No drag container found");
+                return;
+            }
+
+            juce::Logger::writeToLog("GearTreeItem: Found drag container, creating drag operation");
+
+            // Create a custom drag image
+            int itemWidth = 150;
+            int itemHeight = 40;
+
+            juce::Image dragImage(juce::Image::ARGB, itemWidth, itemHeight, true);
+            juce::Graphics g(dragImage);
+
+            g.setColour(juce::Colours::darkgrey);
+            g.fillRoundedRectangle(0.0f, 0.0f, (float)itemWidth, (float)itemHeight, 8.0f);
+
+            // Add a visual indicator
+            g.setColour(juce::Colours::greenyellow);
+            g.fillEllipse(10, itemHeight / 2 - 6, 12, 12);
+
+            g.setColour(juce::Colours::white);
+            g.setFont(14.0f);
+            g.drawText(gearItem->name, 30, 5, itemWidth - 40, 30, juce::Justification::centredLeft);
+
+            // Find the gear index in the library
+            auto allItems = gearLibrary.getAllGearItems();
+            int gearIndex = -1;
+            for (int i = 0; i < allItems.size(); ++i)
+            {
+                if (allItems[i]->unitId == gearItem->unitId)
+                {
+                    gearIndex = i;
+                    break;
+                }
+            }
+
+            if (gearIndex >= 0)
+            {
+                // Create drag data in the format expected by the Rack (lowercase "gear:")
+                juce::String dragDesc = "gear:" + gearItem->unitId;
+                juce::Logger::writeToLog("GearTreeItem: Created drag data: '" + dragDesc + "'");
+
+                // Calculate the drag image offset from the mouse
+                juce::Point<int> imageOffset(e.x - 10, e.y - itemHeight / 2);
+
+                // Start the drag operation using JUCE's built-in system
+                juce::Logger::writeToLog("GearTreeItem: Starting drag operation");
+                container->startDragging(dragDesc, comp, dragImage, true, &imageOffset, nullptr);
+                juce::Logger::writeToLog("GearTreeItem: Drag operation started successfully");
+            }
+            else
+            {
+                juce::Logger::writeToLog("GearTreeItem: ERROR - Could not find gear index for: " + gearItem->unitId);
+            }
         }
     }
 
@@ -448,19 +493,21 @@ juce::String GearTreeItem::getDisplayText() const
     switch (itemType)
     {
     case ItemType::Root:
-        return "[ROOT] " + itemName;
+        return itemName;
     case ItemType::Category:
-        return "[DIR] " + itemName;
+        // Category names are lowercase and singular, so we need to modify the display text
+        if (itemName.toLowerCase() != "categories")
+            return itemName.substring(0, 1).toUpperCase() + itemName.substring(1) + "s";
+        else
+            return itemName;
     case ItemType::Gear:
-        if (gearItem && cacheManager.isInFavorites(gearItem->unitId))
-            return "[GEAR] " + itemName + " ★";
-        return "[GEAR] " + itemName;
+        return itemName;
     case ItemType::RecentlyUsed:
-        return "[RECENT] " + itemName;
+        return itemName;
     case ItemType::Favorites:
-        return "[FAV] " + itemName;
+        return itemName;
     case ItemType::Message:
-        return "[INFO] " + itemName;
+        return "NOTE: " + itemName;
     default:
         return itemName;
     }
@@ -471,15 +518,15 @@ juce::Colour GearTreeItem::getItemColour() const
     switch (itemType)
     {
     case ItemType::Root:
-        return juce::Colours::lightblue;
+        return juce::Colours::lightgrey;
     case ItemType::Category:
-        return juce::Colours::lightgreen;
+        return juce::Colours::lightgrey;
     case ItemType::Gear:
         return juce::Colours::white;
     case ItemType::RecentlyUsed:
-        return juce::Colours::orange;
+        return juce::Colours::lightgrey;
     case ItemType::Favorites:
-        return juce::Colours::yellow;
+        return juce::Colours::lightgrey;
     case ItemType::Message:
         return juce::Colours::lightgrey;
     default:
