@@ -347,17 +347,11 @@ int Rack::getSlotIndexFromPosition(juce::Point<int> position) const
         if (containerPos.x >= slotSpacing && containerPos.x < (getWidth() - slotSpacing))
         {
             juce::Logger::writeToLog("Rack: X position " + juce::String(containerPos.x) + " is within slot bounds");
-            if (containerPos.y < slotMiddle)
+            if (containerPos.y < slotBottom)
             {
-                // Drop above the middle of this slot - insert before this slot
-                juce::Logger::writeToLog("Rack: Drop above slot " + juce::String(i) + " (Y=" + juce::String(containerPos.y) + " < middle=" + juce::String(slotMiddle) + "), inserting before it");
+                // Drop anywhere on this slot - always insert before this slot (above it)
+                juce::Logger::writeToLog("Rack: Drop on slot " + juce::String(i) + " (Y=" + juce::String(containerPos.y) + " < bottom=" + juce::String(slotBottom) + "), inserting before it");
                 return i;
-            }
-            else if (containerPos.y < slotBottom)
-            {
-                // Drop below the middle of this slot - insert after this slot
-                juce::Logger::writeToLog("Rack: Drop below slot " + juce::String(i) + " (Y=" + juce::String(containerPos.y) + " > middle=" + juce::String(slotMiddle) + " but < bottom=" + juce::String(slotBottom) + "), inserting after it");
-                return i + 1;
             }
             else
             {
