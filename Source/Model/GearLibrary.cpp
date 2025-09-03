@@ -564,6 +564,12 @@ std::unique_ptr<GearItem> GearLibrary::parseGearFromJson(const juce::var &gearOb
         loadGearThumbnail(gearItem.get());
     }
 
+    // Load full schema with faceplate and controls if schemaPath is available
+    if (!gearItem->schemaPath.isEmpty())
+    {
+        loadGearSchema(gearItem.get());
+    }
+
     return gearItem;
 }
 
@@ -1358,6 +1364,413 @@ bool GearLibrary::loadGearThumbnail(GearItem *gearItem)
     juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Creating placeholder image for " + gearItem->unitId);
     gearItem->createPlaceholderImage();
     return false;
+}
+
+bool GearLibrary::loadGearSchema(GearItem *gearItem)
+{
+    juce::Logger::writeToLog("GearLibrary::loadGearSchema called for " + gearItem->unitId);
+
+    if (!gearItem || gearItem->schemaPath.isEmpty())
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearSchema - gearItem is null or schemaPath is empty");
+        return false;
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearSchema - schemaPath: '" + gearItem->schemaPath + "'");
+
+    // Check if schema is already cached
+    if (cacheManager.isCached("schema_" + gearItem->unitId))
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearSchema - Found cached schema for " + gearItem->unitId);
+        juce::String cachedPath = cacheManager.getCachedPath("schema_" + gearItem->unitId);
+        if (cachedPath.isNotEmpty())
+        {
+            // Read the cached schema file
+            juce::File cachedFile(cachedPath);
+            if (cachedFile.existsAsFile())
+            {
+                juce::String cachedSchema = cachedFile.loadFileAsString();
+                if (cachedSchema.isNotEmpty())
+                {
+                    return parseGearSchema(gearItem, cachedSchema);
+                }
+            }
+        }
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearSchema - No cached schema, fetching from remote");
+
+    // Convert relative schema path to absolute URL
+    juce::String absoluteSchemaUrl = RemoteConfig::getSchemaUrl(gearItem->schemaPath);
+    juce::Logger::writeToLog("GearLibrary: Loading schema from: " + absoluteSchemaUrl);
+
+    // Try to fetch schema from remote
+    try
+    {
+        juce::URL schemaUrl(absoluteSchemaUrl);
+        auto inputStream = schemaUrl.createInputStream(false);
+
+        if (inputStream != nullptr)
+        {
+            juce::String schemaData = inputStream->readEntireStreamAsString();
+
+            if (schemaData.isNotEmpty())
+            {
+                // Cache the schema data
+                cacheManager.cacheData("schema_" + gearItem->unitId, schemaData);
+
+                // Parse the schema
+                bool success = parseGearSchema(gearItem, schemaData);
+                juce::Logger::writeToLog("GearLibrary::loadGearSchema - Schema load " + juce::String(success ? "SUCCESS" : "FAILED"));
+                return success;
+            }
+        }
+    }
+    catch (const std::exception &e)
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearSchema - Exception: " + juce::String(e.what()));
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearSchema - Failed to load schema");
+    return false;
+}
+
+bool GearLibrary::parseGearSchema(GearItem *gearItem, const juce::String &schemaData)
+{
+    juce::Logger::writeToLog("GearLibrary::parseGearSchema called for " + gearItem->unitId);
+
+    // Parse JSON schema
+    auto schemaJson = juce::JSON::parse(schemaData);
+    if (!schemaJson.isObject())
+    {
+        juce::Logger::writeToLog("GearLibrary::parseGearSchema - Invalid JSON schema");
+        return false;
+    }
+
+    // Look for faceplate image properties
+    juce::StringArray faceplateProperties = {"faceplateImage", "thumbnailImage"};
+    juce::String faceplateImagePath;
+    bool foundFaceplate = false;
+
+    for (const auto &propName : faceplateProperties)
+    {
+        if (schemaJson.hasProperty(propName))
+        {
+            faceplateImagePath = schemaJson.getProperty(propName, "").toString();
+            if (faceplateImagePath.isNotEmpty())
+            {
+                foundFaceplate = true;
+                gearItem->faceplateImagePath = faceplateImagePath;
+                juce::Logger::writeToLog("GearLibrary::parseGearSchema - Found faceplate path: " + faceplateImagePath);
+                break;
+            }
+        }
+    }
+
+    // Parse controls if available
+    if (schemaJson.hasProperty("controls") && schemaJson["controls"].isArray())
+    {
+        gearItem->controls.clear();
+
+        auto controlsArray = schemaJson["controls"].getArray();
+        for (auto &controlVar : *controlsArray)
+        {
+            if (!controlVar.isObject())
+                continue;
+
+            // Get control type
+            GearControl::ControlType controlType = GearControl::ControlType::Button;
+            juce::String controlTypeStr = controlVar.getProperty("type", "button").toString().toLowerCase();
+            if (controlTypeStr == "fader")
+                controlType = GearControl::ControlType::Fader;
+            else if (controlTypeStr == "switch")
+                controlType = GearControl::ControlType::Switch;
+            else if (controlTypeStr == "knob")
+                controlType = GearControl::ControlType::Knob;
+
+            // Get control position
+            juce::Rectangle<float> position;
+            if (controlVar.hasProperty("position"))
+            {
+                auto posObj = controlVar.getProperty("position", juce::var());
+                if (posObj.isObject())
+                {
+                    position = juce::Rectangle<float>(
+                        static_cast<float>(posObj.getProperty("x", 0)),
+                        static_cast<float>(posObj.getProperty("y", 0)),
+                        static_cast<float>(posObj.getProperty("width", 20)),
+                        static_cast<float>(posObj.getProperty("height", 20)));
+                }
+            }
+
+            // Get control name
+            juce::String controlName = controlVar.getProperty("name", "").toString();
+
+            // Create and add control
+            GearControl control(controlType, position, 0.0f);
+            control.name = controlName;
+            gearItem->controls.add(control);
+        }
+
+        juce::Logger::writeToLog("GearLibrary::parseGearSchema - Loaded " + juce::String(gearItem->controls.size()) + " controls");
+    }
+
+    return true;
+}
+
+bool GearLibrary::loadGearFaceplate(GearItem *gearItem)
+{
+    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate called for " + gearItem->unitId);
+
+    if (!gearItem || gearItem->faceplateImagePath.isEmpty())
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - gearItem is null or faceplateImagePath is empty");
+        return false;
+    }
+
+    // Check if faceplate is already loaded to prevent duplicate fetching
+    if (gearItem->faceplateImage.isValid())
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Faceplate already loaded for " + gearItem->unitId);
+        return true;
+    }
+
+    // Extract filename from faceplate path
+    juce::String filename = fileSystem.getFileName(gearItem->faceplateImagePath);
+
+    // Check cache first
+    if (cacheManager.isCached("faceplate_" + gearItem->unitId))
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Found cached faceplate for " + gearItem->unitId);
+        gearItem->faceplateImage = cacheManager.getCachedImage("faceplate_" + gearItem->unitId);
+        if (gearItem->faceplateImage.isValid())
+        {
+            juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Cached faceplate load SUCCESS");
+            return true;
+        }
+        else
+        {
+            juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Cached faceplate is corrupted, clearing cache entry");
+            cacheManager.clearCache("faceplate_" + gearItem->unitId);
+        }
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - No cached faceplate, fetching from remote");
+
+    // Construct the full URL if it's a relative path
+    juce::String fullUrl = gearItem->faceplateImagePath;
+    if (!fullUrl.startsWith("http"))
+    {
+        // Check if the path is already a full path or needs the base URL
+        if (fullUrl.startsWith("assets/") || !fullUrl.contains("/"))
+        {
+            fullUrl = RemoteConfig::getFaceplateUrl(fullUrl);
+        }
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Loading faceplate from: " + fullUrl);
+
+    // Try to fetch faceplate from remote
+    try
+    {
+        juce::URL imageUrl(fullUrl);
+        auto inputStream = imageUrl.createInputStream(false);
+
+        if (inputStream != nullptr)
+        {
+            juce::MemoryBlock binaryData;
+            inputStream->readIntoMemoryBlock(binaryData);
+
+            if (binaryData.getSize() > 0)
+            {
+                // Load image directly from binary data
+                gearItem->faceplateImage = juce::ImageCache::getFromMemory(binaryData.getData(), binaryData.getSize());
+
+                if (gearItem->faceplateImage.isValid())
+                {
+                    // Cache the faceplate image
+                    cacheManager.addToCache("faceplate_" + gearItem->unitId, gearItem->faceplateImage);
+                    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Faceplate load SUCCESS");
+                    return true;
+                }
+                else
+                {
+                    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Failed to create image from downloaded data");
+                }
+            }
+        }
+    }
+    catch (const std::exception &e)
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Exception: " + juce::String(e.what()));
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Failed to load faceplate");
+    return false;
+}
+
+void GearLibrary::loadGearFaceplateAsync(GearItem *gearItem, std::function<void()> onLoaded)
+{
+    juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync called for " + gearItem->unitId);
+
+    if (!gearItem || gearItem->faceplateImagePath.isEmpty())
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - gearItem is null or faceplateImagePath is empty");
+        return;
+    }
+
+    // Check if faceplate is already loaded to prevent duplicate fetching
+    if (gearItem->faceplateImage.isValid())
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Faceplate already loaded for " + gearItem->unitId);
+        // Call the callback even for already loaded faceplates to maintain counter consistency
+        if (onLoaded)
+        {
+            juce::MessageManager::callAsync(onLoaded);
+        }
+        return;
+    }
+
+    // Extract filename from faceplate path
+    juce::String filename = fileSystem.getFileName(gearItem->faceplateImagePath);
+
+    // Check cache first
+    if (cacheManager.isCached("faceplate_" + gearItem->unitId))
+    {
+        juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Found cached faceplate for " + gearItem->unitId);
+        gearItem->faceplateImage = cacheManager.getCachedImage("faceplate_" + gearItem->unitId);
+        if (gearItem->faceplateImage.isValid())
+        {
+            juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Cached faceplate load SUCCESS");
+            // Call the callback even for cached faceplates to maintain counter consistency
+            if (onLoaded)
+            {
+                juce::MessageManager::callAsync(onLoaded);
+            }
+            return;
+        }
+        else
+        {
+            juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Cached faceplate is corrupted, clearing cache entry");
+            cacheManager.clearCache("faceplate_" + gearItem->unitId);
+        }
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - No cached faceplate, starting async download");
+
+    // Construct the full URL if it's a relative path
+    juce::String fullUrl = gearItem->faceplateImagePath;
+    if (!fullUrl.startsWith("http"))
+    {
+        // Check if the path is already a full path or needs the base URL
+        if (fullUrl.startsWith("assets/") || !fullUrl.contains("/"))
+        {
+            fullUrl = RemoteConfig::getFaceplateUrl(fullUrl);
+        }
+    }
+
+    juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Loading faceplate from: " + fullUrl);
+
+    /**
+     * @brief Thread for downloading faceplate images asynchronously.
+     *
+     * This struct handles the asynchronous download and processing of faceplate images
+     * for gear items, ensuring UI updates happen on the message thread.
+     */
+    struct FaceplateImageDownloader : public juce::Thread
+    {
+        /**
+         * @brief Constructs a new FaceplateImageDownloader.
+         *
+         * @param urlToUse The URL to download the image from
+         * @param itemToUpdate The gear item to update with the image
+         * @param parentLibrary The gear library to notify when the image is loaded
+         * @param filenameToCache The filename to use for caching
+         * @param onLoadedCallback Callback to trigger when faceplate is loaded
+         */
+        FaceplateImageDownloader(juce::URL urlToUse, GearItem *itemToUpdate, GearLibrary *parentLibrary, const juce::String &filenameToCache, ICacheManager &cacheManagerRef, std::function<void()> onLoadedCallback)
+            : juce::Thread("Faceplate Image Downloader"),
+              url(urlToUse), item(itemToUpdate), library(parentLibrary), filename(filenameToCache), cacheManager(cacheManagerRef), onLoaded(onLoadedCallback)
+        {
+            startThread();
+        }
+
+        ~FaceplateImageDownloader() override
+        {
+            stopThread(5000); // Wait up to 5 seconds for thread to finish
+        }
+
+        void run() override
+        {
+            juce::Logger::writeToLog("FaceplateImageDownloader: Starting download from " + url.toString(false));
+
+            try
+            {
+                auto inputStream = url.createInputStream(false);
+                if (inputStream != nullptr)
+                {
+                    juce::MemoryBlock binaryData;
+                    inputStream->readIntoMemoryBlock(binaryData);
+
+                    if (binaryData.getSize() > 0)
+                    {
+                        // Load image directly from binary data
+                        juce::Image downloadedImage = juce::ImageCache::getFromMemory(binaryData.getData(), binaryData.getSize());
+
+                        if (downloadedImage.isValid())
+                        {
+                            // Cache the faceplate image
+                            cacheManager.addToCache("faceplate_" + item->unitId, downloadedImage);
+
+                            // Update the gear item on the message thread
+                            juce::MessageManager::callAsync([this, downloadedImage]()
+                                                            {
+                                item->faceplateImage = downloadedImage;
+                                juce::Logger::writeToLog("FaceplateImageDownloader: Successfully loaded faceplate for " + item->unitId);
+                                
+                                // Call the specific callback if provided
+                                if (onLoaded)
+                                {
+                                    onLoaded();
+                                }
+                                // Fallback to global library callback if no specific callback
+                                else if (library->onLibraryUpdated)
+                                {
+                                    library->onLibraryUpdated();
+                                } });
+                        }
+                        else
+                        {
+                            juce::Logger::writeToLog("FaceplateImageDownloader: Failed to create image from downloaded data for " + item->unitId);
+                        }
+                    }
+                    else
+                    {
+                        juce::Logger::writeToLog("FaceplateImageDownloader: No data received for " + item->unitId);
+                    }
+                }
+                else
+                {
+                    juce::Logger::writeToLog("FaceplateImageDownloader: Failed to create input stream for " + item->unitId);
+                }
+            }
+            catch (const std::exception &e)
+            {
+                juce::Logger::writeToLog("FaceplateImageDownloader: Exception downloading faceplate for " + item->unitId + ": " + juce::String(e.what()));
+            }
+        }
+
+    private:
+        juce::URL url;
+        GearItem *item;
+        GearLibrary *library;
+        juce::String filename;
+        ICacheManager &cacheManager;
+        std::function<void()> onLoaded;
+    };
+
+    // Start the async download
+    new FaceplateImageDownloader(juce::URL(fullUrl), gearItem, this, filename, cacheManager, onLoaded);
 }
 
 void GearLibrary::refreshAllThumbnails()

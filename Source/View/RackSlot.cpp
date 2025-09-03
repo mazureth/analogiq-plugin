@@ -38,17 +38,53 @@ RackSlot::RackSlot(IFileSystem &fileSystem,
 
     setComponentID("RackSlot_" + juce::String(index));
 
-    // Set up navigation buttons
-    upButton.setButtonText("U");
-    downButton.setButtonText("D");
+    // Create arrow button paths
+    auto createArrowPath = [](bool isUpArrow)
+    {
+        juce::Path arrowPath;
+        if (isUpArrow)
+        {
+            // Up arrow triangle
+            arrowPath.addTriangle(10.0f, 2.0f, 2.0f, 18.0f, 18.0f, 18.0f);
+        }
+        else
+        {
+            // Down arrow triangle
+            arrowPath.addTriangle(10.0f, 18.0f, 2.0f, 2.0f, 18.0f, 2.0f);
+        }
+        return arrowPath;
+    };
 
-    // Add button listeners
-    upButton.addListener(this);
-    downButton.addListener(this);
+    // Create drawable objects for the up button
+    auto normalUpArrow = std::make_unique<juce::DrawablePath>();
+    normalUpArrow->setPath(createArrowPath(true));
+    normalUpArrow->setFill(juce::Colours::white.withAlpha(0.8f));
 
-    // Add buttons to this component
-    addAndMakeVisible(upButton);
-    addAndMakeVisible(downButton);
+    auto overUpArrow = std::make_unique<juce::DrawablePath>();
+    overUpArrow->setPath(createArrowPath(true));
+    overUpArrow->setFill(juce::Colours::white);
+
+    // Create drawable objects for the down button
+    auto normalDownArrow = std::make_unique<juce::DrawablePath>();
+    normalDownArrow->setPath(createArrowPath(false));
+    normalDownArrow->setFill(juce::Colours::white.withAlpha(0.8f));
+
+    auto overDownArrow = std::make_unique<juce::DrawablePath>();
+    overDownArrow->setPath(createArrowPath(false));
+    overDownArrow->setFill(juce::Colours::white);
+
+    // Create the buttons
+    upButton = std::make_unique<juce::DrawableButton>("UpButton", juce::DrawableButton::ButtonStyle::ImageFitted);
+    upButton->setImages(normalUpArrow.get(), overUpArrow.get());
+    upButton->setTooltip("Move item up");
+    upButton->addListener(this);
+    addAndMakeVisible(upButton.get());
+
+    downButton = std::make_unique<juce::DrawableButton>("DownButton", juce::DrawableButton::ButtonStyle::ImageFitted);
+    downButton->setImages(normalDownArrow.get(), overDownArrow.get());
+    downButton->setTooltip("Move item down");
+    downButton->addListener(this);
+    addAndMakeVisible(downButton.get());
 
     // Update button states
     updateButtonStates();
@@ -62,8 +98,10 @@ RackSlot::RackSlot(IFileSystem &fileSystem,
 RackSlot::~RackSlot()
 {
     // Remove button listeners
-    upButton.removeListener(this);
-    downButton.removeListener(this);
+    if (upButton)
+        upButton->removeListener(this);
+    if (downButton)
+        downButton->removeListener(this);
 }
 
 /**
@@ -80,26 +118,20 @@ void RackSlot::paint(juce::Graphics &g)
     // Draw slot background
     if (isDragOver)
     {
-        g.setColour(juce::Colours::lightblue);
+        // Show drag feedback with light blue overlay
+        g.setColour(juce::Colours::lightblue.withAlpha(0.3f));
+        g.fillAll();
     }
-    else if (gearItem != nullptr)
+    else if (slotBackgroundColor != juce::Colours::transparentBlack)
     {
-        g.setColour(juce::Colours::lightgrey);
+        // Use the slot's background color if it's not transparent
+        g.setColour(slotBackgroundColor);
+        g.fillAll();
     }
-    else
-    {
-        g.setColour(juce::Colours::darkgrey);
-    }
-    g.fillAll();
 
     // Draw slot border
     g.setColour(juce::Colours::white);
     g.drawRect(area, 1);
-
-    // Draw slot index
-    g.setColour(juce::Colours::white);
-    g.setFont(14.0f);
-    g.drawText("Slot " + juce::String(index + 1), area.removeFromLeft(60), juce::Justification::centred);
 
     // Draw gear item info if present
     if (gearItem != nullptr)
@@ -114,19 +146,18 @@ void RackSlot::paint(juce::Graphics &g)
             int scaledWidth = static_cast<int>(gearItem->faceplateImage.getWidth() * currentFaceplateScale);
             int scaledHeight = static_cast<int>(gearItem->faceplateImage.getHeight() * currentFaceplateScale);
 
-            // Center the faceplate in the slot
-            int x = (getWidth() - scaledWidth) / 2;
-            int y = (getHeight() - scaledHeight) / 2;
+            // Position faceplate to fill the available space (scaling already accounts for padding)
+            int buttonRowHeight = 25; // Dedicated space at top for buttons
+            int slotPadding = 2;      // 2px padding on left, right, and bottom
+            int effectiveWidth = getWidth() - (2 * slotPadding);
+            int effectiveHeight = getHeight() - buttonRowHeight - slotPadding;
+            int x = slotPadding + (effectiveWidth - scaledWidth) / 2;
+            int y = buttonRowHeight + (effectiveHeight - scaledHeight) / 2;
 
             // Draw the faceplate image
             g.drawImage(gearItem->faceplateImage, x, y, scaledWidth, scaledHeight, 0, 0,
                         gearItem->faceplateImage.getWidth(), gearItem->faceplateImage.getHeight());
         }
-
-        // Draw gear name
-        g.setColour(juce::Colours::black);
-        g.setFont(12.0f);
-        g.drawText(gearItem->name, area.removeFromLeft(120), juce::Justification::centredLeft);
 
         // Draw controls on top of the faceplate
         drawControls(g);
@@ -142,32 +173,39 @@ void RackSlot::resized()
 {
     auto area = getLocalBounds();
 
-    // Position navigation buttons on the right side
-    int buttonWidth = 30;
-    int buttonHeight = 20;
-    int buttonMargin = 5;
+    // Position navigation buttons in dedicated top row
+    int buttonRowHeight = 25; // Dedicated space at top for buttons
+    int buttonWidth = 20;
+    int buttonHeight = 18;
+    int buttonMargin = 3;
+    int buttonSpacing = 1;
 
-    // Up button at top right
-    upButton.setBounds(area.getRight() - buttonWidth - buttonMargin,
-                       buttonMargin,
-                       buttonWidth,
-                       buttonHeight);
+    // Calculate total width needed for both buttons
+    int totalButtonWidth = (buttonWidth * 2) + buttonSpacing;
 
-    // Down button below up button
-    downButton.setBounds(area.getRight() - buttonWidth - buttonMargin,
-                         buttonMargin + buttonHeight + 2,
-                         buttonWidth,
-                         buttonHeight);
+    // Up button (left of the pair) in top row
+    if (upButton)
+        upButton->setBounds(area.getRight() - totalButtonWidth - buttonMargin,
+                            buttonMargin,
+                            buttonWidth,
+                            buttonHeight);
+
+    // Down button (right of the pair) in top row
+    if (downButton)
+        downButton->setBounds(area.getRight() - buttonWidth - buttonMargin,
+                              buttonMargin,
+                              buttonWidth,
+                              buttonHeight);
 }
 
 // Button handling
 void RackSlot::buttonClicked(juce::Button *button)
 {
-    if (button == &upButton)
+    if (button == upButton.get())
     {
         moveUp();
     }
-    else if (button == &downButton)
+    else if (button == downButton.get())
     {
         moveDown();
     }
@@ -177,8 +215,10 @@ void RackSlot::updateButtonStates()
 {
     // For now, always enable both buttons
     // This can be refined later to check if movement is possible
-    upButton.setEnabled(true);
-    downButton.setEnabled(true);
+    if (upButton)
+        upButton->setEnabled(true);
+    if (downButton)
+        downButton->setEnabled(true);
 }
 
 void RackSlot::moveUp()
@@ -327,9 +367,11 @@ float RackSlot::calculateOptimalFaceplateScale() const
     if (!gearItem || !gearItem->faceplateImage.isValid())
         return 1.0f;
 
-    // Get the slot dimensions (excluding margins for buttons)
-    int slotWidth = getWidth() - 80;   // Leave space for buttons and margins
-    int slotHeight = getHeight() - 20; // Leave space for top/bottom margins
+    // Get the slot dimensions (dedicated button row at top, with padding)
+    int buttonRowHeight = 25;                                     // Dedicated space at top for buttons
+    int slotPadding = 2;                                          // 2px padding on left, right, and bottom
+    int slotWidth = getWidth() - (2 * slotPadding);               // Use effective width minus horizontal padding
+    int slotHeight = getHeight() - buttonRowHeight - slotPadding; // Leave space for button row and bottom padding
 
     if (slotWidth <= 0 || slotHeight <= 0)
         return 1.0f;
@@ -360,6 +402,14 @@ void RackSlot::drawControls(juce::Graphics &g)
     // Update the current faceplate scale
     currentFaceplateScale = calculateOptimalFaceplateScale();
 
+    // Offset controls by horizontal padding and position relative to available space
+    int buttonRowHeight = 25; // Dedicated space at top for buttons
+    int slotPadding = 2;      // 2px padding on left, right, and bottom
+    int effectiveHeight = getHeight() - buttonRowHeight - slotPadding;
+    int scaledHeight = static_cast<int>(gearItem->faceplateImage.getHeight() * currentFaceplateScale);
+    int controlY = buttonRowHeight + (effectiveHeight - scaledHeight) / 2;
+    g.addTransform(juce::AffineTransform::translation(slotPadding, controlY));
+
     // Save the current graphics state
     g.addTransform(juce::AffineTransform::scale(currentFaceplateScale));
 
@@ -385,6 +435,7 @@ void RackSlot::drawControls(juce::Graphics &g)
 
     // Restore the graphics state
     g.addTransform(juce::AffineTransform::scale(1.0f / currentFaceplateScale));
+    g.addTransform(juce::AffineTransform::translation(0, -buttonRowHeight));
 }
 
 void RackSlot::drawButtonControl(juce::Graphics &g, const GearControl &control)
@@ -493,4 +544,24 @@ void RackSlot::drawKnobControl(juce::Graphics &g, const GearControl &control)
         g.drawText(control.name, static_cast<int>(scaledPos.getX()), static_cast<int>(scaledPos.getY() - 15),
                    static_cast<int>(scaledPos.getWidth()), 12, juce::Justification::centred);
     }
+}
+
+void RackSlot::setFaceplateLoadedCallback(std::function<void()> callback)
+{
+    faceplateLoadedCallback = callback;
+}
+
+void RackSlot::triggerFaceplateLoaded()
+{
+    if (faceplateLoadedCallback)
+    {
+        juce::Logger::writeToLog("[RackSlot " + juce::String(index) + "] Triggering faceplate loaded callback");
+        faceplateLoadedCallback();
+    }
+}
+
+void RackSlot::setSlotBackgroundColor(juce::Colour color)
+{
+    slotBackgroundColor = color;
+    repaint();
 }

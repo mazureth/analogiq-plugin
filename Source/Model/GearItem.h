@@ -79,6 +79,7 @@ public:
 
     // Image assets
     juce::Image thumbnailImage;
+    juce::String faceplateImagePath;
     juce::Image faceplateImage;
 
     // Control system

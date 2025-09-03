@@ -123,12 +123,17 @@ private:
     juce::ValueTree rackState;
     juce::Array<juce::Component *> stateListeners;
 
+    // Faceplate loading coordination
+    int pendingFaceplateLoads = 0;
+
     // Private helper methods
     void initializeRack();
     void layoutSlots();
     void createSlot(int slotIndex);
     void updateSlotPositions();
     void notifyStateChanged();
+    void repaintAllSlots();
+    void repaintSingleSlot(int slotIndex);
 
     // Drag and drop helpers
     int getSlotIndexFromPosition(juce::Point<int> position) const;

@@ -218,6 +218,25 @@ public:
      */
     int getSlotIndex() const { return index; }
 
+    /**
+     * @brief Sets a callback to be called when this slot's gear item faceplate is loaded.
+     *
+     * @param callback Function to call when faceplate is loaded
+     */
+    void setFaceplateLoadedCallback(std::function<void()> callback);
+
+    /**
+     * @brief Triggers the faceplate loaded callback for this specific slot.
+     */
+    void triggerFaceplateLoaded();
+
+    /**
+     * @brief Sets the background color for this slot.
+     *
+     * @param color The background color to use
+     */
+    void setSlotBackgroundColor(juce::Colour color);
+
 private:
     // Helper methods for drawing individual control types
     void drawButtonControl(juce::Graphics &g, const GearControl &control);
@@ -239,14 +258,20 @@ private:
     GearLibrary &gearLibrary;
 
     // UI Components
-    juce::TextButton upButton{"Up"};     ///< Button to move gear item up
-    juce::TextButton downButton{"Down"}; ///< Button to move gear item down
+    std::unique_ptr<juce::DrawableButton> upButton;   ///< Button to move gear item up
+    std::unique_ptr<juce::DrawableButton> downButton; ///< Button to move gear item down
 
     // Drag and drop state
     bool isDragOver = false; ///< Whether a drag operation is currently over this slot
 
     // Faceplate scaling
     float currentFaceplateScale = 1.0f; ///< Current scale factor for faceplate and controls
+
+    // Faceplate loading callback
+    std::function<void()> faceplateLoadedCallback; ///< Callback to trigger when faceplate is loaded
+
+    // Visual properties
+    juce::Colour slotBackgroundColor = juce::Colours::transparentBlack; ///< Background color for this slot
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RackSlot)
 };

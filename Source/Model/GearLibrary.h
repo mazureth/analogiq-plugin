@@ -81,6 +81,10 @@ public:
     bool downloadGearSchemas();
     bool checkGearCompatibility(const juce::String &gearId);
     bool updateGearVersions();
+
+    // Faceplate and schema loading methods
+    bool loadGearSchema(GearItem *gearItem);
+    void loadGearFaceplateAsync(GearItem *gearItem, std::function<void()> onLoaded = nullptr);
     juce::String getRemoteLibraryStatus() const;
     bool isRemoteLibraryAvailable() const;
     juce::Time getLastRemoteSyncTime() const;
@@ -161,6 +165,8 @@ private:
     bool downloadGearAsset(const juce::String &gearId, const juce::String &assetUrl, const juce::String &assetType);
     bool validateRemoteGearData(const juce::var &gearObject);
     bool loadGearThumbnail(GearItem *gearItem);
+    bool parseGearSchema(GearItem *gearItem, const juce::String &schemaData);
+    bool loadGearFaceplate(GearItem *gearItem);
     void refreshAllThumbnails();
     void updateRemoteLibraryStatus(bool available, const juce::String &error = "", int httpCode = 0);
     bool shouldRefreshRemoteLibrary() const;

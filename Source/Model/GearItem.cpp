@@ -3,26 +3,26 @@
 #include <juce_graphics/juce_graphics.h>
 
 GearItem::GearItem()
-    : unitId(""), name(""), manufacturer(""), version("1.0"), description(""), type(GearType::Other), category(GearCategory::Other), categoryString(""), schemaPath(""), thumbnailImage(), faceplateImage(), controls(), tags(), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(nullptr), networkFetcher(nullptr), cacheManager(nullptr)
+    : unitId(""), name(""), manufacturer(""), version("1.0"), description(""), type(GearType::Other), category(GearCategory::Other), categoryString(""), schemaPath(""), thumbnailImage(), faceplateImagePath(""), faceplateImage(), controls(), tags(), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(nullptr), networkFetcher(nullptr), cacheManager(nullptr)
 {
     initializeDefaults();
 }
 
 GearItem::GearItem(const juce::String &id, const juce::String &gearName, const juce::String &maker)
-    : unitId(id), name(gearName), manufacturer(maker), version("1.0"), description(""), type(GearType::Other), category(GearCategory::Other), categoryString(""), schemaPath(""), thumbnailImage(), faceplateImage(), controls(), tags(), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(nullptr), networkFetcher(nullptr), cacheManager(nullptr)
+    : unitId(id), name(gearName), manufacturer(maker), version("1.0"), description(""), type(GearType::Other), category(GearCategory::Other), categoryString(""), schemaPath(""), thumbnailImage(), faceplateImagePath(""), faceplateImage(), controls(), tags(), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(nullptr), networkFetcher(nullptr), cacheManager(nullptr)
 {
     initializeDefaults();
 }
 
 GearItem::GearItem(const juce::String &id, const juce::String &gearName, const juce::String &maker,
                    IFileSystem *fs, INetworkFetcher *nf, ICacheManager *cm)
-    : unitId(id), name(gearName), manufacturer(maker), version("1.0"), description(""), type(GearType::Other), category(GearCategory::Other), categoryString(""), schemaPath(""), thumbnailImage(), faceplateImage(), controls(), tags(), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(fs), networkFetcher(nf), cacheManager(cm)
+    : unitId(id), name(gearName), manufacturer(maker), version("1.0"), description(""), type(GearType::Other), category(GearCategory::Other), categoryString(""), schemaPath(""), thumbnailImage(), faceplateImagePath(""), faceplateImage(), controls(), tags(), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(fs), networkFetcher(nf), cacheManager(cm)
 {
     initializeDefaults();
 }
 
 GearItem::GearItem(const GearItem &other)
-    : unitId(other.unitId), name(other.name), manufacturer(other.manufacturer), version(other.version), description(other.description), type(other.type), category(other.category), categoryString(other.categoryString), schemaPath(other.schemaPath), thumbnailImage(other.thumbnailImage), faceplateImage(other.faceplateImage), controls(other.controls), tags(other.tags), isInstance(other.isInstance), instanceId(other.instanceId), sourceUnitId(other.sourceUnitId), fileSystem(other.fileSystem), networkFetcher(other.networkFetcher), cacheManager(other.cacheManager)
+    : unitId(other.unitId), name(other.name), manufacturer(other.manufacturer), version(other.version), description(other.description), type(other.type), category(other.category), categoryString(other.categoryString), schemaPath(other.schemaPath), thumbnailImage(other.thumbnailImage), faceplateImagePath(other.faceplateImagePath), faceplateImage(other.faceplateImage), controls(other.controls), tags(other.tags), isInstance(other.isInstance), instanceId(other.instanceId), sourceUnitId(other.sourceUnitId), fileSystem(other.fileSystem), networkFetcher(other.networkFetcher), cacheManager(other.cacheManager)
 {
     copyImages(other);
 }
@@ -45,6 +45,7 @@ GearItem &GearItem::operator=(const GearItem &other)
         category = other.category;
         categoryString = other.categoryString;
         schemaPath = other.schemaPath;
+        faceplateImagePath = other.faceplateImagePath;
         controls = other.controls;
         tags = other.tags;
         isInstance = other.isInstance;
@@ -75,12 +76,14 @@ void GearItem::initializeDefaults()
 void GearItem::copyImages(const GearItem &other)
 {
     thumbnailImage = other.thumbnailImage;
+    faceplateImagePath = other.faceplateImagePath;
     faceplateImage = other.faceplateImage;
 }
 
 void GearItem::clearImages()
 {
     thumbnailImage = juce::Image();
+    faceplateImagePath = "";
     faceplateImage = juce::Image();
 }
 
@@ -331,7 +334,7 @@ GearItem::GearItem(const juce::String &id,
                    IFileSystem *fs,
                    INetworkFetcher *nf,
                    ICacheManager *cm)
-    : unitId(id), name(gearName), manufacturer(maker), version(gearVersion), description(""), type(gearType), category(gearCategoryEnum), categoryString(gearCategory), schemaPath(gearSchemaPath), imageUrl(gearThumbnailImage), schemaUrl(""), dependencies(), compatibilityVersion(""), thumbnailImage(), faceplateImage(), controls(), tags(gearTags), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(fs), networkFetcher(nf), cacheManager(cm)
+    : unitId(id), name(gearName), manufacturer(maker), version(gearVersion), description(""), type(gearType), category(gearCategoryEnum), categoryString(gearCategory), schemaPath(gearSchemaPath), imageUrl(gearThumbnailImage), schemaUrl(""), dependencies(), compatibilityVersion(""), thumbnailImage(), faceplateImagePath(""), faceplateImage(), controls(), tags(gearTags), isInstance(false), instanceId(""), sourceUnitId(""), fileSystem(fs), networkFetcher(nf), cacheManager(cm)
 {
     // Create placeholder image if thumbnail is not available
     if (gearThumbnailImage.isEmpty())

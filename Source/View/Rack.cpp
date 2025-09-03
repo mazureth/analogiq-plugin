@@ -21,13 +21,16 @@ Rack::Rack(INetworkFetcher &networkFetcher,
            ICacheManager &cacheManager,
            PresetManager &presetManager,
            GearLibrary &gearLibrary)
-    : networkFetcher(networkFetcher), fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary), numSlots(0), slotWidth(200), slotHeight(150), slotSpacing(10), backgroundColor(juce::Colours::darkgrey), slotBackgroundColor(juce::Colours::lightgrey), slotBorderColor(juce::Colours::black), showSlotNumbers(true), showGrid(false)
+    : networkFetcher(networkFetcher), fileSystem(fileSystem), cacheManager(cacheManager), presetManager(presetManager), gearLibrary(gearLibrary), numSlots(0), slotWidth(200), slotHeight(150), slotSpacing(10), backgroundColor(juce::Colours::darkgrey), slotBackgroundColor(juce::Colours::darkgrey.darker(0.7f)), slotBorderColor(juce::Colours::black), showSlotNumbers(true), showGrid(false)
 {
     // Initialize the rack
     initializeRack();
 
     // Set component ID for debugging
     setComponentID("Rack");
+
+    // Note: We no longer use the global library callback for repainting
+    // Individual slots will handle their own repaints via callbacks
 }
 
 Rack::~Rack()
@@ -113,6 +116,15 @@ void Rack::createSlot(int slotIndex)
     // Add as component listener to track changes
     slot->addComponentListener(this);
 
+    // Set up individual faceplate loaded callback for this slot
+    slot->setFaceplateLoadedCallback([this, slotIndex]()
+                                     {
+        juce::Logger::writeToLog("Rack: Faceplate loaded for slot " + juce::String(slotIndex) + ", repainting single slot");
+        repaintSingleSlot(slotIndex); });
+
+    // Set the slot's background color
+    slot->setSlotBackgroundColor(slotBackgroundColor);
+
     rackContainer->addAndMakeVisible(slot.get());
     rackSlots.push_back(std::move(slot));
 }
@@ -144,8 +156,9 @@ void Rack::layoutSlots()
 
 void Rack::updateSlotPositions()
 {
-    // Calculate the slot width based on container width minus margins
-    int effectiveSlotWidth = getWidth() - (2 * slotSpacing);
+    // Calculate the slot width based on container width minus margins and padding
+    int slotPadding = 2; // 2px padding on left and right
+    int effectiveSlotWidth = getWidth() - (2 * slotSpacing) - (2 * slotPadding);
 
     // Position the slots within the container in a single vertical column
     int currentY = slotSpacing;
@@ -156,10 +169,10 @@ void Rack::updateSlotPositions()
             int slotHeight = getSlotHeight(static_cast<int>(i));
 
             rackSlots[i]->setBounds(
-                slotSpacing,        // Left margin
-                currentY,           // Current Y position
-                effectiveSlotWidth, // Full width minus margins
-                slotHeight          // Dynamic height for this slot
+                slotSpacing + slotPadding, // Left margin + padding
+                currentY,                  // Current Y position
+                effectiveSlotWidth,        // Full width minus margins and padding
+                slotHeight                 // Dynamic height for this slot
             );
 
             currentY += slotHeight + slotSpacing;
@@ -413,6 +426,15 @@ void Rack::insertRackSlot(int slotIndex)
     newSlot->setComponentID("RackSlot_" + juce::String(slotIndex));
     newSlot->addComponentListener(this);
 
+    // Set up individual faceplate loaded callback for this slot
+    newSlot->setFaceplateLoadedCallback([this, slotIndex]()
+                                        {
+        juce::Logger::writeToLog("Rack: Faceplate loaded for slot " + juce::String(slotIndex) + ", repainting single slot");
+        repaintSingleSlot(slotIndex); });
+
+    // Set the slot's background color
+    newSlot->setSlotBackgroundColor(slotBackgroundColor);
+
     // Insert the slot at the specified position
     if (static_cast<size_t>(slotIndex) >= rackSlots.size())
     {
@@ -443,7 +465,8 @@ void Rack::insertRackSlot(int slotIndex)
         rackContainer->addAndMakeVisible(rackSlots[static_cast<size_t>(slotIndex)].get());
     }
 
-    layoutSlots();
+    // Don't call layoutSlots() here - it will be called after faceplates finish loading
+    // This prevents the race condition where slots are positioned with incorrect heights
 }
 
 void Rack::removeRackSlot(int slotIndex)
@@ -539,6 +562,43 @@ bool Rack::addGearToSlot(int slotIndex, const juce::String &gearId)
     // Add gear to slot
     slot->setGearItem(gearItem);
     juce::Logger::writeToLog("Rack: Successfully added gear to slot " + juce::String(slotIndex));
+
+    // Load schema and faceplate for the gear item
+    if (gearLibrary.loadGearSchema(gearItem))
+    {
+        juce::Logger::writeToLog("Rack: Successfully loaded schema for " + gearItem->unitId);
+
+        // Increment pending faceplate loads counter
+        pendingFaceplateLoads++;
+        juce::Logger::writeToLog("Rack: Incremented pendingFaceplateLoads to " + juce::String(pendingFaceplateLoads));
+
+        // Load faceplate asynchronously with slot-specific callback
+        auto slotCallback = [this, slotIndex]()
+        {
+            juce::Logger::writeToLog("Rack: Faceplate loaded for slot " + juce::String(slotIndex) + ", triggering slot callback");
+            repaintSingleSlot(slotIndex);
+
+            // Decrement pending faceplate loads counter
+            pendingFaceplateLoads--;
+            juce::Logger::writeToLog("Rack: Decremented pendingFaceplateLoads to " + juce::String(pendingFaceplateLoads));
+
+            // If all faceplates are loaded, recalculate layout with correct heights
+            if (pendingFaceplateLoads == 0)
+            {
+                juce::Logger::writeToLog("Rack: All faceplates loaded, recalculating layout with correct heights");
+                layoutSlots();
+            }
+        };
+
+        gearLibrary.loadGearFaceplateAsync(gearItem, slotCallback);
+        juce::Logger::writeToLog("Rack: Started async faceplate loading for " + gearItem->unitId + " with slot callback");
+    }
+    else
+    {
+        juce::Logger::writeToLog("Rack: Failed to load schema for " + gearItem->unitId);
+        // If schema loading failed, we still need to layout the slot
+        layoutSlots();
+    }
 
     // Save rack state
     saveRackState();
@@ -730,6 +790,16 @@ void Rack::setBackgroundColor(juce::Colour color)
 void Rack::setSlotBackgroundColor(juce::Colour color)
 {
     slotBackgroundColor = color;
+
+    // Update all existing slots with the new background color
+    for (auto &slot : rackSlots)
+    {
+        if (slot)
+        {
+            slot->setSlotBackgroundColor(color);
+        }
+    }
+
     repaint();
 }
 
@@ -851,5 +921,41 @@ void Rack::componentMovedOrResized(juce::Component &component, bool wasMoved, bo
             notifyStateChanged();
             break;
         }
+    }
+}
+
+void Rack::repaintAllSlots()
+{
+    // Repaint all rack slots to show updated faceplates
+    for (auto &slot : rackSlots)
+    {
+        if (slot)
+        {
+            slot->repaint();
+        }
+    }
+
+    // Also repaint the rack container to ensure proper display
+    if (rackContainer)
+    {
+        rackContainer->repaint();
+    }
+}
+
+void Rack::repaintSingleSlot(int slotIndex)
+{
+    // Repaint only the specified slot for efficient updates
+    if (slotIndex >= 0 && static_cast<size_t>(slotIndex) < rackSlots.size())
+    {
+        auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
+        if (slot)
+        {
+            juce::Logger::writeToLog("Rack: Repainting single slot " + juce::String(slotIndex));
+            slot->repaint();
+        }
+    }
+    else
+    {
+        juce::Logger::writeToLog("Rack: Invalid slot index for repaint: " + juce::String(slotIndex));
     }
 }
