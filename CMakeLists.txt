@@ -126,25 +126,25 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     )
     
     # Apply coverage to all JUCE format targets
-    if(ANALOGIQ_BUILD_STANDALONE)
+    if(TARGET AnalogIQ_Standalone)
         target_link_options(AnalogIQ_Standalone PRIVATE
             --coverage -fprofile-instr-generate -fcoverage-mapping
         )
     endif()
     
-    if(ANALOGIQ_BUILD_VST3)
+    if(TARGET AnalogIQ_VST3)
         target_link_options(AnalogIQ_VST3 PRIVATE
             --coverage -fprofile-instr-generate -fcoverage-mapping
         )
     endif()
     
-    if(ANALOGIQ_BUILD_AU)
+    if(TARGET AnalogIQ_AU)
         target_link_options(AnalogIQ_AU PRIVATE
             --coverage -fprofile-instr-generate -fcoverage-mapping
         )
     endif()
     
-    if(ANALOGIQ_BUILD_AAX)
+    if(TARGET AnalogIQ_AAX)
         target_link_options(AnalogIQ_AAX PRIVATE
             --coverage -fprofile-instr-generate -fcoverage-mapping
         )
