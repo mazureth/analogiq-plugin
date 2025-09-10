@@ -385,7 +385,11 @@ void Rack::insertRackSlot(int slotIndex)
     // Create a new slot at the specified index
     auto newSlot = std::make_unique<RackSlot>(fileSystem, cacheManager, presetManager, gearLibrary, slotIndex);
     newSlot->setComponentID("RackSlot_" + juce::String(slotIndex));
+    newSlot->setRack(this); // Set reference to parent rack
     newSlot->addComponentListener(this);
+
+    // Update button states after setting rack reference
+    newSlot->updateButtonStates();
 
     // Set up individual faceplate loaded callback for this slot
     newSlot->setFaceplateLoadedCallback([this, slotIndex]()
@@ -624,21 +628,63 @@ bool Rack::moveGearBetweenSlots(int fromSlot, int toSlot)
     if (fromSlot == toSlot)
         return true;
 
-    // Get gear from source slot
-    juce::String gearId = getGearInSlot(fromSlot);
-    if (gearId.isEmpty())
+    // Get the actual gear items from both slots
+    auto fromSlotPtr = rackSlots[static_cast<size_t>(fromSlot)].get();
+    auto toSlotPtr = rackSlots[static_cast<size_t>(toSlot)].get();
+
+    if (!fromSlotPtr || !toSlotPtr)
         return false;
 
-    // Check if destination slot is empty
-    if (isSlotOccupied(toSlot))
+    // Get gear items directly from slots
+    auto fromGearItem = fromSlotPtr->getGearItem();
+    auto toGearItem = toSlotPtr->getGearItem();
+
+    // If source slot is empty, nothing to move
+    if (!fromGearItem)
         return false;
 
-    // Remove from source slot
-    if (!removeGearFromSlot(fromSlot))
-        return false;
+    // If destination slot is empty, just move the gear
+    if (!toGearItem)
+    {
+        // Move gear from source to destination
+        toSlotPtr->setGearItem(fromGearItem);
+        fromSlotPtr->clearGearItem();
 
-    // Add to destination slot
-    return addGearToSlot(toSlot, gearId);
+        // Update gear item instances
+        gearItemInstances[static_cast<size_t>(toSlot)] = std::move(gearItemInstances[static_cast<size_t>(fromSlot)]);
+        gearItemInstances[static_cast<size_t>(fromSlot)].reset();
+
+        // Save rack state
+        saveRackState();
+        notifyStateChanged();
+
+        return true;
+    }
+    else
+    {
+        // Both slots have gear - swap them
+        // Store gear items temporarily
+        auto tempFromGear = std::move(gearItemInstances[static_cast<size_t>(fromSlot)]);
+        auto tempToGear = std::move(gearItemInstances[static_cast<size_t>(toSlot)]);
+
+        // Clear both slots first
+        fromSlotPtr->clearGearItem();
+        toSlotPtr->clearGearItem();
+
+        // Swap the gear items
+        fromSlotPtr->setGearItem(tempToGear.get());
+        toSlotPtr->setGearItem(tempFromGear.get());
+
+        // Swap the gear item instances
+        gearItemInstances[static_cast<size_t>(fromSlot)] = std::move(tempToGear);
+        gearItemInstances[static_cast<size_t>(toSlot)] = std::move(tempFromGear);
+
+        // Save rack state
+        saveRackState();
+        notifyStateChanged();
+
+        return true;
+    }
 }
 
 juce::String Rack::getGearInSlot(int slotIndex) const
@@ -941,5 +987,18 @@ void Rack::repaintSingleSlot(int slotIndex)
     }
     else
     {
+    }
+}
+
+void Rack::updateSlotIndices()
+{
+    // Update the index of each slot to match its position in the vector
+    for (size_t i = 0; i < rackSlots.size(); ++i)
+    {
+        if (rackSlots[i])
+        {
+            rackSlots[i]->setIndex(static_cast<int>(i));
+            // Button states are updated in setIndex() method
+        }
     }
 }

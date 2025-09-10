@@ -1,7 +1,7 @@
-# REMAINING WORK PLAN - 25% GAP TO 100% LEGACY COVERAGE
+# REMAINING WORK PLAN - 15% GAP TO 100% LEGACY COVERAGE
 
 ## OVERVIEW
-This document outlines the remaining work required to achieve 100% coverage of ALL legacy functionality as specified in REWRITE_PLAN.md. The 75% completion represents a working foundation but significant gaps in user experience and feature completeness.
+This document outlines the remaining work required to achieve 100% coverage of ALL legacy functionality as specified in REWRITE_PLAN.md. The 85% completion represents a working foundation with most core features complete, but some gaps in user experience and feature completeness.
 
 ## CRITICAL REQUIREMENT
 **100% Legacy Functionality Coverage is NON-NEGOTIABLE**
@@ -9,7 +9,7 @@ This document outlines the remaining work required to achieve 100% coverage of A
 ## PROGRESS TRACKING
 - **Priority #1**: Remote Gear Library Functionality ✅ **COMPLETED** (0% → 100%)
 - **Priority #2**: Advanced Gear Library Features ✅ **COMPLETED** (30% → 100%)
-- **Priority #3**: Complete Drag-and-Drop System 🔄 **IN PROGRESS** (60% → 100%)
+- **Priority #3**: Complete Rack Layout and Drag-and-Drop System 🔄 **IN PROGRESS** (50% → 100%)
 - **Priority #4**: Full State Persistence (70% → 100%)
 - **Priority #5**: Full UI Features (40% → 100%)
 - **Priority #6**: Async Network Operations and Performance Optimization 🔄 **NEW PRIORITY** (0% → 100%)
@@ -17,8 +17,8 @@ This document outlines the remaining work required to achieve 100% coverage of A
 - **Priority #8**: Error Handling and Recovery (50% → 100%)
 - **Priority #9**: Build System Refactoring (0% → 100%)
 
-**Overall Progress**: 85% Complete (down from 90% due to new priority item)
-**Remaining Work**: 15% (up from 10%)
+**Overall Progress**: 85% Complete (up from 80% due to completed section 3.2)
+**Remaining Work**: 15% (down from 20%)
 
 ## REMAINING WORK CATEGORIES
 
@@ -62,28 +62,69 @@ This document outlines the remaining work required to achieve 100% coverage of A
 - [x] Implement gear rating and review system
 - [x] Add custom gear tagging
 
-### 3. COMPLETE DRAG-AND-DROP SYSTEM (60% → 100%)
-**Priority: HIGH - Core user interaction**
+### 3. COMPLETE RACK LAYOUT AND DRAG-AND-DROP SYSTEM (50% → 100%)
+**Priority: HIGH - Core user interaction and foundation**
 
-#### 3.1 Gear to Rack Transfer
-- [ ] Complete drag-and-drop from GearLibraryTree to Rack
-- [ ] Implement gear validation before drop
-- [ ] Add visual feedback during drag operations
-- [ ] Handle drop validation and error cases
-- [ ] Implement gear placement logic
+#### 3.1 Rack Layout Foundation (NEW - Must Complete First) ✅ **COMPLETED**
+- [x] **Fix Layout Logic**
+  - Set `slotsPerRow = 1` (single column)
+  - Remove `maxRows` concept, use `numSlots = 16`
+  - Keep `slotHeight = 150` (legacy default)
+  - Use `slotSpacing = 10` (legacy spacing)
 
-#### 3.2 Rack Internal Operations
+- [x] **Implement Faceplate Scaling System**
+  - Add `currentFaceplateScale` to `RackSlot`
+  - Implement `getSlotHeight(int slotIndex)` with faceplate scaling
+  - Add scaling calculation in `paint()` method
+  - Ensure aspect ratio preservation for different unit types
+
+- [x] **Fix Control Positioning and Rendering**
+  - Scale control positions relative to scaled faceplate
+  - Implement `drawControls()` method for all control types
+  - Handle Switch, Button, Fader, and Knob controls
+  - Ensure controls scale proportionally with faceplate
+
+- [x] **Update Layout Methods**
+  - Rewrite `layoutSlots()` for vertical stack: `containerWidth = getWidth()`
+  - Fix `updateSlotPositions()` for single-column: `effectiveSlotWidth = getWidth() - (2 * slotSpacing)`
+  - Remove grid-based coordinate calculations
+  - Implement dynamic height calculation based on faceplate scaling
+
+#### 3.2 Gear to Rack Transfer (60% → 100%)
+- [x] Complete drag-and-drop from GearLibraryTree to Rack
+- [x] Implement gear validation before drop
+- [x] Add visual feedback during drag operations
+- [x] Handle drop validation and error cases
+- [x] Implement gear placement logic
+- [x] Update recently_used gear tracking and Gear Tree UI
+- [x] **Fix drop target calculation for vertical layout**
+- [x] **Update position detection to use vertical bounds checking**
+
+#### 3.3 Rack Internal Operations (60% → 100%)
 - [ ] Complete gear movement between rack slots
 - [ ] Implement gear swapping functionality
 - [ ] Add gear removal and clearing
 - [ ] Implement rack slot validation
 - [ ] Add undo/redo for rack operations
+- [ ] **Ensure slot positioning works with dynamic heights**
 
-#### 3.3 Advanced Rack Features
+#### 3.4 Advanced Rack Features (60% → 100%)
 - [ ] Implement rack templates and presets
 - [ ] Add rack layout customization
 - [ ] Implement rack slot resizing
 - [ ] Add rack export/import functionality
+- [ ] **Support variable slot heights for different gear types**
+
+#### 3.5 Success Criteria for Section 3
+- [ ] Rack displays as single column of 16 slots
+- [ ] Each slot takes full available width
+- [ ] Slots have dynamic heights based on faceplate scaling
+- [ ] Faceplates scale properly maintaining aspect ratio
+- [ ] Controls scale and position correctly relative to faceplates
+- [ ] Drag-and-drop from GearLibraryTree to Rack works
+- [ ] Gear can be moved between rack slots
+- [ ] Gear can be removed and cleared
+- [ ] All operations work with variable slot heights
 
 ### 4. FULL STATE PERSISTENCE (70% → 100%)
 **Priority: HIGH - Core functionality**

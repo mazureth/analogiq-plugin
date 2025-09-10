@@ -56,6 +56,15 @@ RackSlot::RackSlot(IFileSystem &fileSystem,
         return arrowPath;
     };
 
+    auto createXPath = []()
+    {
+        juce::Path xPath;
+        // Create an X shape
+        xPath.addLineSegment(juce::Line<float>(4.0f, 4.0f, 16.0f, 16.0f), 2.0f);
+        xPath.addLineSegment(juce::Line<float>(16.0f, 4.0f, 4.0f, 16.0f), 2.0f);
+        return xPath;
+    };
+
     // Create drawable objects for the up button
     auto normalUpArrow = std::make_unique<juce::DrawablePath>();
     normalUpArrow->setPath(createArrowPath(true));
@@ -86,6 +95,21 @@ RackSlot::RackSlot(IFileSystem &fileSystem,
     downButton->setTooltip("Move item down");
     downButton->addListener(this);
     addAndMakeVisible(downButton.get());
+
+    // Create remove button (red X)
+    auto normalX = std::make_unique<juce::DrawablePath>();
+    normalX->setPath(createXPath());
+    normalX->setFill(juce::Colours::red);
+
+    auto overX = std::make_unique<juce::DrawablePath>();
+    overX->setPath(createXPath());
+    overX->setFill(juce::Colours::darkred);
+
+    removeButton = std::make_unique<juce::DrawableButton>("RemoveButton", juce::DrawableButton::ButtonStyle::ImageFitted);
+    removeButton->setImages(normalX.get(), overX.get());
+    removeButton->setTooltip("Remove item");
+    removeButton->addListener(this);
+    addAndMakeVisible(removeButton.get());
 
     // Update button states
     updateButtonStates();
@@ -233,22 +257,29 @@ void RackSlot::resized()
     int buttonMargin = 3;
     int buttonSpacing = 1;
 
-    // Calculate total width needed for both buttons
-    int totalButtonWidth = (buttonWidth * 2) + buttonSpacing;
+    // Calculate total width needed for all three buttons
+    int totalButtonWidth = (buttonWidth * 3) + (buttonSpacing * 2);
 
-    // Up button (left of the pair) in top row
+    // Up button (leftmost)
     if (upButton)
         upButton->setBounds(area.getRight() - totalButtonWidth - buttonMargin,
                             buttonMargin,
                             buttonWidth,
                             buttonHeight);
 
-    // Down button (right of the pair) in top row
+    // Down button (middle)
     if (downButton)
-        downButton->setBounds(area.getRight() - buttonWidth - buttonMargin,
+        downButton->setBounds(area.getRight() - totalButtonWidth + buttonWidth + buttonSpacing - buttonMargin,
                               buttonMargin,
                               buttonWidth,
                               buttonHeight);
+
+    // Remove button (rightmost)
+    if (removeButton)
+        removeButton->setBounds(area.getRight() - buttonWidth - buttonMargin,
+                                buttonMargin,
+                                buttonWidth,
+                                buttonHeight);
 }
 
 // Button handling
@@ -262,28 +293,89 @@ void RackSlot::buttonClicked(juce::Button *button)
     {
         moveDown();
     }
+    else if (button == removeButton.get())
+    {
+        removeGear();
+    }
 }
 
 void RackSlot::updateButtonStates()
 {
-    // For now, always enable both buttons
-    // This can be refined later to check if movement is possible
+    if (rack == nullptr)
+    {
+        // If no rack reference, disable all buttons
+        if (upButton)
+            upButton->setEnabled(false);
+        if (downButton)
+            downButton->setEnabled(false);
+        if (removeButton)
+            removeButton->setEnabled(false);
+        return;
+    }
+
+    int totalSlots = rack->getSlotCount();
+
+    // Disable up button for first slot (index 0)
     if (upButton)
-        upButton->setEnabled(true);
+        upButton->setEnabled(index > 0);
+
+    // Disable down button for last slot
     if (downButton)
-        downButton->setEnabled(true);
+        downButton->setEnabled(index < totalSlots - 1);
+
+    // Remove button is enabled if there's gear in this slot
+    if (removeButton)
+        removeButton->setEnabled(gearItem != nullptr);
 }
 
 void RackSlot::moveUp()
 {
-    // TODO: Implement gear item movement logic
-    std::cout << "[RackSlot " << index << "] Move up requested" << std::endl;
+    if (rack == nullptr || index <= 0)
+        return;
+
+    // Move gear up by swapping with the slot above
+    int targetSlot = index - 1;
+    if (rack->moveGearBetweenSlots(index, targetSlot))
+    {
+        // Update indices after successful move
+        rack->updateSlotIndices();
+        // Recalculate layout to adjust slot heights for new gear items
+        rack->resized();
+        rack->repaint();
+    }
 }
 
 void RackSlot::moveDown()
 {
-    // TODO: Implement gear item movement logic
-    std::cout << "[RackSlot " << index << "] Move down requested" << std::endl;
+    if (rack == nullptr)
+        return;
+
+    // Get the total number of slots to check if we're at the last slot
+    int totalSlots = rack->getSlotCount();
+    if (index >= totalSlots - 1)
+        return;
+
+    // Move gear down by swapping with the slot below
+    int targetSlot = index + 1;
+    if (rack->moveGearBetweenSlots(index, targetSlot))
+    {
+        // Update indices after successful move
+        rack->updateSlotIndices();
+        // Recalculate layout to adjust slot heights for new gear items
+        rack->resized();
+        rack->repaint();
+    }
+}
+
+void RackSlot::removeGear()
+{
+    if (rack == nullptr)
+        return;
+
+    // Remove the entire slot from the rack
+    rack->removeRackSlot(index);
+    // Note: After this call, this RackSlot object will be destroyed,
+    // so we don't need to update indices or repaint here
 }
 
 // Mouse events for control interaction
@@ -399,7 +491,8 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
 void RackSlot::setGearItem(GearItem *item)
 {
     gearItem = item;
-    repaint(); // Trigger repaint to show the new gear item
+    updateButtonStates(); // Update button states based on gear item presence
+    repaint();            // Trigger repaint to show the new gear item
 }
 
 void RackSlot::clearGearItem()

@@ -62,6 +62,16 @@ public:
     }
 
     /**
+     * @brief Sets the reference to the parent rack.
+     *
+     * @param parentRack Pointer to the parent rack
+     */
+    void setRack(Rack *parentRack)
+    {
+        rack = parentRack;
+    }
+
+    /**
      * @brief Destructor for the RackSlot class.
      *
      * Cleans up resources and ensures all images are properly released.
@@ -102,6 +112,11 @@ public:
      * @brief Moves the gear item down one slot in the rack.
      */
     void moveDown();
+
+    /**
+     * @brief Removes the gear item from this slot.
+     */
+    void removeGear();
 
     // Mouse events for control interaction
     /**
@@ -256,10 +271,12 @@ private:
     ICacheManager &cacheManager;
     PresetManager &presetManager;
     GearLibrary &gearLibrary;
+    Rack *rack = nullptr; ///< Reference to the parent rack for movement operations
 
     // UI Components
-    std::unique_ptr<juce::DrawableButton> upButton;   ///< Button to move gear item up
-    std::unique_ptr<juce::DrawableButton> downButton; ///< Button to move gear item down
+    std::unique_ptr<juce::DrawableButton> upButton;     ///< Button to move gear item up
+    std::unique_ptr<juce::DrawableButton> downButton;   ///< Button to move gear item down
+    std::unique_ptr<juce::DrawableButton> removeButton; ///< Button to remove gear item
 
     // Drag and drop state
     bool isDragOver = false; ///< Whether a drag operation is currently over this slot
