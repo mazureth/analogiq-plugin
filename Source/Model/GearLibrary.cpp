@@ -26,31 +26,20 @@ void GearLibrary::initializeLazy()
     if (initialized)
         return;
 
-    juce::Logger::writeToLog("GearLibrary: Lazy initialization starting");
     try
     {
-        juce::Logger::writeToLog("GearLibrary: Calling initializeLibraryDirectory");
         initializeLibraryDirectory();
-        juce::Logger::writeToLog("GearLibrary: initializeLibraryDirectory completed");
 
-        juce::Logger::writeToLog("GearLibrary: Calling loadGearMetadata");
         loadGearMetadata();
-        juce::Logger::writeToLog("GearLibrary: loadGearMetadata completed");
 
-        juce::Logger::writeToLog("GearLibrary: Calling loadCategories");
         loadCategories();
-        juce::Logger::writeToLog("GearLibrary: loadCategories completed");
 
-        juce::Logger::writeToLog("GearLibrary: Calling loadRemoteGearLibrary");
         loadRemoteGearLibrary(); // Load gear from remote source (no fallback items)
-        juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary completed");
 
-        juce::Logger::writeToLog("GearLibrary: Lazy initialization completed successfully");
         initialized = true;
     }
     catch (...)
     {
-        juce::Logger::writeToLog("GearLibrary: Lazy initialization caught exception - continuing with empty library");
         // If initialization fails, continue with empty library
         // This prevents crashes when file system is not available
     }
@@ -58,37 +47,27 @@ void GearLibrary::initializeLazy()
 
 void GearLibrary::initializeLibraryDirectory()
 {
-    juce::Logger::writeToLog("GearLibrary: initializeLibraryDirectory starting");
     try
     {
-        juce::Logger::writeToLog("GearLibrary: Getting cache root directory");
         libraryRootDir = fileSystem.joinPath(fileSystem.getCacheRootDirectory(), "GearLibrary");
-        juce::Logger::writeToLog("GearLibrary: Library root dir set to: " + libraryRootDir);
 
-        juce::Logger::writeToLog("GearLibrary: Checking if directory exists");
         if (!fileSystem.directoryExists(libraryRootDir))
         {
-            juce::Logger::writeToLog("GearLibrary: Directory doesn't exist, creating it");
             if (!fileSystem.createDirectory(libraryRootDir))
             {
-                juce::Logger::writeToLog("GearLibrary: Failed to create directory, using fallback path");
                 // If we can't create the directory, use a fallback path
                 libraryRootDir = "/tmp/analogiq_gear_library";
             }
             else
             {
-                juce::Logger::writeToLog("GearLibrary: Directory created successfully");
             }
         }
         else
         {
-            juce::Logger::writeToLog("GearLibrary: Directory already exists");
         }
-        juce::Logger::writeToLog("GearLibrary: initializeLibraryDirectory completed successfully");
     }
     catch (...)
     {
-        juce::Logger::writeToLog("GearLibrary: initializeLibraryDirectory caught exception, using fallback path");
         // Use fallback path if anything goes wrong
         libraryRootDir = "/tmp/analogiq_gear_library";
     }
@@ -96,49 +75,37 @@ void GearLibrary::initializeLibraryDirectory()
 
 void GearLibrary::loadRemoteGearLibrary()
 {
-    juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary starting");
 
     // Load gear from remote GitHub repository using configuration
     juce::String remoteUrl = RemoteConfig::getGearLibraryIndexUrl();
-    juce::Logger::writeToLog("GearLibrary: Remote URL: " + remoteUrl);
 
     // Step 1: Try to load from local cache first
-    juce::Logger::writeToLog("GearLibrary: Checking local cache for remote_gear_library");
     auto cachedData = cacheManager.getCachedPath("remote_gear_library");
     if (!cachedData.isEmpty())
     {
-        juce::Logger::writeToLog("GearLibrary: Found cached data, loading from cache");
         if (loadGearFromCache(cachedData))
         {
-            juce::Logger::writeToLog("GearLibrary: Successfully loaded " + juce::String(gearItems.size()) + " items from cache");
         }
         else
         {
-            juce::Logger::writeToLog("GearLibrary: Failed to load from cache, clearing items");
             gearItems.clear();
         }
     }
     else
     {
-        juce::Logger::writeToLog("GearLibrary: No cached data found, library will be empty until remote fetch completes");
         gearItems.clear();
     }
 
     // Step 2: Async remote fetch to update cache and add new/changed gear
-    juce::Logger::writeToLog("GearLibrary: Starting async remote fetch");
     fetchRemoteGearAsync(remoteUrl);
-
-    juce::Logger::writeToLog("GearLibrary: loadRemoteGearLibrary completed");
 }
 
 void GearLibrary::createSampleGearItems()
 {
-    juce::Logger::writeToLog("GearLibrary: createSampleGearItems starting");
     // Create sample gear items for development and testing
     // These will be replaced by real remote data when NetworkFetcher is integrated
 
     // Sample EQ
-    juce::Logger::writeToLog("GearLibrary: Creating sample EQ item");
     auto eq = std::make_unique<GearItem>();
     eq->unitId = "eq_500_series";
     eq->name = "500 Series EQ";
@@ -158,9 +125,7 @@ void GearLibrary::createSampleGearItems()
     eqControl.initialValue = 0.5f;
     eq->controls.add(eqControl);
 
-    juce::Logger::writeToLog("GearLibrary: Adding EQ item to gearItems array");
     gearItems.add(eq.release());
-    juce::Logger::writeToLog("GearLibrary: EQ item added successfully");
 
     // Sample Preamp
     auto preamp = std::make_unique<GearItem>();
@@ -274,7 +239,6 @@ void GearLibrary::createCategoriesSection()
     // Create default categories if none exist
     if (categories.empty())
     {
-        juce::Logger::writeToLog("GearLibrary: Creating default categories");
 
         // Create EQ category
         GearCategory eqCategory;
@@ -296,84 +260,61 @@ void GearLibrary::createCategoriesSection()
         preampCategory.creationTime = juce::Time::getCurrentTime();
         preampCategory.description = "Preamplifiers and gain stages";
         categories["Preamp"] = preampCategory;
-
-        juce::Logger::writeToLog("GearLibrary: Default categories created");
     }
 }
 
 // Helper methods for remote gear loading
 bool GearLibrary::loadGearFromCache(const juce::String &cachePath)
 {
-    juce::Logger::writeToLog("GearLibrary: loadGearFromCache starting with path: " + cachePath);
 
     try
     {
         juce::File cacheFile(cachePath);
         if (!cacheFile.existsAsFile())
         {
-            juce::Logger::writeToLog("GearLibrary: Cache file does not exist");
             return false;
         }
 
         juce::String jsonContent = cacheFile.loadFileAsString();
         if (jsonContent.isEmpty())
         {
-            juce::Logger::writeToLog("GearLibrary: Cache file is empty");
             return false;
         }
 
         auto json = juce::JSON::parse(jsonContent);
         if (!json.isObject())
         {
-            juce::Logger::writeToLog("GearLibrary: Cache file does not contain valid JSON object");
             return false;
         }
 
         // Check if we have a "units" array in the new format (matching legacy system)
         if (!json.hasProperty("units") || !json["units"].isArray())
         {
-            juce::Logger::writeToLog("GearLibrary: Cache file does not contain a 'units' array");
             return false;
         }
 
         // Clear existing items and load from cache
-        juce::Logger::writeToLog("GearLibrary: Clearing existing gear items");
         gearItems.clear();
-        juce::Logger::writeToLog("GearLibrary: Getting units array from JSON");
         auto gearArray = json["units"].getArray();
-        juce::Logger::writeToLog("GearLibrary: Units array size: " + juce::String(gearArray->size()));
 
         for (auto &gearObject : *gearArray)
         {
-            juce::Logger::writeToLog("GearLibrary: Processing gear item, isObject: " + juce::String(gearObject.isObject() ? "YES" : "NO") +
-                                     ", isArray: " + juce::String(gearObject.isArray() ? "YES" : "NO") +
-                                     ", isString: " + juce::String(gearObject.isString() ? "YES" : "NO"));
-
             if (gearObject.isObject())
             {
-                juce::Logger::writeToLog("GearLibrary: About to call parseGearFromJson");
                 auto gearItem = parseGearFromJson(gearObject);
-                juce::Logger::writeToLog("GearLibrary: parseGearFromJson returned");
 
                 if (gearItem)
                 {
-                    juce::Logger::writeToLog("GearLibrary: Successfully parsed gear item: " + gearItem->unitId);
-                    juce::Logger::writeToLog("GearLibrary: Adding gear item to array");
                     gearItems.add(gearItem.release());
-                    juce::Logger::writeToLog("GearLibrary: Gear item added successfully");
                 }
                 else
                 {
-                    juce::Logger::writeToLog("GearLibrary: Failed to parse gear item - parseGearFromJson returned nullptr");
                 }
             }
             else
             {
-                juce::Logger::writeToLog("GearLibrary: Gear object is not a valid object");
             }
         }
-
-        juce::Logger::writeToLog("GearLibrary: Successfully loaded " + juce::String(gearItems.size()) + " items from cache");
 
         // Refresh all thumbnails after loading from cache
         refreshAllThumbnails();
@@ -382,14 +323,12 @@ bool GearLibrary::loadGearFromCache(const juce::String &cachePath)
     }
     catch (...)
     {
-        juce::Logger::writeToLog("GearLibrary: Exception while loading from cache");
         return false;
     }
 }
 
 void GearLibrary::fetchRemoteGearAsync(const juce::String &remoteUrl)
 {
-    juce::Logger::writeToLog("GearLibrary: fetchRemoteGearAsync starting with URL: " + remoteUrl);
 
     // Use the injected NetworkFetcher to fetch remote data
     try
@@ -398,25 +337,21 @@ void GearLibrary::fetchRemoteGearAsync(const juce::String &remoteUrl)
         auto jsonData = networkFetcher.fetchRemoteGearLibrary(juce::URL(remoteUrl), success);
         if (!jsonData.isEmpty())
         {
-            juce::Logger::writeToLog("GearLibrary: Successfully fetched remote data, size: " + juce::String(jsonData.length()));
 
             // Parse the remote data
             auto json = juce::JSON::parse(jsonData);
             if (!json.isObject())
             {
-                juce::Logger::writeToLog("GearLibrary: Remote data is not a valid JSON object");
                 return;
             }
 
             // Check if we have a "units" array in the new format (matching legacy system)
             if (!json.hasProperty("units") || !json["units"].isArray())
             {
-                juce::Logger::writeToLog("GearLibrary: Remote data does not contain a 'units' array");
                 return;
             }
 
             auto gearArray = json["units"].getArray();
-            juce::Logger::writeToLog("GearLibrary: Remote data contains " + juce::String(gearArray->size()) + " gear items");
 
             // Cache the remote data
             cacheManager.cacheData("remote_gear_library", jsonData);
@@ -446,8 +381,6 @@ void GearLibrary::fetchRemoteGearAsync(const juce::String &remoteUrl)
                 }
             }
 
-            juce::Logger::writeToLog("GearLibrary: Added " + juce::String(newItemsCount) + " new gear items from remote");
-
             // Update metadata and categories
             updateGearMetadata();
             updateCategories();
@@ -461,32 +394,26 @@ void GearLibrary::fetchRemoteGearAsync(const juce::String &remoteUrl)
         }
         else
         {
-            juce::Logger::writeToLog("GearLibrary: Failed to fetch remote data - empty response");
         }
     }
     catch (...)
     {
-        juce::Logger::writeToLog("GearLibrary: Exception while fetching remote gear data");
     }
 }
 
 std::unique_ptr<GearItem> GearLibrary::parseGearFromJson(const juce::var &gearObject)
 {
-    juce::Logger::writeToLog("GearLibrary: parseGearFromJson called");
 
     if (!gearObject.isObject())
     {
-        juce::Logger::writeToLog("GearLibrary: gearObject is not an object, returning nullptr");
         return nullptr;
     }
 
     auto obj = gearObject.getDynamicObject();
     if (!obj)
     {
-        juce::Logger::writeToLog("GearLibrary: getDynamicObject() returned nullptr");
         return nullptr;
     }
-    juce::Logger::writeToLog("GearLibrary: getDynamicObject() succeeded, object has " + juce::String(obj->getProperties().size()) + " properties");
 
     auto gearItem = std::make_unique<GearItem>();
     gearItem->setFileSystem(&fileSystem);
@@ -503,7 +430,6 @@ std::unique_ptr<GearItem> GearLibrary::parseGearFromJson(const juce::var &gearOb
     juce::String thumbnailImage = obj->getProperty("thumbnailImage");
 
     // Debug: Log the extracted properties
-    juce::Logger::writeToLog("GearLibrary: Extracted properties - unitId: '" + unitId + "', name: '" + name + "', manufacturer: '" + manufacturer + "', category: '" + category + "'");
 
     // Process tags with explicit cleanup
     juce::StringArray tags;
@@ -555,7 +481,6 @@ std::unique_ptr<GearItem> GearLibrary::parseGearFromJson(const juce::var &gearOb
     if (obj->hasProperty("controls") && obj->getProperty("controls").isArray())
     {
         // TODO: Implement controls parsing when needed
-        juce::Logger::writeToLog("GearLibrary: Controls found but parsing not yet implemented");
     }
 
     // Load thumbnail if imageUrl is available
@@ -564,11 +489,8 @@ std::unique_ptr<GearItem> GearLibrary::parseGearFromJson(const juce::var &gearOb
         loadGearThumbnail(gearItem.get());
     }
 
-    // Load full schema with faceplate and controls if schemaPath is available
-    if (!gearItem->schemaPath.isEmpty())
-    {
-        loadGearSchema(gearItem.get());
-    }
+    // Note: Full schema loading (faceplate and controls) is deferred until the unit is dropped onto the rack
+    // This prevents loading full schemas for all units during initial GearLibrary initialization
 
     return gearItem;
 }
@@ -745,7 +667,6 @@ void GearLibrary::clearAllGearItems()
 void GearLibrary::resetInitialization()
 {
     initialized = false;
-    juce::Logger::writeToLog("GearLibrary: Initialization flag reset to false");
 }
 
 bool GearLibrary::createGearCategory(const juce::String &categoryName)
@@ -1112,6 +1033,81 @@ bool GearLibrary::downloadGearItem(const juce::String &gearId, const juce::Strin
     return true;
 }
 
+bool GearLibrary::downloadGearAsset(const juce::String &gearId, const juce::String &assetUrl, const juce::String &assetType)
+{
+
+    if (assetUrl.isEmpty())
+    {
+        return false;
+    }
+
+    try
+    {
+        // Construct full URL from relative path based on asset type
+        juce::String fullUrl = assetUrl;
+        if (!fullUrl.startsWith("http"))
+        {
+            // Check if the path is already a full path or needs the base URL
+            if (fullUrl.startsWith("assets/") || !fullUrl.contains("/"))
+            {
+                if (assetType == "control")
+                {
+                    fullUrl = RemoteConfig::getControlImageUrl(fullUrl);
+                }
+                else if (assetType == "faceplate")
+                {
+                    fullUrl = RemoteConfig::getFaceplateUrl(fullUrl);
+                }
+                else if (assetType == "thumbnail")
+                {
+                    fullUrl = RemoteConfig::getThumbnailUrl(fullUrl);
+                }
+                else
+                {
+                    // Default to control images for unknown types
+                    fullUrl = RemoteConfig::getControlImageUrl(fullUrl);
+                }
+            }
+        }
+
+        // Create URL from full path
+        juce::URL assetUrlObj(fullUrl);
+        if (!assetUrlObj.isWellFormed())
+        {
+            return false;
+        }
+
+        // Download the asset
+        auto inputStream = assetUrlObj.createInputStream(false);
+        if (inputStream == nullptr)
+        {
+            return false;
+        }
+
+        // Read the binary data
+        juce::MemoryBlock binaryData;
+        inputStream->readIntoMemoryBlock(binaryData);
+
+        if (binaryData.getSize() == 0)
+        {
+            return false;
+        }
+
+        // Cache the asset
+        bool cacheSuccess = cacheManager.cacheBinaryData(assetUrl, binaryData);
+        if (!cacheSuccess)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        return false;
+    }
+}
+
 bool GearLibrary::checkForUpdates(const juce::String &remoteUrl)
 {
     // For now, just return false (no updates)
@@ -1288,28 +1284,21 @@ void GearLibrary::saveCategories()
 
 bool GearLibrary::loadGearThumbnail(GearItem *gearItem)
 {
-    juce::Logger::writeToLog("GearLibrary::loadGearThumbnail called for " + gearItem->unitId);
 
     if (!gearItem || gearItem->imageUrl.isEmpty())
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - gearItem is null or imageUrl is empty");
         return false;
     }
-
-    juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - imageUrl: '" + gearItem->imageUrl + "'");
 
     // Check if thumbnail is already cached
     if (cacheManager.isCached("thumb_" + gearItem->unitId))
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Found cached thumbnail for " + gearItem->unitId);
         gearItem->thumbnailImage = cacheManager.getCachedImage("thumb_" + gearItem->unitId);
         bool success = !gearItem->thumbnailImage.isNull();
-        juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Cached thumbnail load " + juce::String(success ? "SUCCESS" : "FAILED"));
 
         // If cached thumbnail load failed, clear the cache entry and fetch again
         if (!success)
         {
-            juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Cached thumbnail is corrupted, clearing cache entry");
             cacheManager.clearCache("thumb_" + gearItem->unitId);
         }
         else
@@ -1318,13 +1307,8 @@ bool GearLibrary::loadGearThumbnail(GearItem *gearItem)
         }
     }
 
-    juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - No cached thumbnail, fetching from remote");
-
     // Convert relative thumbnail path to absolute URL
     juce::String absoluteThumbnailUrl = RemoteConfig::getThumbnailUrl(gearItem->imageUrl);
-    juce::Logger::writeToLog("GearLibrary: Loading thumbnail from: " + absoluteThumbnailUrl);
-    juce::Logger::writeToLog("GearLibrary: Original imageUrl: '" + gearItem->imageUrl + "'");
-    juce::Logger::writeToLog("GearLibrary: Constructed absolute URL: '" + absoluteThumbnailUrl + "'");
 
     // Try to fetch thumbnail from remote
     try
@@ -1333,55 +1317,42 @@ bool GearLibrary::loadGearThumbnail(GearItem *gearItem)
         bool success = false;
         auto imageData = networkFetcher.fetchGearImage(imageUrl, success);
 
-        juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Remote fetch " + juce::String(success ? "SUCCESS" : "FAILED") +
-                                 " - Data size: " + juce::String(imageData.getSize()));
-
         if (success && imageData.getSize() > 0)
         {
             // imageData is already a MemoryBlock, no conversion needed
 
             if (cacheManager.cacheBinaryData("thumb_" + gearItem->unitId, imageData))
             {
-                juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Successfully cached binary data");
                 // Load the cached image
                 gearItem->thumbnailImage = cacheManager.getCachedImage("thumb_" + gearItem->unitId);
                 bool finalSuccess = !gearItem->thumbnailImage.isNull();
-                juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Final thumbnail load " + juce::String(finalSuccess ? "SUCCESS" : "FAILED"));
                 return finalSuccess;
             }
             else
             {
-                juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Failed to cache binary data");
             }
         }
     }
     catch (...)
     {
-        juce::Logger::writeToLog("GearLibrary: Exception while loading thumbnail for " + gearItem->unitId);
     }
 
     // Create placeholder if loading fails
-    juce::Logger::writeToLog("GearLibrary::loadGearThumbnail - Creating placeholder image for " + gearItem->unitId);
     gearItem->createPlaceholderImage();
     return false;
 }
 
 bool GearLibrary::loadGearSchema(GearItem *gearItem)
 {
-    juce::Logger::writeToLog("GearLibrary::loadGearSchema called for " + gearItem->unitId);
 
     if (!gearItem || gearItem->schemaPath.isEmpty())
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearSchema - gearItem is null or schemaPath is empty");
         return false;
     }
-
-    juce::Logger::writeToLog("GearLibrary::loadGearSchema - schemaPath: '" + gearItem->schemaPath + "'");
 
     // Check if schema is already cached
     if (cacheManager.isCached("schema_" + gearItem->unitId))
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearSchema - Found cached schema for " + gearItem->unitId);
         juce::String cachedPath = cacheManager.getCachedPath("schema_" + gearItem->unitId);
         if (cachedPath.isNotEmpty())
         {
@@ -1398,11 +1369,8 @@ bool GearLibrary::loadGearSchema(GearItem *gearItem)
         }
     }
 
-    juce::Logger::writeToLog("GearLibrary::loadGearSchema - No cached schema, fetching from remote");
-
     // Convert relative schema path to absolute URL
     juce::String absoluteSchemaUrl = RemoteConfig::getSchemaUrl(gearItem->schemaPath);
-    juce::Logger::writeToLog("GearLibrary: Loading schema from: " + absoluteSchemaUrl);
 
     // Try to fetch schema from remote
     try
@@ -1421,29 +1389,24 @@ bool GearLibrary::loadGearSchema(GearItem *gearItem)
 
                 // Parse the schema
                 bool success = parseGearSchema(gearItem, schemaData);
-                juce::Logger::writeToLog("GearLibrary::loadGearSchema - Schema load " + juce::String(success ? "SUCCESS" : "FAILED"));
                 return success;
             }
         }
     }
     catch (const std::exception &e)
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearSchema - Exception: " + juce::String(e.what()));
     }
 
-    juce::Logger::writeToLog("GearLibrary::loadGearSchema - Failed to load schema");
     return false;
 }
 
 bool GearLibrary::parseGearSchema(GearItem *gearItem, const juce::String &schemaData)
 {
-    juce::Logger::writeToLog("GearLibrary::parseGearSchema called for " + gearItem->unitId);
 
     // Parse JSON schema
     auto schemaJson = juce::JSON::parse(schemaData);
     if (!schemaJson.isObject())
     {
-        juce::Logger::writeToLog("GearLibrary::parseGearSchema - Invalid JSON schema");
         return false;
     }
 
@@ -1461,7 +1424,6 @@ bool GearLibrary::parseGearSchema(GearItem *gearItem, const juce::String &schema
             {
                 foundFaceplate = true;
                 gearItem->faceplateImagePath = faceplateImagePath;
-                juce::Logger::writeToLog("GearLibrary::parseGearSchema - Found faceplate path: " + faceplateImagePath);
                 break;
             }
         }
@@ -1470,13 +1432,47 @@ bool GearLibrary::parseGearSchema(GearItem *gearItem, const juce::String &schema
     // Parse controls if available
     if (schemaJson.hasProperty("controls") && schemaJson["controls"].isArray())
     {
-        gearItem->controls.clear();
+        // Store existing control images before clearing the array
+        juce::Array<juce::Image> existingKnobImages;
+        juce::Array<juce::Image> existingButtonSprites;
+        juce::Array<juce::Image> existingFaderImages;
+        juce::Array<juce::Image> existingSwitchSprites;
+
+        for (const auto &control : gearItem->controls)
+        {
+            existingKnobImages.add(control.loadedImage);
+            existingButtonSprites.add(control.buttonSpriteSheet);
+            existingFaderImages.add(control.faderImage);
+            existingSwitchSprites.add(control.switchSpriteSheet);
+        }
+
+        // Only clear the controls array if we have existing controls with images
+        // This prevents clearing on first load when there are no existing controls
+        bool hasExistingControlsWithImages = false;
+        for (const auto &control : gearItem->controls)
+        {
+            if (control.loadedImage.isValid() || control.buttonSpriteSheet.isValid() ||
+                control.faderImage.isValid() || control.switchSpriteSheet.isValid())
+            {
+                hasExistingControlsWithImages = true;
+                break;
+            }
+        }
+
+        if (hasExistingControlsWithImages)
+        {
+            gearItem->controls.clear();
+        }
 
         auto controlsArray = schemaJson["controls"].getArray();
-        for (auto &controlVar : *controlsArray)
+
+        for (int i = 0; i < controlsArray->size(); ++i)
         {
+            auto &controlVar = controlsArray->getReference(i);
             if (!controlVar.isObject())
+            {
                 continue;
+            }
 
             // Get control type
             GearControl::ControlType controlType = GearControl::ControlType::Button;
@@ -1488,6 +1484,12 @@ bool GearLibrary::parseGearSchema(GearItem *gearItem, const juce::String &schema
             else if (controlTypeStr == "knob")
                 controlType = GearControl::ControlType::Knob;
 
+            // Get control orientation
+            GearControl::Orientation orientation = GearControl::Orientation::Horizontal;
+            juce::String orientationStr = controlVar.getProperty("orientation", "horizontal").toString().toLowerCase();
+            if (orientationStr == "vertical")
+                orientation = GearControl::Orientation::Vertical;
+
             // Get control position
             juce::Rectangle<float> position;
             if (controlVar.hasProperty("position"))
@@ -1495,67 +1497,348 @@ bool GearLibrary::parseGearSchema(GearItem *gearItem, const juce::String &schema
                 auto posObj = controlVar.getProperty("position", juce::var());
                 if (posObj.isObject())
                 {
+                    // Default normalized sizes based on control type
+                    float defaultWidth, defaultHeight;
+                    if (controlType == GearControl::ControlType::Knob)
+                    {
+                        defaultWidth = 0.08f;  // 8% of faceplate width
+                        defaultHeight = 0.08f; // 8% of faceplate height
+                    }
+                    else if (controlType == GearControl::ControlType::Button)
+                    {
+                        defaultWidth = 0.12f;  // 12% of faceplate width
+                        defaultHeight = 0.08f; // 8% of faceplate height
+                    }
+                    else
+                    {
+                        defaultWidth = 0.1f;  // 10% of faceplate width
+                        defaultHeight = 0.1f; // 10% of faceplate height
+                    }
+
                     position = juce::Rectangle<float>(
                         static_cast<float>(posObj.getProperty("x", 0)),
                         static_cast<float>(posObj.getProperty("y", 0)),
-                        static_cast<float>(posObj.getProperty("width", 20)),
-                        static_cast<float>(posObj.getProperty("height", 20)));
+                        static_cast<float>(posObj.getProperty("width", defaultWidth)),
+                        static_cast<float>(posObj.getProperty("height", defaultHeight)));
                 }
             }
 
-            // Get control name
-            juce::String controlName = controlVar.getProperty("name", "").toString();
+            // Get control name (use label for human-readable name, fallback to id)
+            juce::String controlName = controlVar.getProperty("label", "").toString();
+            if (controlName.isEmpty())
+            {
+                controlName = controlVar.getProperty("id", "").toString();
+            }
 
-            // Create and add control
+            // Create control
             GearControl control(controlType, position, 0.0f);
             control.name = controlName;
+            control.orientation = orientation;
+
+            // Add control to array first so we can reference it properly
             gearItem->controls.add(control);
+            GearControl &addedControl = gearItem->controls.getReference(gearItem->controls.size() - 1);
+            addedControl.name = controlName; // Ensure name is set on the added control
+
+            // Restore existing images if available (only if controls array was cleared)
+            if (hasExistingControlsWithImages)
+            {
+                if (i < existingKnobImages.size() && existingKnobImages[i].isValid())
+                {
+                    addedControl.loadedImage = existingKnobImages[i];
+                }
+                if (i < existingButtonSprites.size() && existingButtonSprites[i].isValid())
+                {
+                    addedControl.buttonSpriteSheet = existingButtonSprites[i];
+                }
+                if (i < existingFaderImages.size() && existingFaderImages[i].isValid())
+                {
+                    addedControl.faderImage = existingFaderImages[i];
+                }
+                if (i < existingSwitchSprites.size() && existingSwitchSprites[i].isValid())
+                {
+                    addedControl.switchSpriteSheet = existingSwitchSprites[i];
+                }
+            }
+
+            // Parse control-specific data based on type
+            if (controlType == GearControl::ControlType::Button)
+            {
+                // Parse button-specific data
+                if (controlVar.hasProperty("image"))
+                {
+                    juce::String imagePath = controlVar.getProperty("image", "").toString();
+                    if (imagePath.isNotEmpty())
+                    {
+                        // Store the image path for later loading (after controls are in final array)
+                        addedControl.imagePath = imagePath;
+                    }
+                    else
+                    {
+                    }
+                }
+                else
+                {
+                }
+
+                if (controlVar.hasProperty("options") && controlVar["options"].isArray())
+                {
+                    auto optionsArray = controlVar["options"].getArray();
+
+                    for (auto &optionVar : *optionsArray)
+                    {
+                        if (optionVar.isObject())
+                        {
+                            GearControl::SwitchOptionFrame frame;
+                            frame.value = static_cast<float>(optionVar.getProperty("value", 0));
+                            frame.label = optionVar.getProperty("label", "").toString();
+
+                            if (optionVar.hasProperty("frame") && optionVar["frame"].isObject())
+                            {
+                                auto frameObj = optionVar["frame"];
+                                frame.position = juce::Rectangle<float>(
+                                    static_cast<float>(frameObj.getProperty("x", 0)),
+                                    static_cast<float>(frameObj.getProperty("y", 0)),
+                                    static_cast<float>(frameObj.getProperty("width", 20)),
+                                    static_cast<float>(frameObj.getProperty("height", 20)));
+                                frame.size = frame.position;
+                            }
+
+                            addedControl.buttonFrames.add(frame);
+                        }
+                    }
+                }
+                else
+                {
+                }
+
+                addedControl.isMomentary = controlVar.getProperty("momentary", true);
+                addedControl.currentIndex = static_cast<int>(controlVar.getProperty("value", 0));
+            }
+            else if (controlType == GearControl::ControlType::Switch)
+            {
+                // Parse switch-specific data
+                if (controlVar.hasProperty("image"))
+                {
+                    juce::String imagePath = controlVar.getProperty("image", "").toString();
+                    if (imagePath.isNotEmpty())
+                    {
+                        addedControl.imagePath = imagePath;
+                    }
+                }
+
+                if (controlVar.hasProperty("options") && controlVar["options"].isArray())
+                {
+                    auto optionsArray = controlVar["options"].getArray();
+                    for (auto &optionVar : *optionsArray)
+                    {
+                        if (optionVar.isObject())
+                        {
+                            GearControl::SwitchOptionFrame frame;
+                            frame.value = static_cast<float>(optionVar.getProperty("value", 0));
+                            frame.label = optionVar.getProperty("label", "").toString();
+
+                            if (optionVar.hasProperty("frame") && optionVar["frame"].isObject())
+                            {
+                                auto frameObj = optionVar["frame"];
+                                frame.position = juce::Rectangle<float>(
+                                    static_cast<float>(frameObj.getProperty("x", 0)),
+                                    static_cast<float>(frameObj.getProperty("y", 0)),
+                                    static_cast<float>(frameObj.getProperty("width", 20)),
+                                    static_cast<float>(frameObj.getProperty("height", 20)));
+                                frame.size = frame.position;
+                            }
+
+                            addedControl.switchFrames.add(frame);
+                        }
+                    }
+                }
+
+                addedControl.currentIndex = static_cast<int>(controlVar.getProperty("value", 0));
+            }
+            else if (controlType == GearControl::ControlType::Knob)
+            {
+                // Parse knob-specific data
+                if (controlVar.hasProperty("image"))
+                {
+                    juce::String imagePath = controlVar.getProperty("image", "").toString();
+                    if (imagePath.isNotEmpty())
+                    {
+                        // Store the image path for later loading (after controls are in final array)
+                        addedControl.imagePath = imagePath;
+                    }
+                    else
+                    {
+                    }
+                }
+                else
+                {
+                }
+
+                addedControl.startAngle = static_cast<float>(controlVar.getProperty("startAngle", 0));
+                addedControl.endAngle = static_cast<float>(controlVar.getProperty("endAngle", 360));
+                addedControl.currentValue = static_cast<float>(controlVar.getProperty("value", 0));
+            }
+            else if (controlType == GearControl::ControlType::Fader)
+            {
+                // Parse fader-specific data
+                if (controlVar.hasProperty("image"))
+                {
+                    juce::String imagePath = controlVar.getProperty("image", "").toString();
+                    if (imagePath.isNotEmpty())
+                    {
+                        // Store the image path for later loading (after controls are in final array)
+                        addedControl.imagePath = imagePath;
+                    }
+                }
+
+                addedControl.length = static_cast<float>(controlVar.getProperty("length", 100));
+                addedControl.currentValue = static_cast<float>(controlVar.getProperty("value", 0));
+            }
         }
 
-        juce::Logger::writeToLog("GearLibrary::parseGearSchema - Loaded " + juce::String(gearItem->controls.size()) + " controls");
+        // Load control images after all controls are in the final array (like the old system)
+        loadControlImages(gearItem);
     }
 
     return true;
 }
 
+void GearLibrary::loadControlImages(GearItem *gearItem)
+{
+
+    for (int i = 0; i < gearItem->controls.size(); ++i)
+    {
+        GearControl &control = gearItem->controls.getReference(i);
+        if (!control.imagePath.isEmpty())
+        {
+            loadControlImage(gearItem, control, control.imagePath);
+        }
+        else
+        {
+        }
+    }
+}
+
+bool GearLibrary::loadControlImage(GearItem *gearItem, GearControl &control, const juce::String &imagePath)
+{
+
+    if (!gearItem || imagePath.isEmpty())
+    {
+        return false;
+    }
+
+    try
+    {
+        // Check if image is already cached
+        juce::String cachedPath = cacheManager.getCachedPath(imagePath);
+        if (cachedPath.isNotEmpty() && fileSystem.fileExists(cachedPath))
+        {
+
+            // Load the cached image
+            juce::File imageFile(cachedPath);
+            juce::Image image = juce::ImageFileFormat::loadFrom(imageFile);
+
+            if (image.isValid())
+            {
+                // Set the appropriate image based on control type
+                switch (control.type)
+                {
+                case GearControl::ControlType::Button:
+                    control.setButtonSpriteSheet(image);
+                    break;
+                case GearControl::ControlType::Switch:
+                    control.setSwitchSpriteSheet(image);
+                    break;
+                case GearControl::ControlType::Fader:
+                    control.setFaderImage(image);
+                    break;
+                case GearControl::ControlType::Knob:
+                    control.setKnobImage(image);
+                    break;
+                }
+
+                return true;
+            }
+        }
+
+        // If not cached, download the image
+
+        // Download the control image
+        bool downloadSuccess = downloadGearAsset(gearItem->unitId, imagePath, "control");
+
+        if (downloadSuccess)
+        {
+            // Try to load from cache again after download
+            cachedPath = cacheManager.getCachedPath(imagePath);
+            if (cachedPath.isNotEmpty() && fileSystem.fileExists(cachedPath))
+            {
+                juce::File imageFile(cachedPath);
+                juce::Image image = juce::ImageFileFormat::loadFrom(imageFile);
+
+                if (image.isValid())
+                {
+                    // Set the appropriate image based on control type
+                    switch (control.type)
+                    {
+                    case GearControl::ControlType::Button:
+                        control.setButtonSpriteSheet(image);
+                        break;
+                    case GearControl::ControlType::Switch:
+                        control.setSwitchSpriteSheet(image);
+                        break;
+                    case GearControl::ControlType::Fader:
+                        control.setFaderImage(image);
+                        break;
+                    case GearControl::ControlType::Knob:
+                        control.setKnobImage(image);
+                        break;
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    catch (const std::exception &e)
+    {
+        return false;
+    }
+}
+
 bool GearLibrary::loadGearFaceplate(GearItem *gearItem)
 {
-    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate called for " + gearItem->unitId);
 
     if (!gearItem || gearItem->faceplateImagePath.isEmpty())
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - gearItem is null or faceplateImagePath is empty");
         return false;
     }
 
     // Check if faceplate is already loaded to prevent duplicate fetching
     if (gearItem->faceplateImage.isValid())
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Faceplate already loaded for " + gearItem->unitId);
         return true;
     }
 
     // Extract filename from faceplate path
     juce::String filename = fileSystem.getFileName(gearItem->faceplateImagePath);
 
-    // Check cache first
-    if (cacheManager.isCached("faceplate_" + gearItem->unitId))
+    // Check cache first - use sourceUnitId for cache key since all instances of the same gear type share the same faceplate
+    juce::String cacheKey = gearItem->isInstance ? "faceplate_" + gearItem->sourceUnitId : "faceplate_" + gearItem->unitId;
+    if (cacheManager.isCached(cacheKey))
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Found cached faceplate for " + gearItem->unitId);
-        gearItem->faceplateImage = cacheManager.getCachedImage("faceplate_" + gearItem->unitId);
+        gearItem->faceplateImage = cacheManager.getCachedImage(cacheKey);
         if (gearItem->faceplateImage.isValid())
         {
-            juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Cached faceplate load SUCCESS");
             return true;
         }
         else
         {
-            juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Cached faceplate is corrupted, clearing cache entry");
-            cacheManager.clearCache("faceplate_" + gearItem->unitId);
+            cacheManager.clearCache(cacheKey);
         }
     }
-
-    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - No cached faceplate, fetching from remote");
 
     // Construct the full URL if it's a relative path
     juce::String fullUrl = gearItem->faceplateImagePath;
@@ -1567,8 +1850,6 @@ bool GearLibrary::loadGearFaceplate(GearItem *gearItem)
             fullUrl = RemoteConfig::getFaceplateUrl(fullUrl);
         }
     }
-
-    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Loading faceplate from: " + fullUrl);
 
     // Try to fetch faceplate from remote
     try
@@ -1588,41 +1869,36 @@ bool GearLibrary::loadGearFaceplate(GearItem *gearItem)
 
                 if (gearItem->faceplateImage.isValid())
                 {
-                    // Cache the faceplate image
-                    cacheManager.addToCache("faceplate_" + gearItem->unitId, gearItem->faceplateImage);
-                    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Faceplate load SUCCESS");
+                    // Cache the faceplate image using the correct cache key
+                    cacheManager.addToCache(cacheKey, gearItem->faceplateImage);
                     return true;
                 }
                 else
                 {
-                    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Failed to create image from downloaded data");
                 }
             }
         }
     }
     catch (const std::exception &e)
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Exception: " + juce::String(e.what()));
     }
 
-    juce::Logger::writeToLog("GearLibrary::loadGearFaceplate - Failed to load faceplate");
     return false;
 }
 
 void GearLibrary::loadGearFaceplateAsync(GearItem *gearItem, std::function<void()> onLoaded)
 {
-    juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync called for " + gearItem->unitId);
-
     if (!gearItem || gearItem->faceplateImagePath.isEmpty())
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - gearItem is null or faceplateImagePath is empty");
         return;
     }
+
+    // Use mutex to prevent race conditions in faceplate loading
+    std::lock_guard<std::mutex> lock(faceplateLoadingMutex);
 
     // Check if faceplate is already loaded to prevent duplicate fetching
     if (gearItem->faceplateImage.isValid())
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Faceplate already loaded for " + gearItem->unitId);
         // Call the callback even for already loaded faceplates to maintain counter consistency
         if (onLoaded)
         {
@@ -1634,14 +1910,14 @@ void GearLibrary::loadGearFaceplateAsync(GearItem *gearItem, std::function<void(
     // Extract filename from faceplate path
     juce::String filename = fileSystem.getFileName(gearItem->faceplateImagePath);
 
-    // Check cache first
-    if (cacheManager.isCached("faceplate_" + gearItem->unitId))
+    // Check cache first - use sourceUnitId for cache key since all instances of the same gear type share the same faceplate
+    juce::String cacheKey = gearItem->isInstance ? "faceplate_" + gearItem->sourceUnitId : "faceplate_" + gearItem->unitId;
+
+    if (cacheManager.isCached(cacheKey))
     {
-        juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Found cached faceplate for " + gearItem->unitId);
-        gearItem->faceplateImage = cacheManager.getCachedImage("faceplate_" + gearItem->unitId);
+        gearItem->faceplateImage = cacheManager.getCachedImage(cacheKey);
         if (gearItem->faceplateImage.isValid())
         {
-            juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Cached faceplate load SUCCESS");
             // Call the callback even for cached faceplates to maintain counter consistency
             if (onLoaded)
             {
@@ -1651,12 +1927,12 @@ void GearLibrary::loadGearFaceplateAsync(GearItem *gearItem, std::function<void(
         }
         else
         {
-            juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Cached faceplate is corrupted, clearing cache entry");
-            cacheManager.clearCache("faceplate_" + gearItem->unitId);
+            cacheManager.clearCache(cacheKey);
         }
     }
-
-    juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - No cached faceplate, starting async download");
+    else
+    {
+    }
 
     // Construct the full URL if it's a relative path
     juce::String fullUrl = gearItem->faceplateImagePath;
@@ -1668,8 +1944,6 @@ void GearLibrary::loadGearFaceplateAsync(GearItem *gearItem, std::function<void(
             fullUrl = RemoteConfig::getFaceplateUrl(fullUrl);
         }
     }
-
-    juce::Logger::writeToLog("GearLibrary::loadGearFaceplateAsync - Loading faceplate from: " + fullUrl);
 
     /**
      * @brief Thread for downloading faceplate images asynchronously.
@@ -1702,7 +1976,6 @@ void GearLibrary::loadGearFaceplateAsync(GearItem *gearItem, std::function<void(
 
         void run() override
         {
-            juce::Logger::writeToLog("FaceplateImageDownloader: Starting download from " + url.toString(false));
 
             try
             {
@@ -1714,49 +1987,65 @@ void GearLibrary::loadGearFaceplateAsync(GearItem *gearItem, std::function<void(
 
                     if (binaryData.getSize() > 0)
                     {
-                        // Load image directly from binary data
-                        juce::Image downloadedImage = juce::ImageCache::getFromMemory(binaryData.getData(), binaryData.getSize());
+                        // Load image directly from binary data using MemoryInputStream
+                        juce::MemoryInputStream stream(binaryData, false);
+                        juce::Image downloadedImage = juce::ImageFileFormat::loadFrom(stream);
 
                         if (downloadedImage.isValid())
                         {
-                            // Cache the faceplate image
-                            cacheManager.addToCache("faceplate_" + item->unitId, downloadedImage);
+                            // Cache the faceplate image using the correct cache key
+                            juce::String cacheKey = item->isInstance ? "faceplate_" + item->sourceUnitId : "faceplate_" + item->unitId;
 
-                            // Update the gear item on the message thread
-                            juce::MessageManager::callAsync([this, downloadedImage]()
+                            // Check if there's already something in the cache with this key
+                            if (cacheManager.isCached(cacheKey))
+                            {
+                                juce::Image existingImage = cacheManager.getCachedImage(cacheKey);
+                            }
+
+                            cacheManager.addToCache(cacheKey, downloadedImage);
+
+                            // Store the item pointer and ID for validation in the async callback
+                            GearItem *itemPtr = item;
+                            juce::String itemId = item->isInstance ? item->instanceId : item->unitId;
+
+                            // Update the gear item on the message thread with validation
+                            juce::MessageManager::callAsync([this, itemPtr, downloadedImage, itemId]()
                                                             {
-                                item->faceplateImage = downloadedImage;
-                                juce::Logger::writeToLog("FaceplateImageDownloader: Successfully loaded faceplate for " + item->unitId);
                                 
-                                // Call the specific callback if provided
-                                if (onLoaded)
+                                // Validate that the item pointer is still valid and matches the expected ID
+                                if (itemPtr && (itemPtr->isInstance ? itemPtr->instanceId : itemPtr->unitId) == itemId)
                                 {
-                                    onLoaded();
+                                    itemPtr->faceplateImage = downloadedImage;
+                                    
+                                    // Call the specific callback if provided
+                                    if (onLoaded)
+                                    {
+                                        onLoaded();
+                                    }
+                                    // Fallback to global library callback if no specific callback
+                                    else if (library->onLibraryUpdated)
+                                    {
+                                        library->onLibraryUpdated();
+                                    }
                                 }
-                                // Fallback to global library callback if no specific callback
-                                else if (library->onLibraryUpdated)
+                                else
                                 {
-                                    library->onLibraryUpdated();
                                 } });
                         }
                         else
                         {
-                            juce::Logger::writeToLog("FaceplateImageDownloader: Failed to create image from downloaded data for " + item->unitId);
                         }
                     }
                     else
                     {
-                        juce::Logger::writeToLog("FaceplateImageDownloader: No data received for " + item->unitId);
                     }
                 }
                 else
                 {
-                    juce::Logger::writeToLog("FaceplateImageDownloader: Failed to create input stream for " + item->unitId);
                 }
             }
             catch (const std::exception &e)
             {
-                juce::Logger::writeToLog("FaceplateImageDownloader: Exception downloading faceplate for " + item->unitId + ": " + juce::String(e.what()));
             }
         }
 
@@ -1775,13 +2064,11 @@ void GearLibrary::loadGearFaceplateAsync(GearItem *gearItem, std::function<void(
 
 void GearLibrary::refreshAllThumbnails()
 {
-    juce::Logger::writeToLog("GearLibrary::refreshAllThumbnails - Starting thumbnail refresh for " + juce::String(gearItems.size()) + " items");
 
     for (auto *gearItem : gearItems)
     {
         if (gearItem && !gearItem->imageUrl.isEmpty())
         {
-            juce::Logger::writeToLog("GearLibrary::refreshAllThumbnails - Refreshing thumbnail for " + gearItem->unitId);
 
             // Clear any existing cached thumbnail to force a fresh fetch
             cacheManager.clearCache("thumb_" + gearItem->unitId);
@@ -1791,11 +2078,32 @@ void GearLibrary::refreshAllThumbnails()
         }
     }
 
-    juce::Logger::writeToLog("GearLibrary::refreshAllThumbnails - Completed thumbnail refresh");
-
     // Notify listeners that the library has been updated
     if (onLibraryUpdated)
     {
         onLibraryUpdated();
     }
+}
+
+GearItem *GearLibrary::findGearItemById(const juce::String &itemId)
+{
+    // Search through all gear items to find the one with matching ID
+    for (auto *item : gearItems)
+    {
+        if (item)
+        {
+            // Check if it's a template item
+            if (item->unitId == itemId)
+            {
+                return item;
+            }
+            // Check if it's an instance
+            if (item->isInstance && item->instanceId == itemId)
+            {
+                return item;
+            }
+        }
+    }
+
+    return nullptr;
 }

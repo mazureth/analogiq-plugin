@@ -266,14 +266,12 @@ void AnalogIQProcessor::initializeLogging()
 {
     // Temporarily disable file logging to avoid permission issues
     // TODO: Re-enable with proper error handling when file system is stable
-    juce::Logger::writeToLog("Logging initialized (file logging disabled)");
 }
 
 void AnalogIQProcessor::logToFile(const juce::String &message)
 {
     // Temporarily disable file logging to avoid permission issues
     // TODO: Re-enable with proper error handling when file system is stable
-    juce::Logger::writeToLog("LOG: " + message);
 }
 
 juce::String AnalogIQProcessor::getLogTimestamp()

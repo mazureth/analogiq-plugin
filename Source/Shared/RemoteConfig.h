@@ -15,18 +15,21 @@ public:
     static const juce::String SCHEMAS_BASE_URL;
     static const juce::String THUMBNAILS_BASE_URL;
     static const juce::String FACEPLATES_BASE_URL;
+    static const juce::String CONTROL_IMAGES_BASE_URL;
 
     // Relative paths from base URLs
     static const juce::String GEAR_LIBRARY_INDEX_PATH;
     static const juce::String SCHEMAS_PATH;
     static const juce::String THUMBNAILS_PATH;
     static const juce::String FACEPLATES_PATH;
+    static const juce::String CONTROL_IMAGES_PATH;
 
     // Full constructed URLs
     static juce::String getGearLibraryIndexUrl();
     static juce::String getSchemaUrl(const juce::String &schemaPath);
     static juce::String getThumbnailUrl(const juce::String &thumbnailPath);
     static juce::String getFaceplateUrl(const juce::String &faceplatePath);
+    static juce::String getControlImageUrl(const juce::String &controlImagePath);
 
     // URL validation and utilities
     static bool isValidUrl(const juce::String &url);

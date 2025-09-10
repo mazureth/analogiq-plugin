@@ -51,6 +51,7 @@ public:
     float maxValue;
     float stepSize;
     Orientation orientation;
+    juce::String imagePath; // Path to control image for deferred loading
 
     // Switch-specific properties
     juce::Array<SwitchOptionFrame> switchFrames;

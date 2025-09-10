@@ -118,9 +118,7 @@ void Rack::createSlot(int slotIndex)
 
     // Set up individual faceplate loaded callback for this slot
     slot->setFaceplateLoadedCallback([this, slotIndex]()
-                                     {
-        juce::Logger::writeToLog("Rack: Faceplate loaded for slot " + juce::String(slotIndex) + ", repainting single slot");
-        repaintSingleSlot(slotIndex); });
+                                     { repaintSingleSlot(slotIndex); });
 
     // Set the slot's background color
     slot->setSlotBackgroundColor(slotBackgroundColor);
@@ -156,9 +154,12 @@ void Rack::layoutSlots()
 
 void Rack::updateSlotPositions()
 {
-    // Calculate the slot width based on container width minus margins and padding
-    int slotPadding = 2; // 2px padding on left and right
-    int effectiveSlotWidth = getWidth() - (2 * slotSpacing) - (2 * slotPadding);
+    // Calculate the slot width based on container width minus margins (exactly like old system)
+    int effectiveSlotWidth = getWidth() - (2 * slotSpacing);
+
+    juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Rack::updateSlotPositions - getWidth()=" + juce::String(getWidth()) +
+                             ", slotSpacing=" + juce::String(slotSpacing) +
+                             ", effectiveSlotWidth=" + juce::String(effectiveSlotWidth));
 
     // Position the slots within the container in a single vertical column
     int currentY = slotSpacing;
@@ -169,11 +170,16 @@ void Rack::updateSlotPositions()
             int slotHeight = getSlotHeight(static_cast<int>(i));
 
             rackSlots[i]->setBounds(
-                slotSpacing + slotPadding, // Left margin + padding
-                currentY,                  // Current Y position
-                effectiveSlotWidth,        // Full width minus margins and padding
-                slotHeight                 // Dynamic height for this slot
+                slotSpacing,        // Left margin (exactly like old system)
+                currentY,           // Current Y position
+                effectiveSlotWidth, // Full width minus margins
+                slotHeight          // Dynamic height for this slot
             );
+
+            juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Slot " + juce::String(i) + " bounds: x=" + juce::String(slotSpacing) +
+                                     ", y=" + juce::String(currentY) +
+                                     ", width=" + juce::String(effectiveSlotWidth) +
+                                     ", height=" + juce::String(slotHeight));
 
             currentY += slotHeight + slotSpacing;
         }
@@ -217,22 +223,16 @@ void Rack::resized()
 // Drag and Drop Implementation
 bool Rack::isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    juce::Logger::writeToLog("Rack: isInterestedInDragSource called");
-    juce::Logger::writeToLog("Rack: Drag description: '" + dragSourceDetails.description.toString() + "'");
-    juce::Logger::writeToLog("Rack: Source component: " + (dragSourceDetails.sourceComponent ? dragSourceDetails.sourceComponent->getComponentID() : "null"));
 
     // Check if the drag source contains gear data
     juce::String description = dragSourceDetails.description.toString();
     bool interested = description.startsWith("gear:");
 
-    juce::Logger::writeToLog("Rack: Interested in drag source: " + juce::String(interested ? "YES" : "NO"));
     return interested;
 }
 
 void Rack::itemDragEnter(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    juce::Logger::writeToLog("Rack: itemDragEnter called");
-    juce::Logger::writeToLog("Rack: Drag description: '" + dragSourceDetails.description.toString() + "'");
 
     // Highlight the rack to show it's a valid drop target
     repaint();
@@ -240,7 +240,6 @@ void Rack::itemDragEnter(const juce::DragAndDropTarget::SourceDetails &dragSourc
 
 void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    juce::Logger::writeToLog("Rack: itemDragMove called at position: " + dragSourceDetails.localPosition.toString());
 
     // Update visual feedback during drag
     repaint();
@@ -248,7 +247,6 @@ void Rack::itemDragMove(const juce::DragAndDropTarget::SourceDetails &dragSource
 
 void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    juce::Logger::writeToLog("Rack: itemDragExit called");
 
     // Remove drag feedback
     repaint();
@@ -256,57 +254,43 @@ void Rack::itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSource
 
 void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    juce::Logger::writeToLog("Rack: itemDropped called");
-    juce::Logger::writeToLog("Rack: Drop position: " + dragSourceDetails.localPosition.toString());
-    juce::Logger::writeToLog("Rack: Drag description: '" + dragSourceDetails.description.toString() + "'");
-    juce::Logger::writeToLog("Rack: Source component: " + (dragSourceDetails.sourceComponent ? dragSourceDetails.sourceComponent->getComponentID() : "null"));
 
     // Extract gear ID from drag description
     juce::String description = dragSourceDetails.description.toString();
-    juce::Logger::writeToLog("Rack: Full description: '" + description + "'");
 
     if (description.startsWith("gear:"))
     {
         juce::String gearId = description.substring(5); // Remove "gear:" prefix
-        juce::Logger::writeToLog("Rack: Extracted gear ID: '" + gearId + "'");
 
         // Convert drop position to slot index
         juce::Point<int> dropPos = dragSourceDetails.localPosition;
         int slotIndex = getSlotIndexFromPosition(dropPos);
-        juce::Logger::writeToLog("Rack: Calculated slot index: " + juce::String(slotIndex));
 
         // For fluid rack, accept any non-negative slot index
         if (slotIndex >= 0)
         {
-            juce::Logger::writeToLog("Rack: Slot index is valid for fluid rack");
 
             // Check if we can drop the gear in this slot
             if (canDropGearInSlot(slotIndex, gearId))
             {
-                juce::Logger::writeToLog("Rack: Can drop gear in slot, calling addGearToSlot");
                 bool success = addGearToSlot(slotIndex, gearId);
-                juce::Logger::writeToLog("Rack: addGearToSlot result: " + juce::String(success ? "SUCCESS" : "FAILED"));
 
                 if (success)
                 {
                     // Add to recently used
                     cacheManager.addToRecentlyUsed(gearId);
-                    juce::Logger::writeToLog("Rack: Added gear to recently used: " + gearId);
                 }
             }
             else
             {
-                juce::Logger::writeToLog("Rack: Cannot drop gear in slot");
             }
         }
         else
         {
-            juce::Logger::writeToLog("Rack: Invalid slot index (negative): " + juce::String(slotIndex));
         }
     }
     else
     {
-        juce::Logger::writeToLog("Rack: Description does not start with 'gear:', ignoring drop");
     }
 
     repaint();
@@ -314,22 +298,18 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceD
 
 int Rack::getSlotIndexFromPosition(juce::Point<int> position) const
 {
-    juce::Logger::writeToLog("Rack: getSlotIndexFromPosition called with position: " + position.toString());
 
     if (!rackContainer)
     {
-        juce::Logger::writeToLog("Rack: No rack container, returning 0 (empty rack)");
         return 0; // Return 0 for empty rack
     }
 
     // Convert to container coordinates
     juce::Point<int> containerPos = rackContainer->getLocalPoint(this, position);
-    juce::Logger::writeToLog("Rack: Container position: " + containerPos.toString());
 
     // If rack is empty, return 0 to create first slot
     if (rackSlots.empty())
     {
-        juce::Logger::writeToLog("Rack: Empty rack, returning 0 for first slot");
         return 0;
     }
 
@@ -341,54 +321,43 @@ int Rack::getSlotIndexFromPosition(juce::Point<int> position) const
         int slotBottom = currentY + slotHeight;
         int slotMiddle = currentY + (slotHeight / 2);
 
-        juce::Logger::writeToLog("Rack: Checking slot " + juce::String(i) + " - Y range: " + juce::String(currentY) + " to " + juce::String(slotBottom) + " (middle: " + juce::String(slotMiddle) + ")");
-
         // Check if X position is within slot bounds
         if (containerPos.x >= slotSpacing && containerPos.x < (getWidth() - slotSpacing))
         {
-            juce::Logger::writeToLog("Rack: X position " + juce::String(containerPos.x) + " is within slot bounds");
             if (containerPos.y < slotBottom)
             {
                 // Drop anywhere on this slot - always insert before this slot (above it)
-                juce::Logger::writeToLog("Rack: Drop on slot " + juce::String(i) + " (Y=" + juce::String(containerPos.y) + " < bottom=" + juce::String(slotBottom) + "), inserting before it");
                 return i;
             }
             else
             {
-                juce::Logger::writeToLog("Rack: Drop below slot " + juce::String(i) + " (Y=" + juce::String(containerPos.y) + " > bottom=" + juce::String(slotBottom) + "), continuing to next slot");
             }
         }
         else
         {
-            juce::Logger::writeToLog("Rack: X position " + juce::String(containerPos.x) + " is outside slot bounds (spacing=" + juce::String(slotSpacing) + ", width=" + juce::String(getWidth()) + ")");
         }
 
         currentY = slotBottom + slotSpacing;
     }
 
     // If we get here, drop is below all existing slots
-    juce::Logger::writeToLog("Rack: Drop below all slots, appending at end");
     return static_cast<int>(rackSlots.size());
 }
 
 bool Rack::canDropGearInSlot(int slotIndex, const juce::String &gearId) const
 {
-    juce::Logger::writeToLog("Rack: canDropGearInSlot called for slot " + juce::String(slotIndex) + " and gear ID: '" + gearId + "'");
 
     // For fluid rack, we can create slots at any valid index
     if (slotIndex < 0)
     {
-        juce::Logger::writeToLog("Rack: Invalid slot index (negative): " + juce::String(slotIndex));
         return false;
     }
 
     // For fluid rack, we can always create slots at any index
     // The only constraint is that the gear must exist in the library
-    juce::Logger::writeToLog("Rack: Slot index " + juce::String(slotIndex) + " is valid for fluid rack");
 
     // Check if gear exists in library
     bool gearExists = gearLibrary.gearItemExists(gearId);
-    juce::Logger::writeToLog("Rack: Gear exists in library: " + juce::String(gearExists ? "YES" : "NO"));
 
     return gearExists;
 }
@@ -413,8 +382,6 @@ void Rack::insertRackSlot(int slotIndex)
     if (slotIndex < 0)
         return;
 
-    juce::Logger::writeToLog("Rack: insertRackSlot called for index: " + juce::String(slotIndex));
-
     // Create a new slot at the specified index
     auto newSlot = std::make_unique<RackSlot>(fileSystem, cacheManager, presetManager, gearLibrary, slotIndex);
     newSlot->setComponentID("RackSlot_" + juce::String(slotIndex));
@@ -422,9 +389,7 @@ void Rack::insertRackSlot(int slotIndex)
 
     // Set up individual faceplate loaded callback for this slot
     newSlot->setFaceplateLoadedCallback([this, slotIndex]()
-                                        {
-        juce::Logger::writeToLog("Rack: Faceplate loaded for slot " + juce::String(slotIndex) + ", repainting single slot");
-        repaintSingleSlot(slotIndex); });
+                                        { repaintSingleSlot(slotIndex); });
 
     // Set the slot's background color
     newSlot->setSlotBackgroundColor(slotBackgroundColor);
@@ -434,13 +399,20 @@ void Rack::insertRackSlot(int slotIndex)
     {
         // Append to end
         rackSlots.push_back(std::move(newSlot));
-        juce::Logger::writeToLog("Rack: Appended slot at end, total slots: " + juce::String(rackSlots.size()));
+
+        // Ensure gearItemInstances vector is large enough
+        if (static_cast<size_t>(slotIndex) >= gearItemInstances.size())
+        {
+            gearItemInstances.resize(slotIndex + 1);
+        }
     }
     else
     {
         // Insert at specified position
         rackSlots.insert(rackSlots.begin() + slotIndex, std::move(newSlot));
-        juce::Logger::writeToLog("Rack: Inserted slot at position " + juce::String(slotIndex) + ", total slots: " + juce::String(rackSlots.size()));
+
+        // Insert a null entry in gearItemInstances at the same position
+        gearItemInstances.insert(gearItemInstances.begin() + slotIndex, nullptr);
 
         // Reindex all slots after the insertion point
         for (size_t i = static_cast<size_t>(slotIndex) + 1; i < rackSlots.size(); ++i)
@@ -474,6 +446,12 @@ void Rack::removeRackSlot(int slotIndex)
     // Remove the slot
     rackSlots.erase(rackSlots.begin() + slotIndex);
 
+    // Remove the corresponding gear item instance
+    if (static_cast<size_t>(slotIndex) < gearItemInstances.size())
+    {
+        gearItemInstances.erase(gearItemInstances.begin() + slotIndex);
+    }
+
     // Update slot indices
     for (size_t i = static_cast<size_t>(slotIndex); i < rackSlots.size(); ++i)
     {
@@ -499,6 +477,9 @@ void Rack::clearAllSlots()
 
     // Clear the slots array
     rackSlots.clear();
+
+    // Clear the gear item instances array
+    gearItemInstances.clear();
 }
 
 int Rack::getSlotCount() const
@@ -518,78 +499,83 @@ RackSlot *Rack::getSlot(int slotIndex) const
 // Gear Management
 bool Rack::addGearToSlot(int slotIndex, const juce::String &gearId)
 {
-    juce::Logger::writeToLog("Rack: addGearToSlot called for slot " + juce::String(slotIndex) + " and gear ID: '" + gearId + "'");
 
     if (slotIndex < 0)
         return false;
 
-    // Get gear item from library
-    auto gearItem = gearLibrary.getGearItem(gearId);
-    if (!gearItem)
+    // Get gear item template from library and create a unique instance
+    auto gearItemTemplate = gearLibrary.getGearItem(gearId);
+    if (!gearItemTemplate)
     {
-        juce::Logger::writeToLog("Rack: ERROR - Gear item not found in library: " + gearId);
         return false;
     }
 
     // If slot doesn't exist, create it
     if (static_cast<size_t>(slotIndex) >= rackSlots.size())
     {
-        juce::Logger::writeToLog("Rack: Slot doesn't exist, creating new slot at index " + juce::String(slotIndex));
         insertRackSlot(slotIndex);
     }
     else if (isSlotOccupied(slotIndex))
     {
         // Slot exists but is occupied - insert a new slot at this position
-        juce::Logger::writeToLog("Rack: Slot is occupied, inserting new slot at position " + juce::String(slotIndex));
         insertRackSlot(slotIndex);
         // After insertion, the new slot is at slotIndex, and the original occupied slot is now at slotIndex + 1
     }
+
+    // Create a unique instance for this rack slot (AFTER slot insertion)
+    auto gearItem = std::make_unique<GearItem>(gearItemTemplate->createInstance());
+
+    // Ensure we have enough space in the gearItemInstances vector
+    if (static_cast<size_t>(slotIndex) >= gearItemInstances.size())
+    {
+        gearItemInstances.resize(slotIndex + 1);
+    }
+
+    // Store the unique instance
+    gearItemInstances[static_cast<size_t>(slotIndex)] = std::move(gearItem);
+    auto *gearItemPtr = gearItemInstances[static_cast<size_t>(slotIndex)].get();
 
     // Now add gear to the slot (which should be the newly created/available slot)
     auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
     if (!slot)
     {
-        juce::Logger::writeToLog("Rack: ERROR - Failed to get slot after creation");
         return false;
     }
 
     // Add gear to slot
-    slot->setGearItem(gearItem);
-    juce::Logger::writeToLog("Rack: Successfully added gear to slot " + juce::String(slotIndex));
+    slot->setGearItem(gearItemPtr);
 
     // Load schema and faceplate for the gear item
-    if (gearLibrary.loadGearSchema(gearItem))
+    if (gearLibrary.loadGearSchema(gearItemPtr))
     {
-        juce::Logger::writeToLog("Rack: Successfully loaded schema for " + gearItem->unitId);
 
         // Increment pending faceplate loads counter
         pendingFaceplateLoads++;
-        juce::Logger::writeToLog("Rack: Incremented pendingFaceplateLoads to " + juce::String(pendingFaceplateLoads));
 
         // Load faceplate asynchronously with slot-specific callback
         auto slotCallback = [this, slotIndex]()
         {
-            juce::Logger::writeToLog("Rack: Faceplate loaded for slot " + juce::String(slotIndex) + ", triggering slot callback");
+            // Debug: Check what GearItem is in the slot now
+            auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
+            if (slot && slot->getGearItem())
+            {
+            }
             repaintSingleSlot(slotIndex);
 
             // Decrement pending faceplate loads counter
             pendingFaceplateLoads--;
-            juce::Logger::writeToLog("Rack: Decremented pendingFaceplateLoads to " + juce::String(pendingFaceplateLoads));
 
             // If all faceplates are loaded, recalculate layout with correct heights
             if (pendingFaceplateLoads == 0)
             {
-                juce::Logger::writeToLog("Rack: All faceplates loaded, recalculating layout with correct heights");
                 layoutSlots();
             }
         };
 
-        gearLibrary.loadGearFaceplateAsync(gearItem, slotCallback);
-        juce::Logger::writeToLog("Rack: Started async faceplate loading for " + gearItem->unitId + " with slot callback");
+        gearLibrary.loadGearFaceplateAsync(gearItemPtr, slotCallback);
     }
     else
     {
-        juce::Logger::writeToLog("Rack: Failed to load schema for " + gearItem->unitId);
         // If schema loading failed, we still need to layout the slot
         layoutSlots();
     }
@@ -613,6 +599,12 @@ bool Rack::removeGearFromSlot(int slotIndex)
         return false;
 
     slot->clearGearItem();
+
+    // Clear the gear item instance
+    if (static_cast<size_t>(slotIndex) < gearItemInstances.size())
+    {
+        gearItemInstances[static_cast<size_t>(slotIndex)].reset();
+    }
 
     // Save rack state
     saveRackState();
@@ -944,12 +936,10 @@ void Rack::repaintSingleSlot(int slotIndex)
         auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
         if (slot)
         {
-            juce::Logger::writeToLog("Rack: Repainting single slot " + juce::String(slotIndex));
             slot->repaint();
         }
     }
     else
     {
-        juce::Logger::writeToLog("Rack: Invalid slot index for repaint: " + juce::String(slotIndex));
     }
 }

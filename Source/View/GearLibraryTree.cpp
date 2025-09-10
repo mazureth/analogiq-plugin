@@ -14,15 +14,9 @@
 GearLibraryTree::GearLibraryTree(GearLibrary &gl, ICacheManager &cm, PresetManager &pm)
     : gearLibrary(gl), cacheManager(cm), presetManager(pm)
 {
-    juce::Logger::writeToLog("GearLibraryTree: Constructor starting");
-    juce::Logger::writeToLog("GearLibraryTree: Calling setupTreeView");
     setupTreeView();
-    juce::Logger::writeToLog("GearLibraryTree: setupTreeView completed");
 
-    juce::Logger::writeToLog("GearLibraryTree: Calling populateTree");
     populateTree();
-    juce::Logger::writeToLog("GearLibraryTree: populateTree completed");
-    juce::Logger::writeToLog("GearLibraryTree: Constructor completed successfully");
 }
 
 GearLibraryTree::~GearLibraryTree()
@@ -47,16 +41,13 @@ void GearLibraryTree::paint(juce::Graphics &g)
 
 void GearLibraryTree::resized()
 {
-    juce::Logger::writeToLog("GearLibraryTree::resized() called with bounds: " + getLocalBounds().toString());
 
     if (treeView)
     {
         treeView->setBounds(getLocalBounds());
-        juce::Logger::writeToLog("GearLibraryTree: TreeView bounds set to: " + getLocalBounds().toString());
     }
     else
     {
-        juce::Logger::writeToLog("GearLibraryTree: TreeView is NULL in resized()!");
     }
 }
 
@@ -76,33 +67,19 @@ void GearLibraryTree::setupTreeView()
 
 void GearLibraryTree::populateTree()
 {
-    juce::Logger::writeToLog("GearLibraryTree: populateTree starting");
 
-    juce::Logger::writeToLog("GearLibraryTree: Creating root item");
     rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Gear Library", gearLibrary, cacheManager);
-    juce::Logger::writeToLog("GearLibraryTree: Root item created successfully");
 
-    juce::Logger::writeToLog("GearLibraryTree: Calling createRecentlyUsedSection");
     createRecentlyUsedSection();
-    juce::Logger::writeToLog("GearLibraryTree: createRecentlyUsedSection completed");
 
-    juce::Logger::writeToLog("GearLibraryTree: Calling createFavoritesSection");
     createFavoritesSection();
-    juce::Logger::writeToLog("GearLibraryTree: createFavoritesSection completed");
 
-    juce::Logger::writeToLog("GearLibraryTree: Calling createCategoriesSection");
     createCategoriesSection();
-    juce::Logger::writeToLog("GearLibraryTree: createCategoriesSection completed");
 
-    juce::Logger::writeToLog("GearLibraryTree: Setting root item in tree view");
     treeView->setRootItem(rootItem.get());
-    juce::Logger::writeToLog("GearLibraryTree: Root item set successfully");
 
-    juce::Logger::writeToLog("GearLibraryTree: Calling repaint on tree view");
     treeView->repaint();
-    juce::Logger::writeToLog("GearLibraryTree: Repaint completed");
 
-    juce::Logger::writeToLog("GearLibraryTree: populateTree completed successfully");
 }
 
 // Drag and drop is now handled at the TreeViewItem level in GearTreeItem::itemClicked()
@@ -161,27 +138,20 @@ void GearLibraryTree::createFavoritesSection()
 
 void GearLibraryTree::createCategoriesSection()
 {
-    juce::Logger::writeToLog("GearLibraryTree: createCategoriesSection starting");
 
-    juce::Logger::writeToLog("GearLibraryTree: Creating categories node");
     auto categoriesNode = new GearTreeItem(GearTreeItem::ItemType::Category, "Categories", gearLibrary, cacheManager);
-    juce::Logger::writeToLog("GearLibraryTree: Categories node created successfully");
 
     // Add categories node to root item
     rootItem->addSubItem(categoriesNode);
-    juce::Logger::writeToLog("GearLibraryTree: Categories node added to root item");
 
     // Get all gear items and group by category
     juce::Array<GearItem *> allItems;
     try
     {
-        juce::Logger::writeToLog("GearLibraryTree: Calling gearLibrary.getAllGearItems()");
         allItems = gearLibrary.getAllGearItems();
-        juce::Logger::writeToLog("GearLibraryTree: getAllGearItems() returned " + juce::String(allItems.size()) + " items");
     }
     catch (...)
     {
-        juce::Logger::writeToLog("GearLibraryTree: Exception caught in getAllGearItems(), showing error message");
         // If getting gear items fails, show an error message
         categoriesNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "Error loading gear items", gearLibrary, cacheManager));
         return;
@@ -189,12 +159,10 @@ void GearLibraryTree::createCategoriesSection()
 
     if (allItems.isEmpty())
     {
-        juce::Logger::writeToLog("GearLibraryTree: No gear items found, showing placeholder message");
         categoriesNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No gear items available", gearLibrary, cacheManager));
     }
     else
     {
-        juce::Logger::writeToLog("GearLibraryTree: Processing " + juce::String(allItems.size()) + " gear items");
         std::map<juce::String, juce::Array<const GearItem *>> categorizedItems;
 
         for (const auto &item : allItems)
@@ -377,11 +345,9 @@ void GearTreeItem::paintItem(juce::Graphics &g, int width, int height)
 
 void GearTreeItem::itemClicked(const juce::MouseEvent &e)
 {
-    juce::Logger::writeToLog("GearTreeItem::itemClicked called for item: " + itemName + " (type: " + juce::String(static_cast<int>(itemType)) + ")");
 
     if (itemType == ItemType::Gear && gearItem)
     {
-        juce::Logger::writeToLog("GearTreeItem: Handling gear item click for: " + gearItem->name);
 
         if (e.mods.isRightButtonDown())
         {
@@ -394,24 +360,20 @@ void GearTreeItem::itemClicked(const juce::MouseEvent &e)
         else if (e.mods.isLeftButtonDown())
         {
             // Handle single left click - this is where we initiate drag and drop
-            juce::Logger::writeToLog("GearTreeItem: Single left click on gear item, initiating drag");
 
             // Find the parent drag container
             juce::Component *comp = getOwnerView();
             if (comp == nullptr)
             {
-                juce::Logger::writeToLog("GearTreeItem: ERROR - No owner view found");
                 return;
             }
 
             juce::DragAndDropContainer *container = juce::DragAndDropContainer::findParentDragContainerFor(comp);
             if (container == nullptr)
             {
-                juce::Logger::writeToLog("GearTreeItem: ERROR - No drag container found");
                 return;
             }
 
-            juce::Logger::writeToLog("GearTreeItem: Found drag container, creating drag operation");
 
             // Create a custom drag image
             int itemWidth = 150;
@@ -447,19 +409,15 @@ void GearTreeItem::itemClicked(const juce::MouseEvent &e)
             {
                 // Create drag data in the format expected by the Rack (lowercase "gear:")
                 juce::String dragDesc = "gear:" + gearItem->unitId;
-                juce::Logger::writeToLog("GearTreeItem: Created drag data: '" + dragDesc + "'");
 
                 // Calculate the drag image offset from the mouse
                 juce::Point<int> imageOffset(e.x - 10, e.y - itemHeight / 2);
 
                 // Start the drag operation using JUCE's built-in system
-                juce::Logger::writeToLog("GearTreeItem: Starting drag operation");
                 container->startDragging(dragDesc, comp, dragImage, true, &imageOffset, nullptr);
-                juce::Logger::writeToLog("GearTreeItem: Drag operation started successfully");
             }
             else
             {
-                juce::Logger::writeToLog("GearTreeItem: ERROR - Could not find gear index for: " + gearItem->unitId);
             }
         }
     }

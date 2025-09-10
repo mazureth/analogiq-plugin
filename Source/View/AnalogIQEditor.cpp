@@ -37,23 +37,16 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
       gearLibrary(gearLibrary),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
-    juce::Logger::writeToLog("AnalogIQEditor: Constructor 2 starting");
     setComponentID("AnalogIQEditor");
 
     // Create GearLibraryTree component (to the left of the rack)
-    juce::Logger::writeToLog("AnalogIQEditor: Creating GearLibraryTree component");
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
-    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree component created successfully");
 
     // Create Rack component
-    juce::Logger::writeToLog("AnalogIQEditor: Creating Rack component");
     rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, *cacheManager, *presetManager, *gearLibrary);
-    juce::Logger::writeToLog("AnalogIQEditor: Rack component created successfully");
 
     // Create NotesPanel component
-    juce::Logger::writeToLog("AnalogIQEditor: Creating NotesPanel component");
     notesPanel = std::make_unique<NotesPanel>();
-    juce::Logger::writeToLog("AnalogIQEditor: NotesPanel component created successfully");
 
     // Set component IDs for Rack and Notes tabs
     rack->setComponentID("RackTab");
@@ -117,7 +110,6 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
         this->processor.getStateInformation(destData);
 
         // Log the result
-        juce::Logger::writeToLog("[Debug] State saved, data size: " + juce::String(destData.getSize()) + " bytes");
     };
     addAndMakeVisible(debugSaveButton);
 
@@ -179,13 +171,10 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cach
       gearLibrary(processor.getGearLibrary()),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
-    juce::Logger::writeToLog("AnalogIQEditor: Constructor 1 starting");
     setComponentID("AnalogIQEditor");
 
     // Create GearLibraryTree component (to the left of the rack)
-    juce::Logger::writeToLog("AnalogIQEditor: Creating GearLibraryTree component");
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
-    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree component created successfully");
 
     // Add GearLibraryTree to visible components
     addAndMakeVisible(gearLibraryTree.get());
@@ -196,22 +185,15 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cach
     gearLibraryTree->setBounds(0, 30, initialTreeWidth, getHeight() - 30); // Position below menu bar
 
     // Debug: Log the component hierarchy
-    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree added to visible components");
-    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree parent: " + juce::String(gearLibraryTree->getParentComponent() ? "YES" : "NO"));
-    juce::Logger::writeToLog("AnalogIQEditor: Initial bounds set to: " + gearLibraryTree->getBounds().toString());
 
     // CRITICAL FIX: Call resized() to ensure proper layout initialization
     resized();
 
     // Create Rack component
-    juce::Logger::writeToLog("AnalogIQEditor: Creating Rack component");
     rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, *cacheManager, *presetManager, *gearLibrary);
-    juce::Logger::writeToLog("AnalogIQEditor: Rack component created successfully");
 
     // Create NotesPanel component
-    juce::Logger::writeToLog("AnalogIQEditor: Creating NotesPanel component");
     notesPanel = std::make_unique<NotesPanel>();
-    juce::Logger::writeToLog("AnalogIQEditor: NotesPanel component created successfully");
 
     // Set component IDs for Rack and Notes tabs
     rack->setComponentID("RackTab");
@@ -329,8 +311,6 @@ void AnalogIQEditor::resized()
     gearLibraryTree->setBounds(treeArea);
 
     // Debug: Log the bounds being set
-    juce::Logger::writeToLog("AnalogIQEditor: Tree area bounds: " + treeArea.toString());
-    juce::Logger::writeToLog("AnalogIQEditor: GearLibraryTree bounds set to: " + gearLibraryTree->getBounds().toString());
 
     // Right side: Tabs containing Rack and Notes
     mainTabs.setBounds(area);
@@ -607,7 +587,6 @@ void AnalogIQEditor::clearAllCache()
     if (cacheManager)
     {
         cacheManager->clearCache();
-        juce::Logger::writeToLog("[Debug] All cache cleared");
 
         // Show confirmation dialog
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
@@ -624,7 +603,6 @@ void AnalogIQEditor::clearGearLibraryCache()
         // Clear gear library specific cache
         // This would need to be implemented in CacheManager to clear specific cache types
         cacheManager->clearCache();
-        juce::Logger::writeToLog("[Debug] Gear library cache cleared");
 
         // Show confirmation dialog
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
@@ -638,11 +616,8 @@ void AnalogIQEditor::clearPresetCache()
 {
     if (!fileSystem)
     {
-        juce::Logger::writeToLog("[Debug] Error: FileSystem not available for preset clearing");
         return;
     }
-
-    juce::Logger::writeToLog("[Debug] Starting preset cache clearing...");
 
     // Clear preset metadata files
     juce::String cacheRoot = fileSystem->getCacheRootDirectory();
@@ -660,19 +635,14 @@ void AnalogIQEditor::clearPresetCache()
             if (fileSystem->deleteFile(filePath))
             {
                 deletedCount++;
-                juce::Logger::writeToLog("[Debug] Deleted preset file: " + file);
             }
             else
             {
-                juce::Logger::writeToLog("[Debug] Failed to delete preset file: " + file);
             }
         }
-
-        juce::Logger::writeToLog("[Debug] Preset cache cleared: " + juce::String(deletedCount) + " files deleted");
     }
     else
     {
-        juce::Logger::writeToLog("[Debug] Presets directory does not exist");
     }
 
     // Reset UI state
@@ -691,17 +661,13 @@ void AnalogIQEditor::simulateFreshInstall()
 {
     if (!fileSystem)
     {
-        juce::Logger::writeToLog("[Debug] Error: FileSystem not available for fresh install");
         return;
     }
-
-    juce::Logger::writeToLog("[Debug] Starting fresh install simulation...");
 
     // 1. Clear all asset cache
     if (cacheManager)
     {
         cacheManager->clearCache();
-        juce::Logger::writeToLog("[Debug] Asset cache cleared");
     }
 
     // 2. Clear user preference files
@@ -711,20 +677,14 @@ void AnalogIQEditor::simulateFreshInstall()
     juce::String favoritesPath = fileSystem->joinPath(cacheRoot, "favorites.json");
     if (fileSystem->fileExists(favoritesPath))
     {
-        if (fileSystem->deleteFile(favoritesPath))
-            juce::Logger::writeToLog("[Debug] favorites.json deleted");
-        else
-            juce::Logger::writeToLog("[Debug] Failed to delete favorites.json");
+        fileSystem->deleteFile(favoritesPath);
     }
 
     // Remove recently_used.json
     juce::String recentlyUsedPath = fileSystem->joinPath(cacheRoot, "recently_used.json");
     if (fileSystem->fileExists(recentlyUsedPath))
     {
-        if (fileSystem->deleteFile(recentlyUsedPath))
-            juce::Logger::writeToLog("[Debug] recently_used.json deleted");
-        else
-            juce::Logger::writeToLog("[Debug] Failed to delete recently_used.json");
+        fileSystem->deleteFile(recentlyUsedPath);
     }
 
     // 3. Clear gear library metadata files
@@ -736,10 +696,7 @@ void AnalogIQEditor::simulateFreshInstall()
         for (auto &file : gearFiles)
         {
             juce::String filePath = fileSystem->joinPath(gearLibraryDir, file);
-            if (fileSystem->deleteFile(filePath))
-                juce::Logger::writeToLog("[Debug] Deleted gear library file: " + file);
-            else
-                juce::Logger::writeToLog("[Debug] Failed to delete gear library file: " + file);
+            fileSystem->deleteFile(filePath);
         }
     }
 
@@ -752,10 +709,7 @@ void AnalogIQEditor::simulateFreshInstall()
         for (auto &file : presetFiles)
         {
             juce::String filePath = fileSystem->joinPath(presetsDir, file);
-            if (fileSystem->deleteFile(filePath))
-                juce::Logger::writeToLog("[Debug] Deleted preset file: " + file);
-            else
-                juce::Logger::writeToLog("[Debug] Failed to delete preset file: " + file);
+            fileSystem->deleteFile(filePath);
         }
     }
 
@@ -765,22 +719,17 @@ void AnalogIQEditor::simulateFreshInstall()
         gearLibrary->clearAllGearItems();
         // Reset the initialized flag to prevent automatic re-population
         gearLibrary->resetInitialization();
-        juce::Logger::writeToLog("[Debug] Gear library memory cleared and initialization reset");
     }
 
     // 6. Reset UI state
     currentPresetName = "";
     clearModifiedState();
-    juce::Logger::writeToLog("[Debug] UI state reset");
 
     // 7. Refresh the gear library tree
     if (gearLibraryTree)
     {
         gearLibraryTree->repaint();
-        juce::Logger::writeToLog("[Debug] Gear library tree refreshed");
     }
-
-    juce::Logger::writeToLog("[Debug] Fresh install simulation completed successfully");
 
     // Show confirmation dialog
     juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,

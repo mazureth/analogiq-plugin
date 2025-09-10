@@ -16,19 +16,16 @@ juce::MemoryBlock NetworkFetcher::fetchBinaryBlocking(const juce::URL &url, bool
 // New methods for remote gear library operations
 juce::String NetworkFetcher::fetchRemoteGearLibrary(const juce::URL &url, bool &success, ProgressCallback progressCallback)
 {
-    juce::Logger::writeToLog("NetworkFetcher: Fetching remote gear library from: " + url.toString(false));
     return performHttpRequest(url, success, progressCallback);
 }
 
 juce::MemoryBlock NetworkFetcher::fetchGearImage(const juce::URL &url, bool &success, ProgressCallback progressCallback)
 {
-    juce::Logger::writeToLog("NetworkFetcher: Fetching gear image from: " + url.toString(false));
     return performBinaryRequest(url, success, progressCallback);
 }
 
 juce::MemoryBlock NetworkFetcher::fetchGearSchema(const juce::URL &url, bool &success, ProgressCallback progressCallback)
 {
-    juce::Logger::writeToLog("NetworkFetcher: Fetching gear schema from: " + url.toString(false));
     return performBinaryRequest(url, success, progressCallback);
 }
 
@@ -97,7 +94,6 @@ juce::String NetworkFetcher::performHttpRequest(const juce::URL &url, bool &succ
     {
         try
         {
-            juce::Logger::writeToLog("NetworkFetcher: Attempt " + juce::String(attempt + 1) + " for URL: " + url.toString(false));
 
             auto stream = url.createInputStream(juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
                                                     .withConnectionTimeoutMs(connectionTimeoutMs)
@@ -108,7 +104,6 @@ juce::String NetworkFetcher::performHttpRequest(const juce::URL &url, bool &succ
                 lastErrorMessage = "Failed to create input stream";
                 if (attempt < retryAttempts && shouldRetryRequest(0, lastErrorMessage))
                 {
-                    juce::Logger::writeToLog("NetworkFetcher: Retrying after stream creation failure");
                     waitForRetry();
                     continue;
                 }
@@ -148,28 +143,23 @@ juce::String NetworkFetcher::performHttpRequest(const juce::URL &url, bool &succ
 
             success = true;
             lastHttpCode = 200; // Assume success if we got data
-            juce::Logger::writeToLog("NetworkFetcher: Successfully fetched " + juce::String(bytesRead) + " bytes");
             return result;
         }
         catch (const std::exception &e)
         {
             lastErrorMessage = "Exception: " + juce::String(e.what());
-            juce::Logger::writeToLog("NetworkFetcher: Exception on attempt " + juce::String(attempt + 1) + ": " + lastErrorMessage);
         }
         catch (...)
         {
             lastErrorMessage = "Unknown error occurred";
-            juce::Logger::writeToLog("NetworkFetcher: Unknown error on attempt " + juce::String(attempt + 1));
         }
 
         if (attempt < retryAttempts && shouldRetryRequest(lastHttpCode, lastErrorMessage))
         {
-            juce::Logger::writeToLog("NetworkFetcher: Retrying request");
             waitForRetry();
         }
     }
 
-    juce::Logger::writeToLog("NetworkFetcher: All attempts failed for URL: " + url.toString(false));
     return juce::String();
 }
 
@@ -183,7 +173,6 @@ juce::MemoryBlock NetworkFetcher::performBinaryRequest(const juce::URL &url, boo
     {
         try
         {
-            juce::Logger::writeToLog("NetworkFetcher: Binary attempt " + juce::String(attempt + 1) + " for URL: " + url.toString(false));
 
             auto stream = url.createInputStream(juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
                                                     .withConnectionTimeoutMs(connectionTimeoutMs)
@@ -194,7 +183,6 @@ juce::MemoryBlock NetworkFetcher::performBinaryRequest(const juce::URL &url, boo
                 lastErrorMessage = "Failed to create input stream";
                 if (attempt < retryAttempts && shouldRetryRequest(0, lastErrorMessage))
                 {
-                    juce::Logger::writeToLog("NetworkFetcher: Retrying binary request after stream creation failure");
                     waitForRetry();
                     continue;
                 }
@@ -216,7 +204,6 @@ juce::MemoryBlock NetworkFetcher::performBinaryRequest(const juce::URL &url, boo
                     progressCallback(100, block.getSize(), totalBytes);
                 }
 
-                juce::Logger::writeToLog("NetworkFetcher: Successfully fetched binary data: " + juce::String(block.getSize()) + " bytes");
                 return block;
             }
 
@@ -225,22 +212,18 @@ juce::MemoryBlock NetworkFetcher::performBinaryRequest(const juce::URL &url, boo
         catch (const std::exception &e)
         {
             lastErrorMessage = "Exception: " + juce::String(e.what());
-            juce::Logger::writeToLog("NetworkFetcher: Binary exception on attempt " + juce::String(attempt + 1) + ": " + lastErrorMessage);
         }
         catch (...)
         {
             lastErrorMessage = "Unknown binary error occurred";
-            juce::Logger::writeToLog("NetworkFetcher: Unknown binary error on attempt " + juce::String(attempt + 1));
         }
 
         if (attempt < retryAttempts && shouldRetryRequest(lastHttpCode, lastErrorMessage))
         {
-            juce::Logger::writeToLog("NetworkFetcher: Retrying binary request");
             waitForRetry();
         }
     }
 
-    juce::Logger::writeToLog("NetworkFetcher: All binary attempts failed for URL: " + url.toString(false));
     return juce::MemoryBlock();
 }
 

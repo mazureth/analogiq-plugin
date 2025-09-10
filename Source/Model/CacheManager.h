@@ -4,6 +4,7 @@
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <unordered_map>
+#include <mutex>
 
 class CacheManager : public ICacheManager
 {
@@ -78,6 +79,9 @@ private:
 
     // Lazy initialization
     bool initialized;
+
+    // Thread safety
+    mutable std::mutex cacheMutex;
 
     // Helper methods
     void initializeLazy();

@@ -68,9 +68,14 @@ juce::String CacheManager::generateAssetPath(const juce::String &assetId)
 
 bool CacheManager::isCached(const juce::String &assetId)
 {
+    std::lock_guard<std::mutex> lock(cacheMutex);
     initializeLazy();
-    return cacheEntries.find(assetId) != cacheEntries.end() &&
-           fileSystem.fileExists(cacheEntries[assetId].filePath);
+    bool cached = cacheEntries.find(assetId) != cacheEntries.end() &&
+                  fileSystem.fileExists(cacheEntries[assetId].filePath);
+    if (assetId.startsWith("faceplate_"))
+    {
+    }
+    return cached;
 }
 
 juce::String CacheManager::getCachedPath(const juce::String &assetId)
@@ -85,6 +90,7 @@ juce::String CacheManager::getCachedPath(const juce::String &assetId)
 
 bool CacheManager::addToCache(const juce::String &assetId, const juce::MemoryBlock &data)
 {
+    std::lock_guard<std::mutex> lock(cacheMutex);
     initializeLazy();
     if (assetId.isEmpty())
         return false;
@@ -125,15 +131,26 @@ bool CacheManager::addToCache(const juce::String &assetId, const juce::Image &im
     if (assetId.isEmpty() || image.isNull())
         return false;
 
+    if (assetId.startsWith("faceplate_"))
+    {
+    }
+
     juce::MemoryBlock data;
     juce::JPEGImageFormat format;
     juce::MemoryOutputStream stream(data, false);
 
     if (format.writeImageToStream(image, stream))
     {
-        return addToCache(assetId, data);
+        bool result = addToCache(assetId, data);
+        if (assetId.startsWith("faceplate_"))
+        {
+        }
+        return result;
     }
 
+    if (assetId.startsWith("faceplate_"))
+    {
+    }
     return false;
 }
 
@@ -395,22 +412,39 @@ bool CacheManager::cacheBinaryData(const juce::String &assetId, const juce::Memo
 
 juce::Image CacheManager::getCachedImage(const juce::String &assetId)
 {
+    std::lock_guard<std::mutex> lock(cacheMutex);
     auto it = cacheEntries.find(assetId);
     if (it == cacheEntries.end())
+    {
+        if (assetId.startsWith("faceplate_"))
+        {
+        }
         return juce::Image();
+    }
 
     try
     {
         juce::File imageFile(it->second.filePath);
         if (!imageFile.existsAsFile())
+        {
+            if (assetId.startsWith("faceplate_"))
+            {
+            }
             return juce::Image();
+        }
 
         // Load image from file
         juce::Image image = juce::ImageFileFormat::loadFrom(imageFile);
+        if (assetId.startsWith("faceplate_"))
+        {
+        }
         return image;
     }
     catch (...)
     {
+        if (assetId.startsWith("faceplate_"))
+        {
+        }
         return juce::Image();
     }
 }

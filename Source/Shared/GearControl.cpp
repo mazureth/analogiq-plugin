@@ -13,7 +13,7 @@ GearControl::GearControl(ControlType type, const juce::Rectangle<float> &pos, fl
 }
 
 GearControl::GearControl(const GearControl &other)
-    : type(other.type), name(other.name), position(other.position), currentValue(other.currentValue), initialValue(other.initialValue), minValue(other.minValue), maxValue(other.maxValue), stepSize(other.stepSize), orientation(other.orientation), switchFrames(other.switchFrames), options(other.options), currentIndex(other.currentIndex), isMomentary(other.isMomentary), length(other.length), startAngle(other.startAngle), endAngle(other.endAngle), steps(other.steps), currentStepIndex(other.currentStepIndex)
+    : type(other.type), name(other.name), position(other.position), currentValue(other.currentValue), initialValue(other.initialValue), minValue(other.minValue), maxValue(other.maxValue), stepSize(other.stepSize), orientation(other.orientation), imagePath(other.imagePath), buttonFrames(other.buttonFrames), switchFrames(other.switchFrames), options(other.options), currentIndex(other.currentIndex), isMomentary(other.isMomentary), length(other.length), startAngle(other.startAngle), endAngle(other.endAngle), steps(other.steps), currentStepIndex(other.currentStepIndex)
 {
     // Note: Images are not copied to avoid memory issues
     // They will need to be set separately if needed

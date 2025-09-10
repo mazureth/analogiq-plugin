@@ -7,6 +7,7 @@
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <unordered_map>
+#include <mutex>
 
 class GearLibrary : public IGearLibrary
 {
@@ -140,6 +141,9 @@ private:
     std::unordered_map<juce::String, GearCategory> categories;
     RemoteLibraryInfo remoteLibraryInfo;
 
+    // Mutex to protect faceplate loading operations
+    std::mutex faceplateLoadingMutex;
+
     int maxGearItems;
     juce::int64 maxStorageSize;
     bool autoBackupEnabled;
@@ -166,6 +170,8 @@ private:
     bool validateRemoteGearData(const juce::var &gearObject);
     bool loadGearThumbnail(GearItem *gearItem);
     bool parseGearSchema(GearItem *gearItem, const juce::String &schemaData);
+    bool loadControlImage(GearItem *gearItem, GearControl &control, const juce::String &imagePath);
+    void loadControlImages(GearItem *gearItem);
     bool loadGearFaceplate(GearItem *gearItem);
     void refreshAllThumbnails();
     void updateRemoteLibraryStatus(bool available, const juce::String &error = "", int httpCode = 0);
@@ -188,4 +194,7 @@ private:
     // Metadata and category management
     void updateGearMetadata();
     void updateCategories();
+
+    // Async-safe GearItem lookup
+    GearItem *findGearItemById(const juce::String &itemId);
 };

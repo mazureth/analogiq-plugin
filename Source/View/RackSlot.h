@@ -195,14 +195,14 @@ public:
      *
      * @return The calculated scale factor
      */
-    float calculateOptimalFaceplateScale() const;
 
     /**
      * @brief Draws all controls for the gear item with proper scaling.
      *
      * @param g The graphics context to paint with
+     * @param faceplateArea The actual rendered area of the faceplate
      */
-    void drawControls(juce::Graphics &g);
+    void drawControls(juce::Graphics &g, const juce::Rectangle<int> &faceplateArea);
 
     /**
      * @brief Checks if the slot is empty.
@@ -239,10 +239,10 @@ public:
 
 private:
     // Helper methods for drawing individual control types
-    void drawButtonControl(juce::Graphics &g, const GearControl &control);
-    void drawFaderControl(juce::Graphics &g, const GearControl &control);
-    void drawSwitchControl(juce::Graphics &g, const GearControl &control);
-    void drawKnobControl(juce::Graphics &g, const GearControl &control);
+    void drawButtonControl(juce::Graphics &g, const GearControl &control, int x, int y);
+    void drawFaderControl(juce::Graphics &g, const GearControl &control, int x, int y);
+    void drawSwitchControl(juce::Graphics &g, const GearControl &control, int x, int y);
+    void drawKnobControl(juce::Graphics &g, const GearControl &control, int x, int y);
 
 private:
     // Slot information

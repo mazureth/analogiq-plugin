@@ -115,6 +115,9 @@ private:
     // Rack slots
     std::vector<std::unique_ptr<RackSlot>> rackSlots;
 
+    // Gear item instances (one per slot)
+    std::vector<std::unique_ptr<GearItem>> gearItemInstances;
+
     // UI components
     std::unique_ptr<juce::Viewport> viewport;
     std::unique_ptr<juce::Component> rackContainer;
