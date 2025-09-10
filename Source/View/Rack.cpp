@@ -595,10 +595,10 @@ RackSlot *Rack::getSlot(int slotIndex) const
 // Gear Management
 bool Rack::addGearToSlot(int slotIndex, const juce::String &gearId)
 {
-    // Validate slot index
-    if (!isValidSlotIndex(slotIndex))
+    // Basic validation - slot index must be non-negative
+    if (slotIndex < 0)
     {
-        juce::Logger::writeToLog("Add gear failed: invalid slot index " + juce::String(slotIndex));
+        juce::Logger::writeToLog("Add gear failed: negative slot index " + juce::String(slotIndex));
         return false;
     }
 
@@ -619,6 +619,13 @@ bool Rack::addGearToSlot(int slotIndex, const juce::String &gearId)
         // Slot exists but is occupied - insert a new slot at this position
         insertRackSlot(slotIndex);
         // After insertion, the new slot is at slotIndex, and the original occupied slot is now at slotIndex + 1
+    }
+
+    // Now validate that the slot exists after creation
+    if (!isValidSlotIndex(slotIndex))
+    {
+        juce::Logger::writeToLog("Add gear failed: slot creation failed for index " + juce::String(slotIndex));
+        return false;
     }
 
     // Create a unique instance for this rack slot (AFTER slot insertion)
