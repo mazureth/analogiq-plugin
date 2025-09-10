@@ -2,11 +2,21 @@
 #include <juce_core/juce_core.h>
 
 // Base URLs - these can be easily updated without recompiling
+#ifdef JUCE_DEBUG
+// Debug mode: use localhost for local schema testing
+const juce::String RemoteConfig::GEAR_LIBRARY_BASE_URL = "http://localhost:8000";
+const juce::String RemoteConfig::SCHEMAS_BASE_URL = "http://localhost:8000";
+const juce::String RemoteConfig::THUMBNAILS_BASE_URL = "http://localhost:8000";
+const juce::String RemoteConfig::FACEPLATES_BASE_URL = "http://localhost:8000";
+const juce::String RemoteConfig::CONTROL_IMAGES_BASE_URL = "http://localhost:8000";
+#else
+// Release mode: use production GitHub URLs
 const juce::String RemoteConfig::GEAR_LIBRARY_BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main";
 const juce::String RemoteConfig::SCHEMAS_BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main";
 const juce::String RemoteConfig::THUMBNAILS_BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main";
 const juce::String RemoteConfig::FACEPLATES_BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main";
 const juce::String RemoteConfig::CONTROL_IMAGES_BASE_URL = "https://raw.githubusercontent.com/mazureth/analogiq-schemas/main";
+#endif
 
 // Relative paths from base URLs
 const juce::String RemoteConfig::GEAR_LIBRARY_INDEX_PATH = "/units/index.json";

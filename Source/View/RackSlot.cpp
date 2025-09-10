@@ -175,14 +175,26 @@ void RackSlot::paint(juce::Graphics &g)
             // Store the scale factor for use in drawing controls
             currentFaceplateScale = scaleFactor;
 
+            // Calculate actual rendered image bounds (centered within faceplateArea)
+            float scaledWidth = originalWidth * scaleFactor;
+            float scaledHeight = originalHeight * scaleFactor;
+            float imageX = faceplateArea.getX() + (faceplateArea.getWidth() - scaledWidth) / 2;
+            float imageY = faceplateArea.getY() + (faceplateArea.getHeight() - scaledHeight) / 2;
+            juce::Rectangle<float> actualImageBounds(imageX, imageY, scaledWidth, scaledHeight);
+
+            juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Actual image bounds - x=" + juce::String(imageX, 2) +
+                                     ", y=" + juce::String(imageY, 2) +
+                                     ", width=" + juce::String(scaledWidth, 2) +
+                                     ", height=" + juce::String(scaledHeight, 2));
+
             // Draw the faceplate image (exactly like old system)
             g.drawImageWithin(gearItem->faceplateImage,
                               faceplateArea.getX(), faceplateArea.getY(),
                               faceplateArea.getWidth(), faceplateArea.getHeight(),
                               juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize);
 
-            // Draw controls on top of the faceplate
-            drawControls(g, faceplateArea);
+            // Draw controls on top of the faceplate using actual image bounds
+            drawControls(g, actualImageBounds);
         }
         else
         {
@@ -398,27 +410,27 @@ void RackSlot::clearGearItem()
 
 // Control rendering
 
-void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<int> &faceplateArea)
+void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<float> &actualImageBounds)
 {
     if (gearItem == nullptr)
         return;
 
-    juce::Logger::writeToLog("[HORIZONTAL_DEBUG] drawControls - faceplateArea=" + faceplateArea.toString() +
+    juce::Logger::writeToLog("[HORIZONTAL_DEBUG] drawControls - actualImageBounds=" + actualImageBounds.toString() +
                              ", controls count=" + juce::String(gearItem->controls.size()));
 
     for (const auto &control : gearItem->controls)
     {
-        // Calculate control position relative to faceplate (exactly like old system)
-        int x = faceplateArea.getX() + (int)(control.position.getX() * faceplateArea.getWidth());
-        int y = faceplateArea.getY() + (int)(control.position.getY() * faceplateArea.getHeight());
+        // Calculate control position relative to actual rendered image bounds
+        int x = actualImageBounds.getX() + (int)(control.position.getX() * actualImageBounds.getWidth());
+        int y = actualImageBounds.getY() + (int)(control.position.getY() * actualImageBounds.getHeight());
 
         juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Control '" + control.name + "' - position.getX()=" + juce::String(control.position.getX(), 4) +
-                                 ", faceplateArea.getX()=" + juce::String(faceplateArea.getX()) +
-                                 ", faceplateArea.getWidth()=" + juce::String(faceplateArea.getWidth()) +
+                                 ", actualImageBounds.getX()=" + juce::String(actualImageBounds.getX(), 2) +
+                                 ", actualImageBounds.getWidth()=" + juce::String(actualImageBounds.getWidth(), 2) +
                                  ", calculated x=" + juce::String(x) +
                                  ", position.getY()=" + juce::String(control.position.getY(), 4) +
-                                 ", faceplateArea.getY()=" + juce::String(faceplateArea.getY()) +
-                                 ", faceplateArea.getHeight()=" + juce::String(faceplateArea.getHeight()) +
+                                 ", actualImageBounds.getY()=" + juce::String(actualImageBounds.getY(), 2) +
+                                 ", actualImageBounds.getHeight()=" + juce::String(actualImageBounds.getHeight(), 2) +
                                  ", calculated y=" + juce::String(y));
 
         // Draw control based on type

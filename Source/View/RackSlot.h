@@ -200,9 +200,9 @@ public:
      * @brief Draws all controls for the gear item with proper scaling.
      *
      * @param g The graphics context to paint with
-     * @param faceplateArea The actual rendered area of the faceplate
+     * @param actualImageBounds The actual rendered bounds of the faceplate image
      */
-    void drawControls(juce::Graphics &g, const juce::Rectangle<int> &faceplateArea);
+    void drawControls(juce::Graphics &g, const juce::Rectangle<float> &actualImageBounds);
 
     /**
      * @brief Checks if the slot is empty.
