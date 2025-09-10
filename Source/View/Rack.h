@@ -58,6 +58,13 @@ public:
     bool moveGearBetweenSlots(int fromSlot, int toSlot);
     juce::String getGearInSlot(int slotIndex) const;
 
+    // Rack slot validation
+    bool isValidSlotIndex(int slotIndex) const;
+    bool validateRackState() const;
+    bool validateSlotConsistency() const;
+    bool validateGearSlotRelationships() const;
+    void recoverFromInvalidState();
+
     // State persistence
     void saveRackState();
     void loadRackState();

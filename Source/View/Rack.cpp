@@ -441,8 +441,12 @@ void Rack::insertRackSlot(int slotIndex)
 
 void Rack::removeRackSlot(int slotIndex)
 {
-    if (slotIndex < 0 || static_cast<size_t>(slotIndex) >= rackSlots.size())
+    // Validate slot index
+    if (!isValidSlotIndex(slotIndex))
+    {
+        juce::Logger::writeToLog("Remove rack slot failed: invalid slot index " + juce::String(slotIndex));
         return;
+    }
 
     // Remove gear from slot first
     removeGearFromSlot(slotIndex);
@@ -486,6 +490,94 @@ void Rack::clearAllSlots()
     gearItemInstances.clear();
 }
 
+// Rack slot validation methods
+bool Rack::isValidSlotIndex(int slotIndex) const
+{
+    return slotIndex >= 0 && static_cast<size_t>(slotIndex) < rackSlots.size();
+}
+
+bool Rack::validateRackState() const
+{
+    // Check if rack has valid number of slots
+    if (rackSlots.size() != gearItemInstances.size())
+    {
+        juce::Logger::writeToLog("Rack validation failed: slot count mismatch");
+        return false;
+    }
+
+    // Validate slot consistency
+    if (!validateSlotConsistency())
+    {
+        return false;
+    }
+
+    // Validate gear-slot relationships
+    if (!validateGearSlotRelationships())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool Rack::validateSlotConsistency() const
+{
+    // Check that all slots exist and have valid indices
+    for (size_t i = 0; i < rackSlots.size(); ++i)
+    {
+        if (!rackSlots[i])
+        {
+            juce::Logger::writeToLog("Rack validation failed: null slot at index " + juce::String(i));
+            return false;
+        }
+
+        // Check that slot index matches its position
+        if (rackSlots[i]->getSlotIndex() != static_cast<int>(i))
+        {
+            juce::Logger::writeToLog("Rack validation failed: slot index mismatch at position " + juce::String(i));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Rack::validateGearSlotRelationships() const
+{
+    // Check that gear items are properly associated with slots
+    for (size_t i = 0; i < rackSlots.size(); ++i)
+    {
+        if (rackSlots[i])
+        {
+            auto gearItem = rackSlots[i]->getGearItem();
+            if (gearItem && static_cast<size_t>(i) < gearItemInstances.size())
+            {
+                // Check that the gear item instance matches what's in the slot
+                if (gearItemInstances[i].get() != gearItem)
+                {
+                    juce::Logger::writeToLog("Rack validation failed: gear item mismatch at slot " + juce::String(i));
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+void Rack::recoverFromInvalidState()
+{
+    juce::Logger::writeToLog("Rack recovery: Attempting to recover from invalid state");
+
+    // Clear all slots and start fresh
+    clearAllSlots();
+
+    // Recreate a basic rack structure
+    setSlotLayout(16); // Default to 16 slots
+
+    juce::Logger::writeToLog("Rack recovery: Recovered to clean state with " + juce::String(rackSlots.size()) + " slots");
+}
+
 int Rack::getSlotCount() const
 {
     return static_cast<int>(rackSlots.size());
@@ -503,9 +595,12 @@ RackSlot *Rack::getSlot(int slotIndex) const
 // Gear Management
 bool Rack::addGearToSlot(int slotIndex, const juce::String &gearId)
 {
-
-    if (slotIndex < 0)
+    // Validate slot index
+    if (!isValidSlotIndex(slotIndex))
+    {
+        juce::Logger::writeToLog("Add gear failed: invalid slot index " + juce::String(slotIndex));
         return false;
+    }
 
     // Get gear item template from library and create a unique instance
     auto gearItemTemplate = gearLibrary.getGearItem(gearId);
@@ -595,12 +690,19 @@ bool Rack::addGearToSlot(int slotIndex, const juce::String &gearId)
 
 bool Rack::removeGearFromSlot(int slotIndex)
 {
-    if (slotIndex < 0 || static_cast<size_t>(slotIndex) >= rackSlots.size())
+    // Validate slot index
+    if (!isValidSlotIndex(slotIndex))
+    {
+        juce::Logger::writeToLog("Remove gear failed: invalid slot index " + juce::String(slotIndex));
         return false;
+    }
 
     auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
     if (!slot)
+    {
+        juce::Logger::writeToLog("Remove gear failed: null slot at index " + juce::String(slotIndex));
         return false;
+    }
 
     slot->clearGearItem();
 
@@ -621,9 +723,12 @@ bool Rack::removeGearFromSlot(int slotIndex)
 
 bool Rack::moveGearBetweenSlots(int fromSlot, int toSlot)
 {
-    if (fromSlot < 0 || static_cast<size_t>(fromSlot) >= rackSlots.size() ||
-        toSlot < 0 || static_cast<size_t>(toSlot) >= rackSlots.size())
+    // Validate slot indices
+    if (!isValidSlotIndex(fromSlot) || !isValidSlotIndex(toSlot))
+    {
+        juce::Logger::writeToLog("Move gear failed: invalid slot indices - from: " + juce::String(fromSlot) + ", to: " + juce::String(toSlot));
         return false;
+    }
 
     if (fromSlot == toSlot)
         return true;
@@ -1000,5 +1105,12 @@ void Rack::updateSlotIndices()
             rackSlots[i]->setIndex(static_cast<int>(i));
             // Button states are updated in setIndex() method
         }
+    }
+
+    // Validate rack state after updating indices
+    if (!validateRackState())
+    {
+        juce::Logger::writeToLog("Rack state validation failed after updating slot indices - attempting recovery");
+        recoverFromInvalidState();
     }
 }
