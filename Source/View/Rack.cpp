@@ -147,6 +147,12 @@ void Rack::layoutSlots()
         totalHeight += getSlotHeight(static_cast<int>(i)) + slotSpacing;
     }
 
+    // If rack is empty, use the full Rack component height so the placeholder text is fully visible
+    if (rackSlots.empty())
+    {
+        totalHeight = getHeight();
+    }
+
     // Size the container to fit all slots with spacing
     rackContainer->setSize(containerWidth, totalHeight);
 
