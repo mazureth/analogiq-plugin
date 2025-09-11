@@ -217,6 +217,13 @@ public:
      */
     int getItemIndex() const { return itemIndex; }
 
+    /**
+     * @brief Gets the display text for this item.
+     *
+     * @return The display text
+     */
+    juce::String getDisplayText() const;
+
 private:
     ItemType itemType;
     juce::String itemName;
@@ -227,7 +234,6 @@ private:
 
     // Helper methods
     void setupDragAndDrop();
-    juce::String getDisplayText() const;
     juce::Colour getItemColour() const;
     void handleGearItemClick();
     void showContextMenu(const juce::MouseEvent &e);

@@ -9,14 +9,30 @@
 #include "GearLibraryTree.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_core/juce_core.h>
+#include <functional>
 
 // GearLibraryTree implementation
 GearLibraryTree::GearLibraryTree(GearLibrary &gl, ICacheManager &cm, PresetManager &pm)
     : gearLibrary(gl), cacheManager(cm), presetManager(pm)
 {
+    juce::Logger::writeToLog("GearLibraryTree::constructor - Starting constructor");
     setupTreeView();
+    juce::Logger::writeToLog("GearLibraryTree::constructor - setupTreeView() completed");
 
-    populateTree();
+    // Delay tree population to ensure file system and gear library are ready
+    juce::Logger::writeToLog("GearLibraryTree::constructor - About to call MessageManager::callAsync");
+    juce::MessageManager::callAsync([this]()
+                                    {
+        juce::Logger::writeToLog("GearLibraryTree::constructor - ASYNC LAMBDA STARTED");
+        juce::Logger::writeToLog("GearLibraryTree::constructor - Delayed populateTree() called");
+        
+        // Ensure GearLibrary is initialized before populating tree
+        juce::Logger::writeToLog("GearLibraryTree::constructor - Initializing GearLibrary");
+        auto allGearItems = gearLibrary.getAllGearItems();
+        juce::Logger::writeToLog("GearLibraryTree::constructor - GearLibrary initialization complete, loaded " + juce::String(allGearItems.size()) + " gear items");
+        
+        populateTree(); });
+    juce::Logger::writeToLog("GearLibraryTree::constructor - MessageManager::callAsync() called, constructor ending");
 }
 
 GearLibraryTree::~GearLibraryTree()
@@ -67,18 +83,29 @@ void GearLibraryTree::setupTreeView()
 
 void GearLibraryTree::populateTree()
 {
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Starting tree population");
 
     rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Gear Library", gearLibrary, cacheManager);
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Root item created");
 
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Creating Recently Used section");
     createRecentlyUsedSection();
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Recently Used section created");
 
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Creating Favorites section");
     createFavoritesSection();
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Favorites section created");
 
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Creating Categories section");
     createCategoriesSection();
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Categories section created");
 
     treeView->setRootItem(rootItem.get());
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Root item set on tree view");
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Root item has " + juce::String(rootItem->getNumSubItems()) + " sub-items");
 
     treeView->repaint();
+    juce::Logger::writeToLog("GearLibraryTree::populateTree - Tree repainted, population complete");
 }
 
 // Drag and drop is now handled at the TreeViewItem level in GearTreeItem::itemClicked()
@@ -89,6 +116,9 @@ void GearLibraryTree::createRecentlyUsedSection()
     {
         auto recentlyUsedNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", gearLibrary, cacheManager);
         rootItem->addSubItem(recentlyUsedNode);
+
+        // Debug: Check if cache manager is initialized
+        juce::Logger::writeToLog("GearLibraryTree::createRecentlyUsedSection - About to call cacheManager.getRecentlyUsed()");
 
         // Get recently used items from cache manager
         auto recentlyUsedIds = cacheManager.getRecentlyUsed(ICacheManager::MAX_RECENTLY_USED);
@@ -102,18 +132,22 @@ void GearLibraryTree::createRecentlyUsedSection()
 
         if (recentlyUsedIds.isEmpty())
         {
+            juce::Logger::writeToLog("Recently Used Debug - No items found, adding 'No recently used items' message");
             recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No recently used items", gearLibrary, cacheManager));
         }
         else
         {
+            juce::Logger::writeToLog("Recently Used Debug - Found " + juce::String(recentlyUsedIds.size()) + " items, adding to tree");
             // Get gear items for recently used IDs with error handling
             for (const auto &unitId : recentlyUsedIds)
             {
                 if (unitId.isNotEmpty())
                 {
+                    juce::Logger::writeToLog("Recently Used Debug - Looking up gear item: " + unitId);
                     auto gearItem = gearLibrary.getGearItem(unitId);
                     if (gearItem)
                     {
+                        juce::Logger::writeToLog("Recently Used Debug - Found gear item: " + gearItem->name);
                         recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, gearItem->name, gearLibrary, cacheManager, gearItem, -1));
                     }
                     else
@@ -230,8 +264,46 @@ void GearLibraryTree::refreshTree()
 
     try
     {
+        // Ensure GearLibrary is initialized before refreshing tree
+        juce::Logger::writeToLog("GearLibraryTree::refreshTree - Initializing GearLibrary");
+        auto allGearItems = gearLibrary.getAllGearItems();
+        juce::Logger::writeToLog("GearLibraryTree::refreshTree - GearLibrary initialization complete, loaded " + juce::String(allGearItems.size()) + " gear items");
+
         if (rootItem)
         {
+            // Capture expansion state recursively using a map of paths to expansion states
+            std::map<juce::String, bool> expansionStates;
+
+            // Helper function to recursively capture expansion states
+            std::function<void(juce::TreeViewItem *, const juce::String &)> captureExpansionStates;
+            captureExpansionStates = [&](juce::TreeViewItem *item, const juce::String &path)
+            {
+                if (auto *gearItem = dynamic_cast<GearTreeItem *>(item))
+                {
+                    juce::String itemName = gearItem->getDisplayText();
+                    juce::String fullPath = path.isEmpty() ? itemName : path + "/" + itemName;
+                    expansionStates[fullPath] = item->isOpen();
+
+                    // Recursively capture children
+                    for (int i = 0; i < item->getNumSubItems(); ++i)
+                    {
+                        if (auto *childItem = item->getSubItem(i))
+                        {
+                            captureExpansionStates(childItem, fullPath);
+                        }
+                    }
+                }
+            };
+
+            // Capture expansion states starting from root
+            for (int i = 0; i < rootItem->getNumSubItems(); ++i)
+            {
+                if (auto *subItem = rootItem->getSubItem(i))
+                {
+                    captureExpansionStates(subItem, "");
+                }
+            }
+
             // Safely clear sub-items without deleting the root
             rootItem->clearSubItems();
 
@@ -239,6 +311,41 @@ void GearLibraryTree::refreshTree()
             createRecentlyUsedSection();
             createFavoritesSection();
             createCategoriesSection();
+
+            // Restore expansion states recursively
+            std::function<void(juce::TreeViewItem *, const juce::String &)> restoreExpansionStates;
+            restoreExpansionStates = [&](juce::TreeViewItem *item, const juce::String &path)
+            {
+                if (auto *gearItem = dynamic_cast<GearTreeItem *>(item))
+                {
+                    juce::String itemName = gearItem->getDisplayText();
+                    juce::String fullPath = path.isEmpty() ? itemName : path + "/" + itemName;
+
+                    // Restore expansion state if we have it recorded
+                    if (expansionStates.find(fullPath) != expansionStates.end())
+                    {
+                        item->setOpen(expansionStates[fullPath]);
+                    }
+
+                    // Recursively restore children
+                    for (int i = 0; i < item->getNumSubItems(); ++i)
+                    {
+                        if (auto *childItem = item->getSubItem(i))
+                        {
+                            restoreExpansionStates(childItem, fullPath);
+                        }
+                    }
+                }
+            };
+
+            // Restore expansion states starting from root
+            for (int i = 0; i < rootItem->getNumSubItems(); ++i)
+            {
+                if (auto *subItem = rootItem->getSubItem(i))
+                {
+                    restoreExpansionStates(subItem, "");
+                }
+            }
 
             // Repaint the tree
             if (treeView)
