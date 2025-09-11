@@ -167,21 +167,6 @@ public:
      */
     bool removeFromFavorites(GearItem *gearItem);
 
-    /**
-     * @brief Gets recently used gear items.
-     *
-     * @param maxItems Maximum number of items to return
-     * @return Array of recently used gear items
-     */
-    juce::Array<GearItem *> getRecentlyUsedGearItems(int maxItems = 10) const;
-
-    /**
-     * @brief Marks a gear item as recently used.
-     *
-     * @param gearItem The gear item to mark as recently used
-     */
-    void markAsRecentlyUsed(GearItem *gearItem);
-
     // Drag and Drop Coordination
     /**
      * @brief Handles the start of a drag operation.
@@ -275,7 +260,6 @@ private:
     // State tracking
     GearItem *selectedGearItem{nullptr};
     juce::Array<GearItem *> favoriteGearItems;
-    juce::Array<GearItem *> recentlyUsedGearItems;
     bool isLoadingLibrary{false};
     int loadingProgress{0};
 
@@ -289,16 +273,6 @@ private:
      * @brief Saves the favorites list to persistent storage.
      */
     void saveFavoritesToStorage();
-
-    /**
-     * @brief Updates the recently used list from persistent storage.
-     */
-    void updateRecentlyUsedFromStorage();
-
-    /**
-     * @brief Saves the recently used list to persistent storage.
-     */
-    void saveRecentlyUsedToStorage();
 
     /**
      * @brief Normalizes a search term for better matching.

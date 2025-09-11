@@ -15,6 +15,7 @@
 #include "../Shared/ICacheManager.h"
 #include "../Model/PresetManager.h"
 #include "../Model/GearLibrary.h"
+#include "../Shared/IRackStateListener.h"
 #include "RackSlot.h"
 #include <memory>
 #include <vector>
@@ -84,8 +85,8 @@ public:
     void setShowGrid(bool show);
 
     // Event handling
-    void addRackStateListener(juce::Component *listener);
-    void removeRackStateListener(juce::Component *listener);
+    void addRackStateListener(RackStateListener *listener);
+    void removeRackStateListener(RackStateListener *listener);
 
     // Utility methods
     bool isSlotOccupied(int slotIndex) const;
@@ -132,7 +133,7 @@ private:
 
     // State management
     juce::ValueTree rackState;
-    juce::Array<juce::Component *> stateListeners;
+    juce::Array<RackStateListener *> stateListeners;
 
     // Faceplate loading coordination
     int pendingFaceplateLoads = 0;
@@ -143,6 +144,13 @@ private:
     void createSlot(int slotIndex);
     void updateSlotPositions();
     void notifyStateChanged();
+    void notifyGearItemAdded(int slotIndex, const GearItem *gearItem);
+    void notifyGearItemRemoved(int slotIndex);
+    void notifyGearControlChanged(int slotIndex, const GearItem *gearItem, int controlIndex);
+    void notifyGearItemsRearranged(int sourceSlotIndex, int targetSlotIndex);
+    void notifyRackStateReset();
+    void notifyPresetLoaded(const juce::String &presetName);
+    void notifyPresetSaved(const juce::String &presetName);
     void repaintAllSlots();
     void repaintSingleSlot(int slotIndex);
 

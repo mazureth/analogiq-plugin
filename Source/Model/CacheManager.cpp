@@ -18,21 +18,39 @@ CacheManager::~CacheManager()
 
 void CacheManager::initializeLazy()
 {
-    if (initialized)
-        return;
+    juce::Logger::writeToLog("CacheManager::initializeLazy called");
+    juce::Logger::writeToLog("CacheManager::initializeLazy - initialized: " + juce::String(initialized ? "true" : "false"));
 
+    if (initialized)
+    {
+        juce::Logger::writeToLog("CacheManager::initializeLazy - already initialized, returning");
+        return;
+    }
+
+    juce::Logger::writeToLog("CacheManager::initializeLazy - calling initializeCacheDirectory()");
     initializeCacheDirectory();
+    juce::Logger::writeToLog("CacheManager::initializeLazy - initializeCacheDirectory() completed");
+
+    juce::Logger::writeToLog("CacheManager::initializeLazy - calling loadCacheIndex()");
     loadCacheIndex();
+    juce::Logger::writeToLog("CacheManager::initializeLazy - loadCacheIndex() completed");
 
     // Initialize favorites and recently used file paths
     favoritesFilePath = fileSystem.joinPath(cacheRootDir, "favorites.json");
     recentlyUsedFilePath = fileSystem.joinPath(cacheRootDir, "recently_used.json");
+    juce::Logger::writeToLog("CacheManager::initializeLazy - recentlyUsedFilePath set to: " + recentlyUsedFilePath);
 
     // Load favorites and recently used data
+    juce::Logger::writeToLog("CacheManager::initializeLazy - calling loadFavorites()");
     loadFavorites();
+    juce::Logger::writeToLog("CacheManager::initializeLazy - loadFavorites() completed");
+
+    juce::Logger::writeToLog("CacheManager::initializeLazy - calling loadRecentlyUsed()");
     loadRecentlyUsed();
+    juce::Logger::writeToLog("CacheManager::initializeLazy - loadRecentlyUsed() completed");
 
     initialized = true;
+    juce::Logger::writeToLog("CacheManager::initializeLazy - initialization completed, initialized = true");
 }
 
 void CacheManager::initializeCacheDirectory()
@@ -517,11 +535,27 @@ void CacheManager::clearFavorites()
 // Recently used management implementation
 bool CacheManager::addToRecentlyUsed(const juce::String &unitId)
 {
-    if (unitId.isEmpty())
-        return false;
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsed called with unitId: " + unitId);
 
+    if (unitId.isEmpty())
+    {
+        juce::Logger::writeToLog("CacheManager::addToRecentlyUsed - unitId is empty, returning false");
+        return false;
+    }
+
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsed - calling initializeLazy()");
+    initializeLazy();
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsed - initializeLazy() completed");
+
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsed - calling addToRecentlyUsedInternal()");
     addToRecentlyUsedInternal(unitId);
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsed - addToRecentlyUsedInternal() completed");
+
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsed - calling saveRecentlyUsed()");
     saveRecentlyUsed();
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsed - saveRecentlyUsed() completed");
+
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsed - returning true");
     return true;
 }
 
@@ -530,6 +564,7 @@ bool CacheManager::removeFromRecentlyUsed(const juce::String &unitId)
     if (unitId.isEmpty())
         return false;
 
+    initializeLazy();
     int index = recentlyUsed.indexOf(unitId);
     if (index >= 0)
     {
@@ -563,6 +598,7 @@ juce::StringArray CacheManager::getRecentlyUsed(int maxCount)
 
 void CacheManager::clearRecentlyUsed()
 {
+    initializeLazy();
     recentlyUsed.clear();
     saveRecentlyUsed();
 }
@@ -599,42 +635,87 @@ void CacheManager::saveFavorites()
 
 void CacheManager::loadRecentlyUsed()
 {
+    juce::Logger::writeToLog("CacheManager::loadRecentlyUsed called");
+    juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - recentlyUsedFilePath: " + recentlyUsedFilePath);
+
     if (fileSystem.fileExists(recentlyUsedFilePath))
     {
+        juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - file exists, reading content");
         auto content = fileSystem.readFile(recentlyUsedFilePath);
+        juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - content length: " + juce::String(content.length()));
+        juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - content: " + content);
+
         if (!content.isEmpty())
         {
             auto var = juce::JSON::parse(content);
             if (var.isArray())
             {
+                juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - JSON is array, parsing items");
                 recentlyUsed.clear();
                 auto array = var.getArray();
                 for (auto &item : *array)
                 {
                     if (item.isString())
-                        recentlyUsed.add(item.toString());
+                    {
+                        juce::String itemStr = item.toString();
+                        recentlyUsed.add(itemStr);
+                        juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - added item: " + itemStr);
+                    }
                 }
+                juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - loaded " + juce::String(recentlyUsed.size()) + " items");
+            }
+            else
+            {
+                juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - JSON is not an array");
             }
         }
+        else
+        {
+            juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - content is empty");
+        }
+    }
+    else
+    {
+        juce::Logger::writeToLog("CacheManager::loadRecentlyUsed - file does not exist");
     }
 }
 
 void CacheManager::saveRecentlyUsed()
 {
+    juce::Logger::writeToLog("CacheManager::saveRecentlyUsed called");
+    juce::Logger::writeToLog("CacheManager::saveRecentlyUsed - recentlyUsed size: " + juce::String(recentlyUsed.size()));
+    juce::Logger::writeToLog("CacheManager::saveRecentlyUsed - recentlyUsedFilePath: " + recentlyUsedFilePath);
+
     auto var = juce::var(recentlyUsed);
     auto json = juce::JSON::toString(var);
-    fileSystem.writeFile(recentlyUsedFilePath, json);
+    juce::Logger::writeToLog("CacheManager::saveRecentlyUsed - JSON to save: " + json);
+
+    bool success = fileSystem.writeFile(recentlyUsedFilePath, json);
+    juce::Logger::writeToLog("CacheManager::saveRecentlyUsed - writeFile result: " + juce::String(success ? "SUCCESS" : "FAILED"));
 }
 
 void CacheManager::addToRecentlyUsedInternal(const juce::String &unitId)
 {
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsedInternal called with unitId: " + unitId);
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsedInternal - recentlyUsed size before: " + juce::String(recentlyUsed.size()));
+
     // Remove if already exists (to move to front)
+    int oldSize = recentlyUsed.size();
     recentlyUsed.removeString(unitId);
+    bool wasRemoved = (recentlyUsed.size() < oldSize);
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsedInternal - wasRemoved: " + juce::String(wasRemoved ? "true" : "false"));
 
     // Add to end (most recent)
     recentlyUsed.add(unitId);
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsedInternal - added unitId, size now: " + juce::String(recentlyUsed.size()));
 
     // Limit size
     while (recentlyUsed.size() > MAX_RECENTLY_USED)
+    {
+        juce::String removed = recentlyUsed[0];
         recentlyUsed.remove(0);
+        juce::Logger::writeToLog("CacheManager::addToRecentlyUsedInternal - removed oldest item: " + removed);
+    }
+
+    juce::Logger::writeToLog("CacheManager::addToRecentlyUsedInternal - final size: " + juce::String(recentlyUsed.size()));
 }

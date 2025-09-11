@@ -140,9 +140,6 @@ void RackSlot::paint(juce::Graphics &g)
 {
     auto area = getLocalBounds();
 
-    juce::Logger::writeToLog("[HORIZONTAL_DEBUG] RackSlot::paint - getLocalBounds()=" + area.toString() +
-                             ", slotIndex=" + juce::String(getSlotIndex()));
-
     // Draw slot background
     if (isDragOver)
     {
@@ -170,12 +167,8 @@ void RackSlot::paint(juce::Graphics &g)
             // Calculate faceplate area (exactly like old system)
             juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
 
-            juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Faceplate area after reduced(10): " + faceplateArea.toString());
-
             // Remove 20 pixels from top to match old system's faceplate area (without drawing text)
             faceplateArea.removeFromTop(20);
-
-            juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Faceplate area after removeFromTop(20): " + faceplateArea.toString());
 
             // Calculate scaling factor based on faceplate dimensions (exactly like old system)
             float originalWidth = (float)gearItem->faceplateImage.getWidth();
@@ -188,14 +181,6 @@ void RackSlot::paint(juce::Graphics &g)
             float scaleY = targetHeight / originalHeight;
             float scaleFactor = std::min(scaleX, scaleY); // Use the smaller scale to fit within bounds
 
-            juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Faceplate scaling - originalWidth=" + juce::String(originalWidth, 2) +
-                                     ", originalHeight=" + juce::String(originalHeight, 2) +
-                                     ", targetWidth=" + juce::String(targetWidth, 2) +
-                                     ", targetHeight=" + juce::String(targetHeight, 2) +
-                                     ", scaleX=" + juce::String(scaleX, 4) +
-                                     ", scaleY=" + juce::String(scaleY, 4) +
-                                     ", scaleFactor=" + juce::String(scaleFactor, 4));
-
             // Store the scale factor for use in drawing controls
             currentFaceplateScale = scaleFactor;
 
@@ -205,11 +190,6 @@ void RackSlot::paint(juce::Graphics &g)
             float imageX = faceplateArea.getX() + (faceplateArea.getWidth() - scaledWidth) / 2;
             float imageY = faceplateArea.getY() + (faceplateArea.getHeight() - scaledHeight) / 2;
             juce::Rectangle<float> actualImageBounds(imageX, imageY, scaledWidth, scaledHeight);
-
-            juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Actual image bounds - x=" + juce::String(imageX, 2) +
-                                     ", y=" + juce::String(imageY, 2) +
-                                     ", width=" + juce::String(scaledWidth, 2) +
-                                     ", height=" + juce::String(scaledHeight, 2));
 
             // Draw the faceplate image (exactly like old system)
             g.drawImageWithin(gearItem->faceplateImage,
@@ -421,35 +401,42 @@ void RackSlot::itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSo
 
 void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
+    juce::Logger::writeToLog("RackSlot::itemDropped called");
+
     isDragOver = false;
     repaint();
 
     // Extract gear ID from drag description
     juce::String description = dragSourceDetails.description.toString();
+    juce::Logger::writeToLog("RackSlot::itemDropped - description: " + description);
 
     // Check if this is a gear item drop
     if (description.startsWith("gear:"))
     {
+        juce::Logger::writeToLog("RackSlot::itemDropped - description starts with 'gear:'");
         juce::String gearId = description.substring(5); // Remove "gear:" prefix
+        juce::Logger::writeToLog("RackSlot::itemDropped - extracted gearId: " + gearId);
 
         // Get the gear item from the library
         GearItem *gearItem = gearLibrary.getGearItem(gearId);
+        juce::Logger::writeToLog("RackSlot::itemDropped - gearItem found: " + juce::String(gearItem != nullptr ? "YES" : "NO"));
 
         if (gearItem)
         {
+            juce::Logger::writeToLog("RackSlot::itemDropped - checking if slot is empty");
             // Check if slot is empty
             if (isEmpty())
             {
-                // Add to recently used
-                cacheManager.addToRecentlyUsed(gearId);
-
+                juce::Logger::writeToLog("RackSlot::itemDropped - slot is empty, proceeding with drop");
                 // Set the gear item in this slot
                 setGearItem(gearItem);
+                juce::Logger::writeToLog("RackSlot::itemDropped - setGearItem completed");
 
                 // Log successful drop
             }
             else
             {
+                juce::Logger::writeToLog("RackSlot::itemDropped - slot is occupied, delegating to parent");
                 // Slot is occupied - delegate to parent Rack for insertion logic
 
                 // Find the parent Rack component and delegate the drop
@@ -459,6 +446,7 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
                     // Check if parent is a Rack (by class type, not just ID)
                     if (parent->getComponentID() == "Rack" || dynamic_cast<Rack *>(parent) != nullptr)
                     {
+                        juce::Logger::writeToLog("RackSlot::itemDropped - found parent Rack, delegating drop");
                         // Convert the drop position to parent coordinates
                         juce::DragAndDropTarget::SourceDetails parentDetails = dragSourceDetails;
                         parentDetails.localPosition = parent->getLocalPoint(this, dragSourceDetails.localPosition);
@@ -473,6 +461,7 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
                     parent = parent->getParentComponent();
                 }
 
+                juce::Logger::writeToLog("RackSlot::itemDropped - no parent Rack found, showing error");
                 // If no parent Rack found, show error
                 juce::AlertWindow::showMessageBoxAsync(
                     juce::MessageBoxIconType::WarningIcon,
@@ -483,8 +472,15 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
         }
         else
         {
+            juce::Logger::writeToLog("RackSlot::itemDropped - gearItem not found in library");
         }
     }
+    else
+    {
+        juce::Logger::writeToLog("RackSlot::itemDropped - description does not start with 'gear:'");
+    }
+
+    juce::Logger::writeToLog("RackSlot::itemDropped - method completed");
 }
 
 // Gear item management
@@ -508,23 +504,11 @@ void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<float> &act
     if (gearItem == nullptr)
         return;
 
-    juce::Logger::writeToLog("[HORIZONTAL_DEBUG] drawControls - actualImageBounds=" + actualImageBounds.toString() +
-                             ", controls count=" + juce::String(gearItem->controls.size()));
-
     for (const auto &control : gearItem->controls)
     {
         // Calculate control position relative to actual rendered image bounds
         int x = actualImageBounds.getX() + (int)(control.position.getX() * actualImageBounds.getWidth());
         int y = actualImageBounds.getY() + (int)(control.position.getY() * actualImageBounds.getHeight());
-
-        juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Control '" + control.name + "' - position.getX()=" + juce::String(control.position.getX(), 4) +
-                                 ", actualImageBounds.getX()=" + juce::String(actualImageBounds.getX(), 2) +
-                                 ", actualImageBounds.getWidth()=" + juce::String(actualImageBounds.getWidth(), 2) +
-                                 ", calculated x=" + juce::String(x) +
-                                 ", position.getY()=" + juce::String(control.position.getY(), 4) +
-                                 ", actualImageBounds.getY()=" + juce::String(actualImageBounds.getY(), 2) +
-                                 ", actualImageBounds.getHeight()=" + juce::String(actualImageBounds.getHeight(), 2) +
-                                 ", calculated y=" + juce::String(y));
 
         // Draw control based on type
         switch (control.type)
@@ -683,16 +667,6 @@ void RackSlot::drawFaderControl(juce::Graphics &g, const GearControl &control, i
         handleY = y;
     }
 
-    juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Fader '" + control.name + "' - isVertical=" + juce::String(isVertical ? "true" : "false") +
-                             ", control.length=" + juce::String(control.length, 4) +
-                             ", currentFaceplateScale=" + juce::String(currentFaceplateScale, 4) +
-                             ", faderLength=" + juce::String(faderLength, 2) +
-                             ", trackWidth=" + juce::String(trackWidth, 2) +
-                             ", control.currentValue=" + juce::String(control.currentValue, 4) +
-                             ", handleX=" + juce::String(handleX, 2) +
-                             ", handleY=" + juce::String(handleY, 2) +
-                             ", trackBounds=" + trackBounds.toString());
-
     // Draw the fader handle image at the handle position
     if (control.faderImage.isValid())
     {
@@ -821,30 +795,16 @@ void RackSlot::drawKnobControl(juce::Graphics &g, const GearControl &control, in
         float originalHeight = (float)control.loadedImage.getHeight();
         // Use the larger dimension to ensure the knob is properly sized
         knobSize = std::max(originalWidth, originalHeight) * currentFaceplateScale;
-
-        juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Knob '" + control.name + "' - originalWidth=" + juce::String(originalWidth, 2) +
-                                 ", originalHeight=" + juce::String(originalHeight, 2) +
-                                 ", currentFaceplateScale=" + juce::String(currentFaceplateScale, 4) +
-                                 ", knobSize=" + juce::String(knobSize, 2));
     }
     else
     {
         // Fallback to standard size if no image
         const float baseKnobSize = 40.0f;
         knobSize = baseKnobSize * currentFaceplateScale;
-
-        juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Knob '" + control.name + "' (fallback) - baseKnobSize=" + juce::String(baseKnobSize, 2) +
-                                 ", currentFaceplateScale=" + juce::String(currentFaceplateScale, 4) +
-                                 ", knobSize=" + juce::String(knobSize, 2));
     }
 
     // Create knob bounds using the transformed coordinates and scaled size
     juce::Rectangle<float> knobBounds(x, y, knobSize, knobSize);
-
-    juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Knob '" + control.name + "' final bounds - x=" + juce::String(x) +
-                             ", y=" + juce::String(y) +
-                             ", knobSize=" + juce::String(knobSize, 2) +
-                             ", knobBounds=" + knobBounds.toString());
 
     // Draw the knob image if available
     if (control.loadedImage.isValid())

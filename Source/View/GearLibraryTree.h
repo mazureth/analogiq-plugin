@@ -10,9 +10,12 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <mutex>
+#include <atomic>
 #include "../Shared/ICacheManager.h"
 #include "../Model/GearLibrary.h"
 #include "../Model/PresetManager.h"
+#include "../Shared/IRackStateListener.h"
 
 // Forward declarations
 class GearTreeItem;
@@ -25,7 +28,7 @@ class GearTreeItem;
  * including categories, favorites, recently used items, and individual gear items.
  * It supports drag and drop operations for moving gear items to the rack.
  */
-class GearLibraryTree : public juce::Component, public juce::DragAndDropContainer
+class GearLibraryTree : public juce::Component, public RackStateListener
 {
 public:
     /**
@@ -83,6 +86,15 @@ public:
                             const juce::String &manufacturerFilter,
                             const juce::String &gearTypeFilter);
 
+    // RackStateListener interface implementation
+    void onGearItemAdded(Rack *rack, int slotIndex, const GearItem *gearItem) override;
+    void onGearItemRemoved(Rack *rack, int slotIndex) override;
+    void onGearControlChanged(Rack *rack, int slotIndex, const GearItem *gearItem, int controlIndex) override;
+    void onGearItemsRearranged(Rack *rack, int sourceSlotIndex, int targetSlotIndex) override;
+    void onRackStateReset(Rack *rack) override;
+    void onPresetLoaded(Rack *rack, const juce::String &presetName) override;
+    void onPresetSaved(Rack *rack, const juce::String &presetName) override;
+
 private:
     // References to dependencies
     GearLibrary &gearLibrary;
@@ -100,6 +112,10 @@ private:
     juce::String currentCategoryFilter;
     juce::String currentManufacturerFilter;
     juce::String currentGearTypeFilter;
+
+    // Thread safety for tree rebuilding
+    std::mutex treeRebuildMutex;
+    std::atomic<bool> isRebuilding{false};
 
     // Helper methods
     void setupTreeView();

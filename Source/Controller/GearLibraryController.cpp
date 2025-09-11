@@ -27,9 +27,8 @@ GearLibraryController::GearLibraryController(GearLibrary &gearLibrary,
       cacheManager(cacheManager),
       networkFetcher(networkFetcher)
 {
-    // Load favorites and recently used items from storage
+    // Load favorites from storage
     updateFavoritesFromStorage();
-    updateRecentlyUsedFromStorage();
 }
 
 // Search and Filter Coordination
@@ -197,12 +196,6 @@ GearItem *GearLibraryController::getSelectedGearItem() const
 void GearLibraryController::setSelectedGearItem(GearItem *gearItem)
 {
     selectedGearItem = gearItem;
-
-    // Mark as recently used if not null
-    if (gearItem)
-    {
-        markAsRecentlyUsed(gearItem);
-    }
 }
 
 juce::Array<GearItem *> GearLibraryController::getFavoriteGearItems() const
@@ -231,40 +224,6 @@ bool GearLibraryController::removeFromFavorites(GearItem *gearItem)
         saveFavoritesToStorage();
     }
     return removed;
-}
-
-juce::Array<GearItem *> GearLibraryController::getRecentlyUsedGearItems(int maxItems) const
-{
-    juce::Array<GearItem *> result;
-    int count = juce::jmin(maxItems, recentlyUsedGearItems.size());
-
-    for (int i = 0; i < count; ++i)
-    {
-        result.add(recentlyUsedGearItems[i]);
-    }
-
-    return result;
-}
-
-void GearLibraryController::markAsRecentlyUsed(GearItem *gearItem)
-{
-    if (!gearItem)
-        return;
-
-    // Remove if already in the list
-    recentlyUsedGearItems.removeFirstMatchingValue(gearItem);
-
-    // Add to the beginning
-    recentlyUsedGearItems.insert(0, gearItem);
-
-    // Keep only the most recent items
-    const int maxRecentItems = 20;
-    if (recentlyUsedGearItems.size() > maxRecentItems)
-    {
-        recentlyUsedGearItems.removeRange(maxRecentItems, recentlyUsedGearItems.size() - maxRecentItems);
-    }
-
-    saveRecentlyUsedToStorage();
 }
 
 // Drag and Drop Coordination
@@ -383,20 +342,6 @@ void GearLibraryController::saveFavoritesToStorage()
     // For now, just log the save
     // This will be enhanced when we implement persistent storage
     std::cout << "[GearLibraryController] Favorites saved to storage" << std::endl;
-}
-
-void GearLibraryController::updateRecentlyUsedFromStorage()
-{
-    // For now, just initialize with an empty list
-    // This will be enhanced when we implement persistent storage
-    recentlyUsedGearItems.clear();
-}
-
-void GearLibraryController::saveRecentlyUsedToStorage()
-{
-    // For now, just log the save
-    // This will be enhanced when we implement persistent storage
-    std::cout << "[GearLibraryController] Recently used items saved to storage" << std::endl;
 }
 
 juce::String GearLibraryController::normalizeSearchTerm(const juce::String &searchTerm) const

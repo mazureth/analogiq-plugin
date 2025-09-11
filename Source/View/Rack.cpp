@@ -13,6 +13,7 @@
 #include "../Shared/IGearLibrary.h"
 #include "../Shared/ICacheManager.h"
 #include "../Shared/IPresetManager.h"
+#include "../Shared/IRackStateListener.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_gui_extra/juce_gui_extra.h>
 
@@ -157,10 +158,6 @@ void Rack::updateSlotPositions()
     // Calculate the slot width based on container width minus margins (exactly like old system)
     int effectiveSlotWidth = getWidth() - (2 * slotSpacing);
 
-    juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Rack::updateSlotPositions - getWidth()=" + juce::String(getWidth()) +
-                             ", slotSpacing=" + juce::String(slotSpacing) +
-                             ", effectiveSlotWidth=" + juce::String(effectiveSlotWidth));
-
     // Position the slots within the container in a single vertical column
     int currentY = slotSpacing;
     for (size_t i = 0; i < rackSlots.size(); ++i)
@@ -175,11 +172,6 @@ void Rack::updateSlotPositions()
                 effectiveSlotWidth, // Full width minus margins
                 slotHeight          // Dynamic height for this slot
             );
-
-            juce::Logger::writeToLog("[HORIZONTAL_DEBUG] Slot " + juce::String(i) + " bounds: x=" + juce::String(slotSpacing) +
-                                     ", y=" + juce::String(currentY) +
-                                     ", width=" + juce::String(effectiveSlotWidth) +
-                                     ", height=" + juce::String(slotHeight));
 
             currentY += slotHeight + slotSpacing;
         }
@@ -277,8 +269,7 @@ void Rack::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceD
 
                 if (success)
                 {
-                    // Add to recently used
-                    cacheManager.addToRecentlyUsed(gearId);
+                    // Recently used is handled in addGearToSlot() to capture all gear additions
                 }
             }
             else
@@ -692,6 +683,12 @@ bool Rack::addGearToSlot(int slotIndex, const juce::String &gearId)
     // Notify listeners
     notifyStateChanged();
 
+    // Add to recently used
+    cacheManager.addToRecentlyUsed(gearId);
+
+    // Notify specific listeners about gear item added
+    notifyGearItemAdded(slotIndex, gearItemPtr);
+
     return true;
 }
 
@@ -724,6 +721,9 @@ bool Rack::removeGearFromSlot(int slotIndex)
 
     // Notify listeners
     notifyStateChanged();
+
+    // Notify specific listeners about gear item removed
+    notifyGearItemRemoved(slotIndex);
 
     return true;
 }
@@ -966,7 +966,7 @@ void Rack::setShowGrid(bool show)
 }
 
 // Event Handling
-void Rack::addRackStateListener(juce::Component *listener)
+void Rack::addRackStateListener(RackStateListener *listener)
 {
     if (listener && !stateListeners.contains(listener))
     {
@@ -974,7 +974,7 @@ void Rack::addRackStateListener(juce::Component *listener)
     }
 }
 
-void Rack::removeRackStateListener(juce::Component *listener)
+void Rack::removeRackStateListener(RackStateListener *listener)
 {
     stateListeners.removeFirstMatchingValue(listener);
 }
@@ -986,7 +986,92 @@ void Rack::notifyStateChanged()
     {
         if (listener)
         {
-            listener->repaint();
+            // RackStateListener doesn't inherit from Component, so we can't call repaint()
+            // The specific notification methods (notifyGearItemAdded, etc.) handle UI updates
+        }
+    }
+}
+
+void Rack::notifyGearItemAdded(int slotIndex, const GearItem *gearItem)
+{
+    // Notify all RackStateListener implementations
+    for (auto *listener : stateListeners)
+    {
+        if (listener)
+        {
+            listener->onGearItemAdded(this, slotIndex, gearItem);
+        }
+    }
+}
+
+void Rack::notifyGearItemRemoved(int slotIndex)
+{
+    // Notify all RackStateListener implementations
+    for (auto *listener : stateListeners)
+    {
+        if (listener)
+        {
+            listener->onGearItemRemoved(this, slotIndex);
+        }
+    }
+}
+
+void Rack::notifyGearControlChanged(int slotIndex, const GearItem *gearItem, int controlIndex)
+{
+    // Notify all RackStateListener implementations
+    for (auto *listener : stateListeners)
+    {
+        if (listener)
+        {
+            listener->onGearControlChanged(this, slotIndex, gearItem, controlIndex);
+        }
+    }
+}
+
+void Rack::notifyGearItemsRearranged(int sourceSlotIndex, int targetSlotIndex)
+{
+    // Notify all RackStateListener implementations
+    for (auto *listener : stateListeners)
+    {
+        if (listener)
+        {
+            listener->onGearItemsRearranged(this, sourceSlotIndex, targetSlotIndex);
+        }
+    }
+}
+
+void Rack::notifyRackStateReset()
+{
+    // Notify all RackStateListener implementations
+    for (auto *listener : stateListeners)
+    {
+        if (listener)
+        {
+            listener->onRackStateReset(this);
+        }
+    }
+}
+
+void Rack::notifyPresetLoaded(const juce::String &presetName)
+{
+    // Notify all RackStateListener implementations
+    for (auto *listener : stateListeners)
+    {
+        if (listener)
+        {
+            listener->onPresetLoaded(this, presetName);
+        }
+    }
+}
+
+void Rack::notifyPresetSaved(const juce::String &presetName)
+{
+    // Notify all RackStateListener implementations
+    for (auto *listener : stateListeners)
+    {
+        if (listener)
+        {
+            listener->onPresetSaved(this, presetName);
         }
     }
 }

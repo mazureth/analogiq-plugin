@@ -79,34 +79,59 @@ void GearLibraryTree::populateTree()
     treeView->setRootItem(rootItem.get());
 
     treeView->repaint();
-
 }
 
 // Drag and drop is now handled at the TreeViewItem level in GearTreeItem::itemClicked()
 
 void GearLibraryTree::createRecentlyUsedSection()
 {
-    auto recentlyUsedNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", gearLibrary, cacheManager);
-    rootItem->addSubItem(recentlyUsedNode);
-
-    // Get recently used items from cache manager
-    auto recentlyUsedIds = cacheManager.getRecentlyUsed(ICacheManager::MAX_RECENTLY_USED);
-
-    if (recentlyUsedIds.isEmpty())
+    try
     {
-        recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No recently used items", gearLibrary, cacheManager));
-    }
-    else
-    {
-        // Get gear items for recently used IDs
-        for (const auto &unitId : recentlyUsedIds)
+        auto recentlyUsedNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", gearLibrary, cacheManager);
+        rootItem->addSubItem(recentlyUsedNode);
+
+        // Get recently used items from cache manager
+        auto recentlyUsedIds = cacheManager.getRecentlyUsed(ICacheManager::MAX_RECENTLY_USED);
+
+        // Debug logging
+        juce::Logger::writeToLog("Recently Used Debug - Count: " + juce::String(recentlyUsedIds.size()));
+        for (int i = 0; i < recentlyUsedIds.size(); ++i)
         {
-            auto gearItem = gearLibrary.getGearItem(unitId);
-            if (gearItem)
+            juce::Logger::writeToLog("Recently Used Debug - Item " + juce::String(i) + ": " + recentlyUsedIds[i]);
+        }
+
+        if (recentlyUsedIds.isEmpty())
+        {
+            recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No recently used items", gearLibrary, cacheManager));
+        }
+        else
+        {
+            // Get gear items for recently used IDs with error handling
+            for (const auto &unitId : recentlyUsedIds)
             {
-                recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, gearItem->name, gearLibrary, cacheManager, gearItem, -1));
+                if (unitId.isNotEmpty())
+                {
+                    auto gearItem = gearLibrary.getGearItem(unitId);
+                    if (gearItem)
+                    {
+                        recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, gearItem->name, gearLibrary, cacheManager, gearItem, -1));
+                    }
+                    else
+                    {
+                        // Log missing gear item but don't crash
+                        juce::Logger::writeToLog("Recently used gear item not found: " + unitId);
+                    }
+                }
             }
         }
+    }
+    catch (...)
+    {
+        // If creating recently used section fails, add error message
+        auto errorNode = new GearTreeItem(GearTreeItem::ItemType::RecentlyUsed, "Recently Used", gearLibrary, cacheManager);
+        rootItem->addSubItem(errorNode);
+        errorNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "Error loading recently used items", gearLibrary, cacheManager));
+        juce::Logger::writeToLog("Error creating recently used section");
     }
 }
 
@@ -195,11 +220,40 @@ void GearLibraryTree::createCategoriesSection()
 
 void GearLibraryTree::refreshTree()
 {
-    if (rootItem)
+    // Prevent concurrent rebuilds
+    if (isRebuilding.exchange(true))
     {
-        rootItem->clearSubItems();
-        populateTree();
+        return; // Already rebuilding, skip this call
     }
+
+    std::lock_guard<std::mutex> lock(treeRebuildMutex);
+
+    try
+    {
+        if (rootItem)
+        {
+            // Safely clear sub-items without deleting the root
+            rootItem->clearSubItems();
+
+            // Rebuild the tree structure
+            createRecentlyUsedSection();
+            createFavoritesSection();
+            createCategoriesSection();
+
+            // Repaint the tree
+            if (treeView)
+            {
+                treeView->repaint();
+            }
+        }
+    }
+    catch (...)
+    {
+        juce::Logger::writeToLog("Error during tree refresh");
+    }
+
+    // Reset the rebuilding flag
+    isRebuilding = false;
 }
 
 void GearLibraryTree::setSearchFilter(const juce::String &searchText)
@@ -374,7 +428,6 @@ void GearTreeItem::itemClicked(const juce::MouseEvent &e)
                 return;
             }
 
-
             // Create a custom drag image
             int itemWidth = 150;
             int itemHeight = 40;
@@ -496,9 +549,6 @@ void GearTreeItem::handleGearItemClick()
 {
     if (gearItem)
     {
-        // Add to recently used
-        cacheManager.addToRecentlyUsed(gearItem->unitId);
-
         // Repaint the tree to reflect changes
         if (auto treeView = dynamic_cast<juce::TreeView *>(getOwnerView()))
             treeView->repaint();
@@ -576,4 +626,85 @@ void GearTreeItem::showGearDetails()
                                     "Tags: " +
             gearItem->tags.joinIntoString(", "),
         "OK");
+}
+
+// RackStateListener interface implementation
+void GearLibraryTree::onGearItemAdded(Rack *rack, int slotIndex, const GearItem *gearItem)
+{
+    // Refresh the Recently Used section when a gear item is added to the rack
+    if (gearItem)
+    {
+        // Use a controlled async call with error handling
+        juce::MessageManager::callAsync([this]()
+                                        {
+            try
+            {
+                refreshTree();
+            }
+            catch (...)
+            {
+                // Log error but don't crash
+                juce::Logger::writeToLog("Error refreshing tree after gear item added");
+            } });
+    }
+}
+
+void GearLibraryTree::onGearItemRemoved(Rack *rack, int slotIndex)
+{
+    // Refresh the tree when gear is removed (in case it affects Recently Used)
+    juce::MessageManager::callAsync([this]()
+                                    {
+        try
+        {
+            refreshTree();
+        }
+        catch (...)
+        {
+            juce::Logger::writeToLog("Error refreshing tree after gear item removed");
+        } });
+}
+
+void GearLibraryTree::onGearControlChanged(Rack *rack, int slotIndex, const GearItem *gearItem, int controlIndex)
+{
+    // No need to refresh tree for control changes
+}
+
+void GearLibraryTree::onGearItemsRearranged(Rack *rack, int sourceSlotIndex, int targetSlotIndex)
+{
+    // No need to refresh tree for rearrangements
+}
+
+void GearLibraryTree::onRackStateReset(Rack *rack)
+{
+    // Refresh the tree when rack state is reset
+    juce::MessageManager::callAsync([this]()
+                                    {
+        try
+        {
+            refreshTree();
+        }
+        catch (...)
+        {
+            juce::Logger::writeToLog("Error refreshing tree after rack state reset");
+        } });
+}
+
+void GearLibraryTree::onPresetLoaded(Rack *rack, const juce::String &presetName)
+{
+    // Refresh the tree when a preset is loaded (may affect Recently Used)
+    juce::MessageManager::callAsync([this]()
+                                    {
+        try
+        {
+            refreshTree();
+        }
+        catch (...)
+        {
+            juce::Logger::writeToLog("Error refreshing tree after preset loaded");
+        } });
+}
+
+void GearLibraryTree::onPresetSaved(Rack *rack, const juce::String &presetName)
+{
+    // No need to refresh tree for preset saves
 }

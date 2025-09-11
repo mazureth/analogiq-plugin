@@ -74,6 +74,10 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     int initialTreeWidth = getWidth() > 0 ? getWidth() / 3 : 200;          // Default width if getWidth() returns 0
     gearLibraryTree->setBounds(0, 30, initialTreeWidth, getHeight() - 30); // Position below menu bar
 
+    // Register GearLibraryTree as a listener for rack state changes
+    // This allows the tree to refresh when gear is added/removed from the rack
+    rack->addRackStateListener(static_cast<RackStateListener *>(gearLibraryTree.get()));
+
     // CRITICAL FIX: Call resized() to ensure proper layout initialization
     resized();
 
