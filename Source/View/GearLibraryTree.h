@@ -238,6 +238,7 @@ private:
     void handleGearItemClick();
     void showContextMenu(const juce::MouseEvent &e);
     void showGearDetails();
+    void drawStar(juce::Graphics &g, const juce::Rectangle<float> &area);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GearTreeItem)
 };

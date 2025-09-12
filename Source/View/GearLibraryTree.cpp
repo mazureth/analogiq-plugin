@@ -473,14 +473,30 @@ void GearTreeItem::paintItem(juce::Graphics &g, int width, int height)
 {
     auto area = juce::Rectangle<int>(0, 0, width, height);
 
-    // For gear items, draw thumbnail if available
+    // For gear items, draw star icon and thumbnail
     if (itemType == ItemType::Gear && gearItem)
     {
+        // Draw star icon for favorites
+        int starSize = 16;
+        int starX = 2;
+        int starY = (height - starSize) / 2;
+        auto starArea = juce::Rectangle<int>(starX, starY, starSize, starSize);
+
+        // Check if item is in favorites
+        bool isFavorite = cacheManager.isInFavorites(gearItem->unitId);
+
+        // Draw star icon
+        g.setColour(isFavorite ? juce::Colours::yellow : juce::Colours::darkgrey);
+        drawStar(g, starArea.toFloat());
+
+        // Adjust area to account for star
+        area.removeFromLeft(starSize + 6); // star + margin
+
         // Draw thumbnail if available
         if (!gearItem->thumbnailImage.isNull())
         {
             int thumbnailSize = height - 4; // Leave 2px margin
-            auto thumbnailArea = juce::Rectangle<int>(2, 2, thumbnailSize, thumbnailSize);
+            auto thumbnailArea = juce::Rectangle<int>(area.getX(), 2, thumbnailSize, thumbnailSize);
 
             // Draw thumbnail with rounded corners
             g.setColour(juce::Colours::darkgrey);
@@ -509,6 +525,38 @@ void GearTreeItem::itemClicked(const juce::MouseEvent &e)
 
     if (itemType == ItemType::Gear && gearItem)
     {
+        // Check if click is on the star icon
+        if (e.mods.isLeftButtonDown())
+        {
+            int starSize = 16;
+            int starX = 2;
+            int starY = (getItemHeight() - starSize) / 2;
+            auto starArea = juce::Rectangle<int>(starX, starY, starSize, starSize);
+
+            if (starArea.contains(e.getPosition()))
+            {
+                // Toggle favorites
+                bool isFavorite = cacheManager.isInFavorites(gearItem->unitId);
+                if (isFavorite)
+                {
+                    cacheManager.removeFromFavorites(gearItem->unitId);
+                }
+                else
+                {
+                    cacheManager.addToFavorites(gearItem->unitId);
+                }
+
+                // Refresh the tree to show changes
+                if (auto treeView = dynamic_cast<juce::TreeView *>(getOwnerView()))
+                {
+                    if (auto tree = dynamic_cast<GearLibraryTree *>(treeView->getParentComponent()))
+                    {
+                        tree->refreshTree();
+                    }
+                }
+                return;
+            }
+        }
 
         if (e.mods.isRightButtonDown())
         {
@@ -809,6 +857,34 @@ void GearLibraryTree::onPresetLoaded(Rack *rack, const juce::String &presetName)
         {
             juce::Logger::writeToLog("Error refreshing tree after preset loaded");
         } });
+}
+
+void GearTreeItem::drawStar(juce::Graphics &g, const juce::Rectangle<float> &area)
+{
+    // Draw a 5-pointed star
+    juce::Path starPath;
+
+    float centerX = area.getCentreX();
+    float centerY = area.getCentreY();
+    float outerRadius = juce::jmin(area.getWidth(), area.getHeight()) * 0.4f;
+    float innerRadius = outerRadius * 0.4f;
+
+    // Calculate star points
+    for (int i = 0; i < 10; ++i)
+    {
+        float angle = (i * juce::MathConstants<float>::pi) / 5.0f - juce::MathConstants<float>::halfPi;
+        float radius = (i % 2 == 0) ? outerRadius : innerRadius;
+        float x = centerX + radius * std::cos(angle);
+        float y = centerY + radius * std::sin(angle);
+
+        if (i == 0)
+            starPath.startNewSubPath(x, y);
+        else
+            starPath.lineTo(x, y);
+    }
+
+    starPath.closeSubPath();
+    g.fillPath(starPath);
 }
 
 void GearLibraryTree::onPresetSaved(Rack *rack, const juce::String &presetName)
