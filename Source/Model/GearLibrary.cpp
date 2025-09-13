@@ -1627,6 +1627,9 @@ bool GearLibrary::parseGearSchema(GearItem *gearItem, const juce::String &schema
                     }
                 }
 
+                // Clear existing options before parsing
+                addedControl.options.clear();
+
                 if (controlVar.hasProperty("options") && controlVar["options"].isArray())
                 {
                     auto optionsArray = controlVar["options"].getArray();
@@ -1650,11 +1653,16 @@ bool GearLibrary::parseGearSchema(GearItem *gearItem, const juce::String &schema
                             }
 
                             addedControl.switchFrames.add(frame);
+
+                            // Also add the option label to the options array
+                            addedControl.options.add(frame.label);
                         }
                     }
                 }
 
-                addedControl.currentIndex = static_cast<int>(controlVar.getProperty("value", 0));
+                addedControl.currentIndex = static_cast<int>(controlVar.getProperty("currentIndex", 0));
+                addedControl.currentValue = (float)addedControl.currentIndex;
+                addedControl.initialValue = addedControl.currentValue;
             }
             else if (controlType == GearControl::ControlType::Knob)
             {

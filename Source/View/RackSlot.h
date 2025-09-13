@@ -273,6 +273,11 @@ private:
     void handleKnobDrag(GearControl &control, const juce::MouseEvent &e);
     void handleKnobReset(GearControl &control);
     void updateKnobValue(GearControl &control, float deltaAngle, const juce::String &source);
+    void handleFaderDrag(GearControl &control, const juce::MouseEvent &e);
+    void updateFaderValue(GearControl &control, float deltaValue, const juce::String &source);
+    void handleSwitchDrag(GearControl &control, const juce::MouseEvent &e);
+    void handleButtonInteraction(GearControl &control);
+    void notifyRackOfControlChanged(int controlIndex);
 
 private:
     // Slot information
@@ -316,6 +321,9 @@ private:
     static constexpr float KNOB_DRAG_SENSITIVITY = 0.5f;        ///< Sensitivity for mouse drag knob rotation (lower = slower)
     static constexpr float KNOB_WHEEL_SENSITIVITY = 20.0f;      ///< Sensitivity for mouse wheel knob rotation (lower = slower)
     static constexpr float KNOB_WHEEL_SENSITIVITY_STEP = 50.0f; ///< Degrees of movement required before stepped knob changes step (higher = less sensitive)
+
+    // Fader interaction sensitivity constants
+    static constexpr float FADER_WHEEL_SENSITIVITY = 0.01f; ///< Sensitivity for mouse wheel fader movement (lower = slower)
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RackSlot)
 };

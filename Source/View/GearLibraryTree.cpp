@@ -83,29 +83,18 @@ void GearLibraryTree::setupTreeView()
 
 void GearLibraryTree::populateTree()
 {
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Starting tree population");
 
     rootItem = std::make_unique<GearTreeItem>(GearTreeItem::ItemType::Root, "Gear Library", gearLibrary, cacheManager);
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Root item created");
 
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Creating Recently Used section");
     createRecentlyUsedSection();
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Recently Used section created");
 
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Creating Favorites section");
     createFavoritesSection();
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Favorites section created");
 
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Creating Categories section");
     createCategoriesSection();
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Categories section created");
 
     treeView->setRootItem(rootItem.get());
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Root item set on tree view");
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Root item has " + juce::String(rootItem->getNumSubItems()) + " sub-items");
 
     treeView->repaint();
-    juce::Logger::writeToLog("GearLibraryTree::populateTree - Tree repainted, population complete");
 }
 
 // Drag and drop is now handled at the TreeViewItem level in GearTreeItem::itemClicked()
@@ -118,36 +107,24 @@ void GearLibraryTree::createRecentlyUsedSection()
         rootItem->addSubItem(recentlyUsedNode);
 
         // Debug: Check if cache manager is initialized
-        juce::Logger::writeToLog("GearLibraryTree::createRecentlyUsedSection - About to call cacheManager.getRecentlyUsed()");
 
         // Get recently used items from cache manager
         auto recentlyUsedIds = cacheManager.getRecentlyUsed(ICacheManager::MAX_RECENTLY_USED);
 
-        // Debug logging
-        juce::Logger::writeToLog("Recently Used Debug - Count: " + juce::String(recentlyUsedIds.size()));
-        for (int i = 0; i < recentlyUsedIds.size(); ++i)
-        {
-            juce::Logger::writeToLog("Recently Used Debug - Item " + juce::String(i) + ": " + recentlyUsedIds[i]);
-        }
-
         if (recentlyUsedIds.isEmpty())
         {
-            juce::Logger::writeToLog("Recently Used Debug - No items found, adding 'No recently used items' message");
             recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Message, "No recently used items", gearLibrary, cacheManager));
         }
         else
         {
-            juce::Logger::writeToLog("Recently Used Debug - Found " + juce::String(recentlyUsedIds.size()) + " items, adding to tree");
             // Get gear items for recently used IDs with error handling
             for (const auto &unitId : recentlyUsedIds)
             {
                 if (unitId.isNotEmpty())
                 {
-                    juce::Logger::writeToLog("Recently Used Debug - Looking up gear item: " + unitId);
                     auto gearItem = gearLibrary.getGearItem(unitId);
                     if (gearItem)
                     {
-                        juce::Logger::writeToLog("Recently Used Debug - Found gear item: " + gearItem->name);
                         recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, gearItem->name, gearLibrary, cacheManager, gearItem, -1));
                     }
                     else
@@ -265,9 +242,7 @@ void GearLibraryTree::refreshTree()
     try
     {
         // Ensure GearLibrary is initialized before refreshing tree
-        juce::Logger::writeToLog("GearLibraryTree::refreshTree - Initializing GearLibrary");
         auto allGearItems = gearLibrary.getAllGearItems();
-        juce::Logger::writeToLog("GearLibraryTree::refreshTree - GearLibrary initialization complete, loaded " + juce::String(allGearItems.size()) + " gear items");
 
         if (rootItem)
         {
