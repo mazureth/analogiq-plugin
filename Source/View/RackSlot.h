@@ -140,6 +140,13 @@ public:
      */
     void mouseUp(const juce::MouseEvent &e) override;
 
+    /**
+     * @brief Handles mouse wheel events on the rack slot.
+     *
+     * @param e The mouse wheel event details
+     */
+    void mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelDetails &wheel) override;
+
     // DragAndDropTarget methods
     /**
      * @brief Checks if the slot is interested in a drag source.
@@ -259,6 +266,14 @@ private:
     void drawSwitchControl(juce::Graphics &g, const GearControl &control, int x, int y);
     void drawKnobControl(juce::Graphics &g, const GearControl &control, int x, int y);
 
+    // Helper methods for control interaction
+    GearControl *findControlAtPosition(const juce::Point<float> &position, const juce::Rectangle<float> &actualImageBounds);
+    void resetControlToDefault(const juce::MouseEvent &e);
+    void handleKnobInteraction(GearControl &control, const juce::MouseEvent &e);
+    void handleKnobDrag(GearControl &control, const juce::MouseEvent &e);
+    void handleKnobReset(GearControl &control);
+    void updateKnobValue(GearControl &control, float deltaAngle, const juce::String &source);
+
 private:
     // Slot information
     int index; ///< Index of this slot in the rack
@@ -289,6 +304,18 @@ private:
 
     // Visual properties
     juce::Colour slotBackgroundColor = juce::Colours::transparentBlack; ///< Background color for this slot
+
+    // Control interaction state
+    bool isDragging = false;              ///< Whether a control is currently being dragged
+    float dragStartValue = 0.0f;          ///< Control value at drag start
+    juce::Point<float> dragStartPos;      ///< Mouse position at drag start
+    juce::Point<float> lastMousePos;      ///< Previous mouse position for incremental movement
+    GearControl *activeControl = nullptr; ///< Currently active control being manipulated
+
+    // Knob interaction sensitivity constants
+    static constexpr float KNOB_DRAG_SENSITIVITY = 0.5f;        ///< Sensitivity for mouse drag knob rotation (lower = slower)
+    static constexpr float KNOB_WHEEL_SENSITIVITY = 20.0f;      ///< Sensitivity for mouse wheel knob rotation (lower = slower)
+    static constexpr float KNOB_WHEEL_SENSITIVITY_STEP = 50.0f; ///< Degrees of movement required before stepped knob changes step (higher = less sensitive)
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RackSlot)
 };

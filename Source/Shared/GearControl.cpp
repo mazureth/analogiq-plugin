@@ -44,9 +44,7 @@ void GearControl::initializeDefaults()
         break;
 
     case ControlType::Knob:
-        steps.add(0.0f);
-        steps.add(0.5f);
-        steps.add(1.0f);
+        // Don't add default steps - only add steps if they exist in the schema
         currentStepIndex = 0;
         break;
     }

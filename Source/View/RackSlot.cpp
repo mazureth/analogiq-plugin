@@ -361,17 +361,128 @@ void RackSlot::removeGear()
 // Mouse events for control interaction
 void RackSlot::mouseDown(const juce::MouseEvent &e)
 {
-    // TODO: Implement mouse interaction for gear controls
+    if (gearItem == nullptr || !gearItem->faceplateImage.isValid())
+        return;
+
+    // Calculate faceplate area (same as in paint method)
+    juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
+    faceplateArea.removeFromTop(20); // Remove space for name
+
+    // Calculate actual rendered image bounds (same as in paint method)
+    float originalWidth = (float)gearItem->faceplateImage.getWidth();
+    float originalHeight = (float)gearItem->faceplateImage.getHeight();
+    float targetWidth = (float)faceplateArea.getWidth();
+    float targetHeight = (float)faceplateArea.getHeight();
+
+    float scaleX = targetWidth / originalWidth;
+    float scaleY = targetHeight / originalHeight;
+    float scaleFactor = std::min(scaleX, scaleY);
+
+    float scaledWidth = originalWidth * scaleFactor;
+    float scaledHeight = originalHeight * scaleFactor;
+    float imageX = faceplateArea.getX() + (faceplateArea.getWidth() - scaledWidth) / 2;
+    float imageY = faceplateArea.getY() + (faceplateArea.getHeight() - scaledHeight) / 2;
+    juce::Rectangle<float> actualImageBounds(imageX, imageY, scaledWidth, scaledHeight);
+
+    // Find control at mouse position
+    activeControl = findControlAtPosition(e.position, actualImageBounds);
+    if (activeControl != nullptr)
+    {
+        juce::Logger::writeToLog("RackSlot::mouseDown - Found control: " + activeControl->name + " at position: " + e.position.toString());
+
+        // Store drag start state for knobs
+        if (activeControl->type == GearControl::ControlType::Knob)
+        {
+            dragStartPos = e.position;
+            lastMousePos = e.position; // Initialize for incremental movement
+            dragStartValue = activeControl->currentValue;
+            isDragging = true;
+            juce::Logger::writeToLog("RackSlot::mouseDown - Started knob drag, start value: " + juce::String(dragStartValue));
+        }
+    }
 }
 
 void RackSlot::mouseDrag(const juce::MouseEvent &e)
 {
-    // TODO: Implement mouse drag for gear controls
+    if (!isDragging || activeControl == nullptr)
+        return;
+
+    // Handle knob dragging
+    if (activeControl->type == GearControl::ControlType::Knob)
+    {
+        handleKnobDrag(*activeControl, e);
+    }
 }
 
 void RackSlot::mouseUp(const juce::MouseEvent &e)
 {
-    // TODO: Implement mouse up for gear controls
+    // Support both Ctrl/Cmd + Click and Alt/Option + Click for reset
+    if (e.mods.isCtrlDown() || e.mods.isCommandDown() || e.mods.isAltDown())
+    {
+        resetControlToDefault(e);
+    }
+
+    // Handle normal mouse up operations (drag completion)
+    if (isDragging)
+    {
+        isDragging = false;
+        juce::Logger::writeToLog("RackSlot::mouseUp - Ended knob drag, final value: " + juce::String(activeControl ? activeControl->currentValue : 0.0f));
+    }
+    activeControl = nullptr;
+}
+
+void RackSlot::mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelDetails &wheel)
+{
+    if (gearItem == nullptr || !gearItem->faceplateImage.isValid())
+        return;
+
+    // Calculate faceplate area (same as in mouseDown)
+    juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
+    faceplateArea.removeFromTop(20); // Remove space for name
+
+    // Calculate actual rendered image bounds (same as in mouseDown)
+    float originalWidth = (float)gearItem->faceplateImage.getWidth();
+    float originalHeight = (float)gearItem->faceplateImage.getHeight();
+    float targetWidth = (float)faceplateArea.getWidth();
+    float targetHeight = (float)faceplateArea.getHeight();
+
+    float scaleX = targetWidth / originalWidth;
+    float scaleY = targetHeight / originalHeight;
+    float scaleFactor = std::min(scaleX, scaleY);
+
+    float scaledWidth = originalWidth * scaleFactor;
+    float scaledHeight = originalHeight * scaleFactor;
+    float imageX = faceplateArea.getX() + (faceplateArea.getWidth() - scaledWidth) / 2;
+    float imageY = faceplateArea.getY() + (faceplateArea.getHeight() - scaledHeight) / 2;
+    juce::Rectangle<float> actualImageBounds(imageX, imageY, scaledWidth, scaledHeight);
+
+    // Find control at mouse position
+    if (auto *control = findControlAtPosition(e.position, actualImageBounds))
+    {
+        if (control->type == GearControl::ControlType::Knob)
+        {
+            // Set up drag state for wheel movement (like mouseDown)
+            dragStartValue = control->currentValue;
+            dragStartPos = e.position;
+
+            // Scale wheel movement to knob sensitivity
+            float deltaAngle = wheel.deltaY * KNOB_WHEEL_SENSITIVITY * KNOB_WHEEL_SENSITIVITY_STEP;
+
+            juce::Logger::writeToLog("RackSlot::mouseWheelMove - BEFORE: " + control->name +
+                                     ", currentValue: " + juce::String(control->currentValue) +
+                                     ", dragStartValue: " + juce::String(dragStartValue) +
+                                     ", wheel.deltaY: " + juce::String(wheel.deltaY) +
+                                     ", deltaAngle: " + juce::String(deltaAngle) +
+                                     ", stepped: " + juce::String(control->steps.size() > 0 ? "YES" : "NO") +
+                                     ", steps.size: " + juce::String(control->steps.size()));
+
+            // Use the consolidated method to update the knob value
+            updateKnobValue(*control, deltaAngle, "WHEEL");
+
+            juce::Logger::writeToLog("RackSlot::mouseWheelMove - AFTER: " + control->name +
+                                     ", newValue: " + juce::String(control->currentValue));
+        }
+    }
 }
 
 // DragAndDropTarget methods
@@ -812,9 +923,9 @@ void RackSlot::drawKnobControl(juce::Graphics &g, const GearControl &control, in
         // Save the current graphics state
         g.saveState();
 
-        // Use the control value directly as degrees, but subtract 180 to align with JUCE's coordinate system
-        // where 0 is at 12 o'clock and we want 0 to be at 6 o'clock
-        float angle = control.currentValue - 180.0f;
+        // Use the control value directly as degrees
+        // Convert to JUCE coordinate system (add 180° to align with real knob behavior)
+        float angle = control.currentValue + 180.0f;
 
         // Translate to the center of the knob
         g.addTransform(juce::AffineTransform::translation(knobBounds.getCentreX(), knobBounds.getCentreY()));
@@ -844,7 +955,8 @@ void RackSlot::drawKnobControl(juce::Graphics &g, const GearControl &control, in
 
         // Draw position indicator
         g.setColour(juce::Colours::white);
-        float angle = control.currentValue - 180.0f; // Subtract 90 to align with JUCE's coordinate system
+        // Use the control value directly as degrees (same as image drawing)
+        float angle = control.currentValue + 180.0f; // Convert to JUCE coordinate system
         float radius = knobBounds.getWidth() * 0.4f;
         float centreX = knobBounds.getCentreX();
         float centreY = knobBounds.getCentreY();
@@ -874,5 +986,158 @@ void RackSlot::triggerFaceplateLoaded()
 void RackSlot::setSlotBackgroundColor(juce::Colour color)
 {
     slotBackgroundColor = color;
+    repaint();
+}
+
+// Helper methods for control interaction
+GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position, const juce::Rectangle<float> &actualImageBounds)
+{
+    if (gearItem == nullptr)
+        return nullptr;
+
+    for (auto &control : gearItem->controls)
+    {
+        // Calculate control bounds
+        int x = actualImageBounds.getX() + (int)(control.position.getX() * actualImageBounds.getWidth());
+        int y = actualImageBounds.getY() + (int)(control.position.getY() * actualImageBounds.getHeight());
+
+        // Calculate actual rendered bounds based on control type
+        juce::Rectangle<float> controlBounds;
+
+        switch (control.type)
+        {
+        case GearControl::ControlType::Knob:
+        {
+            // Use the same logic as drawKnobControl() to calculate knob size
+            float knobSize;
+            if (control.loadedImage.isValid())
+            {
+                // Use the original image dimensions as the base size (same as drawing)
+                float originalWidth = (float)control.loadedImage.getWidth();
+                float originalHeight = (float)control.loadedImage.getHeight();
+                // Use the larger dimension to ensure the knob is properly sized
+                knobSize = std::max(originalWidth, originalHeight) * currentFaceplateScale;
+            }
+            else
+            {
+                // Fallback to standard size if no image (same as drawing)
+                const float baseKnobSize = 40.0f;
+                knobSize = baseKnobSize * currentFaceplateScale;
+            }
+            controlBounds = juce::Rectangle<float>(x, y, knobSize, knobSize);
+            break;
+        }
+        default:
+            // For other control types, use a default size
+            controlBounds = juce::Rectangle<float>(x, y, 40, 40);
+        }
+
+        // Check if position is within the actual rendered bounds
+        if (controlBounds.contains(position))
+            return &control;
+    }
+
+    return nullptr;
+}
+
+void RackSlot::resetControlToDefault(const juce::MouseEvent &e)
+{
+    if (gearItem == nullptr || !gearItem->faceplateImage.isValid())
+        return;
+
+    // Calculate faceplate area (same as in mouseDown)
+    juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
+    faceplateArea.removeFromTop(20); // Remove space for name
+
+    // Calculate actual rendered image bounds (same as in mouseDown)
+    float originalWidth = (float)gearItem->faceplateImage.getWidth();
+    float originalHeight = (float)gearItem->faceplateImage.getHeight();
+    float targetWidth = (float)faceplateArea.getWidth();
+    float targetHeight = (float)faceplateArea.getHeight();
+
+    float scaleX = targetWidth / originalWidth;
+    float scaleY = targetHeight / originalHeight;
+    float scaleFactor = std::min(scaleX, scaleY);
+
+    float scaledWidth = originalWidth * scaleFactor;
+    float scaledHeight = originalHeight * scaleFactor;
+    float imageX = faceplateArea.getX() + (faceplateArea.getWidth() - scaledWidth) / 2;
+    float imageY = faceplateArea.getY() + (faceplateArea.getHeight() - scaledHeight) / 2;
+    juce::Rectangle<float> actualImageBounds(imageX, imageY, scaledWidth, scaledHeight);
+
+    // Find control at mouse position
+    if (auto *control = findControlAtPosition(e.position, actualImageBounds))
+    {
+        juce::Logger::writeToLog("RackSlot::resetControlToDefault - Resetting control: " + control->name + " to default value: " + juce::String(control->initialValue));
+
+        // Reset control to default value
+        switch (control->type)
+        {
+        case GearControl::ControlType::Knob:
+            control->currentValue = control->initialValue;
+            break;
+        default:
+            // For other control types, reset as needed
+            control->currentValue = control->initialValue;
+            break;
+        }
+        repaint();
+    }
+}
+
+void RackSlot::handleKnobInteraction(GearControl &control, const juce::MouseEvent &e)
+{
+    // This method can be used for other knob interactions if needed
+    juce::Logger::writeToLog("RackSlot::handleKnobInteraction - Control: " + control.name);
+}
+
+void RackSlot::handleKnobDrag(GearControl &control, const juce::MouseEvent &e)
+{
+    // Calculate vertical movement since drag start
+    float deltaY = dragStartPos.y - e.position.y;
+
+    // Scale the movement to control sensitivity
+    float deltaAngle = deltaY * KNOB_DRAG_SENSITIVITY;
+
+    // Use the consolidated method to update the knob value
+    updateKnobValue(control, deltaAngle, "DRAG");
+}
+
+void RackSlot::handleKnobReset(GearControl &control)
+{
+    control.currentValue = control.initialValue;
+    juce::Logger::writeToLog("RackSlot::handleKnobReset - Control: " + control.name + " reset to: " + juce::String(control.initialValue));
+    repaint();
+}
+
+void RackSlot::updateKnobValue(GearControl &control, float deltaAngle, const juce::String &source)
+{
+    // Update the control value (angle in degrees)
+    float newValue = dragStartValue + deltaAngle;
+
+    // Clamp the value between startAngle and endAngle
+    newValue = juce::jlimit(control.startAngle, control.endAngle, newValue);
+
+    // If this is a stepped knob, snap to the nearest step
+    if (!control.steps.isEmpty())
+    {
+        float closestStep = control.steps[0];
+        float minDistance = std::abs(newValue - closestStep);
+
+        // Find the closest step angle
+        for (float step : control.steps)
+        {
+            float distance = std::abs(newValue - step);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestStep = step;
+            }
+        }
+
+        newValue = closestStep;
+    }
+
+    control.currentValue = newValue;
     repaint();
 }

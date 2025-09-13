@@ -1677,7 +1677,34 @@ bool GearLibrary::parseGearSchema(GearItem *gearItem, const juce::String &schema
 
                 addedControl.startAngle = static_cast<float>(controlVar.getProperty("startAngle", 0));
                 addedControl.endAngle = static_cast<float>(controlVar.getProperty("endAngle", 360));
-                addedControl.currentValue = static_cast<float>(controlVar.getProperty("value", 0));
+
+                // Use the value directly as degrees (0-360)
+                addedControl.currentValue = static_cast<float>(controlVar.getProperty("value", 180));
+                addedControl.initialValue = addedControl.currentValue; // Store initial value in degrees
+
+                // Load steps if they exist in the schema
+                if (controlVar.hasProperty("steps"))
+                {
+                    auto stepsArray = controlVar.getProperty("steps", juce::var());
+                    if (stepsArray.isArray())
+                    {
+                        for (int i = 0; i < stepsArray.size(); ++i)
+                        {
+                            addedControl.steps.add(static_cast<float>(stepsArray[i]));
+                        }
+
+                        // Initialize currentStepIndex to match the current value
+                        addedControl.currentStepIndex = 0; // Default to first step
+                        for (int i = 0; i < addedControl.steps.size(); ++i)
+                        {
+                            if (std::abs(addedControl.steps[i] - addedControl.currentValue) < 0.001f)
+                            {
+                                addedControl.currentStepIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             else if (controlType == GearControl::ControlType::Fader)
             {
