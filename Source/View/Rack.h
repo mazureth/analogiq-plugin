@@ -55,6 +55,7 @@ public:
 
     // Gear management
     bool addGearToSlot(int slotIndex, const juce::String &gearId);
+    bool addGearToSlotWithCallback(int slotIndex, const juce::String &gearId, std::function<void()> callback);
     bool removeGearFromSlot(int slotIndex);
     bool moveGearBetweenSlots(int fromSlot, int toSlot);
     juce::String getGearInSlot(int slotIndex) const;
@@ -72,6 +73,10 @@ public:
     juce::ValueTree getRackState() const;
     void setRackState(const juce::ValueTree &state);
 
+    // Preset serialization
+    juce::String serializeRackToJSON() const;
+    bool deserializeRackFromJSON(const juce::String &jsonString);
+
     // Layout management
     void setSlotLayout(int numSlots);
     void setSlotSize(int width, int height);
@@ -87,6 +92,10 @@ public:
     // Event handling
     void addRackStateListener(RackStateListener *listener);
     void removeRackStateListener(RackStateListener *listener);
+
+    // Preset notifications
+    void notifyPresetLoaded(const juce::String &presetName);
+    void notifyPresetSaved(const juce::String &presetName);
 
     // Utility methods
     bool isSlotOccupied(int slotIndex) const;
@@ -149,8 +158,6 @@ private:
     void notifyGearControlChanged(int slotIndex, const GearItem *gearItem, int controlIndex);
     void notifyGearItemsRearranged(int sourceSlotIndex, int targetSlotIndex);
     void notifyRackStateReset();
-    void notifyPresetLoaded(const juce::String &presetName);
-    void notifyPresetSaved(const juce::String &presetName);
     void repaintAllSlots();
     void repaintSingleSlot(int slotIndex);
 

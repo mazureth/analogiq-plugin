@@ -83,6 +83,84 @@ bool PresetController::savePreset(const juce::String &presetName,
     }
 }
 
+bool PresetController::savePreset(const juce::String &presetName, const juce::String &rackStateJSON)
+{
+    // Validate the preset name
+    juce::String errorMessage;
+    if (!validatePresetName(presetName, errorMessage))
+    {
+        std::cout << "[PresetController] Invalid preset name: " << errorMessage << std::endl;
+        return false;
+    }
+
+    // Check for name conflicts
+    if (checkPresetNameConflict(presetName, errorMessage))
+    {
+        std::cout << "[PresetController] Preset name conflict: " << errorMessage << std::endl;
+        return false;
+    }
+
+    try
+    {
+        // Save the preset using the preset manager with rack state
+        bool success = presetManager.savePreset(presetName, rackStateJSON);
+
+        if (success)
+        {
+            // Update state tracking
+            currentPresetName = presetName;
+            lastSaveTime = juce::Time::getCurrentTime();
+            clearModifiedState();
+
+            logPresetOperation("Save", presetName, true);
+            return true;
+        }
+        else
+        {
+            logPresetOperation("Save", presetName, false);
+            return false;
+        }
+    }
+    catch (...)
+    {
+        logPresetOperation("Save", presetName, false);
+        return false;
+    }
+}
+
+bool PresetController::loadPreset(const juce::String &presetName, juce::String &rackStateJSON)
+{
+    if (presetName.isEmpty())
+        return false;
+
+    try
+    {
+        // Load the preset using the preset manager with rack state
+        bool success = presetManager.loadPreset(presetName, rackStateJSON);
+
+        if (success)
+        {
+            // Update state tracking
+            currentPresetName = presetName;
+            lastSaveTime = juce::Time::getCurrentTime();
+            clearModifiedState();
+
+            logPresetOperation("Load", presetName, true);
+            return true;
+        }
+        else
+        {
+            logPresetOperation("Load", presetName, false);
+            return false;
+        }
+    }
+    catch (...)
+    {
+        logPresetOperation("Load", presetName, false);
+        return false;
+    }
+}
+
 bool PresetController::loadPreset(const juce::String &presetName)
 {
     if (presetName.isEmpty())

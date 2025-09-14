@@ -113,9 +113,13 @@ void Rack::createSlot(int slotIndex)
 
     auto slot = std::make_unique<RackSlot>(fileSystem, cacheManager, presetManager, gearLibrary, slotIndex);
     slot->setComponentID("RackSlot_" + juce::String(slotIndex));
+    slot->setRack(this); // Set reference to parent rack
 
     // Add as component listener to track changes
     slot->addComponentListener(this);
+
+    // Update button states after setting rack reference
+    slot->updateButtonStates();
 
     // Set up individual faceplate loaded callback for this slot
     slot->setFaceplateLoadedCallback([this, slotIndex]()
@@ -698,6 +702,146 @@ bool Rack::addGearToSlot(int slotIndex, const juce::String &gearId)
     return true;
 }
 
+bool Rack::addGearToSlotWithCallback(int slotIndex, const juce::String &gearId, std::function<void()> callback)
+{
+    juce::Logger::writeToLog("addGearToSlotWithCallback called: slotIndex=" + juce::String(slotIndex) + ", gearId=" + gearId);
+
+    // Basic validation - slot index must be non-negative
+    if (slotIndex < 0)
+    {
+        juce::Logger::writeToLog("Add gear failed: negative slot index " + juce::String(slotIndex));
+        return false;
+    }
+
+    // Get gear item template from library and create a unique instance
+    // Strip instance suffix from gearId for library lookup
+    juce::String baseGearId = gearId;
+    int instPos = gearId.indexOf("_inst_");
+    if (instPos != -1)
+    {
+        baseGearId = gearId.substring(0, instPos);
+    }
+
+    juce::Logger::writeToLog("Looking up gear item in library for gearId=" + gearId + " (baseGearId=" + baseGearId + ")");
+    auto gearItemTemplate = gearLibrary.getGearItem(baseGearId);
+    if (!gearItemTemplate)
+    {
+        juce::Logger::writeToLog("Add gear failed: gear item template not found for baseGearId=" + baseGearId);
+        juce::Logger::writeToLog("Available gear items in library:");
+        auto items = gearLibrary.getAllGearItems();
+        for (int i = 0; i < items.size(); ++i)
+        {
+            juce::Logger::writeToLog("  - " + items[i]->unitId + " (" + items[i]->name + ")");
+        }
+        return false;
+    }
+
+    juce::Logger::writeToLog("Found gear item template: " + gearItemTemplate->name);
+
+    // If slot doesn't exist, create it
+    if (static_cast<size_t>(slotIndex) >= rackSlots.size())
+    {
+        insertRackSlot(slotIndex);
+    }
+    else if (isSlotOccupied(slotIndex))
+    {
+        // Slot exists but is occupied - insert a new slot at this position
+        insertRackSlot(slotIndex);
+        // After insertion, the new slot is at slotIndex, and the original occupied slot is now at slotIndex + 1
+    }
+
+    // Now validate that the slot exists after creation
+    if (!isValidSlotIndex(slotIndex))
+    {
+        juce::Logger::writeToLog("Add gear failed: slot creation failed for index " + juce::String(slotIndex));
+        return false;
+    }
+
+    // Create a unique instance for this rack slot (AFTER slot insertion)
+    auto gearItem = std::make_unique<GearItem>(gearItemTemplate->createInstance());
+
+    // Ensure we have enough space in the gearItemInstances vector
+    if (static_cast<size_t>(slotIndex) >= gearItemInstances.size())
+    {
+        gearItemInstances.resize(slotIndex + 1);
+    }
+
+    // Store the unique instance
+    gearItemInstances[static_cast<size_t>(slotIndex)] = std::move(gearItem);
+    auto *gearItemPtr = gearItemInstances[static_cast<size_t>(slotIndex)].get();
+
+    // Now add gear to the slot (which should be the newly created/available slot)
+    auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
+    if (!slot)
+    {
+        return false;
+    }
+
+    // Add gear to slot
+    slot->setGearItem(gearItemPtr);
+
+    // Load schema and faceplate for the gear item
+    if (gearLibrary.loadGearSchema(gearItemPtr))
+    {
+        // Increment pending faceplate loads counter
+        pendingFaceplateLoads++;
+
+        // Load faceplate asynchronously with slot-specific callback that includes the user callback
+        auto slotCallback = [this, slotIndex, callback]()
+        {
+            // Debug: Check what GearItem is in the slot now
+            auto slot = rackSlots[static_cast<size_t>(slotIndex)].get();
+            if (slot && slot->getGearItem())
+            {
+            }
+            repaintSingleSlot(slotIndex);
+
+            // Decrement pending faceplate loads counter
+            pendingFaceplateLoads--;
+
+            // If all faceplates are loaded, recalculate layout with correct heights
+            if (pendingFaceplateLoads == 0)
+            {
+                layoutSlots();
+            }
+
+            // Call the user-provided callback after the gear item is fully loaded
+            if (callback)
+            {
+                callback();
+            }
+        };
+
+        gearLibrary.loadGearFaceplateAsync(gearItemPtr, slotCallback);
+    }
+    else
+    {
+        // If schema loading failed, we still need to layout the slot
+        layoutSlots();
+
+        // Call the user-provided callback even if schema loading failed
+        if (callback)
+        {
+            callback();
+        }
+    }
+
+    // Save rack state
+    saveRackState();
+
+    // Notify listeners
+    notifyStateChanged();
+
+    // Add to recently used
+    cacheManager.addToRecentlyUsed(gearId);
+
+    // Notify specific listeners about gear item added
+    notifyGearItemAdded(slotIndex, gearItemPtr);
+
+    juce::Logger::writeToLog("addGearToSlotWithCallback completed successfully for slotIndex=" + juce::String(slotIndex));
+    return true;
+}
+
 bool Rack::removeGearFromSlot(int slotIndex)
 {
     // Validate slot index
@@ -888,6 +1032,183 @@ void Rack::setRackState(const juce::ValueTree &state)
 {
     rackState = state;
     loadRackState();
+}
+
+// Preset serialization
+juce::String Rack::serializeRackToJSON() const
+{
+    juce::DynamicObject::Ptr rackObject = new juce::DynamicObject();
+
+    // Add rack metadata
+    rackObject->setProperty("version", "1.0");
+    rackObject->setProperty("numSlots", static_cast<int>(rackSlots.size()));
+    rackObject->setProperty("slotWidth", slotWidth);
+    rackObject->setProperty("slotHeight", slotHeight);
+    rackObject->setProperty("slotSpacing", slotSpacing);
+
+    // Create array of slots
+    juce::Array<juce::var> slotsArray;
+
+    for (size_t i = 0; i < rackSlots.size(); ++i)
+    {
+        auto slot = rackSlots[i].get();
+        if (slot && isSlotOccupied(static_cast<int>(i)))
+        {
+            juce::DynamicObject::Ptr slotObject = new juce::DynamicObject();
+            slotObject->setProperty("slotIndex", static_cast<int>(i));
+
+            auto gearItem = slot->getGearItem();
+            if (gearItem)
+            {
+                slotObject->setProperty("gearId", gearItem->unitId);
+                slotObject->setProperty("gearName", gearItem->name);
+
+                // Serialize control values
+                juce::DynamicObject::Ptr controlsObject = new juce::DynamicObject();
+                for (size_t j = 0; j < gearItem->controls.size(); ++j)
+                {
+                    const auto &control = gearItem->controls[j];
+                    controlsObject->setProperty(control.name, control.currentValue);
+                }
+                slotObject->setProperty("controls", controlsObject.get());
+            }
+
+            slotsArray.add(slotObject.get());
+        }
+    }
+
+    rackObject->setProperty("slots", slotsArray);
+
+    // Convert to JSON string
+    juce::String jsonString = juce::JSON::toString(juce::var(rackObject.get()));
+    juce::Logger::writeToLog("Serialized JSON: " + jsonString);
+    return jsonString;
+}
+
+bool Rack::deserializeRackFromJSON(const juce::String &jsonString)
+{
+    juce::Logger::writeToLog("deserializeRackFromJSON called with JSON length: " + juce::String(jsonString.length()));
+
+    // Debug: Check gear library state
+    auto items = gearLibrary.getAllGearItems();
+    juce::Logger::writeToLog("Gear library has " + juce::String(items.size()) + " items");
+    for (int i = 0; i < items.size(); ++i)
+    {
+        juce::Logger::writeToLog("  - " + items[i]->unitId + " (" + items[i]->name + ")");
+    }
+
+    try
+    {
+        // Parse JSON
+        juce::var parsedJson = juce::JSON::parse(jsonString);
+        if (!parsedJson.isObject())
+        {
+            juce::Logger::writeToLog("deserializeRackFromJSON failed: JSON is not an object");
+            return false;
+        }
+
+        juce::DynamicObject *rackObject = parsedJson.getDynamicObject();
+        if (!rackObject)
+            return false;
+
+        // Clear existing rack state
+        clearAllSlots();
+
+        // Load rack configuration
+        if (rackObject->hasProperty("numSlots"))
+        {
+            int numSlots = rackObject->getProperty("numSlots");
+            setSlotLayout(numSlots);
+        }
+
+        if (rackObject->hasProperty("slotWidth"))
+            slotWidth = rackObject->getProperty("slotWidth");
+        if (rackObject->hasProperty("slotHeight"))
+            slotHeight = rackObject->getProperty("slotHeight");
+        if (rackObject->hasProperty("slotSpacing"))
+            slotSpacing = rackObject->getProperty("slotSpacing");
+
+        // Load slots
+        if (rackObject->hasProperty("slots"))
+        {
+            juce::var slotsVar = rackObject->getProperty("slots");
+            if (slotsVar.isArray())
+            {
+                juce::Array<juce::var> *slotsArray = slotsVar.getArray();
+                juce::Logger::writeToLog("Found " + juce::String(slotsArray->size()) + " slots in JSON");
+
+                for (int i = 0; i < slotsArray->size(); ++i)
+                {
+                    juce::var slotVar = slotsArray->getReference(i);
+                    if (slotVar.isObject())
+                    {
+                        juce::DynamicObject *slotObject = slotVar.getDynamicObject();
+                        if (slotObject)
+                        {
+                            int slotIndex = slotObject->getProperty("slotIndex");
+                            juce::String gearId = slotObject->getProperty("gearId");
+
+                            juce::Logger::writeToLog("Processing slot " + juce::String(i) + ": slotIndex=" + juce::String(slotIndex) + ", gearId=" + gearId);
+
+                            if (!gearId.isEmpty())
+                            {
+                                juce::Logger::writeToLog("Deserializing gear: slotIndex=" + juce::String(slotIndex) + ", gearId=" + gearId);
+
+                                // Store control values for later restoration
+                                juce::var controlsVar;
+                                if (slotObject->hasProperty("controls"))
+                                {
+                                    controlsVar = slotObject->getProperty("controls");
+                                }
+
+                                // Add gear to slot with callback to restore control values after loading
+                                bool success = addGearToSlotWithCallback(slotIndex, gearId, [this, slotIndex, controlsVar]()
+                                                                         {
+                                    // This callback runs after the gear item is fully loaded
+                                    auto slot = getSlot(slotIndex);
+                                    if (slot)
+                                    {
+                                        auto gearItem = slot->getGearItem();
+                                        if (gearItem && controlsVar.isObject())
+                                        {
+                                            juce::DynamicObject *controlsObject = controlsVar.getDynamicObject();
+                                            if (controlsObject)
+                                            {
+                                                // Restore control values
+                                                for (size_t j = 0; j < gearItem->controls.size(); ++j)
+                                                {
+                                                    auto &control = gearItem->controls.getReference(static_cast<int>(j));
+                                                    if (controlsObject->hasProperty(control.name))
+                                                    {
+                                                        control.currentValue = controlsObject->getProperty(control.name);
+                                                    }
+                                                }
+
+                                                // Notify that controls have changed
+                                                slot->repaint();
+                                            }
+                                        }
+                                    } });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Layout the slots after loading
+        layoutSlots();
+
+        // Save the new state
+        saveRackState();
+
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        juce::Logger::writeToLog("Error deserializing rack from JSON: " + juce::String(e.what()));
+        return false;
+    }
 }
 
 // Layout Management

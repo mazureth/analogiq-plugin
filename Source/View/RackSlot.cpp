@@ -530,8 +530,6 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
     activeControl = findControlAtPosition(e.position, actualImageBounds);
     if (activeControl != nullptr)
     {
-        juce::Logger::writeToLog("RackSlot::mouseDown - Found control: " + activeControl->name + " at position: " + e.position.toString());
-
         // Store drag start state for knobs, faders, and switches
         if (activeControl->type == GearControl::ControlType::Knob)
         {
@@ -539,24 +537,18 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
             lastMousePos = e.position; // Initialize for incremental movement
             dragStartValue = activeControl->currentValue;
             isDragging = true;
-            juce::Logger::writeToLog("RackSlot::mouseDown - Started knob drag, start value: " + juce::String(dragStartValue));
         }
         else if (activeControl->type == GearControl::ControlType::Fader)
         {
             dragStartPos = e.position;
             dragStartValue = activeControl->currentValue;
             isDragging = true;
-            juce::Logger::writeToLog("RackSlot::mouseDown - Started fader drag, start value: " + juce::String(dragStartValue));
         }
         else if (activeControl->type == GearControl::ControlType::Switch)
         {
             dragStartPos = e.position;
             dragStartValue = (float)activeControl->currentIndex;
             isDragging = true;
-            juce::Logger::writeToLog("RackSlot::mouseDown - Started switch drag, start index: " + juce::String(activeControl->currentIndex) +
-                                     ", currentValue: " + juce::String(activeControl->currentValue) +
-                                     ", options.size: " + juce::String(activeControl->options.size()) +
-                                     ", switchFrames.size: " + juce::String(activeControl->switchFrames.size()));
         }
         else if (activeControl->type == GearControl::ControlType::Button)
         {
@@ -576,9 +568,6 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
                     }
                 }
             }
-            juce::Logger::writeToLog("RackSlot::mouseDown - Button clicked: " + activeControl->name +
-                                     ", new index: " + juce::String(activeControl->currentIndex) +
-                                     ", new value: " + juce::String(activeControl->currentValue));
         }
     }
 }
@@ -623,18 +612,6 @@ void RackSlot::mouseUp(const juce::MouseEvent &e)
     if (isDragging)
     {
         isDragging = false;
-        if (activeControl)
-        {
-            if (activeControl->type == GearControl::ControlType::Switch)
-            {
-                juce::Logger::writeToLog("RackSlot::mouseUp - Ended switch drag, final index: " + juce::String(activeControl->currentIndex) +
-                                         ", final value: " + juce::String(activeControl->currentValue));
-            }
-            else
-            {
-                juce::Logger::writeToLog("RackSlot::mouseUp - Ended drag, final value: " + juce::String(activeControl->currentValue));
-            }
-        }
     }
     activeControl = nullptr;
 }
@@ -676,19 +653,8 @@ void RackSlot::mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelD
             // Scale wheel movement to knob sensitivity
             float deltaAngle = wheel.deltaY * KNOB_WHEEL_SENSITIVITY * KNOB_WHEEL_SENSITIVITY_STEP;
 
-            juce::Logger::writeToLog("RackSlot::mouseWheelMove - BEFORE: " + control->name +
-                                     ", currentValue: " + juce::String(control->currentValue) +
-                                     ", dragStartValue: " + juce::String(dragStartValue) +
-                                     ", wheel.deltaY: " + juce::String(wheel.deltaY) +
-                                     ", deltaAngle: " + juce::String(deltaAngle) +
-                                     ", stepped: " + juce::String(control->steps.size() > 0 ? "YES" : "NO") +
-                                     ", steps.size: " + juce::String(control->steps.size()));
-
             // Use the consolidated method to update the knob value
             updateKnobValue(*control, deltaAngle, "WHEEL");
-
-            juce::Logger::writeToLog("RackSlot::mouseWheelMove - AFTER: " + control->name +
-                                     ", newValue: " + juce::String(control->currentValue));
         }
         else if (control->type == GearControl::ControlType::Fader)
         {
@@ -699,18 +665,8 @@ void RackSlot::mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelD
             // Scale wheel movement to fader sensitivity
             float deltaValue = wheel.deltaY * FADER_WHEEL_SENSITIVITY;
 
-            juce::Logger::writeToLog("RackSlot::mouseWheelMove - FADER BEFORE: " + control->name +
-                                     ", currentValue: " + juce::String(control->currentValue) +
-                                     ", dragStartValue: " + juce::String(dragStartValue) +
-                                     ", wheel.deltaY: " + juce::String(wheel.deltaY) +
-                                     ", deltaValue: " + juce::String(deltaValue) +
-                                     ", orientation: " + (control->orientation == GearControl::Orientation::Vertical ? "VERTICAL" : "HORIZONTAL"));
-
             // Use the consolidated method to update the fader value
             updateFaderValue(*control, deltaValue, "WHEEL");
-
-            juce::Logger::writeToLog("RackSlot::mouseWheelMove - FADER AFTER: " + control->name +
-                                     ", newValue: " + juce::String(control->currentValue));
         }
         else if (control->type == GearControl::ControlType::Switch)
         {
@@ -752,11 +708,6 @@ void RackSlot::mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelD
                             }
                         }
                     }
-
-                    juce::Logger::writeToLog("RackSlot::mouseWheelMove - SWITCH: " + control->name +
-                                             ", old index: " + juce::String(currentIndex) +
-                                             ", new index: " + juce::String(newIndex) +
-                                             ", wheel.deltaY: " + juce::String(wheel.deltaY));
                 }
             }
         }
@@ -1651,11 +1602,6 @@ void RackSlot::handleSwitchDrag(GearControl &control, const juce::MouseEvent &e)
                 }
             }
         }
-
-        juce::Logger::writeToLog("RackSlot::handleSwitchDrag - " + control.name +
-                                 ", old index: " + juce::String(control.currentIndex) +
-                                 ", new index: " + juce::String(newIndexInt) +
-                                 ", dragDistance: " + juce::String(dragDistance));
     }
 }
 
@@ -1702,8 +1648,6 @@ void RackSlot::notifyRackOfControlChanged(int controlIndex)
     if (rack != nullptr)
     {
         // This would typically call a method on the rack to handle the control change
-        // For now, we'll just log it - the actual implementation would depend on the Rack class
-        juce::Logger::writeToLog("RackSlot::notifyRackOfControlChanged - Slot " + juce::String(index) +
-                                 ", Control " + juce::String(controlIndex) + " changed");
+        // the actual implementation would depend on the Rack class
     }
 }

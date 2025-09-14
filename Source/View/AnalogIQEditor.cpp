@@ -427,28 +427,12 @@ void AnalogIQEditor::showLoadPresetDialog()
         return;
     }
 
-    auto *dialog = new juce::AlertWindow("Load Preset",
-                                         "Select a preset to load:",
-                                         juce::AlertWindow::NoIcon);
-
-    // Add preset list
-    for (int i = 0; i < presetNames.size(); ++i)
-    {
-        juce::String presetName = presetNames[i];
-        dialog->addButton(presetName, i + 1);
-    }
-
-    dialog->addButton("Cancel", 0);
-
-    dialog->enterModalState(true, juce::ModalCallbackFunction::create([this, dialog, presetNames](int result)
-                                                                      {
-        if (result > 0 && result <= presetNames.size())
+    showPresetSelectionDialog("Load Preset", "Select a preset to load:", "Load", presetNames, [this](const juce::String &presetName)
+                              {
+        if (!presetName.isEmpty())
         {
-            juce::String presetName = presetNames[result - 1];
             handleLoadPreset(presetName);
-        }
-        delete dialog; }),
-                            true);
+        } });
 }
 
 void AnalogIQEditor::showDeletePresetDialog()
@@ -463,36 +447,73 @@ void AnalogIQEditor::showDeletePresetDialog()
         return;
     }
 
-    auto *dialog = new juce::AlertWindow("Delete Preset",
-                                         "Select a preset to delete:",
-                                         juce::AlertWindow::NoIcon);
-
-    // Add preset list
-    for (int i = 0; i < presetNames.size(); ++i)
-    {
-        juce::String presetName = presetNames[i];
-        dialog->addButton(presetName, i + 1);
-    }
-
-    dialog->addButton("Cancel", 0);
-
-    dialog->enterModalState(true, juce::ModalCallbackFunction::create([this, dialog, presetNames](int result)
-                                                                      {
-        if (result > 0 && result <= presetNames.size())
+    showPresetSelectionDialog("Delete Preset", "Select a preset to delete:", "Delete", presetNames, [this](const juce::String &presetName)
+                              {
+        if (!presetName.isEmpty())
         {
-            juce::String presetName = presetNames[result - 1];
-            handleDeletePreset(presetName);
-        }
-        delete dialog; }),
-                            true);
+            // Show confirmation dialog before deleting
+            auto *confirmDialog = new juce::AlertWindow("Confirm Delete",
+                                                       "Are you sure you want to delete the preset '" + presetName + "'?",
+                                                       juce::AlertWindow::QuestionIcon);
+            
+            confirmDialog->addButton("Delete", 1, juce::KeyPress(juce::KeyPress::returnKey));
+            confirmDialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
+            
+            confirmDialog->enterModalState(true, juce::ModalCallbackFunction::create([this, presetName, confirmDialog](int result)
+            {
+                if (result == 1) // Delete
+                {
+                    handleDeletePreset(presetName);
+                }
+                delete confirmDialog;
+            }), true);
+        } });
 }
 
 void AnalogIQEditor::handleSavePreset(const juce::String &presetName)
 {
-    // TODO: Implement when Rack component is available and we have access to AudioProcessorValueTreeState
-    // For now, just mark as modified
-    currentPresetName = presetName;
-    clearModifiedState();
+    if (presetName.isEmpty())
+        return;
+
+    // Get the rack component
+    if (!rack)
+    {
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                               "Save Preset Failed",
+                                               "Rack component is not available.");
+        return;
+    }
+
+    // Serialize the rack state to JSON
+    juce::String rackStateJSON = rack->serializeRackToJSON();
+
+    if (rackStateJSON.isEmpty())
+    {
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                               "Save Preset Failed",
+                                               "Failed to serialize rack state.");
+        return;
+    }
+
+    // Save the preset using the preset manager
+    if (presetManager && presetManager->savePreset(presetName, rackStateJSON))
+    {
+        currentPresetName = presetName;
+        clearModifiedState();
+
+        // Notify the rack that a preset was saved
+        rack->notifyPresetSaved(presetName);
+
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                               "Preset Saved",
+                                               "Preset '" + presetName + "' has been saved successfully.");
+    }
+    else
+    {
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                               "Save Preset Failed",
+                                               "Failed to save preset '" + presetName + "'.");
+    }
 }
 
 void AnalogIQEditor::handleLoadPreset(const juce::String &presetName)
@@ -525,37 +546,72 @@ void AnalogIQEditor::handleLoadPreset(const juce::String &presetName)
 
 void AnalogIQEditor::performLoadPreset(const juce::String &presetName)
 {
-    // TODO: Implement when Rack component is available and we have access to AudioProcessorValueTreeState
-    // For now, just update the current preset name
-    currentPresetName = presetName;
-    clearModifiedState();
+    if (presetName.isEmpty())
+        return;
+
+    // Get the rack component
+    if (!rack)
+    {
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                               "Load Preset Failed",
+                                               "Rack component is not available.");
+        return;
+    }
+
+    // Load the preset using the preset manager
+    juce::String rackStateJSON;
+    if (presetManager && presetManager->loadPreset(presetName, rackStateJSON))
+    {
+        // Deserialize the rack state from JSON
+        if (rack->deserializeRackFromJSON(rackStateJSON))
+        {
+            currentPresetName = presetName;
+            clearModifiedState();
+
+            // Notify the rack that a preset was loaded
+            rack->notifyPresetLoaded(presetName);
+
+            juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                                   "Preset Loaded",
+                                                   "Preset '" + presetName + "' has been loaded successfully.");
+        }
+        else
+        {
+            juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                                   "Load Preset Failed",
+                                                   "Failed to deserialize rack state from preset '" + presetName + "'.");
+        }
+    }
+    else
+    {
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                               "Load Preset Failed",
+                                               "Failed to load preset '" + presetName + "'.");
+    }
 }
 
 void AnalogIQEditor::handleDeletePreset(const juce::String &presetName)
 {
-    auto *dialog = new juce::AlertWindow("Delete Preset",
-                                         "Are you sure you want to delete the preset '" + presetName + "'?",
-                                         juce::AlertWindow::QuestionIcon);
-
-    dialog->addButton("Delete", 1, juce::KeyPress(juce::KeyPress::returnKey));
-    dialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
-
-    dialog->enterModalState(true, juce::ModalCallbackFunction::create([this, dialog, presetName](int result)
-                                                                      {
-        if (result == 1) // Delete
+    // Delete the preset using the preset manager
+    if (presetManager && presetManager->deletePreset(presetName))
+    {
+        // Clear current preset if it was the one deleted
+        if (currentPresetName == presetName)
         {
-            // TODO: Implement when we have access to AudioProcessorValueTreeState
-            // presetManager.deletePreset(presetName);
-            
-            // Clear current preset if it was the one deleted
-            if (currentPresetName == presetName)
-            {
-                currentPresetName = "";
-                clearModifiedState();
-            }
+            currentPresetName = "";
+            clearModifiedState();
         }
-        delete dialog; }),
-                            true);
+
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
+                                               "Preset Deleted",
+                                               "Preset '" + presetName + "' has been deleted successfully.");
+    }
+    else
+    {
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon,
+                                               "Delete Preset Failed",
+                                               "Failed to delete preset '" + presetName + "'.");
+    }
 }
 
 void AnalogIQEditor::refreshPresetMenu()
@@ -577,6 +633,55 @@ void AnalogIQEditor::markAsModified()
 void AnalogIQEditor::clearModifiedState()
 {
     isModified = false;
+}
+
+void AnalogIQEditor::showPresetSelectionDialog(const juce::String &title,
+                                               const juce::String &message,
+                                               const juce::String &actionButtonText,
+                                               const juce::StringArray &presetNames,
+                                               std::function<void(const juce::String &)> callback)
+{
+    // Create an AlertWindow with custom content
+    auto *dialog = new juce::AlertWindow(title, message, juce::AlertWindow::NoIcon);
+
+    auto *content = new PresetSelectionComponent(presetNames, [callback, dialog](const juce::String &selectedPreset)
+                                                 {
+        callback(selectedPreset);
+        dialog->exitModalState(0); }, actionButtonText);
+
+    // Set a proper size for the component
+    content->setSize(400, 300);
+    juce::Logger::writeToLog("PresetSelectionComponent created with size: " + juce::String(content->getWidth()) + "x" + juce::String(content->getHeight()));
+    juce::Logger::writeToLog("Number of presets: " + juce::String(presetNames.size()));
+
+    // Add the custom component to the AlertWindow
+    dialog->addCustomComponent(content);
+
+    // Add the action and cancel buttons
+    dialog->addButton(actionButtonText, 1);
+    dialog->addButton("Cancel", 0);
+
+    dialog->enterModalState(true, juce::ModalCallbackFunction::create([this, dialog, actionButtonText, callback](int result)
+                                                                      {
+        if (result == 1) // Action button clicked
+        {
+            // Get the selected preset from the component
+            auto *content = dynamic_cast<PresetSelectionComponent*>(dialog->getCustomComponent(0));
+            if (content)
+            {
+                int selectedRow = content->getSelectedRow();
+                if (selectedRow >= 0)
+                {
+                    auto presetNames = content->getPresetNames();
+                    if (selectedRow < presetNames.size())
+                    {
+                        callback(presetNames[selectedRow]);
+                    }
+                }
+            }
+        }
+        delete dialog; }),
+                            true);
 }
 
 void AnalogIQEditor::notifyDestruction()
@@ -744,3 +849,87 @@ void AnalogIQEditor::simulateFreshInstall()
                                            "OK");
 }
 #endif
+
+// PresetSelectionComponent Implementation
+PresetSelectionComponent::PresetSelectionComponent(const juce::StringArray &names, PresetSelectedCallback cb, const juce::String &actionText)
+    : presetNames(names), callback(cb), actionButtonText(actionText)
+{
+    // Set up the list box
+    listBox.setModel(this);
+    listBox.setRowHeight(25);
+    listBox.setMultipleSelectionEnabled(false);
+    addAndMakeVisible(listBox);
+
+    // Buttons are handled by AlertWindow, so we don't need internal buttons
+
+    // Selection changes are handled in listBoxItemClicked
+}
+
+void PresetSelectionComponent::paint(juce::Graphics &g)
+{
+    // Draw background
+    g.fillAll(juce::Colours::white);
+
+    // Draw border
+    g.setColour(juce::Colours::lightgrey);
+    g.drawRect(getLocalBounds(), 1);
+}
+
+void PresetSelectionComponent::resized()
+{
+    auto bounds = getLocalBounds();
+    juce::Logger::writeToLog("PresetSelectionComponent::resized() - bounds: " + juce::String(bounds.getWidth()) + "x" + juce::String(bounds.getHeight()));
+
+    // List box takes the full area since AlertWindow handles buttons
+    bounds.reduce(5, 5);
+    listBox.setBounds(bounds);
+    juce::Logger::writeToLog("ListBox bounds set to: " + juce::String(bounds.getWidth()) + "x" + juce::String(bounds.getHeight()));
+}
+
+int PresetSelectionComponent::getNumRows()
+{
+    return presetNames.size();
+}
+
+void PresetSelectionComponent::paintListBoxItem(int rowNumber, juce::Graphics &g, int width, int height, bool rowIsSelected)
+{
+    if (rowNumber >= 0 && rowNumber < presetNames.size())
+    {
+        if (rowIsSelected)
+        {
+            g.fillAll(juce::Colours::lightblue);
+        }
+        else
+        {
+            g.fillAll(juce::Colours::white);
+        }
+
+        g.setColour(juce::Colours::black);
+        g.setFont(14.0f);
+        g.drawText(presetNames[rowNumber], 10, 0, width - 20, height, juce::Justification::left);
+    }
+}
+
+void PresetSelectionComponent::listBoxItemClicked(int row, const juce::MouseEvent &e)
+{
+    // Selection is handled by the ListBox itself
+    // AlertWindow will handle button enabling/disabling
+}
+
+void PresetSelectionComponent::listBoxItemDoubleClicked(int row, const juce::MouseEvent &e)
+{
+    if (row >= 0 && row < presetNames.size())
+    {
+        callback(presetNames[row]);
+    }
+}
+
+int PresetSelectionComponent::getSelectedRow() const
+{
+    return listBox.getSelectedRow();
+}
+
+const juce::StringArray &PresetSelectionComponent::getPresetNames() const
+{
+    return presetNames;
+}

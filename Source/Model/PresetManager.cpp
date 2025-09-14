@@ -16,12 +16,13 @@ PresetManager::~PresetManager()
 
 void PresetManager::initializeLazy()
 {
-    if (initialized) return;
-    
+    if (initialized)
+        return;
+
     initializePresetsDirectory();
     loadPresetMetadata();
     loadCategories();
-    
+
     initialized = true;
 }
 
@@ -54,7 +55,7 @@ juce::String PresetManager::generateCategoryPath(const juce::String &categoryNam
 juce::String PresetManager::sanitizePresetName(const juce::String &presetName)
 {
     // Remove invalid characters for filenames
-    auto sanitized = presetName.replaceCharacters("<>:\"/\\|?*", "_");
+    auto sanitized = presetName.replaceCharacters("<>:\"/\\|?*", "_________");
     return sanitized.trim();
 }
 
@@ -751,5 +752,72 @@ bool PresetManager::createBackupDirectory()
     {
         return fileSystem.createDirectory(backupDir);
     }
+    return true;
+}
+
+// Rack-specific preset methods
+bool PresetManager::savePreset(const juce::String &presetName, const juce::String &rackStateJSON)
+{
+    initializeLazy();
+    if (presetName.isEmpty())
+        return false;
+
+    auto presetPath = generatePresetPath(presetName);
+    auto metadataPath = generateMetadataPath(presetName);
+
+    // Save the rack state JSON
+    juce::MemoryBlock presetData;
+    presetData.append(rackStateJSON.toRawUTF8(), rackStateJSON.getNumBytesAsUTF8());
+
+    if (!fileSystem.writeFile(presetPath, presetData))
+        return false;
+
+    // Create or update metadata
+    PresetMetadata metadata;
+    metadata.name = presetName;
+    metadata.creationTime = presetName.isEmpty() ? juce::Time::getCurrentTime() : (presetMetadata.find(presetName) != presetMetadata.end() ? presetMetadata[presetName].creationTime : juce::Time::getCurrentTime());
+    metadata.lastModifiedTime = juce::Time::getCurrentTime();
+    metadata.fileSize = presetData.getSize();
+    metadata.isValid = true;
+
+    // Preserve existing metadata if available
+    if (presetMetadata.find(presetName) != presetMetadata.end())
+    {
+        auto &existing = presetMetadata[presetName];
+        metadata.description = existing.description;
+        metadata.author = existing.author;
+        metadata.category = existing.category;
+    }
+
+    presetMetadata[presetName] = metadata;
+    savePresetMetadata();
+
+    return true;
+}
+
+bool PresetManager::loadPreset(const juce::String &presetName, juce::String &rackStateJSON)
+{
+    initializeLazy();
+    if (presetName.isEmpty() || !presetExists(presetName))
+        return false;
+
+    auto presetPath = generatePresetPath(presetName);
+    auto presetData = fileSystem.readBinaryFile(presetPath);
+
+    if (presetData.getSize() == 0)
+        return false;
+
+    // Convert binary data to string
+    rackStateJSON = juce::String::fromUTF8(static_cast<const char *>(presetData.getData()), static_cast<int>(presetData.getSize()));
+
+    setCurrentPresetName(presetName);
+
+    // Update last accessed time
+    if (presetMetadata.find(presetName) != presetMetadata.end())
+    {
+        presetMetadata[presetName].lastModifiedTime = juce::Time::getCurrentTime();
+        savePresetMetadata();
+    }
+
     return true;
 }

@@ -72,6 +72,24 @@ public:
     bool loadPreset(const juce::String &presetName);
 
     /**
+     * @brief Saves the current rack state as a preset.
+     *
+     * @param presetName The name for the new preset
+     * @param rackStateJSON The rack state as JSON string
+     * @return true if successful, false otherwise
+     */
+    bool savePreset(const juce::String &presetName, const juce::String &rackStateJSON);
+
+    /**
+     * @brief Loads a preset by name and returns rack state.
+     *
+     * @param presetName The name of the preset to load
+     * @param rackStateJSON Output parameter for the rack state JSON
+     * @return true if successful, false otherwise
+     */
+    bool loadPreset(const juce::String &presetName, juce::String &rackStateJSON);
+
+    /**
      * @brief Deletes a preset by name.
      *
      * @param presetName The name of the preset to delete

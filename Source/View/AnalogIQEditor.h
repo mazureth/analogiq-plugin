@@ -23,6 +23,55 @@ class AnalogIQProcessor;
 class GearLibraryTree;
 
 /**
+ * @brief Custom component for preset selection with scrollable list.
+ */
+class PresetSelectionComponent : public juce::Component,
+                                 public juce::ListBoxModel
+{
+public:
+    /**
+     * @brief Callback function type for preset selection.
+     */
+    using PresetSelectedCallback = std::function<void(const juce::String &)>;
+
+    /**
+     * @brief Constructs a new PresetSelectionComponent.
+     *
+     * @param presetNames Array of preset names to display
+     * @param callback Callback function called when a preset is selected
+     * @param actionButtonText Text for the action button (e.g., "Load", "Delete")
+     */
+    PresetSelectionComponent(const juce::StringArray &presetNames, PresetSelectedCallback callback, const juce::String &actionButtonText = "Select");
+
+    /**
+     * @brief Destructor.
+     */
+    ~PresetSelectionComponent() override = default;
+
+    // juce::Component overrides
+    void paint(juce::Graphics &g) override;
+    void resized() override;
+
+    // juce::ListBoxModel overrides
+    int getNumRows() override;
+    void paintListBoxItem(int rowNumber, juce::Graphics &g, int width, int height, bool rowIsSelected) override;
+    void listBoxItemClicked(int row, const juce::MouseEvent &e) override;
+    void listBoxItemDoubleClicked(int row, const juce::MouseEvent &e) override;
+
+    // Helper methods for AlertWindow integration
+    int getSelectedRow() const;
+    const juce::StringArray &getPresetNames() const;
+
+private:
+    juce::StringArray presetNames;
+    PresetSelectedCallback callback;
+    juce::ListBox listBox;
+    juce::String actionButtonText;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PresetSelectionComponent)
+};
+
+/**
  * @brief Main editor interface for the AnalogIQ plugin.
  *
  * The AnalogIQEditor class provides the user interface for the plugin,
@@ -162,6 +211,21 @@ private:
      * @brief Refreshes the preset menu with current preset list.
      */
     void refreshPresetMenu();
+
+    /**
+     * @brief Shows a preset selection dialog with scrollable list.
+     *
+     * @param title Dialog title
+     * @param message Dialog message
+     * @param actionButtonText Text for the action button
+     * @param presetNames Array of preset names to display
+     * @param callback Callback function called when a preset is selected
+     */
+    void showPresetSelectionDialog(const juce::String &title,
+                                   const juce::String &message,
+                                   const juce::String &actionButtonText,
+                                   const juce::StringArray &presetNames,
+                                   std::function<void(const juce::String &)> callback);
 
     /**
      * @brief Checks if the current rack state has unsaved changes.

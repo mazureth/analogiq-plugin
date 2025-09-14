@@ -8,6 +8,7 @@
 
 #include "GearLibraryTree.h"
 #include <juce_gui_basics/juce_gui_basics.h>
+#include <vector>
 #include <juce_core/juce_core.h>
 #include <functional>
 
@@ -117,21 +118,54 @@ void GearLibraryTree::createRecentlyUsedSection()
         }
         else
         {
-            // Get gear items for recently used IDs with error handling
+            // Get gear items for recently used IDs with error handling and deduplication
+            // Use a vector to maintain order while deduplicating
+            std::vector<juce::String> uniqueBaseUnitIds;
+
+            // Process recently used IDs in order, deduplicating while preserving chronological order
             for (const auto &unitId : recentlyUsedIds)
             {
                 if (unitId.isNotEmpty())
                 {
-                    auto gearItem = gearLibrary.getGearItem(unitId);
-                    if (gearItem)
+                    // Strip instance suffix from unitId for library lookup
+                    juce::String baseUnitId = unitId;
+                    int instPos = unitId.indexOf("_inst_");
+                    if (instPos != -1)
                     {
-                        recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, gearItem->name, gearLibrary, cacheManager, gearItem, -1));
+                        baseUnitId = unitId.substring(0, instPos);
                     }
-                    else
+
+                    // Check if this base unit ID is already in our unique list
+                    bool alreadyExists = false;
+                    for (const auto &existingId : uniqueBaseUnitIds)
                     {
-                        // Log missing gear item but don't crash
-                        juce::Logger::writeToLog("Recently used gear item not found: " + unitId);
+                        if (existingId == baseUnitId)
+                        {
+                            alreadyExists = true;
+                            break;
+                        }
                     }
+
+                    // Only add if not already present (maintains order of first occurrence)
+                    if (!alreadyExists)
+                    {
+                        uniqueBaseUnitIds.push_back(baseUnitId);
+                    }
+                }
+            }
+
+            // Create tree items for unique base unit IDs in order
+            for (const auto &baseUnitId : uniqueBaseUnitIds)
+            {
+                auto gearItem = gearLibrary.getGearItem(baseUnitId);
+                if (gearItem)
+                {
+                    recentlyUsedNode->addSubItem(new GearTreeItem(GearTreeItem::ItemType::Gear, gearItem->name, gearLibrary, cacheManager, gearItem, -1));
+                }
+                else
+                {
+                    // Log missing gear item but don't crash
+                    juce::Logger::writeToLog("Recently used gear item not found: " + baseUnitId);
                 }
             }
         }

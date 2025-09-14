@@ -14,6 +14,10 @@ public:
     // IPresetManager implementation
     bool savePreset(const juce::String &presetName, const juce::AudioProcessorValueTreeState &state) override;
     bool loadPreset(const juce::String &presetName, juce::AudioProcessorValueTreeState &state) override;
+
+    // Rack-specific preset methods
+    bool savePreset(const juce::String &presetName, const juce::String &rackStateJSON);
+    bool loadPreset(const juce::String &presetName, juce::String &rackStateJSON);
     bool deletePreset(const juce::String &presetName) override;
     bool presetExists(const juce::String &presetName) override;
     juce::StringArray getPresetNames() override;
