@@ -57,7 +57,7 @@ public:
     juce::AudioProcessorValueTreeState &getState();
     void saveInstanceState();
     void loadInstanceState();
-    void saveInstanceStateFromRack(Rack *rack);
+    void saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree);
     void loadInstanceState(Rack *rack);
     void resetAllInstances();
     void clearRackReference();
@@ -93,7 +93,7 @@ private:
 
     // Logging infrastructure
     void initializeLogging();
-    void logToFile(const juce::String &message);
+    void writeToLog(const juce::String &message);
     juce::String getLogTimestamp();
     void logStateTreeStructure(const juce::ValueTree &tree, int depth = 0);
     void logXmlContent(const juce::XmlElement &xml);

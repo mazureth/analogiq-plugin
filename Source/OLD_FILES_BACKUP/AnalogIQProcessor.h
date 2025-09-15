@@ -275,7 +275,7 @@ private:
     std::unique_ptr<GearLibrary> gearLibrary;
 
     // Logging infrastructure
-    void logToFile(const juce::String &message);
+    void juce::Logger::writeToLog(const juce::String &message);
     juce::File logFile;
     juce::String getLogTimestamp();
     void initializeLogging();

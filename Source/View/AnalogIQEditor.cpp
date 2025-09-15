@@ -132,11 +132,6 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     { clearAllCache(); };
     addAndMakeVisible(debugClearCacheButton);
 
-    debugClearGearButton.setButtonText("Clear Gear Cache");
-    debugClearGearButton.onClick = [this]()
-    { clearGearLibraryCache(); };
-    addAndMakeVisible(debugClearGearButton);
-
     debugClearPresetsButton.setButtonText("Clear Presets");
     debugClearPresetsButton.onClick = [this]()
     { clearPresetCache(); };
@@ -300,7 +295,6 @@ void AnalogIQEditor::resized()
     // Each button gets 100px width, positioned from right to left
     debugFreshInstallButton.setBounds(menuBarArea.removeFromRight(100));
     debugClearPresetsButton.setBounds(menuBarArea.removeFromRight(100));
-    debugClearGearButton.setBounds(menuBarArea.removeFromRight(100));
     debugClearCacheButton.setBounds(menuBarArea.removeFromRight(100));
     debugLoadButton.setBounds(menuBarArea.removeFromRight(100));
     debugSaveButton.setBounds(menuBarArea.removeFromRight(100));
@@ -701,22 +695,6 @@ void AnalogIQEditor::clearAllCache()
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
                                                "Cache Cleared",
                                                "All cache data has been cleared.\n\nThis simulates a fresh install.",
-                                               "OK");
-    }
-}
-
-void AnalogIQEditor::clearGearLibraryCache()
-{
-    if (cacheManager)
-    {
-        // Clear gear library specific cache
-        // This would need to be implemented in CacheManager to clear specific cache types
-        cacheManager->clearCache();
-
-        // Show confirmation dialog
-        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
-                                               "Gear Cache Cleared",
-                                               "Gear library cache has been cleared.",
                                                "OK");
     }
 }
