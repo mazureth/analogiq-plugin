@@ -94,6 +94,7 @@ target_sources(AnalogIQ PRIVATE
     Source/Model/PresetManager.cpp
     Source/Model/GearItem.cpp
     Source/Model/GearLibrary.cpp
+    Source/Model/RackModel.cpp
     Source/Model/AnalogIQProcessor.cpp
     # View layer sources
     Source/View/AnalogIQEditor.cpp

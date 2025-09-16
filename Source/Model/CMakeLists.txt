@@ -13,6 +13,8 @@ set(MODEL_SOURCES
     GearItem.cpp
     GearLibrary.h
     GearLibrary.cpp
+    RackModel.h
+    RackModel.cpp
     # Additional model sources will be added here
 )
 
