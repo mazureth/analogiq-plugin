@@ -29,6 +29,8 @@ RackSlot::RackSlot(RackModel &rackModel, int slotIndex)
     : index(slotIndex),
       rackModel(rackModel)
 {
+    // Register this slot as a listener to the rack model
+    rackModel.addRackStateListener(this);
 
     setComponentID("RackSlot_" + juce::String(index));
 
@@ -108,18 +110,10 @@ RackSlot::RackSlot(RackModel &rackModel, int slotIndex)
     updateButtonStates();
 }
 
-/**
- * @brief Destructor for the RackSlot class.
- *
- * Cleans up resources and ensures all images are properly released.
- */
 RackSlot::~RackSlot()
 {
-    // Remove button listeners
-    if (upButton)
-        upButton->removeListener(this);
-    if (downButton)
-        downButton->removeListener(this);
+    // Unregister from RackModel listeners
+    rackModel.removeRackStateListener(this);
 }
 
 /**
@@ -1702,4 +1696,68 @@ void RackSlot::notifyRackOfControlChanged(int controlIndex)
         // This would typically call a method on the rack to handle the control change
         // the actual implementation would depend on the Rack class
     }
+}
+
+// RackStateListener interface implementation
+void RackSlot::onGearItemAdded(Rack *rack, int slotIndex, const GearItem *gearItem)
+{
+    // Only respond to changes for this specific slot
+    if (slotIndex == index)
+    {
+        juce::Logger::writeToLog("RackSlot::onGearItemAdded - slot " + juce::String(index) + " gear added");
+        updateButtonStates();
+        repaint();
+    }
+}
+
+void RackSlot::onGearItemRemoved(Rack *rack, int slotIndex)
+{
+    // Only respond to changes for this specific slot
+    if (slotIndex == index)
+    {
+        juce::Logger::writeToLog("RackSlot::onGearItemRemoved - slot " + juce::String(index) + " gear removed");
+        updateButtonStates();
+        repaint();
+    }
+}
+
+void RackSlot::onGearControlChanged(Rack *rack, int slotIndex, const GearItem *gearItem, int controlIndex)
+{
+    // Only respond to changes for this specific slot
+    if (slotIndex == index)
+    {
+        juce::Logger::writeToLog("RackSlot::onGearControlChanged - slot " + juce::String(index) + " control changed");
+        repaint();
+    }
+}
+
+void RackSlot::onGearItemsRearranged(Rack *rack, int sourceSlotIndex, int targetSlotIndex)
+{
+    // Repaint if this slot is involved in the rearrangement
+    if (index == sourceSlotIndex || index == targetSlotIndex)
+    {
+        juce::Logger::writeToLog("RackSlot::onGearItemsRearranged - slot " + juce::String(index) + " involved in rearrangement");
+        updateButtonStates();
+        repaint();
+    }
+}
+
+void RackSlot::onRackStateReset(Rack *rack)
+{
+    juce::Logger::writeToLog("RackSlot::onRackStateReset - slot " + juce::String(index) + " rack reset");
+    updateButtonStates();
+    repaint();
+}
+
+void RackSlot::onPresetLoaded(Rack *rack, const juce::String &presetName)
+{
+    juce::Logger::writeToLog("RackSlot::onPresetLoaded - slot " + juce::String(index) + " preset loaded: " + presetName);
+    updateButtonStates();
+    repaint();
+}
+
+void RackSlot::onPresetSaved(Rack *rack, const juce::String &presetName)
+{
+    juce::Logger::writeToLog("RackSlot::onPresetSaved - slot " + juce::String(index) + " preset saved: " + presetName);
+    // No UI update needed for preset save
 }

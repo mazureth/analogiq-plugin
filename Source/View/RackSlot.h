@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "../Model/RackModel.h"
 #include "../Shared/GearControl.h"
+#include "../Shared/IRackStateListener.h"
 
 // Forward declarations
 class Rack;
@@ -29,7 +30,8 @@ class GearItem;
  */
 class RackSlot : public juce::Component,
                  public juce::DragAndDropTarget,
-                 public juce::Button::Listener
+                 public juce::Button::Listener,
+                 public RackStateListener
 {
 public:
     /**
@@ -230,6 +232,15 @@ public:
      * @param color The background color to use
      */
     void setSlotBackgroundColor(juce::Colour color);
+
+    // RackStateListener interface implementation
+    void onGearItemAdded(Rack *rack, int slotIndex, const GearItem *gearItem) override;
+    void onGearItemRemoved(Rack *rack, int slotIndex) override;
+    void onGearControlChanged(Rack *rack, int slotIndex, const GearItem *gearItem, int controlIndex) override;
+    void onGearItemsRearranged(Rack *rack, int sourceSlotIndex, int targetSlotIndex) override;
+    void onRackStateReset(Rack *rack) override;
+    void onPresetLoaded(Rack *rack, const juce::String &presetName) override;
+    void onPresetSaved(Rack *rack, const juce::String &presetName) override;
 
 private:
     // Helper methods for drawing individual control types
