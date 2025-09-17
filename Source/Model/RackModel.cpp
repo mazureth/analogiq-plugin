@@ -121,39 +121,86 @@ void RackModel::compactSlots()
 // Gear management
 bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
 {
+    juce::Logger::writeToLog("=== RackModel::addGearToSlot START ===");
+    juce::Logger::writeToLog("RackModel::addGearToSlot - slotIndex: " + juce::String(slotIndex) + ", gearId: " + gearId);
+
     // Validate slot index
     if (!isValidSlotIndex(slotIndex))
     {
         juce::Logger::writeToLog("RackModel::addGearToSlot - Invalid slot index: " + juce::String(slotIndex));
         return false;
     }
+    juce::Logger::writeToLog("RackModel::addGearToSlot - slot index validation passed");
 
     // Get gear item template from library
+    juce::Logger::writeToLog("RackModel::addGearToSlot - getting gear item template from library...");
     auto gearItemTemplate = gearLibrary.getGearItem(gearId);
     if (!gearItemTemplate)
     {
         juce::Logger::writeToLog("RackModel::addGearToSlot - Gear item not found: " + gearId);
-        return false;
+    return false;
+}
+    juce::Logger::writeToLog("RackModel::addGearToSlot - gear item template found:");
+    juce::Logger::writeToLog("  - unitId: " + gearItemTemplate->unitId);
+    juce::Logger::writeToLog("  - name: " + gearItemTemplate->name);
+    juce::Logger::writeToLog("  - manufacturer: " + gearItemTemplate->manufacturer);
+    juce::Logger::writeToLog("  - has faceplate: " + juce::String(gearItemTemplate->faceplateImage.isValid() ? "YES" : "NO"));
+    juce::Logger::writeToLog("  - controls count: " + juce::String(gearItemTemplate->controls.size()));
+    juce::Logger::writeToLog("  - schemaPath: " + gearItemTemplate->schemaPath);
+
+    // Load complete gear data (schema, faceplate, controls) if not already loaded
+    juce::Logger::writeToLog("RackModel::addGearToSlot - loading complete gear data...");
+    bool schemaLoaded = gearLibrary.loadGearSchema(gearItemTemplate);
+    juce::Logger::writeToLog("RackModel::addGearToSlot - schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
+    
+    // Load faceplate image asynchronously if schema was loaded and has faceplate path
+    if (schemaLoaded && !gearItemTemplate->faceplateImagePath.isEmpty())
+    {
+        juce::Logger::writeToLog("RackModel::addGearToSlot - loading faceplate image asynchronously from: " + gearItemTemplate->faceplateImagePath);
+        gearLibrary.loadGearFaceplateAsync(gearItemTemplate, [this, slotIndex]() {
+            juce::Logger::writeToLog("RackModel::addGearToSlot - faceplate loaded asynchronously for slot " + juce::String(slotIndex));
+            // Notify listeners that the gear item has been updated with faceplate
+            notifyGearItemAdded(slotIndex, nullptr); // nullptr means update existing
+        });
     }
+    
+    juce::Logger::writeToLog("RackModel::addGearToSlot - after loading complete data:");
+    juce::Logger::writeToLog("  - has faceplate: " + juce::String(gearItemTemplate->faceplateImage.isValid() ? "YES" : "NO"));
+    juce::Logger::writeToLog("  - controls count: " + juce::String(gearItemTemplate->controls.size()));
 
     // Create a unique instance for this rack slot
+    juce::Logger::writeToLog("RackModel::addGearToSlot - creating unique instance...");
     auto gearItem = std::make_unique<GearItem>(gearItemTemplate->createInstance());
+    juce::Logger::writeToLog("RackModel::addGearToSlot - instance created:");
+    juce::Logger::writeToLog("  - instanceId: " + gearItem->instanceId);
+    juce::Logger::writeToLog("  - has faceplate: " + juce::String(gearItem->faceplateImage.isValid() ? "YES" : "NO"));
+    juce::Logger::writeToLog("  - controls count: " + juce::String(gearItem->controls.size()));
 
     // Create slot data from gear item
+    juce::Logger::writeToLog("RackModel::addGearToSlot - creating slot data from gear item...");
     SlotData slotData = createSlotDataFromGearItem(slotIndex, gearItem.get());
+    juce::Logger::writeToLog("RackModel::addGearToSlot - slot data created:");
+    juce::Logger::writeToLog("  - isOccupied: " + juce::String(slotData.isOccupied ? "YES" : "NO"));
+    juce::Logger::writeToLog("  - gearId: " + slotData.gearId);
+    juce::Logger::writeToLog("  - gearName: " + slotData.gearName);
+    juce::Logger::writeToLog("  - controls count: " + juce::String(slotData.controls.size()));
 
     // Set the slot data
+    juce::Logger::writeToLog("RackModel::addGearToSlot - setting slot data in slots array...");
     slots[slotIndex] = slotData;
 
     // Notify listeners
+    juce::Logger::writeToLog("RackModel::addGearToSlot - notifying listeners...");
     notifyGearItemAdded(slotIndex, gearItem.get());
-    notifyStateChanged();
+        notifyStateChanged();
 
     // Add to recently used
+    juce::Logger::writeToLog("RackModel::addGearToSlot - adding to recently used...");
     cacheManager.addToRecentlyUsed(gearId);
 
     juce::Logger::writeToLog("RackModel::addGearToSlot - Added gear " + gearId + " to slot " + juce::String(slotIndex));
-    return true;
+    juce::Logger::writeToLog("=== RackModel::addGearToSlot END ===");
+        return true;
 }
 
 bool RackModel::removeGearFromSlot(int slotIndex)
@@ -220,10 +267,10 @@ bool RackModel::moveGearBetweenSlots(int fromSlot, int toSlot)
         slots.set(fromSlot, toData);
 
         // Notify listeners
-        notifyGearItemsRearranged(fromSlot, toSlot);
-        notifyStateChanged();
+    notifyGearItemsRearranged(fromSlot, toSlot);
+    notifyStateChanged();
 
-        return true;
+    return true;
     }
 }
 
@@ -278,8 +325,8 @@ bool RackModel::updateControlValue(int slotIndex, int controlIndex, float value)
     slotData.controls.getReference(controlIndex).currentValue = value;
 
     // Notify listeners
-    notifyGearControlChanged(slotIndex, nullptr, controlIndex);
-    notifyStateChanged();
+        notifyGearControlChanged(slotIndex, nullptr, controlIndex);
+        notifyStateChanged();
 
     return true;
 }
@@ -298,8 +345,8 @@ bool RackModel::updateControlIndex(int slotIndex, int controlIndex, int index)
     slotData.controls.getReference(controlIndex).currentValue = static_cast<float>(index);
 
     // Notify listeners
-    notifyGearControlChanged(slotIndex, nullptr, controlIndex);
-    notifyStateChanged();
+        notifyGearControlChanged(slotIndex, nullptr, controlIndex);
+        notifyStateChanged();
 
     return true;
 }
@@ -345,7 +392,7 @@ void RackModel::setSlotLayout(int newNumSlots)
             slots[i] = SlotData(i);
         }
 
-        notifyStateChanged();
+    notifyStateChanged();
     }
 }
 
@@ -360,7 +407,7 @@ void RackModel::setSlotSize(int width, int height)
     {
         slotWidth = width;
         slotHeight = height;
-        notifyStateChanged();
+    notifyStateChanged();
     }
 }
 
@@ -541,7 +588,7 @@ bool RackModel::deserializeFromJSON(const juce::String &jsonString)
             return false;
 
         // Clear existing rack state
-        clearAllSlots();
+    clearAllSlots();
 
         // Load rack configuration
         if (rackObject->hasProperty("numSlots"))
@@ -588,7 +635,7 @@ bool RackModel::deserializeFromJSON(const juce::String &jsonString)
             }
         }
 
-        notifyStateChanged();
+    notifyStateChanged();
         return true;
     }
     catch (const std::exception &e)
@@ -851,10 +898,23 @@ void RackModel::notifyRackStateReset()
 // Slot data management
 SlotData RackModel::createSlotDataFromGearItem(int slotIndex, const GearItem *gearItem) const
 {
+    juce::Logger::writeToLog("=== RackModel::createSlotDataFromGearItem START ===");
+    juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - slotIndex: " + juce::String(slotIndex));
+    juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - gearItem: " + juce::String(gearItem != nullptr ? "VALID" : "NULL"));
+
     SlotData slotData(slotIndex);
 
     if (gearItem)
     {
+        juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - processing gear item:");
+        juce::Logger::writeToLog("  - unitId: " + gearItem->unitId);
+        juce::Logger::writeToLog("  - instanceId: " + gearItem->instanceId);
+        juce::Logger::writeToLog("  - name: " + gearItem->name);
+        juce::Logger::writeToLog("  - manufacturer: " + gearItem->manufacturer);
+        juce::Logger::writeToLog("  - has faceplate: " + juce::String(gearItem->faceplateImage.isValid() ? "YES" : "NO"));
+        juce::Logger::writeToLog("  - faceplateImagePath: " + gearItem->faceplateImagePath);
+        juce::Logger::writeToLog("  - controls count: " + juce::String(gearItem->controls.size()));
+
         slotData.isOccupied = true;
         slotData.gearId = gearItem->unitId;
         slotData.instanceId = gearItem->instanceId;
@@ -872,17 +932,31 @@ SlotData RackModel::createSlotDataFromGearItem(int slotIndex, const GearItem *ge
         {
             slotData.faceplateImageWidth = gearItem->faceplateImage.getWidth();
             slotData.faceplateImageHeight = gearItem->faceplateImage.getHeight();
+            juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - faceplate dimensions: " +
+                                     juce::String(slotData.faceplateImageWidth) + "x" + juce::String(slotData.faceplateImageHeight));
         }
         else
         {
             slotData.faceplateImageWidth = 0;
             slotData.faceplateImageHeight = 0;
+            juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - no faceplate image, dimensions set to 0x0");
         }
 
         // Copy controls
         slotData.controls = gearItem->controls;
+        juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - copied " + juce::String(slotData.controls.size()) + " controls");
+    }
+    else
+    {
+        juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - gearItem is null, creating empty slot data");
     }
 
+    juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - final slot data:");
+    juce::Logger::writeToLog("  - isOccupied: " + juce::String(slotData.isOccupied ? "YES" : "NO"));
+    juce::Logger::writeToLog("  - gearId: " + slotData.gearId);
+    juce::Logger::writeToLog("  - gearName: " + slotData.gearName);
+    juce::Logger::writeToLog("  - controls count: " + juce::String(slotData.controls.size()));
+    juce::Logger::writeToLog("=== RackModel::createSlotDataFromGearItem END ===");
     return slotData;
 }
 

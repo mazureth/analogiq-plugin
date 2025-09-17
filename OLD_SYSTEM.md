@@ -322,7 +322,7 @@ Starting with the first file...
 - **Component Ownership**: std::unique_ptr for FileSystem, CacheManager, PresetManager, GearLibrary
 
 ### Logging Infrastructure
-- **File Logging**: logToFile() for persistent logging to user documents
+- **File Logging**: juce::Logger::writeToLog() for persistent logging to user documents
 - **Timestamp Generation**: getLogTimestamp() for chronological logging
 - **Initialization**: initializeLogging() for setup and directory creation
 - **State Debugging**: logStateTreeStructure() for ValueTree debugging

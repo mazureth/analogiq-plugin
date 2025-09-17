@@ -138,11 +138,25 @@ juce::Colour GearItem::getCategoryColor() const
 
 GearItem GearItem::createInstance() const
 {
+    juce::Logger::writeToLog("=== GearItem::createInstance START ===");
+    juce::Logger::writeToLog("GearItem::createInstance - source unitId: " + unitId);
+    juce::Logger::writeToLog("GearItem::createInstance - source name: " + name);
+    juce::Logger::writeToLog("GearItem::createInstance - source has faceplate: " + juce::String(faceplateImage.isValid() ? "YES" : "NO"));
+    juce::Logger::writeToLog("GearItem::createInstance - source controls count: " + juce::String(controls.size()));
+
     GearItem instance(*this);
     instance.isInstance = true;
     instance.instanceId = generateInstanceId();
     instance.sourceUnitId = unitId;
     instance.unitId = instance.instanceId;
+
+    juce::Logger::writeToLog("GearItem::createInstance - instance created:");
+    juce::Logger::writeToLog("  - instanceId: " + instance.instanceId);
+    juce::Logger::writeToLog("  - sourceUnitId: " + instance.sourceUnitId);
+    juce::Logger::writeToLog("  - unitId: " + instance.unitId);
+    juce::Logger::writeToLog("  - has faceplate: " + juce::String(instance.faceplateImage.isValid() ? "YES" : "NO"));
+    juce::Logger::writeToLog("  - controls count: " + juce::String(instance.controls.size()));
+    juce::Logger::writeToLog("=== GearItem::createInstance END ===");
     return instance;
 }
 

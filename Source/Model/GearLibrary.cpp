@@ -610,21 +610,53 @@ bool GearLibrary::updateGearItem(const GearItem &gearItem)
 
 GearItem *GearLibrary::getGearItem(const juce::String &gearId)
 {
+    juce::Logger::writeToLog("=== GearLibrary::getGearItem START ===");
+    juce::Logger::writeToLog("GearLibrary::getGearItem - searching for gearId: " + gearId);
+    juce::Logger::writeToLog("GearLibrary::getGearItem - total gear items in library: " + juce::String(gearItems.size()));
+
     for (auto &item : gearItems)
     {
+        juce::Logger::writeToLog("GearLibrary::getGearItem - checking item: " + item->unitId + " vs " + gearId);
         if (item->unitId == gearId)
+        {
+            juce::Logger::writeToLog("GearLibrary::getGearItem - FOUND MATCH!");
+            juce::Logger::writeToLog("  - unitId: " + item->unitId);
+            juce::Logger::writeToLog("  - name: " + item->name);
+            juce::Logger::writeToLog("  - manufacturer: " + item->manufacturer);
+            juce::Logger::writeToLog("  - has faceplate: " + juce::String(item->faceplateImage.isValid() ? "YES" : "NO"));
+            juce::Logger::writeToLog("  - controls count: " + juce::String(item->controls.size()));
+            juce::Logger::writeToLog("=== GearLibrary::getGearItem END (FOUND) ===");
             return item;
+        }
     }
+    juce::Logger::writeToLog("GearLibrary::getGearItem - NO MATCH FOUND for gearId: " + gearId);
+    juce::Logger::writeToLog("=== GearLibrary::getGearItem END (NOT FOUND) ===");
     return nullptr;
 }
 
 const GearItem *GearLibrary::getGearItem(const juce::String &gearId) const
 {
+    juce::Logger::writeToLog("=== GearLibrary::getGearItem (const) START ===");
+    juce::Logger::writeToLog("GearLibrary::getGearItem (const) - searching for gearId: " + gearId);
+    juce::Logger::writeToLog("GearLibrary::getGearItem (const) - total gear items in library: " + juce::String(gearItems.size()));
+
     for (auto &item : gearItems)
     {
+        juce::Logger::writeToLog("GearLibrary::getGearItem (const) - checking item: " + item->unitId + " vs " + gearId);
         if (item->unitId == gearId)
+        {
+            juce::Logger::writeToLog("GearLibrary::getGearItem (const) - FOUND MATCH!");
+            juce::Logger::writeToLog("  - unitId: " + item->unitId);
+            juce::Logger::writeToLog("  - name: " + item->name);
+            juce::Logger::writeToLog("  - manufacturer: " + item->manufacturer);
+            juce::Logger::writeToLog("  - has faceplate: " + juce::String(item->faceplateImage.isValid() ? "YES" : "NO"));
+            juce::Logger::writeToLog("  - controls count: " + juce::String(item->controls.size()));
+            juce::Logger::writeToLog("=== GearLibrary::getGearItem (const) END (FOUND) ===");
             return item;
+        }
     }
+    juce::Logger::writeToLog("GearLibrary::getGearItem (const) - NO MATCH FOUND for gearId: " + gearId);
+    juce::Logger::writeToLog("=== GearLibrary::getGearItem (const) END (NOT FOUND) ===");
     return nullptr;
 }
 

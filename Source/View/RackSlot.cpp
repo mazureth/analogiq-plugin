@@ -125,7 +125,11 @@ RackSlot::~RackSlot()
  */
 void RackSlot::paint(juce::Graphics &g)
 {
+    juce::Logger::writeToLog("=== RackSlot::paint START ===");
+    juce::Logger::writeToLog("RackSlot::paint - slot index: " + juce::String(index));
+
     auto area = getLocalBounds();
+    juce::Logger::writeToLog("RackSlot::paint - area: " + area.toString());
 
     // Draw slot background
     if (isDragOver)
@@ -133,25 +137,48 @@ void RackSlot::paint(juce::Graphics &g)
         // Show drag feedback with light blue overlay
         g.setColour(juce::Colours::lightblue.withAlpha(0.3f));
         g.fillAll();
+        juce::Logger::writeToLog("RackSlot::paint - drawing drag over background");
     }
     else if (slotBackgroundColor != juce::Colours::transparentBlack)
     {
         // Use the slot's background color if it's not transparent
         g.setColour(slotBackgroundColor);
         g.fillAll();
+        juce::Logger::writeToLog("RackSlot::paint - drawing slot background color");
     }
 
     // Draw slot border
     g.setColour(juce::Colours::white);
     g.drawRect(area, 1);
+    juce::Logger::writeToLog("RackSlot::paint - drew slot border");
 
     // Draw gear item info if present - get data from RackModel
+    juce::Logger::writeToLog("RackSlot::paint - getting slot data from RackModel...");
     if (auto *slotData = rackModel.getSlotData(index))
     {
+        juce::Logger::writeToLog("RackSlot::paint - slot data found");
+        juce::Logger::writeToLog("  - slotData.isOccupied: " + juce::String(slotData->isOccupied ? "YES" : "NO"));
+        juce::Logger::writeToLog("  - slotData.gearId: " + slotData->gearId);
+        juce::Logger::writeToLog("  - slotData.gearName: " + slotData->gearName);
+        juce::Logger::writeToLog("  - slotData.controls count: " + juce::String(slotData->controls.size()));
+
         if (slotData->isOccupied)
         {
+            juce::Logger::writeToLog("RackSlot::paint - slot is occupied, getting gear item from library...");
             // Get gear item from library for image access
             auto *gearItem = rackModel.getGearLibrary().getGearItem(slotData->gearId);
+            juce::Logger::writeToLog("RackSlot::paint - gear item from library: " + juce::String(gearItem != nullptr ? "FOUND" : "NOT FOUND"));
+
+            if (gearItem)
+            {
+                juce::Logger::writeToLog("RackSlot::paint - gear item details:");
+                juce::Logger::writeToLog("  - unitId: " + gearItem->unitId);
+                juce::Logger::writeToLog("  - name: " + gearItem->name);
+                juce::Logger::writeToLog("  - manufacturer: " + gearItem->manufacturer);
+                juce::Logger::writeToLog("  - has faceplate image: " + juce::String(gearItem->faceplateImage.isValid() ? "YES" : "NO"));
+                juce::Logger::writeToLog("  - faceplate image size: " + gearItem->faceplateImage.getBounds().toString());
+                juce::Logger::writeToLog("  - controls count: " + juce::String(gearItem->controls.size()));
+            }
 
             // Draw faceplate image if available (exactly like old system)
             if (gearItem && gearItem->faceplateImage.isValid())
@@ -354,6 +381,12 @@ void RackSlot::paint(juce::Graphics &g)
             }
         }
     }
+    else
+    {
+        juce::Logger::writeToLog("RackSlot::paint - no slot data found for index " + juce::String(index));
+    }
+
+    juce::Logger::writeToLog("=== RackSlot::paint END ===");
 }
 
 bool RackSlot::isEmpty() const
