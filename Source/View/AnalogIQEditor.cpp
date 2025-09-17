@@ -43,7 +43,7 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
 
     // Create Rack component
-    rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, *cacheManager, *presetManager, *gearLibrary);
+    rack = std::make_unique<Rack>(*processor.getRackModel());
 
     // Create NotesPanel component
     notesPanel = std::make_unique<NotesPanel>();
@@ -76,7 +76,7 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
 
     // Register GearLibraryTree as a listener for rack state changes
     // This allows the tree to refresh when gear is added/removed from the rack
-    rack->addRackStateListener(static_cast<RackStateListener *>(gearLibraryTree.get()));
+    processor.getRackModel()->addRackStateListener(static_cast<RackStateListener *>(gearLibraryTree.get()));
 
     // CRITICAL FIX: Call resized() to ensure proper layout initialization
     resized();
@@ -189,7 +189,7 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cach
     resized();
 
     // Create Rack component
-    rack = std::make_unique<Rack>(*processor.getNetworkFetcher(), *fileSystem, *cacheManager, *presetManager, *gearLibrary);
+    rack = std::make_unique<Rack>(*processor.getRackModel());
 
     // Create NotesPanel component
     notesPanel = std::make_unique<NotesPanel>();
@@ -479,7 +479,7 @@ void AnalogIQEditor::handleSavePreset(const juce::String &presetName)
     }
 
     // Serialize the rack state to JSON
-    juce::String rackStateJSON = rack->serializeRackToJSON();
+    juce::String rackStateJSON = processor.getRackModel()->serializeToJSON();
 
     if (rackStateJSON.isEmpty())
     {
@@ -496,7 +496,7 @@ void AnalogIQEditor::handleSavePreset(const juce::String &presetName)
         clearModifiedState();
 
         // Notify the rack that a preset was saved
-        rack->notifyPresetSaved(presetName);
+        processor.getRackModel()->notifyPresetSaved(presetName);
 
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
                                                "Preset Saved",
@@ -557,13 +557,13 @@ void AnalogIQEditor::performLoadPreset(const juce::String &presetName)
     if (presetManager && presetManager->loadPreset(presetName, rackStateJSON))
     {
         // Deserialize the rack state from JSON
-        if (rack->deserializeRackFromJSON(rackStateJSON))
+        if (processor.getRackModel()->deserializeFromJSON(rackStateJSON))
         {
             currentPresetName = presetName;
             clearModifiedState();
 
             // Notify the rack that a preset was loaded
-            rack->notifyPresetLoaded(presetName);
+            processor.getRackModel()->notifyPresetLoaded(presetName);
 
             juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon,
                                                    "Preset Loaded",

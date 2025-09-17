@@ -29,6 +29,7 @@ AnalogIQProcessor::AnalogIQProcessor()
     cacheManager = std::make_unique<CacheManager>(*fileSystem);
     presetManager = std::make_unique<PresetManager>(*fileSystem);
     gearLibrary = std::make_unique<GearLibrary>(*fileSystem, *cacheManager, *networkFetcher);
+    rackModel = std::make_unique<RackModel>(*gearLibrary, *presetManager, *cacheManager);
 
     // Log initialization
     juce::Logger::writeToLog("AnalogIQProcessor initialized with default dependencies");
@@ -38,7 +39,7 @@ AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &nf, IFileSystem &fs)
     : AudioProcessor(BusesProperties()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
-      state(*this, nullptr, "Parameters", createParameterLayout()), undoManager(std::make_unique<juce::UndoManager>()), lastCreatedEditor(nullptr), storedRackReference(nullptr), networkFetcher(&nf), fileSystem(&fs), cacheManager(std::make_unique<CacheManager>(fs)), presetManager(std::make_unique<PresetManager>(fs)), gearLibrary(std::make_unique<GearLibrary>(fs, *cacheManager, nf))
+      state(*this, nullptr, "Parameters", createParameterLayout()), undoManager(std::make_unique<juce::UndoManager>()), lastCreatedEditor(nullptr), storedRackReference(nullptr), networkFetcher(&nf), fileSystem(&fs), cacheManager(std::make_unique<CacheManager>(fs)), presetManager(std::make_unique<PresetManager>(fs)), gearLibrary(std::make_unique<GearLibrary>(fs, *cacheManager, nf)), rackModel(std::make_unique<RackModel>(*gearLibrary, *presetManager, *cacheManager))
 {
     // Initialize logging
     initializeLogging();
@@ -291,7 +292,7 @@ void AnalogIQProcessor::saveInstanceState()
         if (auto *rack = editor->getRack())
         {
             juce::Logger::writeToLog("Rack obtained from editor successfully");
-            juce::Logger::writeToLog("Rack slots: " + juce::String(rack->getSlotCount()));
+            juce::Logger::writeToLog("Rack slots: " + juce::String(rackModel->getSlotCount()));
             saveInstanceStateFromRack(rack, instanceTree);
         }
         else
@@ -332,44 +333,43 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
     }
 
     juce::Logger::writeToLog("Rack validation: rack pointer valid");
-    juce::Logger::writeToLog("Rack slots: " + juce::String(rack->getSlotCount()));
+    juce::Logger::writeToLog("Rack slots: " + juce::String(rackModel->getSlotCount()));
 
     // Save instance data for each slot
-    for (int i = 0; i < rack->getSlotCount(); ++i)
+    for (int i = 0; i < rackModel->getSlotCount(); ++i)
     {
         juce::Logger::writeToLog("Processing slot " + juce::String(i));
 
-        if (auto *slot = rack->getSlot(i))
+        if (auto *slotData = rackModel->getSlotData(i))
         {
             juce::Logger::writeToLog("Slot " + juce::String(i) + " obtained successfully");
 
-            if (auto *item = slot->getGearItem())
+            if (slotData->isOccupied && !slotData->gearId.isEmpty())
             {
-                juce::Logger::writeToLog("Slot " + juce::String(i) + " has gear item: " + item->name);
-                juce::Logger::writeToLog("  Is instance: " + juce::String(item->isInstance ? "true" : "false"));
-                juce::Logger::writeToLog("  Instance ID: " + item->instanceId);
-                juce::Logger::writeToLog("  Unit ID: " + item->unitId);
-                juce::Logger::writeToLog("  Controls count: " + juce::String(item->controls.size()));
+                juce::Logger::writeToLog("Slot " + juce::String(i) + " has gear item: " + slotData->gearName);
+                juce::Logger::writeToLog("  Instance ID: " + slotData->instanceId);
+                juce::Logger::writeToLog("  Unit ID: " + slotData->gearId);
+                juce::Logger::writeToLog("  Controls count: " + juce::String(slotData->controls.size()));
 
                 // Save state for instances only (all items in rack are now instances)
-                if (item->isInstance && !item->instanceId.isEmpty() && !item->unitId.isEmpty())
+                if (!slotData->instanceId.isEmpty() && !slotData->gearId.isEmpty())
                 {
                     juce::Logger::writeToLog("Saving instance data for slot " + juce::String(i));
 
                     auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), undoManager.get());
                     juce::Logger::writeToLog("Slot tree created for slot " + juce::String(i));
 
-                    slotTree.setProperty("instanceId", item->instanceId, undoManager.get());
-                    slotTree.setProperty("sourceUnitId", item->sourceUnitId, undoManager.get());
+                    slotTree.setProperty("instanceId", slotData->instanceId, undoManager.get());
+                    slotTree.setProperty("sourceUnitId", slotData->gearId, undoManager.get());
                     juce::Logger::writeToLog("Slot properties set for slot " + juce::String(i));
 
                     // Save control values
                     auto controlsTree = slotTree.getOrCreateChildWithName("controls", undoManager.get());
                     juce::Logger::writeToLog("Controls tree created for slot " + juce::String(i));
 
-                    for (int j = 0; j < item->controls.size(); ++j)
+                    for (int j = 0; j < slotData->controls.size(); ++j)
                     {
-                        const auto &control = item->controls[j];
+                        const auto &control = slotData->controls[j];
                         juce::Logger::writeToLog("Processing control " + juce::String(j) + " in slot " + juce::String(i));
                         juce::Logger::writeToLog("  Control name: " + control.name);
                         juce::Logger::writeToLog("  Control type: " + juce::String(static_cast<int>(control.type)));
@@ -394,9 +394,8 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                 else
                 {
                     juce::Logger::writeToLog("Slot " + juce::String(i) + " skipped - not a valid instance");
-                    juce::Logger::writeToLog("  Is instance: " + juce::String(item->isInstance ? "true" : "false"));
-                    juce::Logger::writeToLog("  Instance ID empty: " + juce::String(item->instanceId.isEmpty() ? "true" : "false"));
-                    juce::Logger::writeToLog("  Unit ID empty: " + juce::String(item->unitId.isEmpty() ? "true" : "false"));
+                    juce::Logger::writeToLog("  Instance ID empty: " + juce::String(slotData->instanceId.isEmpty() ? "true" : "false"));
+                    juce::Logger::writeToLog("  Unit ID empty: " + juce::String(slotData->gearId.isEmpty() ? "true" : "false"));
                 }
             }
             else
@@ -447,7 +446,7 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
     if (rack != nullptr)
     {
         // Load instance data for each slot
-        for (int i = 0; i < rack->getSlotCount(); ++i)
+        for (int i = 0; i < rackModel->getSlotCount(); ++i)
         {
             auto slotTree = instanceTree.getChildWithName("slot_" + juce::String(i));
             if (slotTree.isValid())

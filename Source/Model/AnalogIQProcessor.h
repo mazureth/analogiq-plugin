@@ -6,6 +6,7 @@
 #include "../Shared/IRackStateListener.h"
 #include "../Shared/ICacheManager.h"
 #include "../Shared/IPresetManager.h"
+#include "RackModel.h"
 
 // Forward declarations
 class CacheManager;
@@ -68,6 +69,7 @@ public:
     CacheManager *getCacheManager() const { return cacheManager.get(); }
     PresetManager *getPresetManager() const { return presetManager.get(); }
     GearLibrary *getGearLibrary() const { return gearLibrary.get(); }
+    RackModel *getRackModel() const { return rackModel.get(); }
 
     // Testing support
     friend class AnalogIQProcessorTests;
@@ -90,6 +92,7 @@ private:
     std::unique_ptr<CacheManager> cacheManager;
     std::unique_ptr<PresetManager> presetManager;
     std::unique_ptr<GearLibrary> gearLibrary;
+    std::unique_ptr<RackModel> rackModel;
 
     // Logging infrastructure
     void initializeLogging();

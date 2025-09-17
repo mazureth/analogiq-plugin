@@ -15,6 +15,7 @@
 #include "../Shared/ICacheManager.h"
 #include "../Model/PresetManager.h"
 #include "../Model/GearLibrary.h"
+#include "../Model/RackModel.h"
 #include "../Shared/GearControl.h"
 
 // Forward declarations
@@ -44,11 +45,7 @@ public:
      * @param gearLibrary Reference to the gear library
      * @param slotIndex The index of this slot in the rack
      */
-    RackSlot(IFileSystem &fileSystem,
-             ICacheManager &cacheManager,
-             PresetManager &presetManager,
-             GearLibrary &gearLibrary,
-             int slotIndex = 0);
+    RackSlot(RackModel &rackModel, int slotIndex = 0);
 
     /**
      * @brief Sets the index of this slot in the rack.
@@ -287,10 +284,7 @@ private:
     GearItem *gearItem = nullptr; ///< Pointer to the gear item in this slot
 
     // Dependencies
-    IFileSystem &fileSystem;
-    ICacheManager &cacheManager;
-    PresetManager &presetManager;
-    GearLibrary &gearLibrary;
+    RackModel &rackModel;
     Rack *rack = nullptr; ///< Reference to the parent rack for movement operations
 
     // UI Components

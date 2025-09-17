@@ -17,11 +17,11 @@
  * @param fileSystem Reference to the file system service
  * @param cacheManager Reference to the cache manager
  */
-RackController::RackController(Rack &rack,
+RackController::RackController(RackModel &rackModel,
                                PresetManager &presetManager,
                                IFileSystem &fileSystem,
                                ICacheManager &cacheManager)
-    : rack(rack),
+    : rackModel(rackModel),
       presetManager(presetManager),
       fileSystem(fileSystem),
       cacheManager(cacheManager)
@@ -42,7 +42,7 @@ bool RackController::addGearToSlot(int slotIndex, GearItem *gearItem)
         return false;
 
     // Add the gear to the rack slot using the gear ID
-    bool success = rack.addGearToSlot(slotIndex, gearItem->unitId);
+    bool success = rackModel.addGearToSlot(slotIndex, gearItem->unitId);
 
     if (success)
     {
@@ -67,7 +67,7 @@ bool RackController::removeGearFromSlot(int slotIndex)
         return false;
 
     // Remove the gear from the rack slot
-    bool success = rack.removeGearFromSlot(slotIndex);
+    bool success = rackModel.removeGearFromSlot(slotIndex);
 
     if (success)
     {
@@ -95,7 +95,7 @@ bool RackController::moveGearBetweenSlots(int fromSlotIndex, int toSlotIndex)
         return false;
 
     // Move the gear between slots
-    bool success = rack.moveGearBetweenSlots(fromSlotIndex, toSlotIndex);
+    bool success = rackModel.moveGearBetweenSlots(fromSlotIndex, toSlotIndex);
 
     if (success)
     {
@@ -120,16 +120,16 @@ bool RackController::swapGearBetweenSlots(int slotIndex1, int slotIndex2)
 
     // Swap the gear between slots by moving them
     // First, get the gear from both slots
-    juce::String gear1 = rack.getGearInSlot(slotIndex1);
-    juce::String gear2 = rack.getGearInSlot(slotIndex2);
+    juce::String gear1 = rackModel.getGearInSlot(slotIndex1);
+    juce::String gear2 = rackModel.getGearInSlot(slotIndex2);
 
     // Clear both slots
-    rack.removeGearFromSlot(slotIndex1);
-    rack.removeGearFromSlot(slotIndex2);
+    rackModel.removeGearFromSlot(slotIndex1);
+    rackModel.removeGearFromSlot(slotIndex2);
 
     // Add gear to opposite slots
-    bool success1 = rack.addGearToSlot(slotIndex2, gear1);
-    bool success2 = rack.addGearToSlot(slotIndex1, gear2);
+    bool success1 = rackModel.addGearToSlot(slotIndex2, gear1);
+    bool success2 = rackModel.addGearToSlot(slotIndex1, gear2);
 
     bool success = success1 && success2;
 

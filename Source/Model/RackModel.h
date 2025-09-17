@@ -122,6 +122,7 @@ public:
     bool removeGearFromSlot(int slotIndex);
     bool moveGearBetweenSlots(int fromSlot, int toSlot);
     juce::String getGearInSlot(int slotIndex) const;
+    GearLibrary &getGearLibrary() const;
 
     // Slot data access
     const SlotData *getSlotData(int slotIndex) const;

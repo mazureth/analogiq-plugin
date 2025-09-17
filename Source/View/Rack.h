@@ -15,6 +15,7 @@
 #include "../Shared/ICacheManager.h"
 #include "../Model/PresetManager.h"
 #include "../Model/GearLibrary.h"
+#include "../Model/RackModel.h"
 #include "../Shared/IRackStateListener.h"
 #include "RackSlot.h"
 #include <memory>
@@ -26,11 +27,7 @@ class Rack : public juce::Component,
 {
 public:
     // Constructor
-    Rack(INetworkFetcher &networkFetcher,
-         IFileSystem &fileSystem,
-         ICacheManager &cacheManager,
-         PresetManager &presetManager,
-         GearLibrary &gearLibrary);
+    Rack(RackModel &rackModel);
 
     ~Rack() override;
 
@@ -45,43 +42,6 @@ public:
     void itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
     void itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
 
-    // Rack management
-    void addRackSlot(int slotIndex);
-    void insertRackSlot(int slotIndex);
-    void removeRackSlot(int slotIndex);
-    void clearAllSlots();
-    int getSlotCount() const;
-    RackSlot *getSlot(int slotIndex) const;
-
-    // Gear management
-    bool addGearToSlot(int slotIndex, const juce::String &gearId);
-    bool addGearToSlotWithCallback(int slotIndex, const juce::String &gearId, std::function<void()> callback);
-    bool removeGearFromSlot(int slotIndex);
-    bool moveGearBetweenSlots(int fromSlot, int toSlot);
-    juce::String getGearInSlot(int slotIndex) const;
-
-    // Rack slot validation
-    bool isValidSlotIndex(int slotIndex) const;
-    bool validateRackState() const;
-    bool validateSlotConsistency() const;
-    bool validateGearSlotRelationships() const;
-    void recoverFromInvalidState();
-
-    // State persistence
-    void saveRackState();
-    void loadRackState();
-    juce::ValueTree getRackState() const;
-    void setRackState(const juce::ValueTree &state);
-
-    // Preset serialization
-    juce::String serializeRackToJSON() const;
-    bool deserializeRackFromJSON(const juce::String &jsonString);
-
-    // Layout management
-    void setSlotLayout(int numSlots);
-    void setSlotSize(int width, int height);
-    void setSlotSpacing(int spacing);
-
     // Visual customization
     void setBackgroundColor(juce::Colour color);
     void setSlotBackgroundColor(juce::Colour color);
@@ -89,39 +49,12 @@ public:
     void setShowSlotNumbers(bool show);
     void setShowGrid(bool show);
 
-    // Event handling
-    void addRackStateListener(RackStateListener *listener);
-    void removeRackStateListener(RackStateListener *listener);
-
-    // Preset notifications
-    void notifyPresetLoaded(const juce::String &presetName);
-    void notifyPresetSaved(const juce::String &presetName);
-
-    // Utility methods
-    bool isSlotOccupied(int slotIndex) const;
-    int getFirstEmptySlot() const;
-    int getLastOccupiedSlot() const;
-    void compactSlots();                    // Remove gaps between occupied slots
-    int getSlotHeight(int slotIndex) const; // Get dynamic height for slot
-    int getDefaultSlotHeight() const;       // Get default slot height
-    void updateSlotIndices();               // Update slot indices after movement
-
     // Component listener override
     void componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized) override;
 
 private:
-    // Member variables
-    INetworkFetcher &networkFetcher;
-    IFileSystem &fileSystem;
-    ICacheManager &cacheManager;
-    PresetManager &presetManager;
-    GearLibrary &gearLibrary;
-
-    // Rack configuration
-    int numSlots;
-    int slotWidth;
-    int slotHeight;
-    int slotSpacing;
+    // Model reference
+    RackModel &rackModel;
 
     // Visual properties
     juce::Colour backgroundColor;
@@ -130,44 +63,24 @@ private:
     bool showSlotNumbers;
     bool showGrid;
 
-    // Rack slots
+    // Rack slots (UI components only)
     std::vector<std::unique_ptr<RackSlot>> rackSlots;
-
-    // Gear item instances (one per slot)
-    std::vector<std::unique_ptr<GearItem>> gearItemInstances;
 
     // UI components
     std::unique_ptr<juce::Viewport> viewport;
     std::unique_ptr<juce::Component> rackContainer;
-
-    // State management
-    juce::ValueTree rackState;
-    juce::Array<RackStateListener *> stateListeners;
-
-    // Faceplate loading coordination
-    int pendingFaceplateLoads = 0;
 
     // Private helper methods
     void initializeRack();
     void layoutSlots();
     void createSlot(int slotIndex);
     void updateSlotPositions();
-    void notifyStateChanged();
-    void notifyGearItemAdded(int slotIndex, const GearItem *gearItem);
-    void notifyGearItemRemoved(int slotIndex);
-    void notifyGearControlChanged(int slotIndex, const GearItem *gearItem, int controlIndex);
-    void notifyGearItemsRearranged(int sourceSlotIndex, int targetSlotIndex);
-    void notifyRackStateReset();
     void repaintAllSlots();
     void repaintSingleSlot(int slotIndex);
 
     // Drag and drop helpers
     int getSlotIndexFromPosition(juce::Point<int> position) const;
     bool canDropGearInSlot(int slotIndex, const juce::String &gearId) const;
-
-    // State persistence helpers
-    void serializeRackState();
-    void deserializeRackState();
 
     // JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Rack)
 };

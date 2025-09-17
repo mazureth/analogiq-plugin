@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "../View/Rack.h"
+#include "../Model/RackModel.h"
 #include "../Model/PresetManager.h"
 #include "../Shared/IFileSystem.h"
 #include "../Shared/ICacheManager.h"
@@ -39,7 +40,7 @@ public:
      * @param fileSystem Reference to the file system service
      * @param cacheManager Reference to the cache manager
      */
-    RackController(Rack &rack,
+    RackController(RackModel &rackModel,
                    PresetManager &presetManager,
                    IFileSystem &fileSystem,
                    ICacheManager &cacheManager);
@@ -279,7 +280,7 @@ public:
 
 private:
     // Core dependencies
-    Rack &rack;
+    RackModel &rackModel;
     PresetManager &presetManager;
     IFileSystem &fileSystem;
     ICacheManager &cacheManager;

@@ -25,16 +25,9 @@
  * @param gearLibrary Reference to the gear library
  * @param slotIndex The index of this slot in the rack
  */
-RackSlot::RackSlot(IFileSystem &fileSystem,
-                   ICacheManager &cacheManager,
-                   PresetManager &presetManager,
-                   GearLibrary &gearLibrary,
-                   int slotIndex)
+RackSlot::RackSlot(RackModel &rackModel, int slotIndex)
     : index(slotIndex),
-      fileSystem(fileSystem),
-      cacheManager(cacheManager),
-      presetManager(presetManager),
-      gearLibrary(gearLibrary)
+      rackModel(rackModel)
 {
 
     setComponentID("RackSlot_" + juce::String(index));
@@ -435,7 +428,7 @@ void RackSlot::updateButtonStates()
         return;
     }
 
-    int totalSlots = rack->getSlotCount();
+    int totalSlots = rackModel.getSlotCount();
 
     // Disable up button for first slot (index 0)
     if (upButton)
@@ -457,10 +450,10 @@ void RackSlot::moveUp()
 
     // Move gear up by swapping with the slot above
     int targetSlot = index - 1;
-    if (rack->moveGearBetweenSlots(index, targetSlot))
+    if (rackModel.moveGearBetweenSlots(index, targetSlot))
     {
         // Update indices after successful move
-        rack->updateSlotIndices();
+        // updateSlotIndices is now handled by RackModel
         // Recalculate layout to adjust slot heights for new gear items
         rack->resized();
         rack->repaint();
@@ -473,16 +466,16 @@ void RackSlot::moveDown()
         return;
 
     // Get the total number of slots to check if we're at the last slot
-    int totalSlots = rack->getSlotCount();
+    int totalSlots = rackModel.getSlotCount();
     if (index >= totalSlots - 1)
         return;
 
     // Move gear down by swapping with the slot below
     int targetSlot = index + 1;
-    if (rack->moveGearBetweenSlots(index, targetSlot))
+    if (rackModel.moveGearBetweenSlots(index, targetSlot))
     {
         // Update indices after successful move
-        rack->updateSlotIndices();
+        // updateSlotIndices is now handled by RackModel
         // Recalculate layout to adjust slot heights for new gear items
         rack->resized();
         rack->repaint();
@@ -495,7 +488,7 @@ void RackSlot::removeGear()
         return;
 
     // Remove the entire slot from the rack
-    rack->removeRackSlot(index);
+    rackModel.removeGearFromSlot(index);
     // Note: After this call, this RackSlot object will be destroyed,
     // so we don't need to update indices or repaint here
 }
@@ -758,7 +751,7 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
         juce::Logger::writeToLog("RackSlot::itemDropped - extracted gearId: " + gearId);
 
         // Get the gear item from the library
-        GearItem *gearItem = gearLibrary.getGearItem(gearId);
+        GearItem *gearItem = rackModel.getGearLibrary().getGearItem(gearId);
         juce::Logger::writeToLog("RackSlot::itemDropped - gearItem found: " + juce::String(gearItem != nullptr ? "YES" : "NO"));
 
         if (gearItem)

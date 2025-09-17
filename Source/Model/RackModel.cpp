@@ -1253,3 +1253,8 @@ bool RackModel::deserializeControl(const juce::ValueTree &controlTree, GearContr
 
     return true;
 }
+
+GearLibrary &RackModel::getGearLibrary() const
+{
+    return gearLibrary;
+}
