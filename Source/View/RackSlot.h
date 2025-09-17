@@ -11,10 +11,6 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "../Shared/IFileSystem.h"
-#include "../Shared/ICacheManager.h"
-#include "../Model/PresetManager.h"
-#include "../Model/GearLibrary.h"
 #include "../Model/RackModel.h"
 #include "../Shared/GearControl.h"
 
@@ -39,10 +35,7 @@ public:
     /**
      * @brief Constructs a new RackSlot instance.
      *
-     * @param fileSystem Reference to the file system
-     * @param cacheManager Reference to the cache manager
-     * @param presetManager Reference to the preset manager
-     * @param gearLibrary Reference to the gear library
+     * @param rackModel Reference to the rack model for data access
      * @param slotIndex The index of this slot in the rack
      */
     RackSlot(RackModel &rackModel, int slotIndex = 0);
@@ -181,25 +174,7 @@ public:
      */
     void itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
 
-    // Gear item management
-    /**
-     * @brief Sets the gear item for this slot.
-     *
-     * @param item Pointer to the gear item to set
-     */
-    void setGearItem(GearItem *item);
-
-    /**
-     * @brief Gets the gear item in this slot.
-     *
-     * @return Pointer to the gear item, or nullptr if no item
-     */
-    GearItem *getGearItem() const { return gearItem; }
-
-    /**
-     * @brief Clears the gear item from this slot.
-     */
-    void clearGearItem();
+    // Gear item data now comes from RackModel - no local management needed
 
     // Faceplate scaling and control rendering
     /**
@@ -228,7 +203,7 @@ public:
      *
      * @return true if the slot is empty, false otherwise
      */
-    bool isEmpty() const { return gearItem == nullptr; }
+    bool isEmpty() const;
 
     /**
      * @brief Gets the slot index.
@@ -280,8 +255,7 @@ private:
     // Slot information
     int index; ///< Index of this slot in the rack
 
-    // Gear item
-    GearItem *gearItem = nullptr; ///< Pointer to the gear item in this slot
+    // Gear item data now comes from RackModel - no local storage
 
     // Dependencies
     RackModel &rackModel;
