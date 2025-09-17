@@ -788,13 +788,19 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
             if (isEmpty())
             {
                 juce::Logger::writeToLog("RackSlot::itemDropped - slot is empty, proceeding with drop");
-                // Set the gear item in this slot
-                // Gear item management now handled by RackModel - trigger UI update
-                updateButtonStates();
-                repaint();
-                juce::Logger::writeToLog("RackSlot::itemDropped - setGearItem completed");
-
-                // Log successful drop
+                // Add gear to slot via RackModel
+                bool success = rackModel.addGearToSlot(index, gearId);
+                if (success)
+                {
+                    juce::Logger::writeToLog("RackSlot::itemDropped - gear added to slot successfully");
+                    // Trigger UI update
+                    updateButtonStates();
+                    repaint();
+                }
+                else
+                {
+                    juce::Logger::writeToLog("RackSlot::itemDropped - failed to add gear to slot");
+                }
             }
             else
             {
