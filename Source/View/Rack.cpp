@@ -25,6 +25,9 @@ Rack::Rack(RackModel &rackModel)
 
     // Set component ID for debugging
     setComponentID("Rack");
+
+    // Debug: Log which RackModel instance this Rack is connected to
+    juce::Logger::writeToLog("Rack::Rack - Created Rack connected to RackModel instance ID: " + juce::String(rackModel.getInstanceId()));
 }
 
 Rack::~Rack()

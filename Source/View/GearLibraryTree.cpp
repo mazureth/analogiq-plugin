@@ -16,24 +16,14 @@
 GearLibraryTree::GearLibraryTree(GearLibrary &gl, ICacheManager &cm, PresetManager &pm)
     : gearLibrary(gl), cacheManager(cm), presetManager(pm)
 {
-    juce::Logger::writeToLog("GearLibraryTree::constructor - Starting constructor");
     setupTreeView();
-    juce::Logger::writeToLog("GearLibraryTree::constructor - setupTreeView() completed");
 
     // Delay tree population to ensure file system and gear library are ready
-    juce::Logger::writeToLog("GearLibraryTree::constructor - About to call MessageManager::callAsync");
     juce::MessageManager::callAsync([this]()
                                     {
-        juce::Logger::writeToLog("GearLibraryTree::constructor - ASYNC LAMBDA STARTED");
-        juce::Logger::writeToLog("GearLibraryTree::constructor - Delayed populateTree() called");
-        
         // Ensure GearLibrary is initialized before populating tree
-        juce::Logger::writeToLog("GearLibraryTree::constructor - Initializing GearLibrary");
         auto allGearItems = gearLibrary.getAllGearItems();
-        juce::Logger::writeToLog("GearLibraryTree::constructor - GearLibrary initialization complete, loaded " + juce::String(allGearItems.size()) + " gear items");
-        
         populateTree(); });
-    juce::Logger::writeToLog("GearLibraryTree::constructor - MessageManager::callAsync() called, constructor ending");
 }
 
 GearLibraryTree::~GearLibraryTree()

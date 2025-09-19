@@ -36,18 +36,24 @@ struct SlotData
     int slotIndex = -1;
     bool isOccupied = false;
 
-    // Gear item data
-    juce::String gearId;
-    juce::String instanceId;
+    // Template identification (for schema lookup)
+    juce::String gearId; // Template ID: "alesis-3630"
+
+    // Instance identification (for uniqueness)
+    juce::String instanceId; // Instance ID: "alesis-3630_inst_1758148594511"
+
+    // Instance-specific data
     juce::String gearName;
     juce::String manufacturer;
     juce::String version;
     juce::String description;
 
-    // Control values - this is the key data that needs to persist
+    // Control values - unique per instance
     juce::Array<GearControl> controls;
 
-    // Faceplate and image data
+    // Faceplate and image data - reference-counted copies
+    juce::Image faceplateImage;
+    juce::Image thumbnailImage;
     juce::String faceplateImagePath;
     juce::String thumbnailImagePath;
 
@@ -129,6 +135,9 @@ public:
     SlotData *getSlotData(int slotIndex);
     void setSlotData(int slotIndex, const SlotData &data);
 
+    // Debug method
+    int getInstanceId() const { return instanceId; }
+
     // Control management
     bool updateControlValue(int slotIndex, int controlIndex, float value);
     bool updateControlIndex(int slotIndex, int controlIndex, int index);
@@ -193,6 +202,9 @@ private:
     int slotWidth;
     int slotHeight;
     int slotSpacing;
+
+    // Debug identifier
+    int instanceId;
 
     // State listeners
     juce::Array<RackStateListener *> stateListeners;

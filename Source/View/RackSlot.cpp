@@ -125,11 +125,7 @@ RackSlot::~RackSlot()
  */
 void RackSlot::paint(juce::Graphics &g)
 {
-    juce::Logger::writeToLog("=== RackSlot::paint START ===");
-    juce::Logger::writeToLog("RackSlot::paint - slot index: " + juce::String(index));
-
     auto area = getLocalBounds();
-    juce::Logger::writeToLog("RackSlot::paint - area: " + area.toString());
 
     // Draw slot background
     if (isDragOver)
@@ -137,51 +133,27 @@ void RackSlot::paint(juce::Graphics &g)
         // Show drag feedback with light blue overlay
         g.setColour(juce::Colours::lightblue.withAlpha(0.3f));
         g.fillAll();
-        juce::Logger::writeToLog("RackSlot::paint - drawing drag over background");
     }
     else if (slotBackgroundColor != juce::Colours::transparentBlack)
     {
         // Use the slot's background color if it's not transparent
         g.setColour(slotBackgroundColor);
         g.fillAll();
-        juce::Logger::writeToLog("RackSlot::paint - drawing slot background color");
     }
 
     // Draw slot border
     g.setColour(juce::Colours::white);
     g.drawRect(area, 1);
-    juce::Logger::writeToLog("RackSlot::paint - drew slot border");
 
     // Draw gear item info if present - get data from RackModel
-    juce::Logger::writeToLog("RackSlot::paint - getting slot data from RackModel...");
     if (auto *slotData = rackModel.getSlotData(index))
     {
-        juce::Logger::writeToLog("RackSlot::paint - slot data found");
-        juce::Logger::writeToLog("  - slotData.isOccupied: " + juce::String(slotData->isOccupied ? "YES" : "NO"));
-        juce::Logger::writeToLog("  - slotData.gearId: " + slotData->gearId);
-        juce::Logger::writeToLog("  - slotData.gearName: " + slotData->gearName);
-        juce::Logger::writeToLog("  - slotData.controls count: " + juce::String(slotData->controls.size()));
 
         if (slotData->isOccupied)
         {
-            juce::Logger::writeToLog("RackSlot::paint - slot is occupied, getting gear item from library...");
-            // Get gear item from library for image access
-            auto *gearItem = rackModel.getGearLibrary().getGearItem(slotData->gearId);
-            juce::Logger::writeToLog("RackSlot::paint - gear item from library: " + juce::String(gearItem != nullptr ? "FOUND" : "NOT FOUND"));
 
-            if (gearItem)
-            {
-                juce::Logger::writeToLog("RackSlot::paint - gear item details:");
-                juce::Logger::writeToLog("  - unitId: " + gearItem->unitId);
-                juce::Logger::writeToLog("  - name: " + gearItem->name);
-                juce::Logger::writeToLog("  - manufacturer: " + gearItem->manufacturer);
-                juce::Logger::writeToLog("  - has faceplate image: " + juce::String(gearItem->faceplateImage.isValid() ? "YES" : "NO"));
-                juce::Logger::writeToLog("  - faceplate image size: " + gearItem->faceplateImage.getBounds().toString());
-                juce::Logger::writeToLog("  - controls count: " + juce::String(gearItem->controls.size()));
-            }
-
-            // Draw faceplate image if available (exactly like old system)
-            if (gearItem && gearItem->faceplateImage.isValid())
+            // Draw faceplate image if available (using instance-specific data)
+            if (slotData->faceplateImage.isValid())
             {
                 // Calculate faceplate area (exactly like old system)
                 juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
@@ -189,9 +161,9 @@ void RackSlot::paint(juce::Graphics &g)
                 // Remove 20 pixels from top to match old system's faceplate area (without drawing text)
                 faceplateArea.removeFromTop(20);
 
-                // Calculate scaling factor based on faceplate dimensions (exactly like old system)
-                float originalWidth = (float)gearItem->faceplateImage.getWidth();
-                float originalHeight = (float)gearItem->faceplateImage.getHeight();
+                // Calculate scaling factor based on faceplate dimensions (using instance data)
+                float originalWidth = (float)slotData->faceplateImage.getWidth();
+                float originalHeight = (float)slotData->faceplateImage.getHeight();
                 float targetWidth = (float)faceplateArea.getWidth();
                 float targetHeight = (float)faceplateArea.getHeight();
 
@@ -210,156 +182,14 @@ void RackSlot::paint(juce::Graphics &g)
                 float imageY = faceplateArea.getY() + (faceplateArea.getHeight() - scaledHeight) / 2;
                 juce::Rectangle<float> actualImageBounds(imageX, imageY, scaledWidth, scaledHeight);
 
-                // Draw the faceplate image (exactly like old system)
-                g.drawImageWithin(gearItem->faceplateImage,
+                // Draw the faceplate image (using instance-specific data)
+                g.drawImageWithin(slotData->faceplateImage,
                                   faceplateArea.getX(), faceplateArea.getY(),
                                   faceplateArea.getWidth(), faceplateArea.getHeight(),
                                   juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize);
 
                 // Draw controls on top of the faceplate using actual image bounds
                 drawControls(g, actualImageBounds);
-
-                // TEMPORARY: Draw red borders around click targets for debugging
-                g.setColour(juce::Colours::red);
-                for (const auto &control : gearItem->controls)
-                {
-
-                    // Calculate control bounds (same as findControlAtPosition)
-                    int x = actualImageBounds.getX() + (int)(control.position.getX() * actualImageBounds.getWidth());
-                    int y = actualImageBounds.getY() + (int)(control.position.getY() * actualImageBounds.getHeight());
-
-                    // Calculate actual rendered bounds based on control type
-                    juce::Rectangle<float> controlBounds;
-
-                    switch (control.type)
-                    {
-                    case GearControl::ControlType::Knob:
-                    {
-                        // Use the same logic as drawKnobControl() to calculate knob size
-                        float knobSize;
-                        if (control.loadedImage.isValid())
-                        {
-                            float originalWidth = (float)control.loadedImage.getWidth();
-                            float originalHeight = (float)control.loadedImage.getHeight();
-                            knobSize = std::max(originalWidth, originalHeight) * currentFaceplateScale;
-                        }
-                        else
-                        {
-                            const float baseKnobSize = 40.0f;
-                            knobSize = baseKnobSize * currentFaceplateScale;
-                        }
-                        controlBounds = juce::Rectangle<float>(x, y, knobSize, knobSize);
-                        break;
-                    }
-                    case GearControl::ControlType::Fader:
-                    {
-                        // DEBUG: Log fader detection
-                        juce::Logger::writeToLog("DEBUG: Drawing red border for fader: " + control.name);
-                        DBG("DEBUG: Drawing red border for fader: " + control.name);
-
-                        // Use the exact same logic as drawFaderControl()
-                        const bool isVertical = control.orientation == GearControl::Orientation::Vertical;
-                        const float faderLength = control.length * currentFaceplateScale;
-
-                        // Calculate handle size from the fader image (exactly like drawFaderControl)
-                        float handleSize = 20.0f; // Default handle size
-                        if (control.faderImage.isValid())
-                        {
-                            // Scale the handle relative to the scaled faceplate size
-                            float imageWidth = (float)control.faderImage.getWidth();
-                            float imageHeight = (float)control.faderImage.getHeight();
-                            handleSize = std::max(imageWidth, imageHeight) * currentFaceplateScale;
-                        }
-
-                        // Scale the handle size based on the image's aspect ratio (exactly like drawFaderControl)
-                        float imageWidth = (float)control.faderImage.getWidth();
-                        float imageHeight = (float)control.faderImage.getHeight();
-                        float aspectRatio = imageWidth / imageHeight;
-
-                        float scaledWidth, scaledHeight;
-                        if (isVertical)
-                        {
-                            scaledHeight = handleSize;
-                            scaledWidth = handleSize * aspectRatio;
-                        }
-                        else
-                        {
-                            scaledWidth = handleSize;
-                            scaledHeight = handleSize / aspectRatio;
-                        }
-
-                        // Use the exact scaled image dimensions for click target
-                        // The handle can extend half its size beyond each end of the track
-                        if (isVertical)
-                        {
-                            // Vertical fader: extend track length by half handle size at each end
-                            float extendedLength = faderLength + scaledHeight;
-                            controlBounds = juce::Rectangle<float>(x - scaledWidth / 2, y - scaledHeight / 2, scaledWidth, extendedLength);
-                        }
-                        else
-                        {
-                            // Horizontal fader: extend track length by half handle size at each end
-                            float extendedLength = faderLength + scaledWidth;
-                            controlBounds = juce::Rectangle<float>(x - scaledWidth / 2, y - scaledHeight / 2, extendedLength, scaledHeight);
-                        }
-
-                        // DEBUG: Log fader bounds
-                        juce::Logger::writeToLog("DEBUG: Fader bounds: " + controlBounds.toString() +
-                                                 ", isVertical: " + (isVertical ? "true" : "false") +
-                                                 ", faderLength: " + juce::String(faderLength) +
-                                                 ", scaledWidth: " + juce::String(scaledWidth) +
-                                                 ", scaledHeight: " + juce::String(scaledHeight));
-                        break;
-                    }
-                    case GearControl::ControlType::Button:
-                    {
-                        // Use the same logic as findControlAtPosition for button bounds
-                        float buttonWidth, buttonHeight;
-                        if (control.buttonSpriteSheet.isValid() && control.buttonFrames.size() > 0)
-                        {
-                            // Use the first frame's dimensions as the base size
-                            buttonWidth = (float)control.buttonFrames[0].position.getWidth() * currentFaceplateScale;
-                            buttonHeight = (float)control.buttonFrames[0].position.getHeight() * currentFaceplateScale;
-                        }
-                        else
-                        {
-                            // Fallback to standard size if no sprite sheet
-                            const float baseButtonSize = 30.0f;
-                            buttonWidth = baseButtonSize * currentFaceplateScale;
-                            buttonHeight = baseButtonSize * currentFaceplateScale;
-                        }
-                        controlBounds = juce::Rectangle<float>(x, y, buttonWidth, buttonHeight);
-                        break;
-                    }
-                    case GearControl::ControlType::Switch:
-                    {
-                        // Use the same logic as findControlAtPosition for switch bounds
-                        float switchWidth, switchHeight;
-                        if (control.switchSpriteSheet.isValid() && control.switchFrames.size() > 0)
-                        {
-                            // Use the first frame's dimensions as the base size
-                            switchWidth = (float)control.switchFrames[0].position.getWidth() * currentFaceplateScale;
-                            switchHeight = (float)control.switchFrames[0].position.getHeight() * currentFaceplateScale;
-                        }
-                        else
-                        {
-                            // Fallback to standard size if no sprite sheet
-                            const float baseSwitchWidth = 30.0f;
-                            const float baseSwitchHeight = 60.0f;
-                            switchWidth = baseSwitchWidth * currentFaceplateScale;
-                            switchHeight = baseSwitchHeight * currentFaceplateScale;
-                        }
-                        controlBounds = juce::Rectangle<float>(x, y, switchWidth, switchHeight);
-                        break;
-                    }
-                    default:
-                        // For other control types, use a default size
-                        controlBounds = juce::Rectangle<float>(x, y, 40, 40);
-                    }
-
-                    // Draw red border around the click target
-                    g.drawRect(controlBounds, 2.0f);
-                }
             }
             else
             {
@@ -385,8 +215,6 @@ void RackSlot::paint(juce::Graphics &g)
     {
         juce::Logger::writeToLog("RackSlot::paint - no slot data found for index " + juce::String(index));
     }
-
-    juce::Logger::writeToLog("=== RackSlot::paint END ===");
 }
 
 bool RackSlot::isEmpty() const
@@ -538,22 +366,21 @@ void RackSlot::removeGear()
 // Mouse events for control interaction
 void RackSlot::mouseDown(const juce::MouseEvent &e)
 {
-    // Get gear item from RackModel
+    // Get slot data from RackModel
     auto *slotData = rackModel.getSlotData(index);
     if (!slotData || !slotData->isOccupied)
         return;
 
-    auto *gearItem = rackModel.getGearLibrary().getGearItem(slotData->gearId);
-    if (gearItem == nullptr || !gearItem->faceplateImage.isValid())
+    if (!slotData->faceplateImage.isValid())
         return;
 
     // Calculate faceplate area (same as in paint method)
     juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
     faceplateArea.removeFromTop(20); // Remove space for name
 
-    // Calculate actual rendered image bounds (same as in paint method)
-    float originalWidth = (float)gearItem->faceplateImage.getWidth();
-    float originalHeight = (float)gearItem->faceplateImage.getHeight();
+    // Calculate actual rendered image bounds (using instance data)
+    float originalWidth = (float)slotData->faceplateImage.getWidth();
+    float originalHeight = (float)slotData->faceplateImage.getHeight();
     float targetWidth = (float)faceplateArea.getWidth();
     float targetHeight = (float)faceplateArea.getHeight();
 
@@ -598,14 +425,19 @@ void RackSlot::mouseDown(const juce::MouseEvent &e)
             repaint();
 
             // Notify the rack of the control change
-            if (gearItem != nullptr)
+            if (activeControl != nullptr)
             {
-                for (int i = 0; i < gearItem->controls.size(); ++i)
+                // Find the control index in the slot data
+                auto *slotData = rackModel.getSlotData(index);
+                if (slotData && slotData->isOccupied)
                 {
-                    if (&gearItem->controls.getReference(i) == activeControl)
+                    for (int i = 0; i < slotData->controls.size(); ++i)
                     {
-                        notifyRackOfControlChanged(i);
-                        break;
+                        if (&slotData->controls.getReference(i) == activeControl)
+                        {
+                            notifyRackOfControlChanged(i);
+                            break;
+                        }
                     }
                 }
             }
@@ -884,16 +716,13 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
 
 void RackSlot::drawControls(juce::Graphics &g, const juce::Rectangle<float> &actualImageBounds)
 {
-    // Get gear item from RackModel
+    // Get slot data from RackModel
     auto *slotData = rackModel.getSlotData(index);
     if (!slotData || !slotData->isOccupied)
         return;
 
-    auto *gearItem = rackModel.getGearLibrary().getGearItem(slotData->gearId);
-    if (gearItem == nullptr)
-        return;
-
-    for (const auto &control : gearItem->controls)
+    // Use instance-specific controls data
+    for (const auto &control : slotData->controls)
     {
         // Calculate control position relative to actual rendered image bounds
         int x = actualImageBounds.getX() + (int)(control.position.getX() * actualImageBounds.getWidth());
@@ -1270,16 +1099,13 @@ void RackSlot::setSlotBackgroundColor(juce::Colour color)
 // Helper methods for control interaction
 GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position, const juce::Rectangle<float> &actualImageBounds)
 {
-    // Get gear item from RackModel
+    // Get slot data from RackModel
     auto *slotData = rackModel.getSlotData(index);
     if (!slotData || !slotData->isOccupied)
         return nullptr;
 
-    auto *gearItem = rackModel.getGearLibrary().getGearItem(slotData->gearId);
-    if (gearItem == nullptr)
-        return nullptr;
-
-    for (auto &control : gearItem->controls)
+    // Use instance-specific controls data
+    for (auto &control : slotData->controls)
     {
         // Calculate control bounds
         int x = actualImageBounds.getX() + (int)(control.position.getX() * actualImageBounds.getWidth());
@@ -1416,22 +1242,21 @@ GearControl *RackSlot::findControlAtPosition(const juce::Point<float> &position,
 
 void RackSlot::resetControlToDefault(const juce::MouseEvent &e)
 {
-    // Get gear item from RackModel
+    // Get slot data from RackModel
     auto *slotData = rackModel.getSlotData(index);
     if (!slotData || !slotData->isOccupied)
         return;
 
-    auto *gearItem = rackModel.getGearLibrary().getGearItem(slotData->gearId);
-    if (gearItem == nullptr || !gearItem->faceplateImage.isValid())
+    if (!slotData->faceplateImage.isValid())
         return;
 
     // Calculate faceplate area (same as in mouseDown)
     juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
     faceplateArea.removeFromTop(20); // Remove space for name
 
-    // Calculate actual rendered image bounds (same as in mouseDown)
-    float originalWidth = (float)gearItem->faceplateImage.getWidth();
-    float originalHeight = (float)gearItem->faceplateImage.getHeight();
+    // Calculate actual rendered image bounds (using instance data)
+    float originalWidth = (float)slotData->faceplateImage.getWidth();
+    float originalHeight = (float)slotData->faceplateImage.getHeight();
     float targetWidth = (float)faceplateArea.getWidth();
     float targetHeight = (float)faceplateArea.getHeight();
 

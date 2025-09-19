@@ -39,6 +39,9 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
 {
     setComponentID("AnalogIQEditor");
 
+    // Debug: Log when AnalogIQEditor is created
+    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - First constructor called");
+
     // Create GearLibraryTree component (to the left of the rack)
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
 
@@ -171,6 +174,9 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cach
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
     setComponentID("AnalogIQEditor");
+
+    // Debug: Log when AnalogIQEditor is created
+    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - Second constructor called");
 
     // Create GearLibraryTree component (to the left of the rack)
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);

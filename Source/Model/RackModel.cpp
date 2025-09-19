@@ -19,7 +19,7 @@
 
 RackModel::RackModel(GearLibrary &gearLib, PresetManager &presetMgr, ICacheManager &cacheMgr)
     : gearLibrary(gearLib), presetManager(presetMgr), cacheManager(cacheMgr),
-      numSlots(0), slotWidth(200), slotHeight(150), slotSpacing(10)
+      numSlots(0), slotWidth(200), slotHeight(150), slotSpacing(10), instanceId(rand())
 {
     initializeDefaults();
 }
@@ -122,6 +122,7 @@ void RackModel::compactSlots()
 bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
 {
     juce::Logger::writeToLog("=== RackModel::addGearToSlot START ===");
+    juce::Logger::writeToLog("RackModel::addGearToSlot - instanceId: " + juce::String(instanceId));
     juce::Logger::writeToLog("RackModel::addGearToSlot - slotIndex: " + juce::String(slotIndex) + ", gearId: " + gearId);
 
     // Validate slot index
@@ -138,8 +139,8 @@ bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
     if (!gearItemTemplate)
     {
         juce::Logger::writeToLog("RackModel::addGearToSlot - Gear item not found: " + gearId);
-    return false;
-}
+        return false;
+    }
     juce::Logger::writeToLog("RackModel::addGearToSlot - gear item template found:");
     juce::Logger::writeToLog("  - unitId: " + gearItemTemplate->unitId);
     juce::Logger::writeToLog("  - name: " + gearItemTemplate->name);
@@ -152,18 +153,7 @@ bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
     juce::Logger::writeToLog("RackModel::addGearToSlot - loading complete gear data...");
     bool schemaLoaded = gearLibrary.loadGearSchema(gearItemTemplate);
     juce::Logger::writeToLog("RackModel::addGearToSlot - schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
-    
-    // Load faceplate image asynchronously if schema was loaded and has faceplate path
-    if (schemaLoaded && !gearItemTemplate->faceplateImagePath.isEmpty())
-    {
-        juce::Logger::writeToLog("RackModel::addGearToSlot - loading faceplate image asynchronously from: " + gearItemTemplate->faceplateImagePath);
-        gearLibrary.loadGearFaceplateAsync(gearItemTemplate, [this, slotIndex]() {
-            juce::Logger::writeToLog("RackModel::addGearToSlot - faceplate loaded asynchronously for slot " + juce::String(slotIndex));
-            // Notify listeners that the gear item has been updated with faceplate
-            notifyGearItemAdded(slotIndex, nullptr); // nullptr means update existing
-        });
-    }
-    
+
     juce::Logger::writeToLog("RackModel::addGearToSlot - after loading complete data:");
     juce::Logger::writeToLog("  - has faceplate: " + juce::String(gearItemTemplate->faceplateImage.isValid() ? "YES" : "NO"));
     juce::Logger::writeToLog("  - controls count: " + juce::String(gearItemTemplate->controls.size()));
@@ -187,12 +177,39 @@ bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
 
     // Set the slot data
     juce::Logger::writeToLog("RackModel::addGearToSlot - setting slot data in slots array...");
-    slots[slotIndex] = slotData;
+    slots.set(slotIndex, slotData);
+
+    // Load faceplate image asynchronously if schema was loaded and has faceplate path
+    if (schemaLoaded && !gearItemTemplate->faceplateImagePath.isEmpty())
+    {
+        juce::Logger::writeToLog("RackModel::addGearToSlot - loading faceplate image asynchronously from: " + gearItemTemplate->faceplateImagePath);
+        gearLibrary.loadGearFaceplateAsync(gearItemTemplate, [this, slotIndex]()
+                                           {
+                                               juce::Logger::writeToLog("RackModel::addGearToSlot - faceplate loaded asynchronously for slot " + juce::String(slotIndex));
+
+                                               // Update the slot data with the loaded faceplate image
+                                               if (auto *slotData = getSlotData(slotIndex))
+                                               {
+                                                   // Get the template to copy the loaded faceplate image
+                                                   auto *templateItem = gearLibrary.getGearItem(slotData->gearId);
+                                                   if (templateItem && templateItem->faceplateImage.isValid())
+                                                   {
+                                                       slotData->faceplateImage = templateItem->faceplateImage;
+                                                       slotData->faceplateImageWidth = templateItem->faceplateImage.getWidth();
+                                                       slotData->faceplateImageHeight = templateItem->faceplateImage.getHeight();
+                                                       juce::Logger::writeToLog("RackModel::addGearToSlot - updated slot data with loaded faceplate image");
+                                                   }
+                                               }
+
+                                               // Notify listeners that the gear item has been updated with faceplate
+                                               notifyGearItemAdded(slotIndex, nullptr); // nullptr means update existing
+                                           });
+    }
 
     // Notify listeners
     juce::Logger::writeToLog("RackModel::addGearToSlot - notifying listeners...");
     notifyGearItemAdded(slotIndex, gearItem.get());
-        notifyStateChanged();
+    notifyStateChanged();
 
     // Add to recently used
     juce::Logger::writeToLog("RackModel::addGearToSlot - adding to recently used...");
@@ -200,7 +217,7 @@ bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
 
     juce::Logger::writeToLog("RackModel::addGearToSlot - Added gear " + gearId + " to slot " + juce::String(slotIndex));
     juce::Logger::writeToLog("=== RackModel::addGearToSlot END ===");
-        return true;
+    return true;
 }
 
 bool RackModel::removeGearFromSlot(int slotIndex)
@@ -267,10 +284,10 @@ bool RackModel::moveGearBetweenSlots(int fromSlot, int toSlot)
         slots.set(fromSlot, toData);
 
         // Notify listeners
-    notifyGearItemsRearranged(fromSlot, toSlot);
-    notifyStateChanged();
+        notifyGearItemsRearranged(fromSlot, toSlot);
+        notifyStateChanged();
 
-    return true;
+        return true;
     }
 }
 
@@ -286,17 +303,24 @@ juce::String RackModel::getGearInSlot(int slotIndex) const
 const SlotData *RackModel::getSlotData(int slotIndex) const
 {
     if (!isValidSlotIndex(slotIndex))
+    {
         return nullptr;
+    }
 
-    return &slots.getReference(slotIndex);
+    const SlotData *slotData = &slots.getReference(slotIndex);
+    return slotData;
 }
 
 SlotData *RackModel::getSlotData(int slotIndex)
 {
-    if (!isValidSlotIndex(slotIndex))
-        return nullptr;
 
-    return &slots.getReference(slotIndex);
+    if (!isValidSlotIndex(slotIndex))
+    {
+        return nullptr;
+    }
+
+    SlotData *result = &slots.getReference(slotIndex);
+    return result;
 }
 
 void RackModel::setSlotData(int slotIndex, const SlotData &data)
@@ -325,8 +349,8 @@ bool RackModel::updateControlValue(int slotIndex, int controlIndex, float value)
     slotData.controls.getReference(controlIndex).currentValue = value;
 
     // Notify listeners
-        notifyGearControlChanged(slotIndex, nullptr, controlIndex);
-        notifyStateChanged();
+    notifyGearControlChanged(slotIndex, nullptr, controlIndex);
+    notifyStateChanged();
 
     return true;
 }
@@ -345,8 +369,8 @@ bool RackModel::updateControlIndex(int slotIndex, int controlIndex, int index)
     slotData.controls.getReference(controlIndex).currentValue = static_cast<float>(index);
 
     // Notify listeners
-        notifyGearControlChanged(slotIndex, nullptr, controlIndex);
-        notifyStateChanged();
+    notifyGearControlChanged(slotIndex, nullptr, controlIndex);
+    notifyStateChanged();
 
     return true;
 }
@@ -392,7 +416,7 @@ void RackModel::setSlotLayout(int newNumSlots)
             slots[i] = SlotData(i);
         }
 
-    notifyStateChanged();
+        notifyStateChanged();
     }
 }
 
@@ -407,7 +431,7 @@ void RackModel::setSlotSize(int width, int height)
     {
         slotWidth = width;
         slotHeight = height;
-    notifyStateChanged();
+        notifyStateChanged();
     }
 }
 
@@ -588,7 +612,7 @@ bool RackModel::deserializeFromJSON(const juce::String &jsonString)
             return false;
 
         // Clear existing rack state
-    clearAllSlots();
+        clearAllSlots();
 
         // Load rack configuration
         if (rackObject->hasProperty("numSlots"))
@@ -635,7 +659,7 @@ bool RackModel::deserializeFromJSON(const juce::String &jsonString)
             }
         }
 
-    notifyStateChanged();
+        notifyStateChanged();
         return true;
     }
     catch (const std::exception &e)
@@ -916,8 +940,13 @@ SlotData RackModel::createSlotDataFromGearItem(int slotIndex, const GearItem *ge
         juce::Logger::writeToLog("  - controls count: " + juce::String(gearItem->controls.size()));
 
         slotData.isOccupied = true;
-        slotData.gearId = gearItem->unitId;
-        slotData.instanceId = gearItem->instanceId;
+
+        // Store template ID (for schema lookup) - this is the source unit ID
+        slotData.gearId = gearItem->sourceUnitId;
+
+        // Store instance ID (for uniqueness) - this is the full instance ID
+        slotData.instanceId = gearItem->unitId;
+
         slotData.gearName = gearItem->name;
         slotData.manufacturer = gearItem->manufacturer;
         slotData.version = gearItem->version;
@@ -926,6 +955,10 @@ SlotData RackModel::createSlotDataFromGearItem(int slotIndex, const GearItem *ge
         slotData.thumbnailImagePath = ""; // GearItem doesn't have thumbnailImagePath
         slotData.tags = gearItem->tags;
         slotData.category = gearItem->categoryString;
+
+        // Store reference-counted copies of images for memory efficiency
+        slotData.faceplateImage = gearItem->faceplateImage;
+        slotData.thumbnailImage = gearItem->thumbnailImage;
 
         // Store faceplate image dimensions for dynamic height calculation
         if (gearItem->faceplateImage.isValid())
@@ -1124,6 +1157,16 @@ bool RackModel::deserializeSlotData(const juce::ValueTree &slotTree, SlotData &d
                 }
             }
         }
+
+        // Load images from paths (reference-counted copies)
+        if (!data.faceplateImagePath.isEmpty())
+        {
+            data.faceplateImage = juce::ImageCache::getFromFile(juce::File(data.faceplateImagePath));
+        }
+        if (!data.thumbnailImagePath.isEmpty())
+        {
+            data.thumbnailImage = juce::ImageCache::getFromFile(juce::File(data.thumbnailImagePath));
+        }
     }
 
     return true;
@@ -1215,6 +1258,16 @@ bool RackModel::loadSlotFromObject(const juce::DynamicObject &slotObject, SlotDa
                 data.controls.clear();
                 // TODO: Implement full control deserialization
             }
+        }
+
+        // Load images from paths (reference-counted copies)
+        if (!data.faceplateImagePath.isEmpty())
+        {
+            data.faceplateImage = juce::ImageCache::getFromFile(juce::File(data.faceplateImagePath));
+        }
+        if (!data.thumbnailImagePath.isEmpty())
+        {
+            data.thumbnailImage = juce::ImageCache::getFromFile(juce::File(data.thumbnailImagePath));
         }
     }
 

@@ -18,7 +18,7 @@ AnalogIQProcessor::AnalogIQProcessor()
     : AudioProcessor(BusesProperties()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
-      state(*this, nullptr, "Parameters", createParameterLayout()), undoManager(std::make_unique<juce::UndoManager>()), lastCreatedEditor(nullptr), storedRackReference(nullptr), networkFetcher(nullptr), fileSystem(nullptr)
+      state(*this, nullptr, "Parameters", createParameterLayout()), undoManager(std::make_unique<juce::UndoManager>()), lastCreatedEditor(nullptr), storedRackReference(nullptr), networkFetcher(nullptr), fileSystem(nullptr), cacheManager(nullptr), presetManager(nullptr), gearLibrary(nullptr), rackModel(nullptr)
 {
     // Initialize logging
     initializeLogging();
@@ -30,9 +30,6 @@ AnalogIQProcessor::AnalogIQProcessor()
     presetManager = std::make_unique<PresetManager>(*fileSystem);
     gearLibrary = std::make_unique<GearLibrary>(*fileSystem, *cacheManager, *networkFetcher);
     rackModel = std::make_unique<RackModel>(*gearLibrary, *presetManager, *cacheManager);
-
-    // Log initialization
-    juce::Logger::writeToLog("AnalogIQProcessor initialized with default dependencies");
 }
 
 AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &nf, IFileSystem &fs)
@@ -43,9 +40,6 @@ AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &nf, IFileSystem &fs)
 {
     // Initialize logging
     initializeLogging();
-
-    // Log initialization
-    juce::Logger::writeToLog("AnalogIQProcessor initialized with dependencies");
 }
 
 AnalogIQProcessor::~AnalogIQProcessor()

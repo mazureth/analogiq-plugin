@@ -612,12 +612,21 @@ GearItem *GearLibrary::getGearItem(const juce::String &gearId)
 {
     juce::Logger::writeToLog("=== GearLibrary::getGearItem START ===");
     juce::Logger::writeToLog("GearLibrary::getGearItem - searching for gearId: " + gearId);
+
+    // Sanitize gearId to remove instance suffix if present
+    juce::String sanitizedGearId = gearId;
+    int instPos = gearId.indexOf("_inst_");
+    if (instPos != -1)
+    {
+        sanitizedGearId = gearId.substring(0, instPos);
+        juce::Logger::writeToLog("GearLibrary::getGearItem - sanitized gearId from '" + gearId + "' to '" + sanitizedGearId + "'");
+    }
+
     juce::Logger::writeToLog("GearLibrary::getGearItem - total gear items in library: " + juce::String(gearItems.size()));
 
     for (auto &item : gearItems)
     {
-        juce::Logger::writeToLog("GearLibrary::getGearItem - checking item: " + item->unitId + " vs " + gearId);
-        if (item->unitId == gearId)
+        if (item->unitId == sanitizedGearId)
         {
             juce::Logger::writeToLog("GearLibrary::getGearItem - FOUND MATCH!");
             juce::Logger::writeToLog("  - unitId: " + item->unitId);
@@ -638,12 +647,22 @@ const GearItem *GearLibrary::getGearItem(const juce::String &gearId) const
 {
     juce::Logger::writeToLog("=== GearLibrary::getGearItem (const) START ===");
     juce::Logger::writeToLog("GearLibrary::getGearItem (const) - searching for gearId: " + gearId);
+
+    // Sanitize gearId to remove instance suffix if present
+    juce::String sanitizedGearId = gearId;
+    int instPos = gearId.indexOf("_inst_");
+    if (instPos != -1)
+    {
+        sanitizedGearId = gearId.substring(0, instPos);
+        juce::Logger::writeToLog("GearLibrary::getGearItem (const) - sanitized gearId from '" + gearId + "' to '" + sanitizedGearId + "'");
+    }
+
     juce::Logger::writeToLog("GearLibrary::getGearItem (const) - total gear items in library: " + juce::String(gearItems.size()));
 
     for (auto &item : gearItems)
     {
-        juce::Logger::writeToLog("GearLibrary::getGearItem (const) - checking item: " + item->unitId + " vs " + gearId);
-        if (item->unitId == gearId)
+        juce::Logger::writeToLog("GearLibrary::getGearItem (const) - checking item: " + item->unitId + " vs " + sanitizedGearId);
+        if (item->unitId == sanitizedGearId)
         {
             juce::Logger::writeToLog("GearLibrary::getGearItem (const) - FOUND MATCH!");
             juce::Logger::writeToLog("  - unitId: " + item->unitId);
