@@ -142,7 +142,7 @@ void RackSlot::paint(juce::Graphics &g)
     }
 
     // Draw slot border
-    g.setColour(juce::Colours::white);
+    g.setColour(juce::Colours::darkgrey);
     g.drawRect(area, 1);
 
     // Draw gear item info if present - get data from RackModel

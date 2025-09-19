@@ -26,12 +26,18 @@ Rack::Rack(RackModel &rackModel)
     // Set component ID for debugging
     setComponentID("Rack");
 
+    // Register this Rack as a listener to the RackModel
+    rackModel.addRackStateListener(this);
+
     // Debug: Log which RackModel instance this Rack is connected to
     juce::Logger::writeToLog("Rack::Rack - Created Rack connected to RackModel instance ID: " + juce::String(rackModel.getInstanceId()));
 }
 
 Rack::~Rack()
 {
+    // Unregister from RackModel listeners
+    rackModel.removeRackStateListener(this);
+
     // Clear all UI slots
     rackSlots.clear();
 }
@@ -404,4 +410,57 @@ void Rack::componentMovedOrResized(juce::Component &component, bool wasMoved, bo
     // Handle component changes - this is called when RackSlot components are moved or resized
     // For now, we don't need to do anything special here as the RackModel handles the data
     // and the UI updates are handled by the normal JUCE component system
+}
+
+// RackStateListener interface implementation
+void Rack::onGearItemAdded(Rack *rack, int slotIndex, const GearItem *gearItem)
+{
+    // When gear is added (including async faceplate loading), relayout slots to recalculate heights
+    juce::Logger::writeToLog("Rack::onGearItemAdded - slot " + juce::String(slotIndex) + " gear added, relayouting slots");
+    layoutSlots();
+    repaint();
+}
+
+void Rack::onGearItemRemoved(Rack *rack, int slotIndex)
+{
+    // When gear is removed, relayout slots
+    juce::Logger::writeToLog("Rack::onGearItemRemoved - slot " + juce::String(slotIndex) + " gear removed, relayouting slots");
+    layoutSlots();
+    repaint();
+}
+
+void Rack::onGearControlChanged(Rack *rack, int slotIndex, const GearItem *gearItem, int controlIndex)
+{
+    // Control changes don't affect layout, just repaint the specific slot
+    repaintSingleSlot(slotIndex);
+}
+
+void Rack::onGearItemsRearranged(Rack *rack, int sourceSlotIndex, int targetSlotIndex)
+{
+    // When items are rearranged, relayout slots
+    juce::Logger::writeToLog("Rack::onGearItemsRearranged - slots " + juce::String(sourceSlotIndex) + " -> " + juce::String(targetSlotIndex) + ", relayouting slots");
+    layoutSlots();
+    repaint();
+}
+
+void Rack::onRackStateReset(Rack *rack)
+{
+    // When rack state is reset, relayout slots
+    juce::Logger::writeToLog("Rack::onRackStateReset - relayouting slots");
+    layoutSlots();
+    repaint();
+}
+
+void Rack::onPresetLoaded(Rack *rack, const juce::String &presetName)
+{
+    // When preset is loaded, relayout slots
+    juce::Logger::writeToLog("Rack::onPresetLoaded - preset: " + presetName + ", relayouting slots");
+    layoutSlots();
+    repaint();
+}
+
+void Rack::onPresetSaved(Rack *rack, const juce::String &presetName)
+{
+    // Preset saving doesn't affect layout
+    juce::Logger::writeToLog("Rack::onPresetSaved - preset: " + presetName);
 }

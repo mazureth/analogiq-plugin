@@ -23,7 +23,8 @@
 
 class Rack : public juce::Component,
              public juce::DragAndDropTarget,
-             public juce::ComponentListener
+             public juce::ComponentListener,
+             public RackStateListener
 {
 public:
     // Constructor
@@ -81,6 +82,15 @@ private:
     // Drag and drop helpers
     int getSlotIndexFromPosition(juce::Point<int> position) const;
     bool canDropGearInSlot(int slotIndex, const juce::String &gearId) const;
+
+    // RackStateListener interface implementation
+    void onGearItemAdded(Rack *rack, int slotIndex, const GearItem *gearItem) override;
+    void onGearItemRemoved(Rack *rack, int slotIndex) override;
+    void onGearControlChanged(Rack *rack, int slotIndex, const GearItem *gearItem, int controlIndex) override;
+    void onGearItemsRearranged(Rack *rack, int sourceSlotIndex, int targetSlotIndex) override;
+    void onRackStateReset(Rack *rack) override;
+    void onPresetLoaded(Rack *rack, const juce::String &presetName) override;
+    void onPresetSaved(Rack *rack, const juce::String &presetName) override;
 
     // JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Rack)
 };

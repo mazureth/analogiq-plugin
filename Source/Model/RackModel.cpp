@@ -203,6 +203,7 @@ bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
 
                                                // Notify listeners that the gear item has been updated with faceplate
                                                notifyGearItemAdded(slotIndex, nullptr); // nullptr means update existing
+                                               notifyStateChanged();                    // Also notify state change to trigger layout recalculation
                                            });
     }
 
@@ -230,7 +231,7 @@ bool RackModel::removeGearFromSlot(int slotIndex)
     }
 
     // Clear the slot data
-    slots[slotIndex].clear();
+    slots.set(slotIndex, SlotData());
 
     // Notify listeners
     notifyGearItemRemoved(slotIndex);
