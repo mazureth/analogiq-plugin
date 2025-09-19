@@ -44,8 +44,6 @@ AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &nf, IFileSystem &fs)
 
 AnalogIQProcessor::~AnalogIQProcessor()
 {
-    juce::Logger::writeToLog("AnalogIQProcessor destructor called");
-
     // Clear stored references
     storedRackReference = nullptr;
     lastCreatedEditor = nullptr;
@@ -94,8 +92,6 @@ bool AnalogIQProcessor::isBusesLayoutSupported(const BusesLayout &busesLayout) c
 
 juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
-    juce::Logger::writeToLog("createEditor called");
-
     // Create the editor with all necessary dependencies
     auto editor = new AnalogIQEditor(*this,
                                      fileSystem,
@@ -119,7 +115,6 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
             }
         }); });
 
-    juce::Logger::writeToLog("Editor created successfully");
     return editor;
 }
 

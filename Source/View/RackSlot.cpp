@@ -127,23 +127,32 @@ void RackSlot::paint(juce::Graphics &g)
 {
     auto area = getLocalBounds();
 
-    // Draw slot background
+    // Draw slot background with rounded top corners
     if (isDragOver)
     {
         // Show drag feedback with light blue overlay
         g.setColour(juce::Colours::lightblue.withAlpha(0.3f));
-        g.fillAll();
+        juce::Path roundedPath;
+        roundedPath.addRoundedRectangle(area.getX(), area.getY(), area.getWidth(), area.getHeight(),
+                                        8.0f, 8.0f, true, true, true, true);
+        g.fillPath(roundedPath);
     }
     else if (slotBackgroundColor != juce::Colours::transparentBlack)
     {
         // Use the slot's background color if it's not transparent
         g.setColour(slotBackgroundColor);
-        g.fillAll();
+        juce::Path roundedPath;
+        roundedPath.addRoundedRectangle(area.getX(), area.getY(), area.getWidth(), area.getHeight(),
+                                        8.0f, 8.0f, true, true, true, true);
+        g.fillPath(roundedPath);
     }
 
-    // Draw slot border
+    // Draw slot border with rounded top corners
     g.setColour(juce::Colours::darkgrey);
-    g.drawRect(area, 1);
+    juce::Path borderPath;
+    borderPath.addRoundedRectangle(area.getX(), area.getY(), area.getWidth(), area.getHeight(),
+                                   8.0f, 8.0f, true, true, true, true);
+    g.strokePath(borderPath, juce::PathStrokeType(1.0f));
 
     // Draw gear item info if present - get data from RackModel
     if (auto *slotData = rackModel.getSlotData(index))
@@ -630,38 +639,29 @@ void RackSlot::itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSo
 
 void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
-    juce::Logger::writeToLog("RackSlot::itemDropped called");
-
     isDragOver = false;
     repaint();
 
     // Extract gear ID from drag description
     juce::String description = dragSourceDetails.description.toString();
-    juce::Logger::writeToLog("RackSlot::itemDropped - description: " + description);
 
     // Check if this is a gear item drop
     if (description.startsWith("gear:"))
     {
-        juce::Logger::writeToLog("RackSlot::itemDropped - description starts with 'gear:'");
         juce::String gearId = description.substring(5); // Remove "gear:" prefix
-        juce::Logger::writeToLog("RackSlot::itemDropped - extracted gearId: " + gearId);
 
         // Get the gear item from the library
         GearItem *gearItem = rackModel.getGearLibrary().getGearItem(gearId);
-        juce::Logger::writeToLog("RackSlot::itemDropped - gearItem found: " + juce::String(gearItem != nullptr ? "YES" : "NO"));
 
         if (gearItem)
         {
-            juce::Logger::writeToLog("RackSlot::itemDropped - checking if slot is empty");
             // Check if slot is empty
             if (isEmpty())
             {
-                juce::Logger::writeToLog("RackSlot::itemDropped - slot is empty, proceeding with drop");
                 // Add gear to slot via RackModel
                 bool success = rackModel.addGearToSlot(index, gearId);
                 if (success)
                 {
-                    juce::Logger::writeToLog("RackSlot::itemDropped - gear added to slot successfully");
                     // Trigger UI update
                     updateButtonStates();
                     repaint();
@@ -673,7 +673,6 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
             }
             else
             {
-                juce::Logger::writeToLog("RackSlot::itemDropped - slot is occupied, delegating to parent");
                 // Slot is occupied - delegate to parent Rack for insertion logic
 
                 // Find the parent Rack component and delegate the drop
@@ -683,7 +682,6 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
                     // Check if parent is a Rack (by class type, not just ID)
                     if (parent->getComponentID() == "Rack" || dynamic_cast<Rack *>(parent) != nullptr)
                     {
-                        juce::Logger::writeToLog("RackSlot::itemDropped - found parent Rack, delegating drop");
                         // Convert the drop position to parent coordinates
                         juce::DragAndDropTarget::SourceDetails parentDetails = dragSourceDetails;
                         parentDetails.localPosition = parent->getLocalPoint(this, dragSourceDetails.localPosition);
@@ -716,8 +714,6 @@ void RackSlot::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSou
     {
         juce::Logger::writeToLog("RackSlot::itemDropped - description does not start with 'gear:'");
     }
-
-    juce::Logger::writeToLog("RackSlot::itemDropped - method completed");
 }
 
 // Gear item management now handled by RackModel
@@ -1283,8 +1279,6 @@ void RackSlot::resetControlToDefault(const juce::MouseEvent &e)
     // Find control at mouse position
     if (auto *control = findControlAtPosition(e.position, actualImageBounds))
     {
-        juce::Logger::writeToLog("RackSlot::resetControlToDefault - Resetting control: " + control->name + " to default value: " + juce::String(control->initialValue));
-
         // Reset control to default value
         switch (control->type)
         {
@@ -1314,7 +1308,6 @@ void RackSlot::resetControlToDefault(const juce::MouseEvent &e)
 void RackSlot::handleKnobInteraction(GearControl &control, const juce::MouseEvent &e)
 {
     // This method can be used for other knob interactions if needed
-    juce::Logger::writeToLog("RackSlot::handleKnobInteraction - Control: " + control.name);
 }
 
 void RackSlot::handleKnobDrag(GearControl &control, const juce::MouseEvent &e)
@@ -1332,7 +1325,6 @@ void RackSlot::handleKnobDrag(GearControl &control, const juce::MouseEvent &e)
 void RackSlot::handleKnobReset(GearControl &control)
 {
     control.currentValue = control.initialValue;
-    juce::Logger::writeToLog("RackSlot::handleKnobReset - Control: " + control.name + " reset to: " + juce::String(control.initialValue));
     repaint();
 }
 
@@ -1572,7 +1564,6 @@ void RackSlot::onGearItemAdded(Rack *rack, int slotIndex, const GearItem *gearIt
     // Only respond to changes for this specific slot
     if (slotIndex == index)
     {
-        juce::Logger::writeToLog("RackSlot::onGearItemAdded - slot " + juce::String(index) + " gear added");
         updateButtonStates();
         repaint();
     }
@@ -1583,7 +1574,6 @@ void RackSlot::onGearItemRemoved(Rack *rack, int slotIndex)
     // Only respond to changes for this specific slot
     if (slotIndex == index)
     {
-        juce::Logger::writeToLog("RackSlot::onGearItemRemoved - slot " + juce::String(index) + " gear removed");
         updateButtonStates();
         repaint();
     }
@@ -1594,7 +1584,6 @@ void RackSlot::onGearControlChanged(Rack *rack, int slotIndex, const GearItem *g
     // Only respond to changes for this specific slot
     if (slotIndex == index)
     {
-        juce::Logger::writeToLog("RackSlot::onGearControlChanged - slot " + juce::String(index) + " control changed");
         repaint();
     }
 }
@@ -1604,7 +1593,6 @@ void RackSlot::onGearItemsRearranged(Rack *rack, int sourceSlotIndex, int target
     // Repaint if this slot is involved in the rearrangement
     if (index == sourceSlotIndex || index == targetSlotIndex)
     {
-        juce::Logger::writeToLog("RackSlot::onGearItemsRearranged - slot " + juce::String(index) + " involved in rearrangement");
         updateButtonStates();
         repaint();
     }
@@ -1612,20 +1600,17 @@ void RackSlot::onGearItemsRearranged(Rack *rack, int sourceSlotIndex, int target
 
 void RackSlot::onRackStateReset(Rack *rack)
 {
-    juce::Logger::writeToLog("RackSlot::onRackStateReset - slot " + juce::String(index) + " rack reset");
     updateButtonStates();
     repaint();
 }
 
 void RackSlot::onPresetLoaded(Rack *rack, const juce::String &presetName)
 {
-    juce::Logger::writeToLog("RackSlot::onPresetLoaded - slot " + juce::String(index) + " preset loaded: " + presetName);
     updateButtonStates();
     repaint();
 }
 
 void RackSlot::onPresetSaved(Rack *rack, const juce::String &presetName)
 {
-    juce::Logger::writeToLog("RackSlot::onPresetSaved - slot " + juce::String(index) + " preset saved: " + presetName);
     // No UI update needed for preset save
 }

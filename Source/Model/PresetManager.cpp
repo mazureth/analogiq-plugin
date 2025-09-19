@@ -760,7 +760,9 @@ bool PresetManager::savePreset(const juce::String &presetName, const juce::Strin
 {
     initializeLazy();
     if (presetName.isEmpty())
+    {
         return false;
+    }
 
     auto presetPath = generatePresetPath(presetName);
     auto metadataPath = generateMetadataPath(presetName);
@@ -770,7 +772,9 @@ bool PresetManager::savePreset(const juce::String &presetName, const juce::Strin
     presetData.append(rackStateJSON.toRawUTF8(), rackStateJSON.getNumBytesAsUTF8());
 
     if (!fileSystem.writeFile(presetPath, presetData))
+    {
         return false;
+    }
 
     // Create or update metadata
     PresetMetadata metadata;

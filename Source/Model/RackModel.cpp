@@ -121,72 +121,36 @@ void RackModel::compactSlots()
 // Gear management
 bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
 {
-    juce::Logger::writeToLog("=== RackModel::addGearToSlot START ===");
-    juce::Logger::writeToLog("RackModel::addGearToSlot - instanceId: " + juce::String(instanceId));
-    juce::Logger::writeToLog("RackModel::addGearToSlot - slotIndex: " + juce::String(slotIndex) + ", gearId: " + gearId);
-
     // Validate slot index
     if (!isValidSlotIndex(slotIndex))
     {
-        juce::Logger::writeToLog("RackModel::addGearToSlot - Invalid slot index: " + juce::String(slotIndex));
         return false;
     }
-    juce::Logger::writeToLog("RackModel::addGearToSlot - slot index validation passed");
 
     // Get gear item template from library
-    juce::Logger::writeToLog("RackModel::addGearToSlot - getting gear item template from library...");
     auto gearItemTemplate = gearLibrary.getGearItem(gearId);
     if (!gearItemTemplate)
     {
-        juce::Logger::writeToLog("RackModel::addGearToSlot - Gear item not found: " + gearId);
         return false;
     }
-    juce::Logger::writeToLog("RackModel::addGearToSlot - gear item template found:");
-    juce::Logger::writeToLog("  - unitId: " + gearItemTemplate->unitId);
-    juce::Logger::writeToLog("  - name: " + gearItemTemplate->name);
-    juce::Logger::writeToLog("  - manufacturer: " + gearItemTemplate->manufacturer);
-    juce::Logger::writeToLog("  - has faceplate: " + juce::String(gearItemTemplate->faceplateImage.isValid() ? "YES" : "NO"));
-    juce::Logger::writeToLog("  - controls count: " + juce::String(gearItemTemplate->controls.size()));
-    juce::Logger::writeToLog("  - schemaPath: " + gearItemTemplate->schemaPath);
 
     // Load complete gear data (schema, faceplate, controls) if not already loaded
-    juce::Logger::writeToLog("RackModel::addGearToSlot - loading complete gear data...");
     bool schemaLoaded = gearLibrary.loadGearSchema(gearItemTemplate);
-    juce::Logger::writeToLog("RackModel::addGearToSlot - schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
-
-    juce::Logger::writeToLog("RackModel::addGearToSlot - after loading complete data:");
-    juce::Logger::writeToLog("  - has faceplate: " + juce::String(gearItemTemplate->faceplateImage.isValid() ? "YES" : "NO"));
-    juce::Logger::writeToLog("  - controls count: " + juce::String(gearItemTemplate->controls.size()));
 
     // Create a unique instance for this rack slot
-    juce::Logger::writeToLog("RackModel::addGearToSlot - creating unique instance...");
     auto gearItem = std::make_unique<GearItem>(gearItemTemplate->createInstance());
-    juce::Logger::writeToLog("RackModel::addGearToSlot - instance created:");
-    juce::Logger::writeToLog("  - instanceId: " + gearItem->instanceId);
-    juce::Logger::writeToLog("  - has faceplate: " + juce::String(gearItem->faceplateImage.isValid() ? "YES" : "NO"));
-    juce::Logger::writeToLog("  - controls count: " + juce::String(gearItem->controls.size()));
 
     // Create slot data from gear item
-    juce::Logger::writeToLog("RackModel::addGearToSlot - creating slot data from gear item...");
     SlotData slotData = createSlotDataFromGearItem(slotIndex, gearItem.get());
-    juce::Logger::writeToLog("RackModel::addGearToSlot - slot data created:");
-    juce::Logger::writeToLog("  - isOccupied: " + juce::String(slotData.isOccupied ? "YES" : "NO"));
-    juce::Logger::writeToLog("  - gearId: " + slotData.gearId);
-    juce::Logger::writeToLog("  - gearName: " + slotData.gearName);
-    juce::Logger::writeToLog("  - controls count: " + juce::String(slotData.controls.size()));
 
     // Set the slot data
-    juce::Logger::writeToLog("RackModel::addGearToSlot - setting slot data in slots array...");
     slots.set(slotIndex, slotData);
 
     // Load faceplate image asynchronously if schema was loaded and has faceplate path
     if (schemaLoaded && !gearItemTemplate->faceplateImagePath.isEmpty())
     {
-        juce::Logger::writeToLog("RackModel::addGearToSlot - loading faceplate image asynchronously from: " + gearItemTemplate->faceplateImagePath);
         gearLibrary.loadGearFaceplateAsync(gearItemTemplate, [this, slotIndex]()
                                            {
-                                               juce::Logger::writeToLog("RackModel::addGearToSlot - faceplate loaded asynchronously for slot " + juce::String(slotIndex));
-
                                                // Update the slot data with the loaded faceplate image
                                                if (auto *slotData = getSlotData(slotIndex))
                                                {
@@ -197,7 +161,6 @@ bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
                                                        slotData->faceplateImage = templateItem->faceplateImage;
                                                        slotData->faceplateImageWidth = templateItem->faceplateImage.getWidth();
                                                        slotData->faceplateImageHeight = templateItem->faceplateImage.getHeight();
-                                                       juce::Logger::writeToLog("RackModel::addGearToSlot - updated slot data with loaded faceplate image");
                                                    }
                                                }
 
@@ -208,16 +171,12 @@ bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
     }
 
     // Notify listeners
-    juce::Logger::writeToLog("RackModel::addGearToSlot - notifying listeners...");
     notifyGearItemAdded(slotIndex, gearItem.get());
     notifyStateChanged();
 
     // Add to recently used
-    juce::Logger::writeToLog("RackModel::addGearToSlot - adding to recently used...");
     cacheManager.addToRecentlyUsed(gearId);
 
-    juce::Logger::writeToLog("RackModel::addGearToSlot - Added gear " + gearId + " to slot " + juce::String(slotIndex));
-    juce::Logger::writeToLog("=== RackModel::addGearToSlot END ===");
     return true;
 }
 
@@ -226,7 +185,6 @@ bool RackModel::removeGearFromSlot(int slotIndex)
     // Validate slot index
     if (!isValidSlotIndex(slotIndex))
     {
-        juce::Logger::writeToLog("RackModel::removeGearFromSlot - Invalid slot index: " + juce::String(slotIndex));
         return false;
     }
 
@@ -237,7 +195,6 @@ bool RackModel::removeGearFromSlot(int slotIndex)
     notifyGearItemRemoved(slotIndex);
     notifyStateChanged();
 
-    juce::Logger::writeToLog("RackModel::removeGearFromSlot - Removed gear from slot " + juce::String(slotIndex));
     return true;
 }
 
@@ -246,8 +203,6 @@ bool RackModel::moveGearBetweenSlots(int fromSlot, int toSlot)
     // Validate slot indices
     if (!isValidSlotIndex(fromSlot) || !isValidSlotIndex(toSlot))
     {
-        juce::Logger::writeToLog("RackModel::moveGearBetweenSlots - Invalid slot indices: " +
-                                 juce::String(fromSlot) + " -> " + juce::String(toSlot));
         return false;
     }
 
@@ -565,52 +520,97 @@ bool RackModel::deserializeFromValueTree(const juce::ValueTree &state)
 
 juce::String RackModel::serializeToJSON() const
 {
-    juce::DynamicObject::Ptr rackObject = new juce::DynamicObject();
+    // Build JSON string directly - much simpler and safer
+    juce::String json = "{\n";
+    json += "  \"version\": \"1.0\",\n";
+    json += "  \"numSlots\": " + juce::String(numSlots) + ",\n";
+    json += "  \"slotWidth\": " + juce::String(slotWidth) + ",\n";
+    json += "  \"slotHeight\": " + juce::String(slotHeight) + ",\n";
+    json += "  \"slotSpacing\": " + juce::String(slotSpacing) + ",\n";
+    json += "  \"rackNotes\": \"" + rackNotes.replace("\"", "\\\"") + "\",\n";
+    json += "  \"slots\": [\n";
 
-    // Add rack metadata
-    rackObject->setProperty("version", "1.0");
-    rackObject->setProperty("numSlots", numSlots);
-    rackObject->setProperty("slotWidth", slotWidth);
-    rackObject->setProperty("slotHeight", slotHeight);
-    rackObject->setProperty("slotSpacing", slotSpacing);
-    rackObject->setProperty("rackNotes", rackNotes);
-
-    // Create array of slots
-    juce::Array<juce::var> slotsArray;
-
+    bool firstSlot = true;
     for (int i = 0; i < slots.size(); ++i)
     {
         if (slots[i].isOccupied)
         {
-            juce::DynamicObject::Ptr slotObject = createSlotObject(slots[i]);
-            if (slotObject)
+
+            if (!firstSlot)
+                json += ",\n";
+            firstSlot = false;
+
+            json += "    {\n";
+            json += "      \"slotIndex\": " + juce::String(i) + ",\n";
+            json += "      \"isOccupied\": true,\n";
+            json += "      \"gearId\": \"" + slots[i].gearId.replace("\"", "\\\"") + "\",\n";
+            json += "      \"instanceId\": \"" + slots[i].instanceId.replace("\"", "\\\"") + "\",\n";
+            json += "      \"gearName\": \"" + slots[i].gearName.replace("\"", "\\\"") + "\",\n";
+            json += "      \"manufacturer\": \"" + slots[i].manufacturer.replace("\"", "\\\"") + "\",\n";
+            json += "      \"faceplateImagePath\": \"" + slots[i].faceplateImagePath.replace("\"", "\\\"") + "\",\n";
+            json += "      \"thumbnailImagePath\": \"" + slots[i].thumbnailImagePath.replace("\"", "\\\"") + "\",\n";
+            json += "      \"faceplateImageWidth\": " + juce::String(slots[i].faceplateImageWidth) + ",\n";
+            json += "      \"faceplateImageHeight\": " + juce::String(slots[i].faceplateImageHeight) + ",\n";
+            json += "      \"controls\": [\n";
+
+            // Serialize controls directly
+            for (int j = 0; j < slots[i].controls.size(); ++j)
             {
-                slotsArray.add(slotObject.get());
+                if (j > 0)
+                    json += ",\n";
+
+                const GearControl &control = slots[i].controls[j];
+                json += "        {\n";
+                json += "          \"type\": \"" + juce::String(static_cast<int>(control.type)) + "\",\n";
+                json += "          \"name\": \"" + control.name.replace("\"", "\\\"") + "\",\n";
+                json += "          \"position\": \"" + juce::String(control.position.getX()) + "," + juce::String(control.position.getY()) + "," + juce::String(control.position.getWidth()) + "," + juce::String(control.position.getHeight()) + "\",\n";
+                json += "          \"currentValue\": " + juce::String(control.currentValue) + ",\n";
+                json += "          \"initialValue\": " + juce::String(control.initialValue) + ",\n";
+                json += "          \"minValue\": " + juce::String(control.minValue) + ",\n";
+                json += "          \"maxValue\": " + juce::String(control.maxValue) + ",\n";
+                json += "          \"stepSize\": " + juce::String(control.stepSize) + ",\n";
+                json += "          \"orientation\": \"" + juce::String(static_cast<int>(control.orientation)) + "\",\n";
+                json += "          \"imagePath\": \"" + control.imagePath.replace("\"", "\\\"") + "\",\n";
+                json += "          \"buttonFrames\": " + juce::String(control.buttonFrames.size()) + ",\n";
+                json += "          \"switchFrames\": " + juce::String(control.switchFrames.size()) + ",\n";
+                json += "          \"currentIndex\": " + juce::String(control.currentIndex) + ",\n";
+                json += "          \"isMomentary\": " + juce::String(control.isMomentary ? "true" : "false") + ",\n";
+                json += "          \"length\": " + juce::String(control.length) + ",\n";
+                json += "          \"startAngle\": " + juce::String(control.startAngle) + ",\n";
+                json += "          \"endAngle\": " + juce::String(control.endAngle) + ",\n";
+                json += "          \"steps\": " + juce::String(control.steps.size()) + ",\n";
+                json += "          \"currentStepIndex\": " + juce::String(control.currentStepIndex) + "\n";
+                json += "        }";
             }
+
+            json += "\n      ]\n";
+            json += "    }";
         }
     }
 
-    rackObject->setProperty("slots", slotsArray);
+    json += "\n  ]\n";
+    json += "}";
 
-    // Convert to JSON string
-    return juce::JSON::toString(juce::var(rackObject.get()));
+    return json;
 }
 
 bool RackModel::deserializeFromJSON(const juce::String &jsonString)
 {
+
     try
     {
         // Parse JSON
         juce::var parsedJson = juce::JSON::parse(jsonString);
         if (!parsedJson.isObject())
         {
-            juce::Logger::writeToLog("RackModel::deserializeFromJSON - JSON is not an object");
             return false;
         }
 
         juce::DynamicObject *rackObject = parsedJson.getDynamicObject();
         if (!rackObject)
+        {
             return false;
+        }
 
         // Clear existing rack state
         clearAllSlots();
@@ -647,12 +647,99 @@ bool RackModel::deserializeFromJSON(const juce::String &jsonString)
                         juce::DynamicObject *slotObject = slotVar.getDynamicObject();
                         if (slotObject)
                         {
-                            SlotData slotData;
-                            if (loadSlotFromObject(*slotObject, slotData))
+                            int slotIndex = slotObject->getProperty("slotIndex").isVoid() ? i : (int)slotObject->getProperty("slotIndex");
+                            bool isOccupied = slotObject->getProperty("isOccupied").isVoid() ? false : (bool)slotObject->getProperty("isOccupied");
+
+                            if (isOccupied)
                             {
-                                // Ensure we have enough slots
-                                ensureSlotCapacity(slotData.slotIndex);
-                                slots[slotData.slotIndex] = slotData;
+                                // Get the template gear item from the library
+                                juce::String gearId = slotObject->getProperty("gearId").toString();
+
+                                auto *gearItemTemplate = gearLibrary.getGearItem(gearId);
+
+                                if (gearItemTemplate)
+                                {
+                                    // Load the schema for the template first (like in normal drag-and-drop flow)
+                                    bool schemaLoaded = gearLibrary.loadGearSchema(gearItemTemplate);
+
+                                    // Create a new instance from the template (like dragging from gear library)
+                                    auto gearItemInstance = gearItemTemplate->createInstance();
+
+                                    // Load saved control values from JSON
+                                    juce::var controlsVar = slotObject->getProperty("controls");
+                                    if (controlsVar.isArray())
+                                    {
+                                        juce::Array<juce::var> *controlsArray = controlsVar.getArray();
+
+                                        for (int j = 0; j < controlsArray->size() && j < gearItemInstance.controls.size(); ++j)
+                                        {
+                                            juce::var controlVar = controlsArray->getReference(j);
+                                            if (controlVar.isObject())
+                                            {
+                                                juce::DynamicObject *controlObject = controlVar.getDynamicObject();
+                                                if (controlObject)
+                                                {
+                                                    // Update the instance's control with saved values
+                                                    gearItemInstance.controls.getReference(j).currentValue = (float)controlObject->getProperty("currentValue");
+                                                    gearItemInstance.controls.getReference(j).currentIndex = (int)controlObject->getProperty("currentIndex");
+                                                    gearItemInstance.controls.getReference(j).currentStepIndex = (int)controlObject->getProperty("currentStepIndex");
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Create SlotData from the recreated instance (this will have all images and proper control definitions)
+                                    SlotData slotData = createSlotDataFromGearItem(slotIndex, &gearItemInstance);
+
+                                    // Preserve the original instance ID from the preset
+                                    slotData.instanceId = slotObject->getProperty("instanceId").toString();
+
+                                    // Ensure we have enough slots and set the slot data
+                                    ensureSlotCapacity(slotIndex);
+                                    slots.set(slotIndex, slotData);
+
+                                    // Load faceplate image asynchronously (like in normal drag-and-drop flow)
+                                    if (!gearItemTemplate->faceplateImagePath.isEmpty())
+                                    {
+                                        gearLibrary.loadGearFaceplateAsync(gearItemTemplate, [this, slotIndex]()
+                                                                           {
+                                                                               // Update the slot data with the loaded faceplate image
+                                                                               if (auto *slotData = getSlotData(slotIndex))
+                                                                               {
+                                                                                   // Get the template to copy the loaded faceplate image
+                                                                                   auto *templateItem = gearLibrary.getGearItem(slotData->gearId);
+                                                                                   if (templateItem && templateItem->faceplateImage.isValid())
+                                                                                   {
+                                                                                       slotData->faceplateImage = templateItem->faceplateImage;
+                                                                                       slotData->faceplateImageWidth = templateItem->faceplateImage.getWidth();
+                                                                                       slotData->faceplateImageHeight = templateItem->faceplateImage.getHeight();
+                                                                                   }
+                                                                               }
+
+                                                                               // Notify listeners that the gear item has been updated with faceplate
+                                                                               notifyGearItemAdded(slotIndex, nullptr); // nullptr means update existing
+                                                                               notifyStateChanged();                    // Also notify state change to trigger layout recalculation
+                                                                           });
+                                    }
+                                }
+                                else
+                                {
+                                    // Fallback: create empty slot if template not found
+                                    SlotData emptySlot;
+                                    emptySlot.slotIndex = slotIndex;
+                                    emptySlot.isOccupied = false;
+                                    ensureSlotCapacity(slotIndex);
+                                    slots.set(slotIndex, emptySlot);
+                                }
+                            }
+                            else
+                            {
+                                // Empty slot
+                                SlotData emptySlot;
+                                emptySlot.slotIndex = slotIndex;
+                                emptySlot.isOccupied = false;
+                                ensureSlotCapacity(slotIndex);
+                                slots.set(slotIndex, emptySlot);
                             }
                         }
                     }
@@ -665,7 +752,7 @@ bool RackModel::deserializeFromJSON(const juce::String &jsonString)
     }
     catch (const std::exception &e)
     {
-        juce::Logger::writeToLog("RackModel::deserializeFromJSON - Error: " + juce::String(e.what()));
+        juce::Logger::writeToLog("RackModel::deserializeFromJSON - Exception caught: " + juce::String(e.what()));
         return false;
     }
 }
@@ -695,7 +782,6 @@ bool RackModel::validateState() const
     // Check if rack has valid number of slots
     if (slots.size() != static_cast<size_t>(numSlots))
     {
-        juce::Logger::writeToLog("RackModel validation failed: slot count mismatch");
         return false;
     }
 
@@ -716,15 +802,12 @@ bool RackModel::validateState() const
 
 void RackModel::recoverFromInvalidState()
 {
-    juce::Logger::writeToLog("RackModel recovery: Attempting to recover from invalid state");
 
     // Clear all slots and start fresh
     clearAllSlots();
 
     // Recreate a basic rack structure
     setSlotLayout(16); // Default to 16 slots
-
-    juce::Logger::writeToLog("RackModel recovery: Recovered to clean state with " + juce::String(slots.size()) + " slots");
 }
 
 // Event handling
@@ -777,24 +860,6 @@ void RackModel::setRackNotes(const juce::String &notes)
     {
         rackNotes = notes;
         notifyStateChanged();
-    }
-}
-
-// Debug and validation
-void RackModel::logState() const
-{
-    juce::Logger::writeToLog("RackModel State:");
-    juce::Logger::writeToLog("  Slots: " + juce::String(slots.size()));
-    juce::Logger::writeToLog("  Width: " + juce::String(slotWidth));
-    juce::Logger::writeToLog("  Height: " + juce::String(slotHeight));
-    juce::Logger::writeToLog("  Spacing: " + juce::String(slotSpacing));
-
-    for (int i = 0; i < slots.size(); ++i)
-    {
-        if (slots[i].isOccupied)
-        {
-            juce::Logger::writeToLog("  Slot " + juce::String(i) + ": " + slots[i].gearId + " (" + slots[i].gearName + ")");
-        }
     }
 }
 
@@ -923,22 +988,10 @@ void RackModel::notifyRackStateReset()
 // Slot data management
 SlotData RackModel::createSlotDataFromGearItem(int slotIndex, const GearItem *gearItem) const
 {
-    juce::Logger::writeToLog("=== RackModel::createSlotDataFromGearItem START ===");
-    juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - slotIndex: " + juce::String(slotIndex));
-    juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - gearItem: " + juce::String(gearItem != nullptr ? "VALID" : "NULL"));
-
     SlotData slotData(slotIndex);
 
     if (gearItem)
     {
-        juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - processing gear item:");
-        juce::Logger::writeToLog("  - unitId: " + gearItem->unitId);
-        juce::Logger::writeToLog("  - instanceId: " + gearItem->instanceId);
-        juce::Logger::writeToLog("  - name: " + gearItem->name);
-        juce::Logger::writeToLog("  - manufacturer: " + gearItem->manufacturer);
-        juce::Logger::writeToLog("  - has faceplate: " + juce::String(gearItem->faceplateImage.isValid() ? "YES" : "NO"));
-        juce::Logger::writeToLog("  - faceplateImagePath: " + gearItem->faceplateImagePath);
-        juce::Logger::writeToLog("  - controls count: " + juce::String(gearItem->controls.size()));
 
         slotData.isOccupied = true;
 
@@ -966,31 +1019,20 @@ SlotData RackModel::createSlotDataFromGearItem(int slotIndex, const GearItem *ge
         {
             slotData.faceplateImageWidth = gearItem->faceplateImage.getWidth();
             slotData.faceplateImageHeight = gearItem->faceplateImage.getHeight();
-            juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - faceplate dimensions: " +
-                                     juce::String(slotData.faceplateImageWidth) + "x" + juce::String(slotData.faceplateImageHeight));
         }
         else
         {
             slotData.faceplateImageWidth = 0;
             slotData.faceplateImageHeight = 0;
-            juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - no faceplate image, dimensions set to 0x0");
         }
 
         // Copy controls
         slotData.controls = gearItem->controls;
-        juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - copied " + juce::String(slotData.controls.size()) + " controls");
     }
     else
     {
-        juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - gearItem is null, creating empty slot data");
     }
 
-    juce::Logger::writeToLog("RackModel::createSlotDataFromGearItem - final slot data:");
-    juce::Logger::writeToLog("  - isOccupied: " + juce::String(slotData.isOccupied ? "YES" : "NO"));
-    juce::Logger::writeToLog("  - gearId: " + slotData.gearId);
-    juce::Logger::writeToLog("  - gearName: " + slotData.gearName);
-    juce::Logger::writeToLog("  - controls count: " + juce::String(slotData.controls.size()));
-    juce::Logger::writeToLog("=== RackModel::createSlotDataFromGearItem END ===");
     return slotData;
 }
 
@@ -1202,14 +1244,52 @@ juce::DynamicObject *RackModel::createSlotObject(const SlotData &data) const
         }
         slotObject->setProperty("tags", tagsArray);
 
-        // Serialize controls
-        juce::DynamicObject::Ptr controlsObject = new juce::DynamicObject();
+        // Serialize controls as array of control objects
+        juce::Array<juce::var> controlsArray;
         for (int i = 0; i < data.controls.size(); ++i)
         {
             const auto &control = data.controls[i];
-            controlsObject->setProperty(control.name, control.currentValue);
+            juce::DynamicObject::Ptr controlObject = new juce::DynamicObject();
+
+            controlObject->setProperty("name", control.name);
+            controlObject->setProperty("type", static_cast<int>(control.type));
+            controlObject->setProperty("positionX", control.position.getX());
+            controlObject->setProperty("positionY", control.position.getY());
+            controlObject->setProperty("positionWidth", control.position.getWidth());
+            controlObject->setProperty("positionHeight", control.position.getHeight());
+            controlObject->setProperty("currentValue", control.currentValue);
+            controlObject->setProperty("initialValue", control.initialValue);
+            controlObject->setProperty("minValue", control.minValue);
+            controlObject->setProperty("maxValue", control.maxValue);
+            controlObject->setProperty("stepSize", control.stepSize);
+            controlObject->setProperty("orientation", static_cast<int>(control.orientation));
+            controlObject->setProperty("imagePath", control.imagePath);
+            controlObject->setProperty("currentIndex", control.currentIndex);
+            controlObject->setProperty("isMomentary", control.isMomentary);
+            controlObject->setProperty("length", control.length);
+            controlObject->setProperty("startAngle", control.startAngle);
+            controlObject->setProperty("endAngle", control.endAngle);
+            controlObject->setProperty("currentStepIndex", control.currentStepIndex);
+
+            // Serialize options array
+            juce::Array<juce::var> optionsArray;
+            for (const auto &option : control.options)
+            {
+                optionsArray.add(option);
+            }
+            controlObject->setProperty("options", optionsArray);
+
+            // Serialize steps array
+            juce::Array<juce::var> stepsArray;
+            for (const auto &step : control.steps)
+            {
+                stepsArray.add(step);
+            }
+            controlObject->setProperty("steps", stepsArray);
+
+            controlsArray.add(controlObject.get());
         }
-        slotObject->setProperty("controls", controlsObject.get());
+        slotObject->setProperty("controls", controlsArray);
     }
 
     return slotObject.get();
@@ -1248,16 +1328,69 @@ bool RackModel::loadSlotFromObject(const juce::DynamicObject &slotObject, SlotDa
 
         // Deserialize controls
         juce::var controlsVar = slotObject.getProperty("controls");
-        if (controlsVar.isObject())
+        if (controlsVar.isArray())
         {
-            juce::DynamicObject *controlsObject = controlsVar.getDynamicObject();
-            if (controlsObject)
+            juce::Array<juce::var> *controlsArray = controlsVar.getArray();
+            data.controls.clear();
+
+            for (int i = 0; i < controlsArray->size(); ++i)
             {
-                // Note: This is a simplified control deserialization
-                // In a full implementation, you'd need to reconstruct the full GearControl objects
-                // For now, we'll just store the values
-                data.controls.clear();
-                // TODO: Implement full control deserialization
+                juce::var controlVar = controlsArray->getReference(i);
+                if (controlVar.isObject())
+                {
+                    juce::DynamicObject *controlObject = controlVar.getDynamicObject();
+                    if (controlObject)
+                    {
+                        GearControl control;
+
+                        control.name = controlObject->getProperty("name").isVoid() ? "" : controlObject->getProperty("name").toString();
+                        control.type = static_cast<GearControl::ControlType>(controlObject->getProperty("type").isVoid() ? 0 : (int)controlObject->getProperty("type"));
+                        control.position = juce::Rectangle<float>(
+                            controlObject->getProperty("positionX").isVoid() ? 0.0f : (float)controlObject->getProperty("positionX"),
+                            controlObject->getProperty("positionY").isVoid() ? 0.0f : (float)controlObject->getProperty("positionY"),
+                            controlObject->getProperty("positionWidth").isVoid() ? 0.0f : (float)controlObject->getProperty("positionWidth"),
+                            controlObject->getProperty("positionHeight").isVoid() ? 0.0f : (float)controlObject->getProperty("positionHeight"));
+                        control.currentValue = controlObject->getProperty("currentValue").isVoid() ? 0.0f : (float)controlObject->getProperty("currentValue");
+                        control.initialValue = controlObject->getProperty("initialValue").isVoid() ? 0.0f : (float)controlObject->getProperty("initialValue");
+                        control.minValue = controlObject->getProperty("minValue").isVoid() ? 0.0f : (float)controlObject->getProperty("minValue");
+                        control.maxValue = controlObject->getProperty("maxValue").isVoid() ? 1.0f : (float)controlObject->getProperty("maxValue");
+                        control.stepSize = controlObject->getProperty("stepSize").isVoid() ? 0.01f : (float)controlObject->getProperty("stepSize");
+                        control.orientation = static_cast<GearControl::Orientation>(controlObject->getProperty("orientation").isVoid() ? 0 : (int)controlObject->getProperty("orientation"));
+                        control.imagePath = controlObject->getProperty("imagePath").isVoid() ? "" : controlObject->getProperty("imagePath").toString();
+                        control.currentIndex = controlObject->getProperty("currentIndex").isVoid() ? 0 : (int)controlObject->getProperty("currentIndex");
+                        control.isMomentary = controlObject->getProperty("isMomentary").isVoid() ? false : (bool)controlObject->getProperty("isMomentary");
+                        control.length = controlObject->getProperty("length").isVoid() ? 0.0f : (float)controlObject->getProperty("length");
+                        control.startAngle = controlObject->getProperty("startAngle").isVoid() ? 0.0f : (float)controlObject->getProperty("startAngle");
+                        control.endAngle = controlObject->getProperty("endAngle").isVoid() ? 0.0f : (float)controlObject->getProperty("endAngle");
+                        control.currentStepIndex = controlObject->getProperty("currentStepIndex").isVoid() ? 0 : (int)controlObject->getProperty("currentStepIndex");
+
+                        // Deserialize options array
+                        juce::var optionsVar = controlObject->getProperty("options");
+                        if (optionsVar.isArray())
+                        {
+                            juce::Array<juce::var> *optionsArray = optionsVar.getArray();
+                            control.options.clear();
+                            for (int j = 0; j < optionsArray->size(); ++j)
+                            {
+                                control.options.add(optionsArray->getReference(j).toString());
+                            }
+                        }
+
+                        // Deserialize steps array
+                        juce::var stepsVar = controlObject->getProperty("steps");
+                        if (stepsVar.isArray())
+                        {
+                            juce::Array<juce::var> *stepsArray = stepsVar.getArray();
+                            control.steps.clear();
+                            for (int j = 0; j < stepsArray->size(); ++j)
+                            {
+                                control.steps.add((float)stepsArray->getReference(j));
+                            }
+                        }
+
+                        data.controls.add(control);
+                    }
+                }
             }
         }
 

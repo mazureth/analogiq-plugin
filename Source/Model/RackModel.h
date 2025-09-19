@@ -183,7 +183,6 @@ public:
     void setRackNotes(const juce::String &notes);
 
     // Debug and validation
-    void logState() const;
     bool validateSlotConsistency() const;
     bool validateGearSlotRelationships() const;
 

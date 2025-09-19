@@ -39,9 +39,6 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
 {
     setComponentID("AnalogIQEditor");
 
-    // Debug: Log when AnalogIQEditor is created
-    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - First constructor called");
-
     // Create GearLibraryTree component (to the left of the rack)
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
 
@@ -174,9 +171,6 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cach
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
     setComponentID("AnalogIQEditor");
-
-    // Debug: Log when AnalogIQEditor is created
-    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - Second constructor called");
 
     // Create GearLibraryTree component (to the left of the rack)
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
@@ -651,8 +645,6 @@ void AnalogIQEditor::showPresetSelectionDialog(const juce::String &title,
 
     // Set a proper size for the component
     content->setSize(400, 300);
-    juce::Logger::writeToLog("PresetSelectionComponent created with size: " + juce::String(content->getWidth()) + "x" + juce::String(content->getHeight()));
-    juce::Logger::writeToLog("Number of presets: " + juce::String(presetNames.size()));
 
     // Add the custom component to the AlertWindow
     dialog->addCustomComponent(content);
@@ -862,12 +854,10 @@ void PresetSelectionComponent::paint(juce::Graphics &g)
 void PresetSelectionComponent::resized()
 {
     auto bounds = getLocalBounds();
-    juce::Logger::writeToLog("PresetSelectionComponent::resized() - bounds: " + juce::String(bounds.getWidth()) + "x" + juce::String(bounds.getHeight()));
 
     // List box takes the full area since AlertWindow handles buttons
     bounds.reduce(5, 5);
     listBox.setBounds(bounds);
-    juce::Logger::writeToLog("ListBox bounds set to: " + juce::String(bounds.getWidth()) + "x" + juce::String(bounds.getHeight()));
 }
 
 int PresetSelectionComponent::getNumRows()
