@@ -46,6 +46,10 @@ void Rack::initializeRack()
 {
     // Create viewport
     viewport = std::make_unique<juce::Viewport>();
+
+    // disable horizontal scrollbar
+    viewport->setScrollBarsShown(true, false);
+
     addAndMakeVisible(viewport.get());
 
     // Create rack container
