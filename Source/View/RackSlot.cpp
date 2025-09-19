@@ -494,11 +494,17 @@ void RackSlot::mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelD
     // Get gear item from RackModel
     auto *slotData = rackModel.getSlotData(index);
     if (!slotData || !slotData->isOccupied)
+    {
+        juce::Component::mouseWheelMove(e, wheel);
         return;
+    }
 
     auto *gearItem = rackModel.getGearLibrary().getGearItem(slotData->gearId);
     if (gearItem == nullptr || !gearItem->faceplateImage.isValid())
+    {
+        juce::Component::mouseWheelMove(e, wheel);
         return;
+    }
 
     // Calculate faceplate area (same as in mouseDown)
     juce::Rectangle<int> faceplateArea = getLocalBounds().reduced(10);
@@ -590,6 +596,10 @@ void RackSlot::mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelD
                 }
             }
         }
+    }
+    else
+    {
+        juce::Component::mouseWheelMove(e, wheel);
     }
 }
 
