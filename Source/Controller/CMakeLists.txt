@@ -37,3 +37,6 @@ target_include_directories(AnalogIQController
         ${CMAKE_CURRENT_SOURCE_DIR}/../View
         ${CMAKE_BINARY_DIR}/AnalogIQ_artefacts/JuceLibraryCode
 )
+
+# Ensure JuceHeader.h is generated before this target compiles
+add_dependencies(AnalogIQController AnalogIQ)
