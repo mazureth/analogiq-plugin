@@ -427,26 +427,112 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
 
 void AnalogIQProcessor::loadInstanceState(Rack *rack)
 {
+    juce::Logger::writeToLog("=== loadInstanceState START ===");
+
     // Get the instance state tree
     auto instanceTree = state.state.getChildWithName("instances");
     if (!instanceTree.isValid())
+    {
+        juce::Logger::writeToLog("No instance tree found in state");
         return;
+    }
+
+    juce::Logger::writeToLog("Instance tree found, loading gear items...");
 
     if (rack != nullptr)
     {
+        // Clear existing rack state first
+        rackModel->clearAllSlots();
+        juce::Logger::writeToLog("Cleared existing rack state");
+
         // Load instance data for each slot
         for (int i = 0; i < rackModel->getSlotCount(); ++i)
         {
             auto slotTree = instanceTree.getChildWithName("slot_" + juce::String(i));
             if (slotTree.isValid())
             {
-                // Get the source unit ID from the saved state
+                // Get the source unit ID and instance ID from the saved state
                 auto sourceUnitId = slotTree.getProperty("sourceUnitId").toString();
-                if (!sourceUnitId.isEmpty())
+                auto instanceId = slotTree.getProperty("instanceId").toString();
+
+                if (!sourceUnitId.isEmpty() && !instanceId.isEmpty())
                 {
-                    // For now, we'll implement a simplified version
-                    // TODO: Implement proper gear loading by unit ID
-                    juce::Logger::writeToLog("Loading gear item for slot " + juce::String(i) + " with unit ID: " + sourceUnitId);
+                    juce::Logger::writeToLog("Loading gear item for slot " + juce::String(i) + " with unit ID: " + sourceUnitId + ", instance ID: " + instanceId);
+
+                    // Get the template gear item from the library
+                    auto *gearItemTemplate = gearLibrary->getGearItem(sourceUnitId);
+
+                    if (gearItemTemplate)
+                    {
+                        juce::Logger::writeToLog("Found gear template: " + gearItemTemplate->name);
+
+                        // Load the schema for the template first (like in normal drag-and-drop flow)
+                        bool schemaLoaded = gearLibrary->loadGearSchema(gearItemTemplate);
+                        juce::Logger::writeToLog("Schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
+
+                        if (schemaLoaded)
+                        {
+                            // Use the public addGearToSlot method to add the gear item
+                            // This will handle all the SlotData creation and async loading
+                            bool gearAdded = rackModel->addGearToSlot(i, sourceUnitId);
+
+                            if (gearAdded)
+                            {
+                                juce::Logger::writeToLog("Successfully added gear to slot " + juce::String(i));
+
+                                // Now we need to restore the control values from the saved state
+                                auto controlsTree = slotTree.getChildWithName("controls");
+                                if (controlsTree.isValid())
+                                {
+                                    juce::Logger::writeToLog("Loading control values from ValueTree...");
+
+                                    // Get the slot data to update control values
+                                    if (auto *slotData = rackModel->getSlotData(i))
+                                    {
+                                        for (int j = 0; j < controlsTree.getNumChildren() && j < slotData->controls.size(); ++j)
+                                        {
+                                            auto controlTree = controlsTree.getChild(j);
+                                            if (controlTree.isValid())
+                                            {
+                                                // Update the slot's control with saved values
+                                                slotData->controls.getReference(j).currentValue = (float)controlTree.getProperty("value");
+                                                slotData->controls.getReference(j).initialValue = (float)controlTree.getProperty("initialValue");
+
+                                                // Handle switch/button specific properties
+                                                if (controlTree.hasProperty("currentIndex"))
+                                                {
+                                                    slotData->controls.getReference(j).currentIndex = (int)controlTree.getProperty("currentIndex");
+                                                }
+
+                                                juce::Logger::writeToLog("  Control " + juce::String(j) + " (" + slotData->controls[j].name + "): value=" + juce::String(slotData->controls[j].currentValue));
+                                            }
+                                        }
+
+                                        // Update the instance ID to match the saved state
+                                        slotData->instanceId = instanceId;
+
+                                        juce::Logger::writeToLog("Successfully loaded gear item for slot " + juce::String(i));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                juce::Logger::writeToLog("Failed to add gear to slot " + juce::String(i));
+                            }
+                        }
+                        else
+                        {
+                            juce::Logger::writeToLog("Failed to load schema for gear template: " + sourceUnitId);
+                        }
+                    }
+                    else
+                    {
+                        juce::Logger::writeToLog("Gear template not found: " + sourceUnitId);
+                    }
+                }
+                else
+                {
+                    juce::Logger::writeToLog("Slot " + juce::String(i) + " has empty sourceUnitId or instanceId, skipping");
                 }
             }
         }
@@ -463,10 +549,17 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                     if (notesContent.isNotEmpty())
                     {
                         notesPanel->setNotes(notesContent);
+                        juce::Logger::writeToLog("Loaded notes panel content");
                     }
                 }
             }
         }
+
+        juce::Logger::writeToLog("=== loadInstanceState COMPLETE ===");
+    }
+    else
+    {
+        juce::Logger::writeToLog("Rack pointer is null, cannot load state");
     }
 }
 
