@@ -14,29 +14,44 @@
 #include "../Shared/ICacheManager.h"
 #include "../Shared/IPresetManager.h"
 #include "../Shared/IRackStateListener.h"
+#include "../Shared/CrashLogger.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_gui_extra/juce_gui_extra.h>
 
 Rack::Rack(RackModel &rackModel)
     : rackModel(rackModel), backgroundColor(juce::Colours::darkgrey), slotBackgroundColor(juce::Colours::darkgrey.darker(0.7f)), slotBorderColor(juce::Colours::black), showSlotNumbers(true), showGrid(false)
 {
+    juce::Logger::writeToLog("Rack::Rack - START - Creating new Rack instance");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Rack constructor started");
+
     // Initialize the rack
+    juce::Logger::writeToLog("Rack::Rack - Initializing rack components");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Initializing rack components");
     initializeRack();
 
     // Set component ID for debugging
     setComponentID("Rack");
 
     // Register this Rack as a listener to the RackModel
+    juce::Logger::writeToLog("Rack::Rack - Registering as RackModel listener");
     rackModel.addRackStateListener(this);
+
+    juce::Logger::writeToLog("Rack::Rack - END - Rack creation complete");
 }
 
 Rack::~Rack()
 {
+    juce::Logger::writeToLog("Rack::~Rack - START - Destroying Rack instance");
+
     // Unregister from RackModel listeners
+    juce::Logger::writeToLog("Rack::~Rack - Unregistering from RackModel listeners");
     rackModel.removeRackStateListener(this);
 
     // Clear all UI slots
+    juce::Logger::writeToLog("Rack::~Rack - Clearing rack slots");
     rackSlots.clear();
+
+    juce::Logger::writeToLog("Rack::~Rack - END - Rack destruction complete");
 }
 
 void Rack::initializeRack()

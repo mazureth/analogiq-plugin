@@ -9,6 +9,8 @@ set(SHARED_SOURCES
     IGearLibrary.h
     GearControl.h
     GearControl.cpp
+    CrashLogger.h
+    CrashLogger.cpp
 )
 
 # Create shared library target

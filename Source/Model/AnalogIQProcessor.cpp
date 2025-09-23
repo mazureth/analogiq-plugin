@@ -5,6 +5,7 @@
 #include "PresetManager.h"
 #include "GearLibrary.h"
 #include "../View/AnalogIQEditor.h"
+#include "../Shared/CrashLogger.h"
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_core/juce_core.h>
 
@@ -92,12 +93,19 @@ bool AnalogIQProcessor::isBusesLayoutSupported(const BusesLayout &busesLayout) c
 
 juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 {
+    juce::Logger::writeToLog("AnalogIQProcessor::createEditor - START - Creating new editor");
+    CrashLogger::getInstance().log("CREATE_EDITOR", "AnalogIQProcessor::createEditor called");
+
     // Create the editor with all necessary dependencies
+    juce::Logger::writeToLog("AnalogIQProcessor::createEditor - Creating AnalogIQEditor instance");
+    CrashLogger::getInstance().log("CREATE_EDITOR", "Creating AnalogIQEditor instance");
     auto editor = new AnalogIQEditor(*this,
                                      fileSystem,
                                      cacheManager.get(),
                                      presetManager.get(),
                                      gearLibrary.get());
+    juce::Logger::writeToLog("AnalogIQProcessor::createEditor - AnalogIQEditor created successfully");
+    CrashLogger::getInstance().log("CREATE_EDITOR", "AnalogIQEditor created successfully");
 
     // Store reference to the editor for state management
     lastCreatedEditor = editor;
@@ -115,6 +123,7 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
             }
         }); });
 
+    juce::Logger::writeToLog("AnalogIQProcessor::createEditor - END - Editor creation complete, returning editor");
     return editor;
 }
 

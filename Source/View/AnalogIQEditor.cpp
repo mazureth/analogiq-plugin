@@ -11,6 +11,7 @@
 #include "AnalogIQEditor.h"
 #include "../Model/AnalogIQProcessor.h"
 #include "GearLibraryTree.h"
+#include "../Shared/CrashLogger.h"
 
 /**
  * @brief Constructs a new AnalogIQEditor.
@@ -37,16 +38,30 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
       gearLibrary(gearLibrary),
       mainTabs(juce::TabbedButtonBar::TabsAtTop)
 {
+    // Log editor creation
+    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - START - Creating new editor instance");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "AnalogIQEditor constructor started");
+
     setComponentID("AnalogIQEditor");
 
     // Create GearLibraryTree component (to the left of the rack)
+    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - Creating GearLibraryTree");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Creating GearLibraryTree");
     gearLibraryTree = std::make_unique<GearLibraryTree>(*gearLibrary, *cacheManager, *presetManager);
+    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - GearLibraryTree created successfully");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "GearLibraryTree created successfully");
 
     // Create Rack component
+    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - Creating Rack");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Creating Rack");
     rack = std::make_unique<Rack>(*processor.getRackModel());
+    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - Rack created successfully");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Rack created successfully");
 
     // Create NotesPanel component
+    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - Creating NotesPanel");
     notesPanel = std::make_unique<NotesPanel>();
+    juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - NotesPanel created successfully");
 
     // Set component IDs for Rack and Notes tabs
     rack->setComponentID("RackTab");
@@ -251,15 +266,21 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor, ICacheManager *cach
  */
 AnalogIQEditor::~AnalogIQEditor()
 {
+    juce::Logger::writeToLog("AnalogIQEditor::~AnalogIQEditor - START - Destroying editor instance");
+    CrashLogger::getInstance().log("DESTRUCTOR", "AnalogIQEditor destructor started");
+
     // Notify the processor that we're being destroyed so it can clear stored references
     // TODO: Implement when processor has clearRackReference method
     // processor.clearRackReference();
 
     // CRITICAL: Clear LookAndFeel reference before destruction to avoid JUCE assertion
     // This prevents "LookAndFeel object being destroyed while something is still using it"
+    juce::Logger::writeToLog("AnalogIQEditor::~AnalogIQEditor - Clearing LookAndFeel reference");
     presetsMenuButton.setLookAndFeel(nullptr);
 
     // The unique_ptrs will clean up automatically
+    juce::Logger::writeToLog("AnalogIQEditor::~AnalogIQEditor - END - Editor destruction complete");
+    CrashLogger::getInstance().log("DESTRUCTOR", "AnalogIQEditor destructor completed");
 }
 
 /**
@@ -281,7 +302,10 @@ void AnalogIQEditor::paint(juce::Graphics &g)
  */
 void AnalogIQEditor::resized()
 {
+    juce::Logger::writeToLog("AnalogIQEditor::resized - START - Resizing editor components");
+    CrashLogger::getInstance().log("RESIZE", "AnalogIQEditor resized() called");
     auto area = getLocalBounds();
+    juce::Logger::writeToLog("AnalogIQEditor::resized - Local bounds: " + area.toString());
 
     // Top area: Menu bar (full width)
     auto menuBarArea = area.removeFromTop(30);
@@ -312,6 +336,8 @@ void AnalogIQEditor::resized()
 
     // Right side: Tabs containing Rack and Notes
     mainTabs.setBounds(area);
+
+    juce::Logger::writeToLog("AnalogIQEditor::resized - END - All components resized successfully");
 }
 
 void AnalogIQEditor::showPresetMenu()
