@@ -112,14 +112,21 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
 
     // Load instance state after the editor is created and gear library is loaded
     // We'll defer this to after the gear library is ready
+    CrashLogger::getInstance().log("CREATE_EDITOR", "Scheduling loadInstanceState with 100ms delay");
     juce::MessageManager::callAsync([this, editor]()
                                     {
         // Wait a bit more to ensure gear library is fully loaded
         juce::Timer::callAfterDelay(100, [this, editor]()
         {
+            CrashLogger::getInstance().log("CREATE_EDITOR", "Timer callback executing - attempting to load instance state");
             if (auto *rack = editor->getRack())
             {
+                CrashLogger::getInstance().log("CREATE_EDITOR", "Rack obtained successfully - calling loadInstanceState");
                 loadInstanceState(rack);
+            }
+            else
+            {
+                CrashLogger::getInstance().log("CREATE_EDITOR_ERROR", "Failed to get rack from editor");
             }
         }); });
 
@@ -185,29 +192,36 @@ void AnalogIQProcessor::changeProgramName(int index, const juce::String &newName
 void AnalogIQProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
     juce::Logger::writeToLog("=== getStateInformation START ===");
+    CrashLogger::getInstance().log("STATE_SAVE", "getStateInformation START - DestData initial size: " + juce::String(destData.getSize()));
     juce::Logger::writeToLog("DestData initial size: " + juce::String(destData.getSize()));
 
     try
     {
         // Save instance state before saving the main state
         juce::Logger::writeToLog("Calling saveInstanceState()...");
+        CrashLogger::getInstance().log("STATE_SAVE", "Calling saveInstanceState()");
         saveInstanceState();
         juce::Logger::writeToLog("saveInstanceState() completed");
+        CrashLogger::getInstance().log("STATE_SAVE", "saveInstanceState() completed");
 
         juce::Logger::writeToLog("Creating state snapshot...");
+        CrashLogger::getInstance().log("STATE_SAVE", "Creating state snapshot");
         auto stateSnapshot = getState().copyState();
         juce::Logger::writeToLog("State snapshot created successfully");
+        CrashLogger::getInstance().log("STATE_SAVE", "State snapshot created successfully - children: " + juce::String(stateSnapshot.getNumChildren()));
         juce::Logger::writeToLog("State snapshot children: " + juce::String(stateSnapshot.getNumChildren()));
 
         // Log the state tree structure
         logStateTreeStructure(stateSnapshot, 0);
 
         juce::Logger::writeToLog("Creating XML from state...");
+        CrashLogger::getInstance().log("STATE_SAVE", "Creating XML from state");
         std::unique_ptr<juce::XmlElement> xml(stateSnapshot.createXml());
 
         if (xml != nullptr)
         {
             juce::Logger::writeToLog("XML created successfully");
+            CrashLogger::getInstance().log("STATE_SAVE", "XML created successfully - children: " + juce::String(xml->getNumChildElements()) + ", tag: " + xml->getTagName());
             juce::Logger::writeToLog("XML children: " + juce::String(xml->getNumChildElements()));
             juce::Logger::writeToLog("XML tag name: " + xml->getTagName());
 
@@ -215,47 +229,63 @@ void AnalogIQProcessor::getStateInformation(juce::MemoryBlock &destData)
             logXmlContent(*xml);
 
             juce::Logger::writeToLog("Converting XML to binary...");
+            CrashLogger::getInstance().log("STATE_SAVE", "Converting XML to binary");
             copyXmlToBinary(*xml, destData);
             juce::Logger::writeToLog("Binary conversion completed");
+            CrashLogger::getInstance().log("STATE_SAVE", "Binary conversion completed - Final destData size: " + juce::String(destData.getSize()));
             juce::Logger::writeToLog("Final destData size: " + juce::String(destData.getSize()));
         }
         else
         {
             juce::Logger::writeToLog("ERROR: Failed to create XML from state");
+            CrashLogger::getInstance().log("STATE_SAVE_ERROR", "Failed to create XML from state");
         }
     }
     catch (const std::exception &e)
     {
         juce::Logger::writeToLog("ERROR: Exception during serialization: " + juce::String(e.what()));
+        CrashLogger::getInstance().log("STATE_SAVE_ERROR", "Exception during serialization: " + juce::String(e.what()));
     }
     catch (...)
     {
         juce::Logger::writeToLog("ERROR: Unknown exception during serialization");
+        CrashLogger::getInstance().log("STATE_SAVE_ERROR", "Unknown exception during serialization");
     }
 
     juce::Logger::writeToLog("=== getStateInformation END ===");
+    CrashLogger::getInstance().log("STATE_SAVE", "getStateInformation END");
 }
 
 void AnalogIQProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
     juce::Logger::writeToLog("setStateInformation called - Size: " + juce::String(sizeInBytes) + " bytes");
+    CrashLogger::getInstance().log("STATE_LOAD", "setStateInformation called - Size: " + juce::String(sizeInBytes) + " bytes");
 
     try
     {
+        CrashLogger::getInstance().log("STATE_LOAD", "Converting binary to XML");
         auto xml = getXmlFromBinary(data, sizeInBytes);
         if (xml != nullptr)
         {
+            CrashLogger::getInstance().log("STATE_LOAD", "XML created successfully - children: " + juce::String(xml->getNumChildElements()) + ", tag: " + xml->getTagName());
             state.replaceState(juce::ValueTree::fromXml(*xml));
+            CrashLogger::getInstance().log("STATE_LOAD", "ValueTree state replaced successfully");
             logXmlContent(*xml);
+        }
+        else
+        {
+            CrashLogger::getInstance().log("STATE_LOAD_ERROR", "Failed to create XML from binary data");
         }
     }
     catch (const std::exception &e)
     {
         juce::Logger::writeToLog("Error in setStateInformation: " + juce::String(e.what()));
+        CrashLogger::getInstance().log("STATE_LOAD_ERROR", "Exception in setStateInformation: " + juce::String(e.what()));
     }
 
     // Load instance state after restoring the main state
     // We need to wait for the editor to be created, so we'll do this in createEditor
+    CrashLogger::getInstance().log("STATE_LOAD", "setStateInformation completed - instance loading deferred to createEditor");
 }
 
 // State management interface
@@ -267,45 +297,56 @@ juce::AudioProcessorValueTreeState &AnalogIQProcessor::getState()
 void AnalogIQProcessor::saveInstanceState()
 {
     juce::Logger::writeToLog("=== saveInstanceState START ===");
+    CrashLogger::getInstance().log("INSTANCE_SAVE", "saveInstanceState START");
 
     // Create a child tree for instance state
     juce::Logger::writeToLog("Creating/accessing instances tree...");
+    CrashLogger::getInstance().log("INSTANCE_SAVE", "Creating/accessing instances tree");
     auto instanceTree = state.state.getOrCreateChildWithName("instances", undoManager.get());
     juce::Logger::writeToLog("Instances tree accessed successfully");
+    CrashLogger::getInstance().log("INSTANCE_SAVE", "Instances tree accessed successfully - children before clear: " + juce::String(instanceTree.getNumChildren()));
     juce::Logger::writeToLog("Instances tree children before clear: " + juce::String(instanceTree.getNumChildren()));
 
     // Clear existing instance data
     juce::Logger::writeToLog("Clearing existing instance data...");
+    CrashLogger::getInstance().log("INSTANCE_SAVE", "Clearing existing instance data");
     instanceTree.removeAllChildren(undoManager.get());
     juce::Logger::writeToLog("Instance data cleared");
+    CrashLogger::getInstance().log("INSTANCE_SAVE", "Instance data cleared - children after clear: " + juce::String(instanceTree.getNumChildren()));
     juce::Logger::writeToLog("Instances tree children after clear: " + juce::String(instanceTree.getNumChildren()));
 
     // Get the rack from the editor
     juce::Logger::writeToLog("Checking editor availability...");
+    CrashLogger::getInstance().log("INSTANCE_SAVE", "Checking editor availability");
     if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
     {
         juce::Logger::writeToLog("Editor is available");
+        CrashLogger::getInstance().log("INSTANCE_SAVE", "Editor is available - type: " + juce::String(typeid(*editor).name()));
         juce::Logger::writeToLog("Editor type: " + juce::String(typeid(*editor).name()));
 
         if (auto *rack = editor->getRack())
         {
             juce::Logger::writeToLog("Rack obtained from editor successfully");
+            CrashLogger::getInstance().log("INSTANCE_SAVE", "Rack obtained from editor successfully - slots: " + juce::String(rackModel->getSlotCount()));
             juce::Logger::writeToLog("Rack slots: " + juce::String(rackModel->getSlotCount()));
             saveInstanceStateFromRack(rack, instanceTree);
         }
         else
         {
             juce::Logger::writeToLog("WARNING: Editor available but getRack() returned null");
+            CrashLogger::getInstance().log("INSTANCE_SAVE_ERROR", "Editor available but getRack() returned null");
         }
     }
     else
     {
         juce::Logger::writeToLog("Editor is NOT available (getActiveEditor() returned null)");
+        CrashLogger::getInstance().log("INSTANCE_SAVE_ERROR", "Editor is NOT available - getActiveEditor() returned null - cannot save instance state");
         juce::Logger::writeToLog("ERROR: No rack available - cannot save instance state");
         juce::Logger::writeToLog("This will result in an empty state being saved");
     }
 
     juce::Logger::writeToLog("Final instances tree children: " + juce::String(instanceTree.getNumChildren()));
+    CrashLogger::getInstance().log("INSTANCE_SAVE", "saveInstanceState END - Final instances tree children: " + juce::String(instanceTree.getNumChildren()));
     juce::Logger::writeToLog("=== saveInstanceState END ===");
 }
 
@@ -323,28 +364,34 @@ void AnalogIQProcessor::loadInstanceState()
 void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree)
 {
     juce::Logger::writeToLog("=== saveInstanceStateFromRack START ===");
+    CrashLogger::getInstance().log("RACK_SAVE", "saveInstanceStateFromRack START");
 
     if (rack == nullptr)
     {
         juce::Logger::writeToLog("ERROR: Rack pointer is null");
+        CrashLogger::getInstance().log("RACK_SAVE_ERROR", "Rack pointer is null");
         return;
     }
 
     juce::Logger::writeToLog("Rack validation: rack pointer valid");
+    CrashLogger::getInstance().log("RACK_SAVE", "Rack validation: rack pointer valid - slots: " + juce::String(rackModel->getSlotCount()));
     juce::Logger::writeToLog("Rack slots: " + juce::String(rackModel->getSlotCount()));
 
     // Save instance data for each slot
     for (int i = 0; i < rackModel->getSlotCount(); ++i)
     {
         juce::Logger::writeToLog("Processing slot " + juce::String(i));
+        CrashLogger::getInstance().log("RACK_SAVE", "Processing slot " + juce::String(i));
 
         if (auto *slotData = rackModel->getSlotData(i))
         {
             juce::Logger::writeToLog("Slot " + juce::String(i) + " obtained successfully");
+            CrashLogger::getInstance().log("RACK_SAVE", "Slot " + juce::String(i) + " obtained successfully");
 
             if (slotData->isOccupied && !slotData->gearId.isEmpty())
             {
                 juce::Logger::writeToLog("Slot " + juce::String(i) + " has gear item: " + slotData->gearName);
+                CrashLogger::getInstance().log("RACK_SAVE", "Slot " + juce::String(i) + " has gear item: " + slotData->gearName + " - Instance ID: " + slotData->instanceId + " - Unit ID: " + slotData->gearId + " - Controls: " + juce::String(slotData->controls.size()));
                 juce::Logger::writeToLog("  Instance ID: " + slotData->instanceId);
                 juce::Logger::writeToLog("  Unit ID: " + slotData->gearId);
                 juce::Logger::writeToLog("  Controls count: " + juce::String(slotData->controls.size()));
@@ -353,22 +400,27 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                 if (!slotData->instanceId.isEmpty() && !slotData->gearId.isEmpty())
                 {
                     juce::Logger::writeToLog("Saving instance data for slot " + juce::String(i));
+                    CrashLogger::getInstance().log("RACK_SAVE", "Saving instance data for slot " + juce::String(i));
 
                     auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), undoManager.get());
                     juce::Logger::writeToLog("Slot tree created for slot " + juce::String(i));
+                    CrashLogger::getInstance().log("RACK_SAVE", "Slot tree created for slot " + juce::String(i));
 
                     slotTree.setProperty("instanceId", slotData->instanceId, undoManager.get());
                     slotTree.setProperty("sourceUnitId", slotData->gearId, undoManager.get());
                     juce::Logger::writeToLog("Slot properties set for slot " + juce::String(i));
+                    CrashLogger::getInstance().log("RACK_SAVE", "Slot properties set for slot " + juce::String(i) + " - instanceId: " + slotData->instanceId + " - sourceUnitId: " + slotData->gearId);
 
                     // Save control values
                     auto controlsTree = slotTree.getOrCreateChildWithName("controls", undoManager.get());
                     juce::Logger::writeToLog("Controls tree created for slot " + juce::String(i));
+                    CrashLogger::getInstance().log("RACK_SAVE", "Controls tree created for slot " + juce::String(i) + " - controls count: " + juce::String(slotData->controls.size()));
 
                     for (int j = 0; j < slotData->controls.size(); ++j)
                     {
                         const auto &control = slotData->controls[j];
                         juce::Logger::writeToLog("Processing control " + juce::String(j) + " in slot " + juce::String(i));
+                        CrashLogger::getInstance().log("RACK_SAVE", "Processing control " + juce::String(j) + " in slot " + juce::String(i) + " - name: " + control.name + " - type: " + juce::String(static_cast<int>(control.type)) + " - value: " + juce::String(control.currentValue));
                         juce::Logger::writeToLog("  Control name: " + control.name);
                         juce::Logger::writeToLog("  Control type: " + juce::String(static_cast<int>(control.type)));
                         juce::Logger::writeToLog("  Control value: " + juce::String(control.currentValue));
@@ -437,22 +489,26 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
 void AnalogIQProcessor::loadInstanceState(Rack *rack)
 {
     juce::Logger::writeToLog("=== loadInstanceState START ===");
+    CrashLogger::getInstance().log("INSTANCE_LOAD", "loadInstanceState START");
 
     // Get the instance state tree
     auto instanceTree = state.state.getChildWithName("instances");
     if (!instanceTree.isValid())
     {
         juce::Logger::writeToLog("No instance tree found in state");
+        CrashLogger::getInstance().log("INSTANCE_LOAD_ERROR", "No instance tree found in state");
         return;
     }
 
     juce::Logger::writeToLog("Instance tree found, loading gear items...");
+    CrashLogger::getInstance().log("INSTANCE_LOAD", "Instance tree found, loading gear items - children: " + juce::String(instanceTree.getNumChildren()));
 
     if (rack != nullptr)
     {
         // Clear existing rack state first
         rackModel->clearAllSlots();
         juce::Logger::writeToLog("Cleared existing rack state");
+        CrashLogger::getInstance().log("INSTANCE_LOAD", "Cleared existing rack state");
 
         // Load instance data for each slot
         for (int i = 0; i < rackModel->getSlotCount(); ++i)
@@ -467,6 +523,7 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                 if (!sourceUnitId.isEmpty() && !instanceId.isEmpty())
                 {
                     juce::Logger::writeToLog("Loading gear item for slot " + juce::String(i) + " with unit ID: " + sourceUnitId + ", instance ID: " + instanceId);
+                    CrashLogger::getInstance().log("INSTANCE_LOAD", "Loading gear item for slot " + juce::String(i) + " with unit ID: " + sourceUnitId + ", instance ID: " + instanceId);
 
                     // Get the template gear item from the library
                     auto *gearItemTemplate = gearLibrary->getGearItem(sourceUnitId);
@@ -474,10 +531,12 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                     if (gearItemTemplate)
                     {
                         juce::Logger::writeToLog("Found gear template: " + gearItemTemplate->name);
+                        CrashLogger::getInstance().log("INSTANCE_LOAD", "Found gear template: " + gearItemTemplate->name);
 
                         // Load the schema for the template first (like in normal drag-and-drop flow)
                         bool schemaLoaded = gearLibrary->loadGearSchema(gearItemTemplate);
                         juce::Logger::writeToLog("Schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
+                        CrashLogger::getInstance().log("INSTANCE_LOAD", "Schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
 
                         if (schemaLoaded)
                         {
@@ -488,12 +547,14 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                             if (gearAdded)
                             {
                                 juce::Logger::writeToLog("Successfully added gear to slot " + juce::String(i));
+                                CrashLogger::getInstance().log("INSTANCE_LOAD", "Successfully added gear to slot " + juce::String(i));
 
                                 // Now we need to restore the control values from the saved state
                                 auto controlsTree = slotTree.getChildWithName("controls");
                                 if (controlsTree.isValid())
                                 {
                                     juce::Logger::writeToLog("Loading control values from ValueTree...");
+                                    CrashLogger::getInstance().log("INSTANCE_LOAD", "Loading control values from ValueTree for slot " + juce::String(i) + " - controls count: " + juce::String(controlsTree.getNumChildren()));
 
                                     // Get the slot data to update control values
                                     if (auto *slotData = rackModel->getSlotData(i))
@@ -514,6 +575,7 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                                                 }
 
                                                 juce::Logger::writeToLog("  Control " + juce::String(j) + " (" + slotData->controls[j].name + "): value=" + juce::String(slotData->controls[j].currentValue));
+                                                CrashLogger::getInstance().log("INSTANCE_LOAD", "Control " + juce::String(j) + " (" + slotData->controls[j].name + ") restored - value: " + juce::String(slotData->controls[j].currentValue));
                                             }
                                         }
 
@@ -521,6 +583,7 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
                                         slotData->instanceId = instanceId;
 
                                         juce::Logger::writeToLog("Successfully loaded gear item for slot " + juce::String(i));
+                                        CrashLogger::getInstance().log("INSTANCE_LOAD", "Successfully loaded gear item for slot " + juce::String(i) + " - instanceId: " + instanceId);
                                     }
                                 }
                             }

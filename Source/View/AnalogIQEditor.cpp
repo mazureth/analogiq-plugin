@@ -53,10 +53,10 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
 
     // Create Rack component
     juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - Creating Rack");
-    CrashLogger::getInstance().log("CONSTRUCTOR", "Creating Rack");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Creating Rack - RackModel instance ID: " + juce::String(processor.getRackModel()->getInstanceId()));
     rack = std::make_unique<Rack>(*processor.getRackModel());
     juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - Rack created successfully");
-    CrashLogger::getInstance().log("CONSTRUCTOR", "Rack created successfully");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Rack created successfully - connected to RackModel instance ID: " + juce::String(processor.getRackModel()->getInstanceId()));
 
     // Create NotesPanel component
     juce::Logger::writeToLog("AnalogIQEditor::AnalogIQEditor - Creating NotesPanel");

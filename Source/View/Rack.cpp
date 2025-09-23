@@ -22,7 +22,7 @@ Rack::Rack(RackModel &rackModel)
     : rackModel(rackModel), backgroundColor(juce::Colours::darkgrey), slotBackgroundColor(juce::Colours::darkgrey.darker(0.7f)), slotBorderColor(juce::Colours::black), showSlotNumbers(true), showGrid(false)
 {
     juce::Logger::writeToLog("Rack::Rack - START - Creating new Rack instance");
-    CrashLogger::getInstance().log("CONSTRUCTOR", "Rack constructor started");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Rack constructor started - RackModel instance ID: " + juce::String(rackModel.getInstanceId()));
 
     // Initialize the rack
     juce::Logger::writeToLog("Rack::Rack - Initializing rack components");
@@ -34,9 +34,11 @@ Rack::Rack(RackModel &rackModel)
 
     // Register this Rack as a listener to the RackModel
     juce::Logger::writeToLog("Rack::Rack - Registering as RackModel listener");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Registering as RackModel listener");
     rackModel.addRackStateListener(this);
 
     juce::Logger::writeToLog("Rack::Rack - END - Rack creation complete");
+    CrashLogger::getInstance().log("CONSTRUCTOR", "Rack creation complete - connected to RackModel instance ID: " + juce::String(rackModel.getInstanceId()));
 }
 
 Rack::~Rack()

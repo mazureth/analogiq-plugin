@@ -11,6 +11,7 @@
 #include "RackSlot.h"
 #include "Rack.h"
 #include "../Model/GearItem.h"
+#include "../Shared/CrashLogger.h"
 #include <map>
 
 /**
@@ -30,6 +31,7 @@ RackSlot::RackSlot(RackModel &rackModel, int slotIndex)
       rackModel(rackModel)
 {
     // Register this slot as a listener to the rack model
+    CrashLogger::getInstance().log("CONSTRUCTOR", "RackSlot " + juce::String(slotIndex) + " created - connected to RackModel instance ID: " + juce::String(rackModel.getInstanceId()));
     rackModel.addRackStateListener(this);
 
     setComponentID("RackSlot_" + juce::String(index));
