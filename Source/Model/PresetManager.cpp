@@ -83,7 +83,9 @@ bool PresetManager::savePreset(const juce::String &presetName, const juce::Audio
     // Create or update metadata
     PresetMetadata metadata;
     metadata.name = presetName;
-    metadata.creationTime = presetName.isEmpty() ? juce::Time::getCurrentTime() : (presetMetadata.find(presetName) != presetMetadata.end() ? presetMetadata[presetName].creationTime : juce::Time::getCurrentTime());
+    metadata.creationTime = (presetMetadata.find(presetName) != presetMetadata.end())
+                                ? presetMetadata[presetName].creationTime // Preserve existing creation time
+                                : juce::Time::getCurrentTime();           // Set new creation time for new presets
     metadata.lastModifiedTime = juce::Time::getCurrentTime();
     metadata.fileSize = presetData.getSize();
     metadata.isValid = true;
@@ -779,7 +781,9 @@ bool PresetManager::savePreset(const juce::String &presetName, const juce::Strin
     // Create or update metadata
     PresetMetadata metadata;
     metadata.name = presetName;
-    metadata.creationTime = presetName.isEmpty() ? juce::Time::getCurrentTime() : (presetMetadata.find(presetName) != presetMetadata.end() ? presetMetadata[presetName].creationTime : juce::Time::getCurrentTime());
+    metadata.creationTime = (presetMetadata.find(presetName) != presetMetadata.end())
+                                ? presetMetadata[presetName].creationTime // Preserve existing creation time
+                                : juce::Time::getCurrentTime();           // Set new creation time for new presets
     metadata.lastModifiedTime = juce::Time::getCurrentTime();
     metadata.fileSize = presetData.getSize();
     metadata.isValid = true;

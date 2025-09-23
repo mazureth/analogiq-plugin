@@ -142,7 +142,7 @@ bool PresetController::loadPreset(const juce::String &presetName, juce::String &
         {
             // Update state tracking
             currentPresetName = presetName;
-            lastSaveTime = juce::Time::getCurrentTime();
+            // Don't update lastSaveTime when loading - that should only happen when saving
             clearModifiedState();
 
             logPresetOperation("Load", presetName, true);
@@ -175,7 +175,7 @@ bool PresetController::loadPreset(const juce::String &presetName)
         {
             // Update state tracking
             currentPresetName = presetName;
-            lastSaveTime = juce::Time::getCurrentTime();
+            // Don't update lastSaveTime when loading - that should only happen when saving
             clearModifiedState();
 
             logPresetOperation("Load", presetName, true);
