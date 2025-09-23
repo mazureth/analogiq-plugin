@@ -16,6 +16,9 @@ find_package(Doxygen)
 if(APPLE)
     add_compile_options(-Wno-deprecated-declarations)
     add_compile_options(-Wno-unused-but-set-variable)
+
+    # Ensure we always build Universal (Intel + Apple Silicon)
+    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac" FORCE)
 endif()
 
 # Generate compile_commands.json
