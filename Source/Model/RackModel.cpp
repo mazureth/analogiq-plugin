@@ -13,6 +13,7 @@
 #include "PresetManager.h"
 #include "../Shared/ICacheManager.h"
 #include "../Shared/IRackStateListener.h"
+#include "../Shared/CrashLogger.h"
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <algorithm>
@@ -64,10 +65,28 @@ bool RackModel::isValidSlotIndex(int slotIndex) const
 
 bool RackModel::isSlotOccupied(int slotIndex) const
 {
-    if (!isValidSlotIndex(slotIndex))
-        return false;
+    juce::Logger::writeToLog("isSlotOccupied - slotIndex: " + juce::String(slotIndex));
+    CrashLogger::getInstance().log("IS_SLOT_OCCUPIED", "isSlotOccupied called - slotIndex: " + juce::String(slotIndex));
 
-    return slots[slotIndex].isOccupied && !slots[slotIndex].gearId.isEmpty();
+    if (!isValidSlotIndex(slotIndex))
+    {
+        juce::Logger::writeToLog("isSlotOccupied - Invalid slot index: " + juce::String(slotIndex));
+        CrashLogger::getInstance().log("IS_SLOT_OCCUPIED_ERROR", "Invalid slot index: " + juce::String(slotIndex));
+        return false;
+    }
+
+    bool isOccupied = slots[slotIndex].isOccupied;
+    bool hasGearId = !slots[slotIndex].gearId.isEmpty();
+    bool result = isOccupied && hasGearId;
+
+    juce::Logger::writeToLog("isSlotOccupied - Slot " + juce::String(slotIndex) + " details:");
+    juce::Logger::writeToLog("  isOccupied: " + juce::String(isOccupied ? "YES" : "NO"));
+    juce::Logger::writeToLog("  gearId: '" + slots[slotIndex].gearId + "'");
+    juce::Logger::writeToLog("  hasGearId: " + juce::String(hasGearId ? "YES" : "NO"));
+    juce::Logger::writeToLog("  result: " + juce::String(result ? "YES" : "NO"));
+    CrashLogger::getInstance().log("IS_SLOT_OCCUPIED", "Slot " + juce::String(slotIndex) + " - isOccupied: " + juce::String(isOccupied ? "YES" : "NO") + " - gearId: '" + slots[slotIndex].gearId + "' - hasGearId: " + juce::String(hasGearId ? "YES" : "NO") + " - result: " + juce::String(result ? "YES" : "NO"));
+
+    return result;
 }
 
 int RackModel::getFirstEmptySlot() const
@@ -121,9 +140,15 @@ void RackModel::compactSlots()
 // Gear management
 bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
 {
+    juce::Logger::writeToLog("=== addGearToSlot START ===");
+    juce::Logger::writeToLog("addGearToSlot - slotIndex: " + juce::String(slotIndex) + " - gearId: '" + gearId + "'");
+    CrashLogger::getInstance().log("ADD_GEAR", "addGearToSlot START - slotIndex: " + juce::String(slotIndex) + " - gearId: '" + gearId + "'");
+
     // Validate slot index
     if (!isValidSlotIndex(slotIndex))
     {
+        juce::Logger::writeToLog("addGearToSlot - Invalid slot index: " + juce::String(slotIndex));
+        CrashLogger::getInstance().log("ADD_GEAR_ERROR", "Invalid slot index: " + juce::String(slotIndex));
         return false;
     }
 
@@ -131,20 +156,66 @@ bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
     auto gearItemTemplate = gearLibrary.getGearItem(gearId);
     if (!gearItemTemplate)
     {
+        juce::Logger::writeToLog("addGearToSlot - Gear template not found: '" + gearId + "'");
+        CrashLogger::getInstance().log("ADD_GEAR_ERROR", "Gear template not found: '" + gearId + "'");
         return false;
     }
 
+    juce::Logger::writeToLog("addGearToSlot - Found gear template:");
+    juce::Logger::writeToLog("  template unitId: '" + gearItemTemplate->unitId + "'");
+    juce::Logger::writeToLog("  template name: '" + gearItemTemplate->name + "'");
+    juce::Logger::writeToLog("  template isInstance: " + juce::String(gearItemTemplate->isInstance ? "YES" : "NO"));
+    juce::Logger::writeToLog("  template sourceUnitId: '" + gearItemTemplate->sourceUnitId + "'");
+    CrashLogger::getInstance().log("ADD_GEAR", "Found gear template - unitId: '" + gearItemTemplate->unitId + "' - name: '" + gearItemTemplate->name + "' - isInstance: " + juce::String(gearItemTemplate->isInstance ? "YES" : "NO") + " - sourceUnitId: '" + gearItemTemplate->sourceUnitId + "'");
+
     // Load complete gear data (schema, faceplate, controls) if not already loaded
     bool schemaLoaded = gearLibrary.loadGearSchema(gearItemTemplate);
+    juce::Logger::writeToLog("addGearToSlot - Schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
+    CrashLogger::getInstance().log("ADD_GEAR", "Schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
 
     // Create a unique instance for this rack slot
     auto gearItem = std::make_unique<GearItem>(gearItemTemplate->createInstance());
+
+    juce::Logger::writeToLog("addGearToSlot - Created gear instance:");
+    juce::Logger::writeToLog("  instance unitId: '" + gearItem->unitId + "'");
+    juce::Logger::writeToLog("  instance name: '" + gearItem->name + "'");
+    juce::Logger::writeToLog("  instance isInstance: " + juce::String(gearItem->isInstance ? "YES" : "NO"));
+    juce::Logger::writeToLog("  instance sourceUnitId: '" + gearItem->sourceUnitId + "'");
+    juce::Logger::writeToLog("  instance instanceId: '" + gearItem->instanceId + "'");
+    juce::Logger::writeToLog("  instance controls count: " + juce::String(gearItem->controls.size()));
+    CrashLogger::getInstance().log("ADD_GEAR", "Created gear instance - unitId: '" + gearItem->unitId + "' - name: '" + gearItem->name + "' - isInstance: " + juce::String(gearItem->isInstance ? "YES" : "NO") + " - sourceUnitId: '" + gearItem->sourceUnitId + "' - instanceId: '" + gearItem->instanceId + "' - controls: " + juce::String(gearItem->controls.size()));
 
     // Create slot data from gear item
     SlotData slotData = createSlotDataFromGearItem(slotIndex, gearItem.get());
 
     // Set the slot data
+    juce::Logger::writeToLog("addGearToSlot - About to store slot data in slots array");
+    juce::Logger::writeToLog("addGearToSlot - Slot data before storage:");
+    juce::Logger::writeToLog("  slotData.isOccupied: " + juce::String(slotData.isOccupied ? "YES" : "NO"));
+    juce::Logger::writeToLog("  slotData.gearId: '" + slotData.gearId + "'");
+    juce::Logger::writeToLog("  slotData.instanceId: '" + slotData.instanceId + "'");
+    juce::Logger::writeToLog("  slotData.gearName: '" + slotData.gearName + "'");
+    juce::Logger::writeToLog("  slotData.controls count: " + juce::String(slotData.controls.size()));
+    CrashLogger::getInstance().log("ADD_GEAR", "Slot data before storage - isOccupied: " + juce::String(slotData.isOccupied ? "YES" : "NO") + " - gearId: '" + slotData.gearId + "' - instanceId: '" + slotData.instanceId + "' - gearName: '" + slotData.gearName + "' - controls: " + juce::String(slotData.controls.size()));
+
     slots.set(slotIndex, slotData);
+
+    juce::Logger::writeToLog("addGearToSlot - Slot data stored in slots array");
+    juce::Logger::writeToLog("addGearToSlot - Verifying stored slot data:");
+    if (auto *storedSlotData = getSlotData(slotIndex))
+    {
+        juce::Logger::writeToLog("  stored isOccupied: " + juce::String(storedSlotData->isOccupied ? "YES" : "NO"));
+        juce::Logger::writeToLog("  stored gearId: '" + storedSlotData->gearId + "'");
+        juce::Logger::writeToLog("  stored instanceId: '" + storedSlotData->instanceId + "'");
+        juce::Logger::writeToLog("  stored gearName: '" + storedSlotData->gearName + "'");
+        juce::Logger::writeToLog("  stored controls count: " + juce::String(storedSlotData->controls.size()));
+        CrashLogger::getInstance().log("ADD_GEAR", "Stored slot data verified - isOccupied: " + juce::String(storedSlotData->isOccupied ? "YES" : "NO") + " - gearId: '" + storedSlotData->gearId + "' - instanceId: '" + storedSlotData->instanceId + "' - gearName: '" + storedSlotData->gearName + "' - controls: " + juce::String(storedSlotData->controls.size()));
+    }
+    else
+    {
+        juce::Logger::writeToLog("addGearToSlot - ERROR: Could not retrieve stored slot data!");
+        CrashLogger::getInstance().log("ADD_GEAR_ERROR", "Could not retrieve stored slot data!");
+    }
 
     // Load faceplate image asynchronously if schema was loaded and has faceplate path
     if (schemaLoaded && !gearItemTemplate->faceplateImagePath.isEmpty())
@@ -177,6 +248,8 @@ bool RackModel::addGearToSlot(int slotIndex, const juce::String &gearId)
     // Add to recently used
     cacheManager.addToRecentlyUsed(gearId);
 
+    juce::Logger::writeToLog("=== addGearToSlot END - SUCCESS ===");
+    CrashLogger::getInstance().log("ADD_GEAR", "addGearToSlot END - SUCCESS");
     return true;
 }
 
@@ -269,13 +342,26 @@ const SlotData *RackModel::getSlotData(int slotIndex) const
 
 SlotData *RackModel::getSlotData(int slotIndex)
 {
+    juce::Logger::writeToLog("getSlotData - slotIndex: " + juce::String(slotIndex));
+    CrashLogger::getInstance().log("GET_SLOT_DATA", "getSlotData called - slotIndex: " + juce::String(slotIndex));
 
     if (!isValidSlotIndex(slotIndex))
     {
+        juce::Logger::writeToLog("getSlotData - Invalid slot index: " + juce::String(slotIndex));
+        CrashLogger::getInstance().log("GET_SLOT_DATA_ERROR", "Invalid slot index: " + juce::String(slotIndex));
         return nullptr;
     }
 
     SlotData *result = &slots.getReference(slotIndex);
+
+    juce::Logger::writeToLog("getSlotData - Retrieved slot data:");
+    juce::Logger::writeToLog("  isOccupied: " + juce::String(result->isOccupied ? "YES" : "NO"));
+    juce::Logger::writeToLog("  gearId: '" + result->gearId + "'");
+    juce::Logger::writeToLog("  instanceId: '" + result->instanceId + "'");
+    juce::Logger::writeToLog("  gearName: '" + result->gearName + "'");
+    juce::Logger::writeToLog("  controls count: " + juce::String(result->controls.size()));
+    CrashLogger::getInstance().log("GET_SLOT_DATA", "Retrieved slot data - isOccupied: " + juce::String(result->isOccupied ? "YES" : "NO") + " - gearId: '" + result->gearId + "' - instanceId: '" + result->instanceId + "' - gearName: '" + result->gearName + "' - controls: " + juce::String(result->controls.size()));
+
     return result;
 }
 
@@ -990,8 +1076,25 @@ SlotData RackModel::createSlotDataFromGearItem(int slotIndex, const GearItem *ge
 {
     SlotData slotData(slotIndex);
 
+    juce::Logger::writeToLog("=== createSlotDataFromGearItem START ===");
+    juce::Logger::writeToLog("createSlotDataFromGearItem - slotIndex: " + juce::String(slotIndex) + " - gearItem: " + juce::String(gearItem ? "NOT NULL" : "NULL"));
+    CrashLogger::getInstance().log("SLOT_DATA_CREATE", "createSlotDataFromGearItem START - slotIndex: " + juce::String(slotIndex) + " - gearItem: " + juce::String(gearItem ? "NOT NULL" : "NULL"));
+
     if (gearItem)
     {
+        juce::Logger::writeToLog("createSlotDataFromGearItem - GearItem details:");
+        juce::Logger::writeToLog("  sourceUnitId: '" + gearItem->sourceUnitId + "'");
+        juce::Logger::writeToLog("  unitId: '" + gearItem->unitId + "'");
+        juce::Logger::writeToLog("  name: '" + gearItem->name + "'");
+        juce::Logger::writeToLog("  manufacturer: '" + gearItem->manufacturer + "'");
+        juce::Logger::writeToLog("  version: '" + gearItem->version + "'");
+        juce::Logger::writeToLog("  isInstance: " + juce::String(gearItem->isInstance ? "YES" : "NO"));
+        juce::Logger::writeToLog("  instanceId: '" + gearItem->instanceId + "'");
+        juce::Logger::writeToLog("  controls count: " + juce::String(gearItem->controls.size()));
+        juce::Logger::writeToLog("  faceplateImage valid: " + juce::String(gearItem->faceplateImage.isValid() ? "YES" : "NO"));
+        juce::Logger::writeToLog("  faceplateImagePath: '" + gearItem->faceplateImagePath + "'");
+
+        CrashLogger::getInstance().log("SLOT_DATA_CREATE", "GearItem details - sourceUnitId: '" + gearItem->sourceUnitId + "' - unitId: '" + gearItem->unitId + "' - name: '" + gearItem->name + "' - isInstance: " + juce::String(gearItem->isInstance ? "YES" : "NO") + " - controls: " + juce::String(gearItem->controls.size()));
 
         slotData.isOccupied = true;
 
@@ -1028,11 +1131,25 @@ SlotData RackModel::createSlotDataFromGearItem(int slotIndex, const GearItem *ge
 
         // Copy controls
         slotData.controls = gearItem->controls;
+
+        juce::Logger::writeToLog("createSlotDataFromGearItem - SlotData populated:");
+        juce::Logger::writeToLog("  slotData.isOccupied: " + juce::String(slotData.isOccupied ? "YES" : "NO"));
+        juce::Logger::writeToLog("  slotData.gearId: '" + slotData.gearId + "'");
+        juce::Logger::writeToLog("  slotData.instanceId: '" + slotData.instanceId + "'");
+        juce::Logger::writeToLog("  slotData.gearName: '" + slotData.gearName + "'");
+        juce::Logger::writeToLog("  slotData.controls count: " + juce::String(slotData.controls.size()));
+        juce::Logger::writeToLog("  slotData.faceplateImage valid: " + juce::String(slotData.faceplateImage.isValid() ? "YES" : "NO"));
+
+        CrashLogger::getInstance().log("SLOT_DATA_CREATE", "SlotData populated - isOccupied: " + juce::String(slotData.isOccupied ? "YES" : "NO") + " - gearId: '" + slotData.gearId + "' - instanceId: '" + slotData.instanceId + "' - gearName: '" + slotData.gearName + "' - controls: " + juce::String(slotData.controls.size()));
     }
     else
     {
+        juce::Logger::writeToLog("createSlotDataFromGearItem - gearItem is NULL!");
+        CrashLogger::getInstance().log("SLOT_DATA_CREATE_ERROR", "createSlotDataFromGearItem - gearItem is NULL!");
     }
 
+    juce::Logger::writeToLog("=== createSlotDataFromGearItem END ===");
+    CrashLogger::getInstance().log("SLOT_DATA_CREATE", "createSlotDataFromGearItem END");
     return slotData;
 }
 
