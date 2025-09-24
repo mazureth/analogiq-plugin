@@ -116,18 +116,11 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
     juce::MessageManager::callAsync([this, editor]()
                                     {
         // Wait a bit more to ensure gear library is fully loaded
-        juce::Timer::callAfterDelay(100, [this, editor]()
+        juce::Timer::callAfterDelay(100, [this]()
         {
             CrashLogger::getInstance().log("CREATE_EDITOR", "Timer callback executing - attempting to load instance state");
-            if (auto *rack = editor->getRack())
-            {
-                CrashLogger::getInstance().log("CREATE_EDITOR", "Rack obtained successfully - calling loadInstanceState");
-                loadInstanceState(rack);
-            }
-            else
-            {
-                CrashLogger::getInstance().log("CREATE_EDITOR_ERROR", "Failed to get rack from editor");
-            }
+            CrashLogger::getInstance().log("CREATE_EDITOR", "Calling loadInstanceState directly from RackModel");
+            loadInstanceState();
         }); });
 
     juce::Logger::writeToLog("AnalogIQProcessor::createEditor - END - Editor creation complete, returning editor");
@@ -315,83 +308,26 @@ void AnalogIQProcessor::saveInstanceState()
     CrashLogger::getInstance().log("INSTANCE_SAVE", "Instance data cleared - children after clear: " + juce::String(instanceTree.getNumChildren()));
     juce::Logger::writeToLog("Instances tree children after clear: " + juce::String(instanceTree.getNumChildren()));
 
-    // Get the rack from the editor
-    juce::Logger::writeToLog("Checking editor availability...");
-    CrashLogger::getInstance().log("INSTANCE_SAVE", "Checking editor availability");
-    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
-    {
-        juce::Logger::writeToLog("Editor is available");
-        CrashLogger::getInstance().log("INSTANCE_SAVE", "Editor is available - type: " + juce::String(typeid(*editor).name()));
-        juce::Logger::writeToLog("Editor type: " + juce::String(typeid(*editor).name()));
+    // Save instance data directly from RackModel - no Editor dependency!
+    juce::Logger::writeToLog("Saving instance data directly from RackModel...");
+    CrashLogger::getInstance().log("INSTANCE_SAVE", "Saving instance data directly from RackModel - slots: " + juce::String(rackModel->getSlotCount()));
+    juce::Logger::writeToLog("RackModel slots: " + juce::String(rackModel->getSlotCount()));
 
-        if (auto *rack = editor->getRack())
-        {
-            juce::Logger::writeToLog("Rack obtained from editor successfully");
-            CrashLogger::getInstance().log("INSTANCE_SAVE", "Rack obtained from editor successfully - slots: " + juce::String(rackModel->getSlotCount()));
-            juce::Logger::writeToLog("Rack slots: " + juce::String(rackModel->getSlotCount()));
-            saveInstanceStateFromRack(rack, instanceTree);
-        }
-        else
-        {
-            juce::Logger::writeToLog("WARNING: Editor available but getRack() returned null");
-            CrashLogger::getInstance().log("INSTANCE_SAVE_ERROR", "Editor available but getRack() returned null");
-        }
-    }
-    else
-    {
-        juce::Logger::writeToLog("Editor is NOT available (getActiveEditor() returned null)");
-        CrashLogger::getInstance().log("INSTANCE_SAVE_ERROR", "Editor is NOT available - getActiveEditor() returned null - cannot save instance state");
-        juce::Logger::writeToLog("ERROR: No rack available - cannot save instance state");
-        juce::Logger::writeToLog("This will result in an empty state being saved");
-    }
-
-    juce::Logger::writeToLog("Final instances tree children: " + juce::String(instanceTree.getNumChildren()));
-    CrashLogger::getInstance().log("INSTANCE_SAVE", "saveInstanceState END - Final instances tree children: " + juce::String(instanceTree.getNumChildren()));
-    juce::Logger::writeToLog("=== saveInstanceState END ===");
-}
-
-void AnalogIQProcessor::loadInstanceState()
-{
-    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
-    {
-        if (auto *rack = editor->getRack())
-        {
-            loadInstanceState(rack);
-        }
-    }
-}
-
-void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree)
-{
-    juce::Logger::writeToLog("=== saveInstanceStateFromRack START ===");
-    CrashLogger::getInstance().log("RACK_SAVE", "saveInstanceStateFromRack START");
-
-    if (rack == nullptr)
-    {
-        juce::Logger::writeToLog("ERROR: Rack pointer is null");
-        CrashLogger::getInstance().log("RACK_SAVE_ERROR", "Rack pointer is null");
-        return;
-    }
-
-    juce::Logger::writeToLog("Rack validation: rack pointer valid");
-    CrashLogger::getInstance().log("RACK_SAVE", "Rack validation: rack pointer valid - slots: " + juce::String(rackModel->getSlotCount()));
-    juce::Logger::writeToLog("Rack slots: " + juce::String(rackModel->getSlotCount()));
-
-    // Save instance data for each slot
+    // Save instance data for each slot directly from RackModel
     for (int i = 0; i < rackModel->getSlotCount(); ++i)
     {
         juce::Logger::writeToLog("Processing slot " + juce::String(i));
-        CrashLogger::getInstance().log("RACK_SAVE", "Processing slot " + juce::String(i));
+        CrashLogger::getInstance().log("INSTANCE_SAVE", "Processing slot " + juce::String(i));
 
         if (auto *slotData = rackModel->getSlotData(i))
         {
             juce::Logger::writeToLog("Slot " + juce::String(i) + " obtained successfully");
-            CrashLogger::getInstance().log("RACK_SAVE", "Slot " + juce::String(i) + " obtained successfully");
+            CrashLogger::getInstance().log("INSTANCE_SAVE", "Slot " + juce::String(i) + " obtained successfully");
 
             if (slotData->isOccupied && !slotData->gearId.isEmpty())
             {
                 juce::Logger::writeToLog("Slot " + juce::String(i) + " has gear item: " + slotData->gearName);
-                CrashLogger::getInstance().log("RACK_SAVE", "Slot " + juce::String(i) + " has gear item: " + slotData->gearName + " - Instance ID: " + slotData->instanceId + " - Unit ID: " + slotData->gearId + " - Controls: " + juce::String(slotData->controls.size()));
+                CrashLogger::getInstance().log("INSTANCE_SAVE", "Slot " + juce::String(i) + " has gear item: " + slotData->gearName + " - Instance ID: " + slotData->instanceId + " - Unit ID: " + slotData->gearId + " - Controls: " + juce::String(slotData->controls.size()));
                 juce::Logger::writeToLog("  Instance ID: " + slotData->instanceId);
                 juce::Logger::writeToLog("  Unit ID: " + slotData->gearId);
                 juce::Logger::writeToLog("  Controls count: " + juce::String(slotData->controls.size()));
@@ -400,27 +336,27 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                 if (!slotData->instanceId.isEmpty() && !slotData->gearId.isEmpty())
                 {
                     juce::Logger::writeToLog("Saving instance data for slot " + juce::String(i));
-                    CrashLogger::getInstance().log("RACK_SAVE", "Saving instance data for slot " + juce::String(i));
+                    CrashLogger::getInstance().log("INSTANCE_SAVE", "Saving instance data for slot " + juce::String(i));
 
                     auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), undoManager.get());
                     juce::Logger::writeToLog("Slot tree created for slot " + juce::String(i));
-                    CrashLogger::getInstance().log("RACK_SAVE", "Slot tree created for slot " + juce::String(i));
+                    CrashLogger::getInstance().log("INSTANCE_SAVE", "Slot tree created for slot " + juce::String(i));
 
                     slotTree.setProperty("instanceId", slotData->instanceId, undoManager.get());
                     slotTree.setProperty("sourceUnitId", slotData->gearId, undoManager.get());
                     juce::Logger::writeToLog("Slot properties set for slot " + juce::String(i));
-                    CrashLogger::getInstance().log("RACK_SAVE", "Slot properties set for slot " + juce::String(i) + " - instanceId: " + slotData->instanceId + " - sourceUnitId: " + slotData->gearId);
+                    CrashLogger::getInstance().log("INSTANCE_SAVE", "Slot properties set for slot " + juce::String(i) + " - instanceId: " + slotData->instanceId + " - sourceUnitId: " + slotData->gearId);
 
                     // Save control values
                     auto controlsTree = slotTree.getOrCreateChildWithName("controls", undoManager.get());
                     juce::Logger::writeToLog("Controls tree created for slot " + juce::String(i));
-                    CrashLogger::getInstance().log("RACK_SAVE", "Controls tree created for slot " + juce::String(i) + " - controls count: " + juce::String(slotData->controls.size()));
+                    CrashLogger::getInstance().log("INSTANCE_SAVE", "Controls tree created for slot " + juce::String(i) + " - controls count: " + juce::String(slotData->controls.size()));
 
                     for (int j = 0; j < slotData->controls.size(); ++j)
                     {
                         const auto &control = slotData->controls[j];
                         juce::Logger::writeToLog("Processing control " + juce::String(j) + " in slot " + juce::String(i));
-                        CrashLogger::getInstance().log("RACK_SAVE", "Processing control " + juce::String(j) + " in slot " + juce::String(i) + " - name: " + control.name + " - type: " + juce::String(static_cast<int>(control.type)) + " - value: " + juce::String(control.currentValue));
+                        CrashLogger::getInstance().log("INSTANCE_SAVE", "Processing control " + juce::String(j) + " in slot " + juce::String(i) + " - name: " + control.name + " - type: " + juce::String(static_cast<int>(control.type)) + " - value: " + juce::String(control.currentValue));
                         juce::Logger::writeToLog("  Control name: " + control.name);
                         juce::Logger::writeToLog("  Control type: " + juce::String(static_cast<int>(control.type)));
                         juce::Logger::writeToLog("  Control value: " + juce::String(control.currentValue));
@@ -443,19 +379,19 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                 }
                 else
                 {
-                    juce::Logger::writeToLog("Slot " + juce::String(i) + " skipped - not a valid instance");
-                    juce::Logger::writeToLog("  Instance ID empty: " + juce::String(slotData->instanceId.isEmpty() ? "true" : "false"));
-                    juce::Logger::writeToLog("  Unit ID empty: " + juce::String(slotData->gearId.isEmpty() ? "true" : "false"));
+                    juce::Logger::writeToLog("Slot " + juce::String(i) + " has gear item but missing instanceId or gearId - skipping");
+                    CrashLogger::getInstance().log("INSTANCE_SAVE", "Slot " + juce::String(i) + " has gear item but missing instanceId or gearId - skipping");
                 }
             }
             else
             {
-                juce::Logger::writeToLog("Slot " + juce::String(i) + " has no gear item");
+                juce::Logger::writeToLog("Slot " + juce::String(i) + " is empty or has no gear ID - skipping");
             }
         }
         else
         {
-            juce::Logger::writeToLog("ERROR: Failed to get slot " + juce::String(i));
+            juce::Logger::writeToLog("Slot " + juce::String(i) + " data is null - skipping");
+            CrashLogger::getInstance().log("INSTANCE_SAVE_ERROR", "Slot " + juce::String(i) + " data is null - skipping");
         }
     }
 
@@ -482,11 +418,12 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
         juce::Logger::writeToLog("Editor not available for notes panel");
     }
 
-    juce::Logger::writeToLog("Final instance tree children: " + juce::String(instanceTree.getNumChildren()));
-    juce::Logger::writeToLog("=== saveInstanceStateFromRack END ===");
+    juce::Logger::writeToLog("Final instances tree children: " + juce::String(instanceTree.getNumChildren()));
+    CrashLogger::getInstance().log("INSTANCE_SAVE", "saveInstanceState END - Final instances tree children: " + juce::String(instanceTree.getNumChildren()));
+    juce::Logger::writeToLog("=== saveInstanceState END ===");
 }
 
-void AnalogIQProcessor::loadInstanceState(Rack *rack)
+void AnalogIQProcessor::loadInstanceState()
 {
     juce::Logger::writeToLog("=== loadInstanceState START ===");
     CrashLogger::getInstance().log("INSTANCE_LOAD", "loadInstanceState START");
@@ -503,136 +440,129 @@ void AnalogIQProcessor::loadInstanceState(Rack *rack)
     juce::Logger::writeToLog("Instance tree found, loading gear items...");
     CrashLogger::getInstance().log("INSTANCE_LOAD", "Instance tree found, loading gear items - children: " + juce::String(instanceTree.getNumChildren()));
 
-    if (rack != nullptr)
+    // Clear existing rack state first
+    rackModel->clearAllSlots();
+    juce::Logger::writeToLog("Cleared existing rack state");
+    CrashLogger::getInstance().log("INSTANCE_LOAD", "Cleared existing rack state");
+
+    // Load instance data for each slot
+    for (int i = 0; i < rackModel->getSlotCount(); ++i)
     {
-        // Clear existing rack state first
-        rackModel->clearAllSlots();
-        juce::Logger::writeToLog("Cleared existing rack state");
-        CrashLogger::getInstance().log("INSTANCE_LOAD", "Cleared existing rack state");
-
-        // Load instance data for each slot
-        for (int i = 0; i < rackModel->getSlotCount(); ++i)
+        auto slotTree = instanceTree.getChildWithName("slot_" + juce::String(i));
+        if (slotTree.isValid())
         {
-            auto slotTree = instanceTree.getChildWithName("slot_" + juce::String(i));
-            if (slotTree.isValid())
+            // Get the source unit ID and instance ID from the saved state
+            auto sourceUnitId = slotTree.getProperty("sourceUnitId").toString();
+            auto instanceId = slotTree.getProperty("instanceId").toString();
+
+            if (!sourceUnitId.isEmpty() && !instanceId.isEmpty())
             {
-                // Get the source unit ID and instance ID from the saved state
-                auto sourceUnitId = slotTree.getProperty("sourceUnitId").toString();
-                auto instanceId = slotTree.getProperty("instanceId").toString();
+                juce::Logger::writeToLog("Loading gear item for slot " + juce::String(i) + " with unit ID: " + sourceUnitId + ", instance ID: " + instanceId);
+                CrashLogger::getInstance().log("INSTANCE_LOAD", "Loading gear item for slot " + juce::String(i) + " with unit ID: " + sourceUnitId + ", instance ID: " + instanceId);
 
-                if (!sourceUnitId.isEmpty() && !instanceId.isEmpty())
+                // Get the template gear item from the library
+                auto *gearItemTemplate = gearLibrary->getGearItem(sourceUnitId);
+
+                if (gearItemTemplate)
                 {
-                    juce::Logger::writeToLog("Loading gear item for slot " + juce::String(i) + " with unit ID: " + sourceUnitId + ", instance ID: " + instanceId);
-                    CrashLogger::getInstance().log("INSTANCE_LOAD", "Loading gear item for slot " + juce::String(i) + " with unit ID: " + sourceUnitId + ", instance ID: " + instanceId);
+                    juce::Logger::writeToLog("Found gear template: " + gearItemTemplate->name);
+                    CrashLogger::getInstance().log("INSTANCE_LOAD", "Found gear template: " + gearItemTemplate->name);
 
-                    // Get the template gear item from the library
-                    auto *gearItemTemplate = gearLibrary->getGearItem(sourceUnitId);
+                    // Load the schema for the template first (like in normal drag-and-drop flow)
+                    bool schemaLoaded = gearLibrary->loadGearSchema(gearItemTemplate);
+                    juce::Logger::writeToLog("Schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
+                    CrashLogger::getInstance().log("INSTANCE_LOAD", "Schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
 
-                    if (gearItemTemplate)
+                    if (schemaLoaded)
                     {
-                        juce::Logger::writeToLog("Found gear template: " + gearItemTemplate->name);
-                        CrashLogger::getInstance().log("INSTANCE_LOAD", "Found gear template: " + gearItemTemplate->name);
+                        // Use the public addGearToSlot method to add the gear item
+                        // This will handle all the SlotData creation and async loading
+                        bool gearAdded = rackModel->addGearToSlot(i, sourceUnitId);
 
-                        // Load the schema for the template first (like in normal drag-and-drop flow)
-                        bool schemaLoaded = gearLibrary->loadGearSchema(gearItemTemplate);
-                        juce::Logger::writeToLog("Schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
-                        CrashLogger::getInstance().log("INSTANCE_LOAD", "Schema loaded: " + juce::String(schemaLoaded ? "YES" : "NO"));
-
-                        if (schemaLoaded)
+                        if (gearAdded)
                         {
-                            // Use the public addGearToSlot method to add the gear item
-                            // This will handle all the SlotData creation and async loading
-                            bool gearAdded = rackModel->addGearToSlot(i, sourceUnitId);
+                            juce::Logger::writeToLog("Successfully added gear to slot " + juce::String(i));
+                            CrashLogger::getInstance().log("INSTANCE_LOAD", "Successfully added gear to slot " + juce::String(i));
 
-                            if (gearAdded)
+                            // Now we need to restore the control values from the saved state
+                            auto controlsTree = slotTree.getChildWithName("controls");
+                            if (controlsTree.isValid())
                             {
-                                juce::Logger::writeToLog("Successfully added gear to slot " + juce::String(i));
-                                CrashLogger::getInstance().log("INSTANCE_LOAD", "Successfully added gear to slot " + juce::String(i));
+                                juce::Logger::writeToLog("Loading control values from ValueTree...");
+                                CrashLogger::getInstance().log("INSTANCE_LOAD", "Loading control values from ValueTree for slot " + juce::String(i) + " - controls count: " + juce::String(controlsTree.getNumChildren()));
 
-                                // Now we need to restore the control values from the saved state
-                                auto controlsTree = slotTree.getChildWithName("controls");
-                                if (controlsTree.isValid())
+                                // Get the slot data to update control values
+                                if (auto *slotData = rackModel->getSlotData(i))
                                 {
-                                    juce::Logger::writeToLog("Loading control values from ValueTree...");
-                                    CrashLogger::getInstance().log("INSTANCE_LOAD", "Loading control values from ValueTree for slot " + juce::String(i) + " - controls count: " + juce::String(controlsTree.getNumChildren()));
-
-                                    // Get the slot data to update control values
-                                    if (auto *slotData = rackModel->getSlotData(i))
+                                    for (int j = 0; j < controlsTree.getNumChildren() && j < slotData->controls.size(); ++j)
                                     {
-                                        for (int j = 0; j < controlsTree.getNumChildren() && j < slotData->controls.size(); ++j)
+                                        auto controlTree = controlsTree.getChild(j);
+                                        if (controlTree.isValid())
                                         {
-                                            auto controlTree = controlsTree.getChild(j);
-                                            if (controlTree.isValid())
+                                            // Update the slot's control with saved values
+                                            slotData->controls.getReference(j).currentValue = (float)controlTree.getProperty("value");
+                                            slotData->controls.getReference(j).initialValue = (float)controlTree.getProperty("initialValue");
+
+                                            // Handle switch/button specific properties
+                                            if (controlTree.hasProperty("currentIndex"))
                                             {
-                                                // Update the slot's control with saved values
-                                                slotData->controls.getReference(j).currentValue = (float)controlTree.getProperty("value");
-                                                slotData->controls.getReference(j).initialValue = (float)controlTree.getProperty("initialValue");
-
-                                                // Handle switch/button specific properties
-                                                if (controlTree.hasProperty("currentIndex"))
-                                                {
-                                                    slotData->controls.getReference(j).currentIndex = (int)controlTree.getProperty("currentIndex");
-                                                }
-
-                                                juce::Logger::writeToLog("  Control " + juce::String(j) + " (" + slotData->controls[j].name + "): value=" + juce::String(slotData->controls[j].currentValue));
-                                                CrashLogger::getInstance().log("INSTANCE_LOAD", "Control " + juce::String(j) + " (" + slotData->controls[j].name + ") restored - value: " + juce::String(slotData->controls[j].currentValue));
+                                                slotData->controls.getReference(j).currentIndex = (int)controlTree.getProperty("currentIndex");
                                             }
+
+                                            juce::Logger::writeToLog("  Control " + juce::String(j) + " (" + slotData->controls[j].name + "): value=" + juce::String(slotData->controls[j].currentValue));
+                                            CrashLogger::getInstance().log("INSTANCE_LOAD", "Control " + juce::String(j) + " (" + slotData->controls[j].name + ") restored - value: " + juce::String(slotData->controls[j].currentValue));
                                         }
-
-                                        // Update the instance ID to match the saved state
-                                        slotData->instanceId = instanceId;
-
-                                        juce::Logger::writeToLog("Successfully loaded gear item for slot " + juce::String(i));
-                                        CrashLogger::getInstance().log("INSTANCE_LOAD", "Successfully loaded gear item for slot " + juce::String(i) + " - instanceId: " + instanceId);
                                     }
+
+                                    // Update the instance ID to match the saved state
+                                    slotData->instanceId = instanceId;
+
+                                    juce::Logger::writeToLog("Successfully loaded gear item for slot " + juce::String(i));
+                                    CrashLogger::getInstance().log("INSTANCE_LOAD", "Successfully loaded gear item for slot " + juce::String(i) + " - instanceId: " + instanceId);
                                 }
-                            }
-                            else
-                            {
-                                juce::Logger::writeToLog("Failed to add gear to slot " + juce::String(i));
                             }
                         }
                         else
                         {
-                            juce::Logger::writeToLog("Failed to load schema for gear template: " + sourceUnitId);
+                            juce::Logger::writeToLog("Failed to add gear to slot " + juce::String(i));
                         }
                     }
                     else
                     {
-                        juce::Logger::writeToLog("Gear template not found: " + sourceUnitId);
+                        juce::Logger::writeToLog("Failed to load schema for gear template: " + sourceUnitId);
                     }
                 }
                 else
                 {
-                    juce::Logger::writeToLog("Slot " + juce::String(i) + " has empty sourceUnitId or instanceId, skipping");
+                    juce::Logger::writeToLog("Gear template not found: " + sourceUnitId);
                 }
             }
-        }
-
-        // Load notes panel content after all gear items are processed
-        if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
-        {
-            if (auto *notesPanel = editor->getNotesPanel())
+            else
             {
-                auto notesTree = instanceTree.getChildWithName("notes");
-                if (notesTree.isValid())
+                juce::Logger::writeToLog("Slot " + juce::String(i) + " has empty sourceUnitId or instanceId, skipping");
+            }
+        }
+    }
+
+    // Load notes panel content after all gear items are processed
+    if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
+    {
+        if (auto *notesPanel = editor->getNotesPanel())
+        {
+            auto notesTree = instanceTree.getChildWithName("notes");
+            if (notesTree.isValid())
+            {
+                auto notesContent = notesTree.getProperty("content").toString();
+                if (notesContent.isNotEmpty())
                 {
-                    auto notesContent = notesTree.getProperty("content").toString();
-                    if (notesContent.isNotEmpty())
-                    {
-                        notesPanel->setNotes(notesContent);
-                        juce::Logger::writeToLog("Loaded notes panel content");
-                    }
+                    notesPanel->setNotes(notesContent);
+                    juce::Logger::writeToLog("Loaded notes panel content");
                 }
             }
         }
+    }
 
-        juce::Logger::writeToLog("=== loadInstanceState COMPLETE ===");
-    }
-    else
-    {
-        juce::Logger::writeToLog("Rack pointer is null, cannot load state");
-    }
+    juce::Logger::writeToLog("=== loadInstanceState COMPLETE ===");
 }
 
 void AnalogIQProcessor::resetAllInstances()

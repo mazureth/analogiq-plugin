@@ -58,8 +58,6 @@ public:
     juce::AudioProcessorValueTreeState &getState();
     void saveInstanceState();
     void loadInstanceState();
-    void saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree);
-    void loadInstanceState(Rack *rack);
     void resetAllInstances();
     void clearRackReference();
 

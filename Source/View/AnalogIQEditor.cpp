@@ -135,10 +135,7 @@ AnalogIQEditor::AnalogIQEditor(AnalogIQProcessor &processor,
     debugLoadButton.setButtonText("Debug: Load State");
     debugLoadButton.onClick = [this]()
     {
-        if (auto *rack = getRack())
-        {
-            this->processor.loadInstanceState(rack);
-        }
+        this->processor.loadInstanceState();
     };
     addAndMakeVisible(debugLoadButton);
 
