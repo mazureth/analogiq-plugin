@@ -110,18 +110,11 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
     // Store reference to the editor for state management
     lastCreatedEditor = editor;
 
-    // Load instance state after the editor is created and gear library is loaded
-    // We'll defer this to after the gear library is ready
-    CrashLogger::getInstance().log("CREATE_EDITOR", "Scheduling loadInstanceState with 100ms delay");
-    juce::MessageManager::callAsync([this, editor]()
-                                    {
-        // Wait a bit more to ensure gear library is fully loaded
-        juce::Timer::callAfterDelay(100, [this]()
-        {
-            CrashLogger::getInstance().log("CREATE_EDITOR", "Timer callback executing - attempting to load instance state");
-            CrashLogger::getInstance().log("CREATE_EDITOR", "Calling loadInstanceState directly from RackModel");
-            loadInstanceState();
-        }); });
+    // CRITICAL FIX: UI opening/closing is separate from state persistence
+    // The RackModel data persists across UI open/close cycles
+    // State loading only happens when DAW loads a project (setStateInformation)
+    // State saving only happens when DAW saves a project (getStateInformation)
+    CrashLogger::getInstance().log("CREATE_EDITOR", "UI created - RackModel data persists, no state loading needed");
 
     juce::Logger::writeToLog("AnalogIQProcessor::createEditor - END - Editor creation complete, returning editor");
     return editor;
