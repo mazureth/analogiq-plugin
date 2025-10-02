@@ -16,6 +16,9 @@ find_package(Doxygen)
 if(APPLE)
     add_compile_options(-Wno-deprecated-declarations)
     add_compile_options(-Wno-unused-but-set-variable)
+
+    # Ensure we always build Universal (Intel + Apple Silicon)
+    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac" FORCE)
 endif()
 
 # Generate compile_commands.json
@@ -74,21 +77,35 @@ juce_add_plugin(AnalogIQ
 # Set C++ standard to 17
 target_compile_features(AnalogIQ PRIVATE cxx_std_17)
 
-# Add source files
+# Add include directories for MVC architecture
+target_include_directories(AnalogIQ PRIVATE
+    Source
+    Source/Shared
+    Source/Model
+    Source/View
+    Source/Controller
+)
+
+# Add source files - MVC architecture will be added here as components are implemented
 target_sources(AnalogIQ PRIVATE
-    Source/AnalogIQProcessor.cpp
-    Source/AnalogIQProcessor.h
-    Source/AnalogIQEditor.cpp
-    Source/AnalogIQEditor.h
-    Source/GearLibrary.cpp
-    Source/GearItem.cpp
-    Source/Rack.cpp
-    Source/RackSlot.cpp
-    Source/NotesPanel.cpp
-    Source/NotesPanel.h
-    Source/NetworkFetcher.cpp
-    Source/NetworkFetcher.h
-    Source/INetworkFetcher.h
+    # Shared sources
+    Source/Shared/RemoteConfig.cpp
+    # Model layer sources
+    Source/Model/FileSystem.cpp
+    Source/Model/NetworkFetcher.cpp
+    Source/Model/CacheManager.cpp
+    Source/Model/PresetManager.cpp
+    Source/Model/GearItem.cpp
+    Source/Model/GearLibrary.cpp
+    Source/Model/RackModel.cpp
+    Source/Model/AnalogIQProcessor.cpp
+    # View layer sources
+    Source/View/AnalogIQEditor.cpp
+    Source/View/GearLibraryTree.cpp
+    Source/View/NotesPanel.cpp
+    Source/View/Rack.cpp
+    Source/View/RackSlot.cpp
+    # Additional sources will be added as MVC components are implemented
 )
 
 # Set up JUCE dependencies
@@ -98,7 +115,7 @@ target_compile_definitions(AnalogIQ
     JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
-# Link with JUCE modules
+# Link with JUCE modules and our libraries
 target_link_libraries(AnalogIQ
     PRIVATE
         juce::juce_audio_basics
@@ -113,6 +130,7 @@ target_link_libraries(AnalogIQ
         juce::juce_graphics
         juce::juce_gui_basics
         juce::juce_gui_extra
+        AnalogIQShared
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
@@ -121,6 +139,7 @@ target_link_libraries(AnalogIQ
 
 # Add coverage runtime libraries for debug builds
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Apply coverage to main target for all builds
     target_link_options(AnalogIQ PRIVATE
         --coverage -fprofile-instr-generate -fcoverage-mapping
     )
@@ -128,12 +147,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     # Apply coverage to all JUCE format targets
     if(ANALOGIQ_BUILD_STANDALONE)
         target_link_options(AnalogIQ_Standalone PRIVATE
-            --coverage -fprofile-instr-generate -fcoverage-mapping
-        )
-    endif()
-    
-    if(ANALOGIQ_BUILD_VST3)
-        target_link_options(AnalogIQ_VST3 PRIVATE
             --coverage -fprofile-instr-generate -fcoverage-mapping
         )
     endif()
@@ -148,6 +161,19 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_link_options(AnalogIQ_AAX PRIVATE
             --coverage -fprofile-instr-generate -fcoverage-mapping
         )
+    endif()
+    
+    # VST3 target gets coverage but with proper runtime library linking
+    if(ANALOGIQ_BUILD_VST3)
+        target_link_options(AnalogIQ_VST3 PRIVATE
+            --coverage -fprofile-instr-generate -fcoverage-mapping
+        )
+        
+        # Ensure VST3 target has proper coverage runtime libraries
+        # This prevents the "undefined symbols" linking errors
+        # On macOS, we use LLVM coverage runtime which is built into the compiler
+        # The --coverage flag automatically links the necessary runtime libraries
+        message(STATUS "VST3 target configured with coverage support")
     endif()
 endif()
 

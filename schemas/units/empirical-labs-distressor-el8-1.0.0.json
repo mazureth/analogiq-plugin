@@ -1,0 +1,370 @@
+{
+    "unitId": "empirical-labs-distressor-el8",
+    "name": "Empirical Labs Distressor EL8",
+    "manufacturer": "Empirical Labs",
+    "tags": [
+        "Empirical Labs",
+        "19-inch-rack",
+        "compressor",
+        "distressor",
+        "dynamics",
+        "distortion"
+    ],
+    "version": "1.0.0",
+    "category": "compressor",
+    "formFactor": "19-inch-rack",
+    "faceplateImage": "assets/faceplates/eli-distressor-el8-compressor-1.0.0.png",
+    "thumbnailImage": "assets/thumbnails/eli-distressor-el8-compressor-1.0.0.png",
+    "width": 1900,
+    "height": 350,
+    "controls": [
+        {
+            "id": "input",
+            "label": "Input",
+            "type": "knob",
+            "position": {
+                "x": 0.476,
+                "y": 0.12
+            },
+            "value": 180,
+            "startAngle": 30,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/eli-lg-white.png"
+        },
+        {
+            "id": "attack",
+            "label": "Attack",
+            "type": "knob",
+            "position": {
+                "x": 0.582,
+                "y": 0.12
+            },
+            "value": 180,
+            "startAngle": 30,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/eli-lg-white.png"
+        },
+        {
+            "id": "release",
+            "label": "Release",
+            "type": "knob",
+            "position": {
+                "x": 0.687,
+                "y": 0.12
+            },
+            "value": 180,
+            "startAngle": 30,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/eli-lg-white.png"
+        },
+        {
+            "id": "output",
+            "label": "Output",
+            "type": "knob",
+            "position": {
+                "x": 0.793,
+                "y": 0.12
+            },
+            "value": 180,
+            "startAngle": 30,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/eli-lg-white.png"
+        },
+        {
+            "id": "bypass",
+            "label": "Bypass",
+            "type": "button",
+            "position": {
+                "x": 0.181,
+                "y": 0.4
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "Off",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 178,
+                        "height": 37
+                    },
+                    "label": "Off"
+                },
+                {
+                    "value": "On",
+                    "frame": {
+                        "x": 0,
+                        "y": 37,
+                        "width": 178,
+                        "height": 37
+                    },
+                    "label": "On"
+                }
+            ],
+            "image": "assets/controls/buttons/button-distressor-bypass.png"
+        },
+        {
+            "id": "ratio",
+            "label": "Ratio",
+            "type": "button",
+            "position": {
+                "x": 0.132,
+                "y": 0.595
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "1",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 421,
+                        "height": 54
+                    },
+                    "label": "1"
+                },
+                {
+                    "value": "2",
+                    "frame": {
+                        "x": 0,
+                        "y": 56,
+                        "width": 421,
+                        "height": 55
+                    },
+                    "label": "2"
+                },
+                {
+                    "value": "3",
+                    "frame": {
+                        "x": 0,
+                        "y": 110,
+                        "width": 421,
+                        "height": 54
+                    },
+                    "label": "3"
+                },
+                {
+                    "value": "4",
+                    "frame": {
+                        "x": 0,
+                        "y": 162,
+                        "width": 421,
+                        "height": 54
+                    },
+                    "label": "4"
+                },
+                {
+                    "value": "6",
+                    "frame": {
+                        "x": 0,
+                        "y": 218,
+                        "width": 421,
+                        "height": 54
+                    },
+                    "label": "6"
+                },
+                {
+                    "value": "10",
+                    "frame": {
+                        "x": 0,
+                        "y": 272,
+                        "width": 421,
+                        "height": 54
+                    },
+                    "label": "10"
+                },
+                {
+                    "value": "20",
+                    "frame": {
+                        "x": 0,
+                        "y": 324,
+                        "width": 421,
+                        "height": 54
+                    },
+                    "label": "20"
+                },
+                {
+                    "value": "Nuke",
+                    "frame": {
+                        "x": 0,
+                        "y": 379,
+                        "width": 421,
+                        "height": 54
+                    },
+                    "label": "Nuke"
+                }
+            ],
+            "image": "assets/controls/buttons/button-distressor-ratio.png"
+        },
+        {
+            "id": "detector",
+            "label": "Detector",
+            "type": "button",
+            "position": {
+                "x": 0.375,
+                "y": 0.13
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "Off",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 65,
+                        "height": 114
+                    },
+                    "label": "Off"
+                },
+                {
+                    "value": "Hi Pass",
+                    "frame": {
+                        "x": 0,
+                        "y": 114,
+                        "width": 65,
+                        "height": 114
+                    },
+                    "label": "Hi Pass"
+                },
+                {
+                    "value": "Band",
+                    "frame": {
+                        "x": 0,
+                        "y": 228,
+                        "width": 65,
+                        "height": 114
+                    },
+                    "label": "Band"
+                },
+                {
+                    "value": "Hi Pass + Band",
+                    "frame": {
+                        "x": 0,
+                        "y": 342,
+                        "width": 65,
+                        "height": 114
+                    },
+                    "label": "Hi Pass + Band"
+                },
+                {
+                    "value": "Link",
+                    "frame": {
+                        "x": 0,
+                        "y": 456,
+                        "width": 65,
+                        "height": 114
+                    },
+                    "label": "Link"
+                },
+                {
+                    "value": "Hi Pass + Link",
+                    "frame": {
+                        "x": 0,
+                        "y": 570,
+                        "width": 65,
+                        "height": 114
+                    },
+                    "label": "Hi Pass + Link"
+                },
+                {
+                    "value": "Band + Link",
+                    "frame": {
+                        "x": 0,
+                        "y": 684,
+                        "width": 65,
+                        "height": 114
+                    },
+                    "label": "Band + Link"
+                },
+                {
+                    "value": "Hi Pass + Band + Link",
+                    "frame": {
+                        "x": 0,
+                        "y": 798,
+                        "width": 65,
+                        "height": 114
+                    },
+                    "label": "Hi Pass + Band + Link"
+                }
+            ],
+            "image": "assets/controls/buttons/button-distressor-detector.png"
+        },
+        {
+            "id": "audio",
+            "label": "Audio",
+            "type": "button",
+            "position": {
+                "x": 0.427,
+                "y": 0.13
+            },
+            "momentary": false,
+            "value": 0,
+            "options": [
+                {
+                    "value": "Off",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 64,
+                        "height": 112
+                    },
+                    "label": "Off"
+                },
+                {
+                    "value": "Hi Pass",
+                    "frame": {
+                        "x": 0,
+                        "y": 112,
+                        "width": 64,
+                        "height": 112
+                    },
+                    "label": "Hi Pass"
+                },
+                {
+                    "value": "Dist 2",
+                    "frame": {
+                        "x": 0,
+                        "y": 224,
+                        "width": 64,
+                        "height": 112
+                    },
+                    "label": "Dist 2"
+                },
+                {
+                    "value": "Hi Pass + Dist 2",
+                    "frame": {
+                        "x": 0,
+                        "y": 336,
+                        "width": 64,
+                        "height": 112
+                    },
+                    "label": "Hi Pass + Dist 2"
+                },
+                {
+                    "value": "Dist 3",
+                    "frame": {
+                        "x": 0,
+                        "y": 448,
+                        "width": 64,
+                        "height": 112
+                    },
+                    "label": "Dist 3"
+                },
+                {
+                    "value": "Hi Pass + Dist 3",
+                    "frame": {
+                        "x": 0,
+                        "y": 560,
+                        "width": 64,
+                        "height": 112
+                    },
+                    "label": "Hi Pass + Dist 3"
+                }
+            ],
+            "image": "assets/controls/buttons/button-distressor-audio.png"
+        }
+    ]
+}

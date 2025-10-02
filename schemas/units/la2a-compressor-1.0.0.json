@@ -1,0 +1,133 @@
+{
+    "unitId": "la2a-compressor",
+    "name": "LA-2A Tube Compressor",
+    "manufacturer": "Universal Audio",
+    "tags": [
+        "compressor",
+        "tube",
+        "optical",
+        "vintage"
+    ],
+    "version": "1.0.0",
+    "category": "compressor",
+    "formFactor": "19-inch-rack",
+    "faceplateImage": "assets/faceplates/la2a-compressor-1.0.0.png",
+    "thumbnailImage": "assets/thumbnails/la2a-compressor-1.0.0.png",
+    "width": 1900,
+    "height": 525,
+    "controls": [
+        {
+            "id": "gain-reduction",
+            "label": "Gain Reduction",
+            "type": "knob",
+            "position": {
+                "x": 0.813,
+                "y": 0.22
+            },
+            "value": 180,
+            "startAngle": 140,
+            "endAngle": 220,
+            "steps": [
+                140,
+                180,
+                220
+            ],
+            "currentStepIndex": 1,
+            "image": "assets/controls/knobs/bakelite-lg-black.png"
+        },
+        {
+            "id": "peak-reduction",
+            "label": "Peak Reduction",
+            "type": "knob",
+            "position": {
+                "x": 0.68,
+                "y": 0.44
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 322,
+            "image": "assets/controls/knobs/bakelite-lg-black.png"
+        },
+        {
+            "id": "gain",
+            "label": "Gain",
+            "type": "knob",
+            "position": {
+                "x": 0.257,
+                "y": 0.44
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 322,
+            "image": "assets/controls/knobs/bakelite-lg-black.png"
+        },
+        {
+            "id": "comp-lim",
+            "label": "Comp/Lim",
+            "type": "switch",
+            "position": {
+                "x": 0.086,
+                "y": 0.57
+            },
+            "options": [
+                {
+                    "value": "Compress",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 128,
+                        "height": 156
+                    },
+                    "label": "Compress"
+                },
+                {
+                    "value": "Limit",
+                    "frame": {
+                        "x": 128,
+                        "y": 0,
+                        "width": 128,
+                        "height": 156
+                    },
+                    "label": "Limit"
+                }
+            ],
+            "currentIndex": 0,
+            "orientation": "vertical",
+            "image": "assets/controls/switches/chrome-lg-sprite.png"
+        },
+        {
+            "id": "power",
+            "label": "Power",
+            "type": "switch",
+            "position": {
+                "x": 0.826,
+                "y": 0.57
+            },
+            "options": [
+                {
+                    "value": "Off",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 128,
+                        "height": 156
+                    },
+                    "label": "Off"
+                },
+                {
+                    "value": "On",
+                    "frame": {
+                        "x": 128,
+                        "y": 0,
+                        "width": 128,
+                        "height": 156
+                    },
+                    "label": "On"
+                }
+            ],
+            "currentIndex": 1,
+            "orientation": "vertical",
+            "image": "assets/controls/switches/chrome-lg-sprite.png"
+        }
+    ]
+}

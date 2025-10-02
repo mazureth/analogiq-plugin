@@ -1,0 +1,112 @@
+{
+    "$id": "#/definitions/switch",
+    "type": "object",
+    "required": [
+        "id",
+        "label",
+        "type",
+        "position",
+        "options",
+        "currentIndex",
+        "orientation",
+        "image"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "Unique identifier for the switch"
+        },
+        "label": {
+            "type": "string",
+            "description": "Label for the switch"
+        },
+        "type": {
+            "const": "switch"
+        },
+        "position": {
+            "type": "object",
+            "description": "Position of the switch on the faceplate",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "X position of the switch on the faceplate"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "Y position of the switch on the faceplate"
+                }
+            },
+            "required": [
+                "x",
+                "y"
+            ]
+        },
+        "options": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "value",
+                    "frame"
+                ],
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "description": "The option value"
+                    },
+                    "frame": {
+                        "type": "object",
+                        "required": [
+                            "x",
+                            "y",
+                            "width",
+                            "height"
+                        ],
+                        "properties": {
+                            "x": {
+                                "type": "integer",
+                                "description": "X position of the sprite frame",
+                                "minimum": 0
+                            },
+                            "y": {
+                                "type": "integer",
+                                "description": "Y position of the sprite frame",
+                                "minimum": 0
+                            },
+                            "width": {
+                                "type": "integer",
+                                "description": "Width of the sprite frame",
+                                "minimum": 1
+                            },
+                            "height": {
+                                "type": "integer",
+                                "description": "Height of the sprite frame",
+                                "minimum": 1
+                            }
+                        }
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "Optional display label for this option"
+                    }
+                }
+            }
+        },
+        "currentIndex": {
+            "type": "number"
+        },
+        "orientation": {
+            "type": "string",
+            "enum": [
+                "horizontal",
+                "vertical"
+            ]
+        },
+        "image": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "\\.png$",
+            "description": "URI to the sprite sheet image containing all switch position visuals"
+        }
+    }
+}

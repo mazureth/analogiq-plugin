@@ -1,0 +1,96 @@
+/**
+ * @file Rack.h
+ * @brief Header file for the Rack class which manages a virtual rack of audio gear.
+ *
+ * This file defines the Rack class which provides a visual interface for managing
+ * audio gear items in a virtual rack system. It handles the layout, drag-and-drop
+ * functionality, and resource management for gear items and their controls.
+ */
+
+#pragma once
+#include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_gui_extra/juce_gui_extra.h>
+#include "../Shared/INetworkFetcher.h"
+#include "../Shared/IFileSystem.h"
+#include "../Shared/ICacheManager.h"
+#include "../Model/PresetManager.h"
+#include "../Model/GearLibrary.h"
+#include "../Model/RackModel.h"
+#include "../Shared/IRackStateListener.h"
+#include "RackSlot.h"
+#include <memory>
+#include <vector>
+
+class Rack : public juce::Component,
+             public juce::DragAndDropTarget,
+             public juce::ComponentListener,
+             public RackStateListener
+{
+public:
+    // Constructor
+    Rack(RackModel &rackModel);
+
+    ~Rack() override;
+
+    // JUCE Component overrides
+    void paint(juce::Graphics &g) override;
+    void resized() override;
+
+    // Drag and Drop
+    bool isInterestedInDragSource(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
+    void itemDragEnter(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
+    void itemDragMove(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
+    void itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
+    void itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
+
+    // Visual customization
+    void setBackgroundColor(juce::Colour color);
+    void setSlotBackgroundColor(juce::Colour color);
+    void setSlotBorderColor(juce::Colour color);
+    void setShowSlotNumbers(bool show);
+    void setShowGrid(bool show);
+
+    // Component listener override
+    void componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized) override;
+
+private:
+    // Model reference
+    RackModel &rackModel;
+
+    // Visual properties
+    juce::Colour backgroundColor;
+    juce::Colour slotBackgroundColor;
+    juce::Colour slotBorderColor;
+    bool showSlotNumbers;
+    bool showGrid;
+
+    // Rack slots (UI components only)
+    std::vector<std::unique_ptr<RackSlot>> rackSlots;
+
+    // UI components
+    std::unique_ptr<juce::Viewport> viewport;
+    std::unique_ptr<juce::Component> rackContainer;
+
+    // Private helper methods
+    void initializeRack();
+    void layoutSlots();
+    void createSlot(int slotIndex);
+    void updateSlotPositions();
+    void repaintAllSlots();
+    void repaintSingleSlot(int slotIndex);
+
+    // Drag and drop helpers
+    int getSlotIndexFromPosition(juce::Point<int> position) const;
+    bool canDropGearInSlot(int slotIndex, const juce::String &gearId) const;
+
+    // RackStateListener interface implementation
+    void onGearItemAdded(Rack *rack, int slotIndex, const GearItem *gearItem) override;
+    void onGearItemRemoved(Rack *rack, int slotIndex) override;
+    void onGearControlChanged(Rack *rack, int slotIndex, const GearItem *gearItem, int controlIndex) override;
+    void onGearItemsRearranged(Rack *rack, int sourceSlotIndex, int targetSlotIndex) override;
+    void onRackStateReset(Rack *rack) override;
+    void onPresetLoaded(Rack *rack, const juce::String &presetName) override;
+    void onPresetSaved(Rack *rack, const juce::String &presetName) override;
+
+    // JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Rack)
+};

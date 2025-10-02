@@ -33,7 +33,7 @@ AnalogIQProcessor::AnalogIQProcessor(INetworkFetcher &networkFetcher, IFileSyste
       gearLibrary(std::make_unique<GearLibrary>(networkFetcher, *this->fileSystem, *cacheManager, *presetManager))
 {
     initializeLogging();
-    logToFile("=== AnalogIQProcessor Constructor ===");
+    juce::Logger::writeToLog("=== AnalogIQProcessor Constructor ===");
 }
 
 /**
@@ -77,8 +77,8 @@ void AnalogIQProcessor::initializeLogging()
 #endif
 
     // Test logging immediately
-    logToFile("=== Logging Initialized ===");
-    logToFile("Log file: " + logFile.getFullPathName());
+    juce::Logger::writeToLog("=== Logging Initialized ===");
+    juce::Logger::writeToLog("Log file: " + logFile.getFullPathName());
 
 // Also log to console in debug mode
 #ifdef JUCE_DEBUG
@@ -89,7 +89,7 @@ void AnalogIQProcessor::initializeLogging()
 /**
  * @brief Writes a message to the log file.
  */
-void AnalogIQProcessor::logToFile(const juce::String &message)
+void AnalogIQProcessor::juce::Logger::writeToLog(const juce::String &message)
 {
 // Always log to console in debug mode
 #ifdef JUCE_DEBUG
@@ -157,7 +157,7 @@ juce::String AnalogIQProcessor::getLogTimestamp()
  */
 void AnalogIQProcessor::logStateTreeStructure(const juce::ValueTree &tree, const juce::String &prefix)
 {
-    logToFile(prefix + " - Type: " + tree.getType().toString() + ", Properties: " + juce::String(tree.getNumProperties()) + ", Children: " + juce::String(tree.getNumChildren()));
+    juce::Logger::writeToLog(prefix + " - Type: " + tree.getType().toString() + ", Properties: " + juce::String(tree.getNumProperties()) + ", Children: " + juce::String(tree.getNumChildren()));
 
     for (int i = 0; i < tree.getNumChildren(); ++i)
     {
@@ -171,7 +171,7 @@ void AnalogIQProcessor::logStateTreeStructure(const juce::ValueTree &tree, const
  */
 void AnalogIQProcessor::logXmlContent(const juce::XmlElement &xml, const juce::String &prefix)
 {
-    logToFile(prefix + " - Tag: " + xml.getTagName() + ", Attributes: " + juce::String(xml.getNumAttributes()) + ", Children: " + juce::String(xml.getNumChildElements()));
+    juce::Logger::writeToLog(prefix + " - Tag: " + xml.getTagName() + ", Attributes: " + juce::String(xml.getNumAttributes()) + ", Children: " + juce::String(xml.getNumChildElements()));
 
     for (int i = 0; i < xml.getNumChildElements(); ++i)
     {
@@ -360,7 +360,7 @@ juce::AudioProcessorEditor *AnalogIQProcessor::createEditor()
     if (auto *rackEditor = dynamic_cast<AnalogIQEditor *>(editor))
     {
         rack = rackEditor->getRack();
-        logToFile("Stored rack reference for fallback operations");
+        juce::Logger::writeToLog("Stored rack reference for fallback operations");
 
         // Load instance state after the editor is created and gear library is loaded
         // We'll defer this to after the gear library is ready
@@ -398,56 +398,56 @@ juce::AudioProcessorEditor *AnalogIQProcessor::getActiveEditor()
  */
 void AnalogIQProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
-    logToFile("=== getStateInformation START ===");
-    logToFile("DestData initial size: " + juce::String(destData.getSize()));
+    juce::Logger::writeToLog("=== getStateInformation START ===");
+    juce::Logger::writeToLog("DestData initial size: " + juce::String(destData.getSize()));
 
     try
     {
         // Save instance state before saving the main state
-        logToFile("Calling saveInstanceState()...");
+        juce::Logger::writeToLog("Calling saveInstanceState()...");
         saveInstanceState();
-        logToFile("saveInstanceState() completed");
+        juce::Logger::writeToLog("saveInstanceState() completed");
 
-        logToFile("Creating state snapshot...");
+        juce::Logger::writeToLog("Creating state snapshot...");
         auto stateSnapshot = getState().copyState();
-        logToFile("State snapshot created successfully");
-        logToFile("State snapshot children: " + juce::String(stateSnapshot.getNumChildren()));
+        juce::Logger::writeToLog("State snapshot created successfully");
+        juce::Logger::writeToLog("State snapshot children: " + juce::String(stateSnapshot.getNumChildren()));
 
         // Log the state tree structure
         logStateTreeStructure(stateSnapshot, "Root");
 
-        logToFile("Creating XML from state...");
+        juce::Logger::writeToLog("Creating XML from state...");
         std::unique_ptr<juce::XmlElement> xml(stateSnapshot.createXml());
 
         if (xml != nullptr)
         {
-            logToFile("XML created successfully");
-            logToFile("XML children: " + juce::String(xml->getNumChildElements()));
-            logToFile("XML tag name: " + xml->getTagName());
+            juce::Logger::writeToLog("XML created successfully");
+            juce::Logger::writeToLog("XML children: " + juce::String(xml->getNumChildElements()));
+            juce::Logger::writeToLog("XML tag name: " + xml->getTagName());
 
             // Log XML content for debugging
             logXmlContent(*xml, "Root");
 
-            logToFile("Converting XML to binary...");
+            juce::Logger::writeToLog("Converting XML to binary...");
             copyXmlToBinary(*xml, destData);
-            logToFile("Binary conversion completed");
-            logToFile("Final destData size: " + juce::String(destData.getSize()));
+            juce::Logger::writeToLog("Binary conversion completed");
+            juce::Logger::writeToLog("Final destData size: " + juce::String(destData.getSize()));
         }
         else
         {
-            logToFile("ERROR: Failed to create XML from state");
+            juce::Logger::writeToLog("ERROR: Failed to create XML from state");
         }
     }
     catch (const std::exception &e)
     {
-        logToFile("ERROR: Exception during serialization: " + juce::String(e.what()));
+        juce::Logger::writeToLog("ERROR: Exception during serialization: " + juce::String(e.what()));
     }
     catch (...)
     {
-        logToFile("ERROR: Unknown exception during serialization");
+        juce::Logger::writeToLog("ERROR: Unknown exception during serialization");
     }
 
-    logToFile("=== getStateInformation END ===");
+    juce::Logger::writeToLog("=== getStateInformation END ===");
 }
 
 /**
@@ -476,115 +476,115 @@ void AnalogIQProcessor::setStateInformation(const void *data, int sizeInBytes)
  */
 void AnalogIQProcessor::saveInstanceState()
 {
-    logToFile("=== saveInstanceState START ===");
+    juce::Logger::writeToLog("=== saveInstanceState START ===");
 
     // Create a child tree for instance state
-    logToFile("Creating/accessing instances tree...");
+    juce::Logger::writeToLog("Creating/accessing instances tree...");
     auto instanceTree = state.state.getOrCreateChildWithName("instances", &undoManager);
-    logToFile("Instances tree accessed successfully");
-    logToFile("Instances tree children before clear: " + juce::String(instanceTree.getNumChildren()));
+    juce::Logger::writeToLog("Instances tree accessed successfully");
+    juce::Logger::writeToLog("Instances tree children before clear: " + juce::String(instanceTree.getNumChildren()));
 
     // Clear existing instance data
-    logToFile("Clearing existing instance data...");
+    juce::Logger::writeToLog("Clearing existing instance data...");
     instanceTree.removeAllChildren(&undoManager);
-    logToFile("Instance data cleared");
-    logToFile("Instances tree children after clear: " + juce::String(instanceTree.getNumChildren()));
+    juce::Logger::writeToLog("Instance data cleared");
+    juce::Logger::writeToLog("Instances tree children after clear: " + juce::String(instanceTree.getNumChildren()));
 
     // Get the rack from the editor
-    logToFile("Checking editor availability...");
+    juce::Logger::writeToLog("Checking editor availability...");
     if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
     {
-        logToFile("Editor is available");
-        logToFile("Editor type: " + juce::String(typeid(*editor).name()));
+        juce::Logger::writeToLog("Editor is available");
+        juce::Logger::writeToLog("Editor type: " + juce::String(typeid(*editor).name()));
 
         if (auto *rack = editor->getRack())
         {
-            logToFile("Rack obtained from editor successfully");
-            logToFile("Rack slots: " + juce::String(rack->getNumSlots()));
+            juce::Logger::writeToLog("Rack obtained from editor successfully");
+            juce::Logger::writeToLog("Rack slots: " + juce::String(rack->getNumSlots()));
             saveInstanceStateFromRack(rack, instanceTree);
         }
         else
         {
-            logToFile("WARNING: Editor available but getRack() returned null");
+            juce::Logger::writeToLog("WARNING: Editor available but getRack() returned null");
         }
     }
     else
     {
-        logToFile("Editor is NOT available (getActiveEditor() returned null)");
+        juce::Logger::writeToLog("Editor is NOT available (getActiveEditor() returned null)");
 
         // Check if we have a stored rack reference for fallback operations
         if (rack != nullptr)
         {
-            logToFile("Using stored rack reference as fallback");
-            logToFile("Stored rack slots: " + juce::String(rack->getNumSlots()));
-            logToFile("WARNING: Using fallback rack reference - this may be stale if editor was destroyed");
+            juce::Logger::writeToLog("Using stored rack reference as fallback");
+            juce::Logger::writeToLog("Stored rack slots: " + juce::String(rack->getNumSlots()));
+            juce::Logger::writeToLog("WARNING: Using fallback rack reference - this may be stale if editor was destroyed");
             saveInstanceStateFromRack(rack, instanceTree);
         }
         else
         {
-            logToFile("ERROR: No rack available - cannot save instance state");
-            logToFile("This will result in an empty state being saved");
+            juce::Logger::writeToLog("ERROR: No rack available - cannot save instance state");
+            juce::Logger::writeToLog("This will result in an empty state being saved");
         }
     }
 
-    logToFile("Final instances tree children: " + juce::String(instanceTree.getNumChildren()));
-    logToFile("=== saveInstanceState END ===");
+    juce::Logger::writeToLog("Final instances tree children: " + juce::String(instanceTree.getNumChildren()));
+    juce::Logger::writeToLog("=== saveInstanceState END ===");
 }
 
 void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &instanceTree)
 {
-    logToFile("=== saveInstanceStateFromRack START ===");
+    juce::Logger::writeToLog("=== saveInstanceStateFromRack START ===");
 
     if (rack == nullptr)
     {
-        logToFile("ERROR: Rack pointer is null");
+        juce::Logger::writeToLog("ERROR: Rack pointer is null");
         return;
     }
 
-    logToFile("Rack validation: rack pointer valid");
-    logToFile("Rack slots: " + juce::String(rack->getNumSlots()));
+    juce::Logger::writeToLog("Rack validation: rack pointer valid");
+    juce::Logger::writeToLog("Rack slots: " + juce::String(rack->getNumSlots()));
 
     // Save instance data for each slot
     for (int i = 0; i < rack->getNumSlots(); ++i)
     {
-        logToFile("Processing slot " + juce::String(i));
+        juce::Logger::writeToLog("Processing slot " + juce::String(i));
 
         if (auto *slot = rack->getSlot(i))
         {
-            logToFile("Slot " + juce::String(i) + " obtained successfully");
+            juce::Logger::writeToLog("Slot " + juce::String(i) + " obtained successfully");
 
             if (auto *item = slot->getGearItem())
             {
-                logToFile("Slot " + juce::String(i) + " has gear item: " + item->name);
-                logToFile("  Is instance: " + juce::String(item->isInstance ? "true" : "false"));
-                logToFile("  Instance ID: " + item->instanceId);
-                logToFile("  Unit ID: " + item->unitId);
-                logToFile("  Controls count: " + juce::String(item->controls.size()));
+                juce::Logger::writeToLog("Slot " + juce::String(i) + " has gear item: " + item->name);
+                juce::Logger::writeToLog("  Is instance: " + juce::String(item->isInstance ? "true" : "false"));
+                juce::Logger::writeToLog("  Instance ID: " + item->instanceId);
+                juce::Logger::writeToLog("  Unit ID: " + item->unitId);
+                juce::Logger::writeToLog("  Controls count: " + juce::String(item->controls.size()));
 
                 // Save state for instances only (all items in rack are now instances)
                 if (item->isInstance && !item->instanceId.isEmpty() && !item->unitId.isEmpty())
                 {
-                    logToFile("Saving instance data for slot " + juce::String(i));
+                    juce::Logger::writeToLog("Saving instance data for slot " + juce::String(i));
 
                     auto slotTree = instanceTree.getOrCreateChildWithName("slot_" + juce::String(i), &undoManager);
-                    logToFile("Slot tree created for slot " + juce::String(i));
+                    juce::Logger::writeToLog("Slot tree created for slot " + juce::String(i));
 
                     slotTree.setProperty("instanceId", item->instanceId, &undoManager);
                     slotTree.setProperty("sourceUnitId", item->sourceUnitId, &undoManager);
-                    logToFile("Slot properties set for slot " + juce::String(i));
+                    juce::Logger::writeToLog("Slot properties set for slot " + juce::String(i));
 
                     // Save control values
                     auto controlsTree = slotTree.getOrCreateChildWithName("controls", &undoManager);
-                    logToFile("Controls tree created for slot " + juce::String(i));
+                    juce::Logger::writeToLog("Controls tree created for slot " + juce::String(i));
 
                     for (int j = 0; j < item->controls.size(); ++j)
                     {
                         const auto &control = item->controls[j];
-                        logToFile("Processing control " + juce::String(j) + " in slot " + juce::String(i));
-                        logToFile("  Control name: " + control.name);
-                        logToFile("  Control type: " + juce::String(static_cast<int>(control.type)));
-                        logToFile("  Control value: " + juce::String(control.value));
-                        logToFile("  Control initial value: " + juce::String(control.initialValue));
+                        juce::Logger::writeToLog("Processing control " + juce::String(j) + " in slot " + juce::String(i));
+                        juce::Logger::writeToLog("  Control name: " + control.name);
+                        juce::Logger::writeToLog("  Control type: " + juce::String(static_cast<int>(control.type)));
+                        juce::Logger::writeToLog("  Control value: " + juce::String(control.value));
+                        juce::Logger::writeToLog("  Control initial value: " + juce::String(control.initialValue));
 
                         auto controlTree = controlsTree.getOrCreateChildWithName("control_" + juce::String(j), &undoManager);
                         controlTree.setProperty("value", control.value, &undoManager);
@@ -593,58 +593,58 @@ void AnalogIQProcessor::saveInstanceStateFromRack(Rack *rack, juce::ValueTree &i
                         if (control.type == GearControl::Type::Switch || control.type == GearControl::Type::Button)
                         {
                             controlTree.setProperty("currentIndex", control.currentIndex, &undoManager);
-                            logToFile("  Control current index: " + juce::String(control.currentIndex));
+                            juce::Logger::writeToLog("  Control current index: " + juce::String(control.currentIndex));
                         }
 
-                        logToFile("Control " + juce::String(j) + " saved successfully");
+                        juce::Logger::writeToLog("Control " + juce::String(j) + " saved successfully");
                     }
 
-                    logToFile("Slot " + juce::String(i) + " completed successfully");
+                    juce::Logger::writeToLog("Slot " + juce::String(i) + " completed successfully");
                 }
                 else
                 {
-                    logToFile("Slot " + juce::String(i) + " skipped - not a valid instance");
-                    logToFile("  Is instance: " + juce::String(item->isInstance ? "true" : "false"));
-                    logToFile("  Instance ID empty: " + juce::String(item->instanceId.isEmpty() ? "true" : "false"));
-                    logToFile("  Unit ID empty: " + juce::String(item->unitId.isEmpty() ? "true" : "false"));
+                    juce::Logger::writeToLog("Slot " + juce::String(i) + " skipped - not a valid instance");
+                    juce::Logger::writeToLog("  Is instance: " + juce::String(item->isInstance ? "true" : "false"));
+                    juce::Logger::writeToLog("  Instance ID empty: " + juce::String(item->instanceId.isEmpty() ? "true" : "false"));
+                    juce::Logger::writeToLog("  Unit ID empty: " + juce::String(item->unitId.isEmpty() ? "true" : "false"));
                 }
             }
             else
             {
-                logToFile("Slot " + juce::String(i) + " has no gear item");
+                juce::Logger::writeToLog("Slot " + juce::String(i) + " has no gear item");
             }
         }
         else
         {
-            logToFile("ERROR: Failed to get slot " + juce::String(i));
+            juce::Logger::writeToLog("ERROR: Failed to get slot " + juce::String(i));
         }
     }
 
     // Save notes panel content
-    logToFile("Attempting to save notes panel content...");
+    juce::Logger::writeToLog("Attempting to save notes panel content...");
     if (auto *editor = dynamic_cast<AnalogIQEditor *>(getActiveEditor()))
     {
-        logToFile("Editor available for notes panel");
+        juce::Logger::writeToLog("Editor available for notes panel");
         if (auto *notesPanel = editor->getNotesPanel())
         {
-            logToFile("Notes panel obtained successfully");
+            juce::Logger::writeToLog("Notes panel obtained successfully");
             auto notesTree = instanceTree.getOrCreateChildWithName("notes", &undoManager);
             auto notesContent = notesPanel->getText();
             notesTree.setProperty("content", notesContent, &undoManager);
-            logToFile("Notes content saved: " + juce::String(notesContent.length()) + " characters");
+            juce::Logger::writeToLog("Notes content saved: " + juce::String(notesContent.length()) + " characters");
         }
         else
         {
-            logToFile("WARNING: Notes panel is null");
+            juce::Logger::writeToLog("WARNING: Notes panel is null");
         }
     }
     else
     {
-        logToFile("Editor not available for notes panel");
+        juce::Logger::writeToLog("Editor not available for notes panel");
     }
 
-    logToFile("Final instance tree children: " + juce::String(instanceTree.getNumChildren()));
-    logToFile("=== saveInstanceStateFromRack END ===");
+    juce::Logger::writeToLog("Final instance tree children: " + juce::String(instanceTree.getNumChildren()));
+    juce::Logger::writeToLog("=== saveInstanceStateFromRack END ===");
 }
 
 /**
@@ -803,19 +803,19 @@ void AnalogIQProcessor::resetAllInstances()
     // If no editor is available, try to use the stored rack reference as fallback
     if (rack != nullptr)
     {
-        logToFile("Using stored rack reference for resetAllInstances fallback");
-        logToFile("WARNING: Using fallback rack reference - this may be stale if editor was destroyed");
+        juce::Logger::writeToLog("Using stored rack reference for resetAllInstances fallback");
+        juce::Logger::writeToLog("WARNING: Using fallback rack reference - this may be stale if editor was destroyed");
         rack->resetAllInstances();
     }
     else
     {
-        logToFile("ERROR: No rack available for resetAllInstances - operation failed");
+        juce::Logger::writeToLog("ERROR: No rack available for resetAllInstances - operation failed");
     }
 }
 
 void AnalogIQProcessor::clearRackReference()
 {
-    logToFile("Clearing stored rack reference to prevent dangling pointer usage");
+    juce::Logger::writeToLog("Clearing stored rack reference to prevent dangling pointer usage");
     rack = nullptr;
 }
 

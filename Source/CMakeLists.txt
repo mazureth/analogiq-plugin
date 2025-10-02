@@ -1,26 +1,9 @@
-# Add source files to the main target
-target_sources(AnalogIQ
-    PRIVATE
-        AnalogIQProcessor.cpp
-        AnalogIQProcessor.h
-        AnalogIQEditor.cpp
-        AnalogIQEditor.h
-        GearLibrary.cpp
-        GearLibrary.h
-        GearItem.cpp
-        GearItem.h
-        Rack.cpp
-        Rack.h
-        RackSlot.cpp
-        RackSlot.h
-        NotesPanel.cpp
-        NotesPanel.h
-        DraggableListBox.h
-        CacheManager.cpp
-        CacheManager.h
-        PresetManager.cpp
-        PresetManager.h
-        IFileSystem.h
-        FileSystem.h
-        FileSystem.cpp
-) 
+# Source CMakeLists.txt for AnalogIQ Plugin
+
+# Add subdirectories for MVC architecture
+add_subdirectory(Model)
+add_subdirectory(View)
+add_subdirectory(Controller)
+add_subdirectory(Shared)
+
+# Main plugin source files will be added here as they're implemented 

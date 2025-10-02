@@ -1,0 +1,314 @@
+{
+    "unitId": "black-lion-b172a",
+    "name": "Black Lion Audio B172A Dual Compressor",
+    "manufacturer": "Black Lion Audio",
+    "tags": [
+        "Black Lion Audio",
+        "500 series",
+        "compressor",
+        "1176",
+        "LA-2A",
+        "FET",
+        "optical"
+    ],
+    "version": "1.0.0",
+    "category": "compressor",
+    "formFactor": "19-inch-rack",
+    "faceplateImage": "assets/faceplates/bla-b172a-1.0.0.png",
+    "thumbnailImage": "assets/thumbnails/bla-b172a-1.0.0.png",
+    "width": 1900,
+    "height": 350,
+    "controls": [
+        {
+            "id": "input",
+            "label": "Input",
+            "type": "knob",
+            "position": {
+                "x": 0.1,
+                "y": 0.642
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "attack",
+            "label": "Attack",
+            "type": "knob",
+            "position": {
+                "x": 0.165,
+                "y": 0.642
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "release",
+            "label": "Release",
+            "type": "knob",
+            "position": {
+                "x": 0.397,
+                "y": 0.631
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "output",
+            "label": "Output",
+            "type": "knob",
+            "position": {
+                "x": 0.46,
+                "y": 0.642
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "ratio",
+            "label": "Ratio",
+            "type": "knob",
+            "position": {
+                "x": 0.155,
+                "y": 0.19
+            },
+            "value": 130,
+            "startAngle": 130,
+            "endAngle": 225,
+            "steps": [
+                130,
+                160,
+                195,
+                225
+            ],
+            "currentStepIndex": 0,
+            "image": "assets/controls/knobs/bakelite-med-black.png"
+        },
+        {
+            "id": "meter-17",
+            "label": "Meter",
+            "type": "knob",
+            "position": {
+                "x": 0.384,
+                "y": 0.19
+            },
+            "value": 180,
+            "startAngle": 140,
+            "endAngle": 220,
+            "steps": [
+                140,
+                180,
+                220
+            ],
+            "currentStepIndex": 0,
+            "image": "assets/controls/knobs/bakelite-med-black.png"
+        },
+        {
+            "id": "bypass-17",
+            "label": "Bypass",
+            "type": "switch",
+            "position": {
+                "x": 0.102,
+                "y": 0.2
+            },
+            "options": [
+                {
+                    "value": "Out",
+                    "frame": {
+                        "x": 0,
+                        "y": 66,
+                        "width": 66,
+                        "height": 66
+                    },
+                    "label": "Out"
+                },
+                {
+                    "value": "In",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 66,
+                        "height": 66
+                    },
+                    "label": "In"
+                }
+            ],
+            "currentIndex": 0,
+            "orientation": "vertical",
+            "image": "assets/controls/switches/chrome-med-sprite.png"
+        },
+        {
+            "id": "gain",
+            "label": "Gain",
+            "type": "knob",
+            "position": {
+                "x": 0.578,
+                "y": 0.63
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "peak-reduction",
+            "label": "Peak Reduction",
+            "type": "knob",
+            "position": {
+                "x": 0.79,
+                "y": 0.63
+            },
+            "value": 180,
+            "startAngle": 40,
+            "endAngle": 330,
+            "image": "assets/controls/knobs/urei-med-silver.png"
+        },
+        {
+            "id": "meter-2a",
+            "label": "Meter",
+            "type": "knob",
+            "position": {
+                "x": 0.773,
+                "y": 0.175
+            },
+            "value": 180,
+            "startAngle": 140,
+            "endAngle": 220,
+            "steps": [
+                140,
+                180,
+                220
+            ],
+            "currentStepIndex": 0,
+            "image": "assets/controls/knobs/bakelite-med-black.png"
+        },
+        {
+            "id": "bypass-2a",
+            "label": "Bypass (2A)",
+            "type": "switch",
+            "position": {
+                "x": 0.576,
+                "y": 0.21
+            },
+            "options": [
+                {
+                    "value": "Out",
+                    "frame": {
+                        "x": 0,
+                        "y": 66,
+                        "width": 66,
+                        "height": 66
+                    },
+                    "label": "Out"
+                },
+                {
+                    "value": "In",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 66,
+                        "height": 66
+                    },
+                    "label": "In"
+                }
+            ],
+            "currentIndex": 0,
+            "orientation": "vertical",
+            "image": "assets/controls/switches/chrome-med-sprite.png"
+        },
+        {
+            "id": "limit-compress",
+            "label": "Limit/Compress",
+            "type": "switch",
+            "position": {
+                "x": 0.85,
+                "y": 0.21
+            },
+            "options": [
+                {
+                    "value": "Compress",
+                    "frame": {
+                        "x": 0,
+                        "y": 66,
+                        "width": 66,
+                        "height": 66
+                    },
+                    "label": "Compress"
+                },
+                {
+                    "value": "Limit",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 66,
+                        "height": 66
+                    },
+                    "label": "Limit"
+                }
+            ],
+            "currentIndex": 0,
+            "orientation": "vertical",
+            "image": "assets/controls/switches/chrome-med-sprite.png"
+        },
+        {
+            "id": "dual-mono-link",
+            "label": "Dual/Mono Link",
+            "type": "knob",
+            "position": {
+                "x": 0.5,
+                "y": 0.19
+            },
+            "value": 180,
+            "startAngle": 140,
+            "endAngle": 220,
+            "steps": [
+                140,
+                180,
+                220
+            ],
+            "currentStepIndex": 1,
+            "image": "assets/controls/knobs/bakelite-med-black.png"
+        },
+        {
+            "id": "power",
+            "label": "Power",
+            "type": "switch",
+            "position": {
+                "x": 0.885,
+                "y": 0.63
+            },
+            "options": [
+                {
+                    "value": "On",
+                    "frame": {
+                        "x": 0,
+                        "y": 66,
+                        "width": 66,
+                        "height": 66
+                    },
+                    "label": "On"
+                },
+                {
+                    "value": "Off",
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 66,
+                        "height": 66
+                    },
+                    "label": "Off"
+                }
+            ],
+            "currentIndex": 0,
+            "orientation": "vertical",
+            "image": "assets/controls/switches/chrome-med-sprite.png"
+        }
+    ]
+}

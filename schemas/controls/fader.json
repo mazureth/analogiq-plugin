@@ -1,0 +1,66 @@
+{
+    "$id": "#/definitions/fader",
+    "type": "object",
+    "required": [
+        "id",
+        "label",
+        "type",
+        "position",
+        "value",
+        "orientation",
+        "length"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "Unique identifier for the fader"
+        },
+        "label": {
+            "type": "string",
+            "description": "Label for the fader"
+        },
+        "type": {
+            "const": "fader"
+        },
+        "position": {
+            "type": "object",
+            "description": "Position of the fader on the faceplate",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "X position of the fader on the faceplate"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "Y position of the fader on the faceplate"
+                }
+            },
+            "required": [
+                "x",
+                "y"
+            ]
+        },
+        "value": {
+            "type": "number",
+            "description": "Current position of the fader in percentage (0.0 - 1.0) along the track"
+        },
+        "length": {
+            "type": "integer",
+            "description": "Length of the fader in pixels",
+            "minimum": 1
+        },
+        "orientation": {
+            "type": "string",
+            "enum": [
+                "horizontal",
+                "vertical"
+            ]
+        },
+        "image": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "\\.png$",
+            "description": "URI to the image representing this specific fader's handle"
+        }
+    }
+}

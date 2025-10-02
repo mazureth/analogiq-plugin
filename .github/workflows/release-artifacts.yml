@@ -24,6 +24,7 @@ jobs:
       - name: Configure and Build
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DANALOGIQ_BUILD_AAX=ON \
             -DANALOGIQ_BUILD_VST3=ON \
             -DANALOGIQ_BUILD_AU=ON \

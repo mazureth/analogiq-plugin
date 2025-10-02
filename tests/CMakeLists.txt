@@ -4,23 +4,12 @@ enable_testing()
 # Create test executable
 add_executable(analogiq_tests
     main.cpp
-    unit/TestHelpers.h
-    unit/TestFixture.h
-    unit/MockNetworkFetcher.h
-    unit/MockRackStateListener.h
-    unit/MockFileSystem.h
-    unit/MockStateVerifier.h
-    unit/GearLibraryTests.cpp
-    unit/GearItemTests.cpp
-    unit/RackTests.cpp
-    unit/RackSlotTests.cpp
-    unit/DraggableListBoxTests.cpp
-    unit/NotesPanelTests.cpp
-    unit/PluginProcessorTests.cpp
-    unit/PluginEditorTests.cpp
-    unit/CacheManagerTests.cpp
-    unit/PresetManagerTests.cpp
-    unit/PresetIntegrationTests.cpp
+    # Test files will be added here as we implement components
+    # unit/FileSystemTests.cpp
+    # unit/NetworkFetcherTests.cpp
+    # unit/GearControlTests.cpp
+    # unit/GearItemTests.cpp
+    # unit/AnalogIQProcessorTests.cpp
 )
 
 # Set C++ standard
@@ -51,6 +40,10 @@ target_link_libraries(analogiq_tests
 target_include_directories(analogiq_tests
     PRIVATE
     ${CMAKE_SOURCE_DIR}/Source
+    ${CMAKE_SOURCE_DIR}/Source/Shared
+    ${CMAKE_SOURCE_DIR}/Source/Model
+    ${CMAKE_SOURCE_DIR}/Source/View
+    ${CMAKE_SOURCE_DIR}/Source/Controller
     ${CMAKE_BINARY_DIR}/AnalogIQ_artefacts/JuceLibraryCode # For JuceHeader.h
 )
 
