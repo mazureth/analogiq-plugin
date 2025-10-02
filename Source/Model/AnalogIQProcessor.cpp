@@ -270,8 +270,9 @@ void AnalogIQProcessor::setStateInformation(const void *data, int sizeInBytes)
     }
 
     // Load instance state after restoring the main state
-    // We need to wait for the editor to be created, so we'll do this in createEditor
-    CrashLogger::getInstance().log("STATE_LOAD", "setStateInformation completed - instance loading deferred to createEditor");
+    // CRITICAL FIX: Load instance data immediately when state is restored
+    CrashLogger::getInstance().log("STATE_LOAD", "setStateInformation completed - loading instance data immediately");
+    loadInstanceState();
 }
 
 // State management interface
